@@ -1,1 +1,0 @@
-# poi-desk-app
