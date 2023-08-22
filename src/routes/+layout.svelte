@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import BottomNav from '../components/BottomNav.svelte';
+	import BottomNav from '$components/BottomNav.svelte';
 </script>
 
 <BottomNav />

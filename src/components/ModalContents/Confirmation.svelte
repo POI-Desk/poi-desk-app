@@ -17,6 +17,5 @@
 	<p class="py-4">Added to Outlook</p>
 {/if}
 
-
 <style>
 </style>

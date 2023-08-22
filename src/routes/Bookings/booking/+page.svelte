@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Booking from '../../components/Booking.svelte';
+	import Booking from '$components/Booking.svelte';
 	let date: Date = new Date();
 	let showModal: boolean = false;
     let table: string = 'A11';

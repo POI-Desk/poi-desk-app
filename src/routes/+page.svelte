@@ -1,7 +1,7 @@
 <script lang="ts">
-	import BingBong from '../components/BingBong.svelte';
-	import Check from '../components/Check.svelte';
-	import CrazyAnimation from '../components/CrazyAnimation.svelte';
+	import BingBong from '$components/BingBong.svelte';
+	import Check from '$components/Check.svelte';
+	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 
 	let visible = false;
 

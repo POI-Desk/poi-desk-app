@@ -19,7 +19,7 @@
 			/>
 		</svg>
 	</a>
-	<a href="/" class={$page.url.pathname === '/' ? 'active' : ''}>
+	<a href="/" class={$page.url.pathname === '/map' ? 'active' : ''}>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			class="h-5 w-5"
@@ -35,7 +35,7 @@
 			/>
 		</svg>
 	</a>
-	<a href="./Bookings" class={$page.url.pathname === '/Bookings' ? 'active' : ''}>
+	<a href="./bookings" class={$page.url.pathname === '/bookings' ? 'active' : ''}>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			class="h-5 w-5"
