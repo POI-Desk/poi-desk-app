@@ -23,7 +23,12 @@
 					<th>{booking.id}</th>
 					<td>{booking.date}</td>
 					<td>{booking.time}</td>
-					<td on:click={() => deleteBooking(booking.id)}> Delete </td>
+					<td>
+						<button
+							on:click|stopPropagation={() => deleteBooking(booking.id)}
+							class="btn btn-error btn-sm btn-outline">Delete</button
+						>
+					</td>
 				</tr>
 			{/each}
 		</tbody>
