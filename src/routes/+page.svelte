@@ -1,7 +1,8 @@
 <script lang="ts">
-	import BingBong from '$components/BingBong.svelte';
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
+	// import type { PageData } from './$types';
+	import type { PageData } from './$houdini';
 
 	let visible = false;
 
@@ -11,10 +12,20 @@
 			visible = false;
 		}, 5000);
 	}
+
+	export let data: PageData;
+	$: ({ getUsers } = data);
+	$: users = $getUsers.data?.getAllUsers;
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+{#if users}
+	<ul>
+		{#each users as user (user?.pk_userid)}
+			<li>{user?.username}</li>
+		{/each}
+	</ul>
+{/if}
+
 <button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>
 
 {#if visible}
