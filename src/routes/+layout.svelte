@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.postcss';
+	import '../app.css';
 	import BottomNav from '$components/BottomNav.svelte';
 </script>
 
