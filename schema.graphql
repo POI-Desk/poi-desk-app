@@ -1,21 +1,12 @@
-type Author {
-  firstName: String
-  id: ID
-  lastName: String
-}
-
-type Book {
-  author: Author
-  id: ID
-  name: String
-  pageCount: Int
-}
-
 type Mutation {
-  createBook(authorId: ID, name: String, pageCount: Int): Book
+  changeUsername(id: String, name: String): User
 }
 
 type Query {
-  bookById(id: ID): Book
-  books: [Book]
+  getAllUsers: [User]
+}
+
+type User {
+  pk_userid: String
+  username: String
 }

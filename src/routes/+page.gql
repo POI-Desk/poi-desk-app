@@ -1,0 +1,6 @@
+query getUsers {
+	getAllUsers {
+		pk_userid
+		username
+	}
+}
