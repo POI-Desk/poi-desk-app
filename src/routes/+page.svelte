@@ -1,10 +1,21 @@
 <script lang="ts">
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
-	// import type { PageData } from './$types';
-	import type { PageData } from './$houdini';
+	import DateSelection from '$components/DateSelection.svelte';
+	import { bookings } from '$lib/bookings';
+	import type { PageData } from './$types';
 
 	let visible = false;
+	let triggerEl: any;
+    let panelVisible = false;
+ 
+    function togglePanel() {
+      panelVisible = !panelVisible;
+    }
+ 
+    function hidePanel() {
+      panelVisible = false;
+    }
 
 	function spinnnnn() {
 		visible = true;
@@ -13,18 +24,8 @@
 		}, 5000);
 	}
 
-	export let data: PageData;
-	$: ({ getUsers } = data);
-	$: users = $getUsers.data?.getAllUsers;
 </script>
 
-{#if users}
-	<ul>
-		{#each users as user (user?.pk_userid)}
-			<li>{user?.username}</li>
-		{/each}
-	</ul>
-{/if}
 
 <button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>
 
@@ -33,3 +34,5 @@
 		<Check />
 	</CrazyAnimation>
 {/if}
+
+<DateSelection></DateSelection>
