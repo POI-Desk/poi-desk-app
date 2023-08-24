@@ -1,9 +1,21 @@
 <script lang="ts">
-	import BingBong from '$components/BingBong.svelte';
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
+	import DateSelection from '$components/DateSelection.svelte';
+	import { bookings } from '$lib/bookings';
+	import type { PageData } from './$types';
 
 	let visible = false;
+	let triggerEl: any;
+    let panelVisible = false;
+ 
+    function togglePanel() {
+      panelVisible = !panelVisible;
+    }
+ 
+    function hidePanel() {
+      panelVisible = false;
+    }
 
 	function spinnnnn() {
 		visible = true;
@@ -11,10 +23,10 @@
 			visible = false;
 		}, 5000);
 	}
+
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+
 <button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>
 
 {#if visible}
@@ -22,3 +34,5 @@
 		<Check />
 	</CrazyAnimation>
 {/if}
+
+<DateSelection></DateSelection>
