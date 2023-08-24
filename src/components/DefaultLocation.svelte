@@ -1,33 +1,41 @@
 <script lang="ts">
-    import { createEventDispatcher} from "svelte";
+	import { graphql } from '$houdini';
+	import { createEventDispatcher } from 'svelte';
 
-    const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-    function closeModal() {
-        dispatch("close");
+	function closeModal() {
+		dispatch('close');
+	}
+	let isModalOpen: boolean = false;
+	export let chosenLocation: {pk_locationid: string | null, locationname: string | null};
+
+    function setAsDefault(){
+        console.log('hi')
     }
-    let isModalOpen: boolean = false;
-    export let chosenLocation:string = "none";
-    let setAsDefault: boolean = false;
+
 </script>
-
-<!-- The button to open modal -->
-<!-- 🔵 set true on click -->
-
-
-<!-- Put this part before </body> tag -->
-<!-- 🔵 conditional `modal-open` class if true -->
 <div class="modal" class:modal-open={true}>
-    <div class="modal-box">
-        <h1 class="text-2xl"> Do you want to set {chosenLocation} as your default</h1>
-        <div class="">
-            <button class="btn btn-success px-14"> <a href="." on:click={()=>{setAsDefault=true}}>Yes</a></button>
-            <button class="btn btn-error px-14"><a href="." on:click={()=>{setAsDefault=false}}>No</a></button>
-        </div>
-    </div>
+	<div class="modal-box">
+		<h1 class="text-2xl">Do you want to set {chosenLocation.locationname} as your default</h1>
+		<div class="flex">
+			<button class="btn btn-success px-14 justify-self-start">
+				<a
+					href="."
+					on:click={() => {
+						setAsDefault();
+					}}>Yes</a
+				></button
+			>
+			<button class="btn btn-error px-14 justify-self-end"
+				><a
+					href="."
+				    >No</a
+				></button
+			>
+		</div>
+	</div>
 </div>
 
-
 <style>
-
 </style>
