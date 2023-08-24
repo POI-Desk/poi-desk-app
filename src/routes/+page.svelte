@@ -37,4 +37,3 @@
 {/if}
 
 <DateSelection></DateSelection>
-<SeatsOnFloor></SeatsOnFloor>
