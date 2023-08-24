@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
 	// import type { PageLoad } from './$houdini';
 	//import DateSelection
 
@@ -53,3 +54,5 @@
 		{/each}
 	</ul>
 {/if}
+
+<SeatsOnFloor {dateValue}/>
