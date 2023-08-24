@@ -74,8 +74,8 @@
 							date: date.toISOString().split('T')[0],
 							isMorning: $interval.morning,
 							isAfternoon: $interval.afternoon,
-							userId: '767fbcb6-6de7-4354-9020-00a30cc2e218', //TODO: get user id from auth
-							seatId: '972c747d-dc47-4b01-b464-0c0384e3e0ae' //TODO: get seat from map
+							userId: '767fbcb6-6de7-4354-9020-00a30cc2e218', // TODO: get user id from auth
+							seatId: seat.pk_seatid
 						});
 					}}>Book</button
 				>

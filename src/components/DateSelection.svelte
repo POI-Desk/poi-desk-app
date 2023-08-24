@@ -47,12 +47,12 @@
 	</div>
 </div>
 
-{#if bookings}
-	<ul>
-		{#each bookings as booking (booking?.pk_bookingid)}
-			<li>{booking?.bookingnumber}</li>
-		{/each}
-	</ul>
-{/if}
+<!--{#if bookings}-->
+<!--	<ul>-->
+<!--		{#each bookings as booking (booking?.pk_bookingid)}-->
+<!--			<li>{booking?.bookingnumber}</li>-->
+<!--		{/each}-->
+<!--	</ul>-->
+<!--{/if}-->
 
 <SeatsOnFloor {dateValue}/>

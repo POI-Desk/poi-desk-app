@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {graphql} from "$houdini";
+    import {CachePolicy, graphql} from "$houdini";
     import Booking from "$components/Booking.svelte";
     import CrazyAnimation from "$components/CrazyAnimation.svelte";
     import Check from "$components/Check.svelte";
@@ -82,7 +82,7 @@
     <p>loading seats...</p>
 {:else if seats}
     {#each seats as seat}
-        <button on:click={() => toggleModal(seatz)}
+        <button on:click={() => toggleModal(seat)}
                 class="btn btn-accent"
                 class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
         >{seat?.seatnum}</button>
@@ -92,7 +92,10 @@
 {/if}
 
 {#if showModal}
-    <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={toggleModal} on:play={spinnnnn} />
+    <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
+        toggleModal(null);
+        getSeats.fetch({policy: CachePolicy.NetworkOnly});
+    }} on:play={spinnnnn} />
 {/if}
 
 {#if visible}
