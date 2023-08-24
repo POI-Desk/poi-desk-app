@@ -7,7 +7,7 @@
 	function closeModal() {
 		dispatch('close');
 	}
-	let isModalOpen: boolean = false;
+	let isModalOpen = false;
 	export let chosenLocation: {pk_locationid: string | null, locationname: string | null};
 	
 	const defaultLocation = graphql(`

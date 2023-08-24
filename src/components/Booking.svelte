@@ -41,8 +41,10 @@
 
 	let time: string = 'none';
 	let modalConfirmVisible: boolean = false;
-	export let table: string = 'defaultValue'; //get table from parent page
+	export let seat: any = undefined; //get table from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
+
+	console.log(seat);
 </script>
 
 <!-- useless Modal Stuff -->
@@ -52,7 +54,7 @@
 <div class="modal" class:modal-open={true}>
 	<div class="modal-box flex flex-col">
 		{#if !modalConfirmVisible}
-			<Selection {table} {date} />
+			<Selection {seat} {date} />
 			<div class="modal-action">
 				<button class="btn btn-error" on:click={closeModal}>Cancel</button>
 				<button class="btn btn-primary modal-button" disabled={!$interval.afternoon && !$interval.morning} on:click={() => (modalConfirmVisible = true)}
@@ -60,7 +62,7 @@
 				>
 			</div>
 		{:else}
-			<Confirmation {table} {date} />
+			<Confirmation {seat} {date} />
 			<div class="modal-action">
 				<button class="btn btn-error" on:click={() => (modalConfirmVisible = false)}>Back</button>
 				<button
@@ -72,8 +74,8 @@
 							date: date.toISOString().split('T')[0],
 							isMorning: $interval.morning,
 							isAfternoon: $interval.afternoon,
-							userId: 'bb5ad8f0-6883-4f9c-97ec-5f9ca9242890', //TODO: get user id from auth
-							seatId: 'e5431411-43b6-4a4a-95a0-942334fdfe18' //TODO: get seat from map
+							userId: '767fbcb6-6de7-4354-9020-00a30cc2e218', //TODO: get user id from auth
+							seatId: '972c747d-dc47-4b01-b464-0c0384e3e0ae' //TODO: get seat from map
 						});
 					}}>Book</button
 				>
