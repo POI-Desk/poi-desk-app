@@ -58,7 +58,7 @@
 			<div class="modal-action">
 				<button class="btn btn-error" on:click={closeModal}>Cancel</button>
 				<button class="btn btn-primary modal-button" disabled={!$interval.afternoon && !$interval.morning} on:click={() => (modalConfirmVisible = true)}
-					>Confirmation</button
+					>Book</button
 				>
 			</div>
 		{:else}
@@ -77,7 +77,7 @@
 							userId: '767fbcb6-6de7-4354-9020-00a30cc2e218', // TODO: get user id from auth
 							seatId: seat.pk_seatid
 						});
-					}}>Book</button
+					}}>Confirm</button
 				>
 			</div>
 		{/if}
