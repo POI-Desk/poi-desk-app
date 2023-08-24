@@ -7,7 +7,6 @@
 	function closeModal() {
 		dispatch('close');
 	}
-	let isModalOpen: boolean = false;
 	export let chosenLocation: {pk_locationid: string | null, locationname: string | null};
 	
 	const defaultLocation = graphql(`
@@ -27,19 +26,13 @@
 	<div class="modal-box">
 		<h1 class="text-2xl">Do you want to set {chosenLocation.locationname} as your default</h1>
 		<div class="flex">
-			<button class="btn btn-success px-14 justify-self-start">
-				<a
-					href="."
-					on:click={() => {
+			<a class="btn btn-success px-14 justify-self-start" href="/" on:click={() => {
 						setAsDefault();
-					}}>Yes</a
-				></button
-			>
-			<button class="btn btn-error px-14 justify-self-end"
-				><a
-					href="."
-				    >No</a
-				></button
+					}}>
+				Yes</a>
+			<a class="btn btn-error px-14 justify-self-end" href="/"
+				>No
+				</a
 			>
 		</div>
 	</div>
