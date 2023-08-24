@@ -4,6 +4,7 @@
 	import DateSelection from '$components/DateSelection.svelte';
 	import { bookings } from '$lib/bookings';
 	import type { PageData } from './$types';
+	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
 
 	let visible = false;
 	let triggerEl: any;
@@ -36,3 +37,4 @@
 {/if}
 
 <DateSelection></DateSelection>
+<SeatsOnFloor></SeatsOnFloor>
