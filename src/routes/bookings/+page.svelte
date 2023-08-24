@@ -1,36 +1,46 @@
 <script lang="ts">
-	import { bookings } from '$lib/bookings';
+	import { delBooking } from '$lib/mutations/booking';
+	import { CachePolicy, fetch } from '$houdini';
+	import type { PageData } from './$houdini'; 
 
-	const deleteBooking = (id: number) => {
-		bookings.update((b) => b.filter((b) => b.id !== id));
+	export let data: PageData;
+
+	$: ({ GetAllBookings } = data);
+
+	const deleteBooking = async (id: string) => {
+		await delBooking.mutate({ id: id });
+		await data.GetAllBookings.fetch({ policy: CachePolicy.NetworkOnly });
 	};
 </script>
 
 <div class="overflow-x-auto">
 	<table class="table">
-		<!-- head -->
 		<thead>
 			<tr>
 				<th>ID</th>
+				<th>Number</th>
 				<th>Date</th>
-				<th>Time</th>
 				<th />
 			</tr>
 		</thead>
 		<tbody>
-			{#each $bookings as booking (booking.id)}
-				<tr>
-					<th>{booking.id}</th>
-					<td>{booking.date}</td>
-					<td>{booking.time}</td>
-					<td>
-						<button
-							on:click|stopPropagation={() => deleteBooking(booking.id)}
-							class="btn btn-error btn-sm btn-outline">Delete</button
-						>
-					</td>
-				</tr>
-			{/each}
+			{#if $GetAllBookings.data?.allBookings}
+				{#each $GetAllBookings.data?.allBookings as booking}
+					<tr>
+						<th>{booking?.pk_bookingid}</th>
+						<td>{booking?.bookingnumber}</td>
+						<td>{booking?.date}</td>
+						<td>
+							<button
+								on:click|stopPropagation={async () => {
+									await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst');
+								}}
+								class="btn btn-error btn-sm btn-outline">Delete</button
+							>
+						</td>
+					</tr>
+				{/each}
+			{/if}
 		</tbody>
 	</table>
 </div>

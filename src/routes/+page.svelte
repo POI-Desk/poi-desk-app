@@ -2,21 +2,20 @@
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
-	import { bookings } from '$lib/bookings';
 	import type { PageData } from './$types';
 	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
 
 	let visible = false;
 	let triggerEl: any;
-    let panelVisible = false;
- 
-    function togglePanel() {
-      panelVisible = !panelVisible;
-    }
- 
-    function hidePanel() {
-      panelVisible = false;
-    }
+	let panelVisible = false;
+
+	function togglePanel() {
+		panelVisible = !panelVisible;
+	}
+
+	function hidePanel() {
+		panelVisible = false;
+	}
 
 	function spinnnnn() {
 		visible = true;
@@ -24,9 +23,7 @@
 			visible = false;
 		}, 5000);
 	}
-
 </script>
-
 
 <button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>
 
@@ -36,4 +33,4 @@
 	</CrazyAnimation>
 {/if}
 
-<DateSelection></DateSelection>
+<DateSelection />
