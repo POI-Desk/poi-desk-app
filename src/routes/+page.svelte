@@ -34,3 +34,5 @@
 {/if}
 
 <DateSelection />
+
+<a class="btn btn-primary" href="./location">Location</a>
