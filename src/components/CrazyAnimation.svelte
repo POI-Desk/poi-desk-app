@@ -30,7 +30,7 @@
 
 <style>
 	.fireworks {
-		background-image: url('fireworks.gif');
+		background-image: url('/fireworks.gif');
 		background-size: cover;
 		background-position: center;
 	}
