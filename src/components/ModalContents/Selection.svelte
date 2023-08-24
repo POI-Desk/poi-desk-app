@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { interval, addOutlook } from '$lib/bookingStore';
-	export let table: string = 'defaultValue'; //get table from parent page
+	export let seat: any = undefined; //get table from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
 </script>
 
@@ -8,8 +8,8 @@
 	<li class="step step-primary">Register Workspace</li>
 	<li class="step">Confirm Selection</li>
 </ul>
-<h3 class="font-bold text-lg">Book Table {table}</h3>
-<p class="py-4">Table: {table}</p>
+<h3 class="font-bold text-lg">Book Table {seat.seatnum}</h3>
+<p class="py-4">Table: {seat.seatnum}</p>
 <p class="py-3">Date: {date.toLocaleDateString()}</p>
 <div class="form-control">
 	<label class="label cursor-pointer">
