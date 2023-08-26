@@ -4,6 +4,7 @@
 	import DateSelection from '$components/DateSelection.svelte';
 	import type { PageData } from './$types';
 	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
+	import { user } from '$lib/userStore';
 
 	let visible = false;
 	let triggerEl: any;
@@ -36,3 +37,7 @@
 <DateSelection />
 
 <a class="btn btn-primary" href="./location">Location</a>
+
+<a class="btn btn-primary" href="./login">Login</a>
+
+<p>{$user?.username ?? 'no username'}</p>
