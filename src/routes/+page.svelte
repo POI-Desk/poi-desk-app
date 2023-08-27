@@ -3,10 +3,9 @@
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
 	import type { PageData } from './$types';
-	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
+	import SeatsOnFloor from '$components/SeatsOnFloor.svelte';
 
 	let visible = false;
-	let triggerEl: any;
 	let panelVisible = false;
 
 	function togglePanel() {
