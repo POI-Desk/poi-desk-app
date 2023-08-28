@@ -1,44 +1,51 @@
 <script lang="ts">
-	import { marshalSelection } from '$houdini';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	export let initX: number = 0;
+	export let initY: number = 0;
+	export let initMouseX: number = 0;
+	export let initMouseY: number = 0;
+	export let initDrag: boolean = false;
 
-	let left = 0;
-	let top = 0;
+
 	let drag: HTMLElement;
+	let left: number = 0;
+	let top: number = 0;
 	let dragging = false;
 
 	let position: number[] = [0, 0];
 	let dispatch = createEventDispatcher();
+
+	onMount(() => {
+		left = initX;
+		top = initY;
+		if(initDrag){
+			handleDragStart(new MouseEvent('mousedown', {clientX: initMouseX, clientY: initMouseY}));
+		}
+	});
+
 	function closestNumber(n: number, m: number) {
 		// find the quotient
 		let q = Math.floor(n / m);
-		console.log(q, n, m);
 
-		// 1st possible closest number
 		let n1 = m * q;
 
-		// 2nd possible closest number
 		let n2 = n * m > 0 ? m * (q + 1) : m * (q - 1);
 
-		// if true, then n1 is the
-		// required closest number
 		if (Math.abs(n - n1) < Math.abs(n - n2)) return n1;
 
-		// else n2 is the required
-		// closest number
 		return n2;
 	}
-	function handleDragStart(event: any) {
+	function handleDragStart(event: MouseEvent) {
 		dragging = true;
 		const offsetX = event.clientX - left;
 		const offsetY = event.clientY - top;
 
-		const handleDragMove = (e: any) => {
+		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
 				left = e.clientX - offsetX;
 				top = e.clientY - offsetY;
-				drag.style.left = `${closestNumber(left, 10)}px`;
-				drag.style.top = `${closestNumber(top, 10)}px`;
+				drag.style.left = `${closestNumber(left, 25)}px`;
+				drag.style.top = `${closestNumber(top, 25)}px`;
 			}
 		};
 
@@ -60,8 +67,10 @@
 
 <button
 	class="btn no-animation"
-	style="position: absolute; height: 50px; width: 50px;"
+	style="position: absolute; height: 50px; width: 50px; left: {initX}px; top: {initY}px; transform: translate(-50%, -50%);"
 	bind:this={drag}
 	on:mousedown={handleDragStart}
-	on:mouseup={updatePosition}>I</button
+	on:mouseup={updatePosition}
+	on:click={drag.remove}
+	>I</button
 >

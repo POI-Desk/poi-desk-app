@@ -3,19 +3,34 @@
 
 	let height: number;
 	let width: number;
-	let row: number[] = Array.from({ length: 20 }, (_, index) => index);
+	let row: number[] = Array.from({ length: 35 }, (_, index) => index);
 	let column: number[] = Array.from({ length: 20 }, (_, index) => index);
 
-	const snap = (event: CustomEvent<number[]>) => {
-		console.log(event.detail);
-	};
+	let tables: Table[] = [];
+
+	const copyTable = (event: MouseEvent) =>{
+		const grid: Element = document.getElementById('grid') as Element;
+		const element = new Table({
+			target: grid,
+			props: {
+				initX: event.clientX - grid.getBoundingClientRect().left,
+				initY: event.clientY - grid.getBoundingClientRect().top,
+				initMouseX: event.clientX,
+				initMouseY: event.clientY,
+				initDrag: true
+			}
+		});
+		tables.push(element);
+	}
+
 </script>
 
 <main class="scroll-lock">
-	<Table on:updatePosition={snap} />
+	<button on:mousedown={copyTable} class="btn btn-primary">copy</button>
 	<div style="width: 100vw; height: 100vh;">
 		<div
-			style=" left: 50%; top: 50%; position: absolute; transform: translate(-50%, -50%); z-index: -1;"
+		id="grid"
+		style=" left: 50%; top: 50%; position: absolute; transform: translate(-50%, -50%);"
 		>
 			{#each row as y (y)}
 				<div id={y.toString()} class="flex">
