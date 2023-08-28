@@ -2,9 +2,7 @@
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
-	import type { PageData } from './$types';
-	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
-	import { user } from '$lib/userStore';
+	import {user} from '$lib/userStore';
 
 	let visible = false;
 	let triggerEl: any;
@@ -26,7 +24,7 @@
 	}
 </script>
 
-<button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>
+<!--<button class="btn btn-primary" on:click={spinnnnn}>bingbong</button>-->
 
 {#if visible}
 	<CrazyAnimation>
@@ -34,10 +32,12 @@
 	</CrazyAnimation>
 {/if}
 
-<DateSelection />
-
-<a class="btn btn-primary" href="./location">Location</a>
 
 <a class="btn btn-primary" href="./login">Login</a>
 
+<a class="btn btn-primary" href="./location">Location</a>
+
+<p>{$user?.pk_userId ?? 'no id'}</p>
 <p>{$user?.username ?? 'no username'}</p>
+
+<DateSelection />
