@@ -3,6 +3,7 @@
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
 	import {user} from '$lib/userStore';
+	import {location} from '$lib/locationStore';
 
 	let visible = false;
 	let triggerEl: any;
@@ -39,5 +40,7 @@
 
 <p>{$user?.pk_userId ?? 'no id'}</p>
 <p>{$user?.username ?? 'no username'}</p>
+<p>{$location?.locationname ?? 'no location'}</p>
+<p>{$location?.pk_locationid ?? 'no location'}</p>
 
 <DateSelection />

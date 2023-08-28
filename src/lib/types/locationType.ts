@@ -1,4 +1,4 @@
 export type Location = {
-    locationId: string;
-    locationName: string;
+    pk_locationid: string;
+    locationname: string;
 };

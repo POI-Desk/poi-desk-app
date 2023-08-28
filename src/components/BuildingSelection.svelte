@@ -4,9 +4,10 @@
     import {getContext} from "svelte";
 
     // let floorid = "5c36ec41-e3b0-40dc-b755-e2251b08010e";
-    let locationId = $location?.locationId;
+    $: locationId = $location?.pk_locationid;
     export let buildingId = '';
     const { getFloors } = getContext('floors');
+    console.log(locationId)
 
 
     export const _getBuildingsInLocationVariables = () => {

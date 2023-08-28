@@ -3,11 +3,10 @@
     import Booking from "$components/Booking.svelte";
     import CrazyAnimation from "$components/CrazyAnimation.svelte";
     import Check from "$components/Check.svelte";
-    import BuildingSelection from "$components/BuildingSelection.svelte";
     import FloorSelection from "$components/FloorSelection.svelte";
     import {setContext} from "svelte";
 
-    let floorid = "5c36ec41-e3b0-40dc-b755-e2251b08010e";
+    let floorid = "";
     export let dateValue: string;
     let showModal: boolean = false;
     let selectedSeat: any;

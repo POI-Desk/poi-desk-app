@@ -1,6 +1,7 @@
 <script lang="ts">
 	import DefaultLocation from '$components/DefaultLocation.svelte';
 	import type { PageData } from './$houdini';
+	import { location } from '$lib/locationStore';
 	let chosenLocation: {pk_locationid: string | null, locationname: string | null};
 	let showModal: boolean = false;
 
@@ -11,6 +12,7 @@
 	export let data: PageData;
 	$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
+	$: $location = chosenLocation;
 </script>
 
 <div class="grid place-items-center place-content-center space-y-6 h-screen">

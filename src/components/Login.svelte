@@ -2,7 +2,6 @@
 	import { graphql } from "$houdini";
     import { user } from "$lib/userStore";
 
-    let userId = '';
     let username = '';
     $: $user.username = username;
 
