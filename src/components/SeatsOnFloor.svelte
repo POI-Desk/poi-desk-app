@@ -3,31 +3,19 @@
     import Booking from "$components/Booking.svelte";
     import CrazyAnimation from "$components/CrazyAnimation.svelte";
     import Check from "$components/Check.svelte";
+    import FloorSelection from "$components/FloorSelection.svelte";
+    import {setContext} from "svelte";
 
-    let floorid = "5c36ec41-e3b0-40dc-b755-e2251b08010e";
+    let floorid = "";
     export let dateValue: string;
-    let curSeatId: string;
-    let curDayTime: string;
     let showModal: boolean = false;
-    let selectedSeat;
+    let selectedSeat: any;
     let visible: boolean = false;
+
 
     export const _getSeatsOnFloorVariables = () => {
         return {floorid};
     }
-
-    export const _isBookedAtVariables = () => {
-        return {curSeatId, dateValue, curDayTime}
-    }
-
-    const getFloors = graphql(`
-        query getAllFloors @load {
-            getAllFloors {
-                pk_floorid
-                floorname
-            }
-        }
-    `);
 
     const getSeats = graphql(`
         query getSeatsOnFloor($floorid: ID!) @load {
@@ -47,14 +35,9 @@
         `);
 
     $: seats = $getSeats.data?.getSeatsOnFloor;
-    $: floors = $getFloors.data?.getAllFloors;
 
-    function onFloorClicked(newFloorId: string) {
-        floorid = newFloorId;
-        getSeats.fetch({variables: {floorid}});
-    }
 
-    function toggleModal(seat) {
+    function toggleModal(seat: any) {
         showModal = !showModal;
         selectedSeat = seat;
     }
@@ -65,18 +48,11 @@
             visible = false;
         }, 5000);
     }
+
+    setContext('seats', { getSeats });
 </script>
 
-<div class="btn-group btn-group-vertical">
-    {#if $getFloors.fetching}
-        <p>loading seats...</p>
-    {:else if floors}
-        {#each floors as floor}
-            <button class="btn btn-primary"
-                    on:click={() => onFloorClicked(floor?.pk_floorid ?? "")}>{floor?.floorname}</button>
-        {/each}
-    {/if}
-</div>
+
 
 {#if $getSeats.fetching}
     <p>loading seats...</p>
@@ -95,12 +71,13 @@
     <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
         toggleModal(null);
         getSeats.fetch({policy: CachePolicy.NetworkOnly});
-    }} on:play={spinnnnn} />
+    }} on:play={spinnnnn}/>
 {/if}
 
 {#if visible}
     <CrazyAnimation>
         <Check />
     </CrazyAnimation>
-
 {/if}
+
+<FloorSelection {floorid}></FloorSelection>

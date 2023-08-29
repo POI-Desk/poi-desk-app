@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from "$houdini";
     import { user } from "$lib/userStore";
-     
+
     let username = '';
     $: $user.username = username;
 
@@ -12,12 +12,22 @@
 			createOrLoginAsUser(
 				username: $username
 			) {
+			    pk_userid
 				username
 			}
 		}
     `);
 
-
+    async function loginWithoutMicrosoft() {
+        try {
+            const result = await createOrLoginAsUser.mutate({
+                username: username
+            });
+            $user.pk_userId = result.data?.createOrLoginAsUser?.pk_userid
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
 </script>
 
 <h1 class="text-center">POI-Desk</h1>
@@ -28,10 +38,6 @@
         <input type="text" class="input input-primary" id="usernameInput" bind:value={username}>
     </div>
     <div class="p-3">
-        <a href="../" class="btn btn-primary" on:click={() => {
-            createOrLoginAsUser.mutate({
-                username: username
-            })
-        }}>Login without Microsoft</a>
+        <a href="../" class="btn btn-primary" on:click={loginWithoutMicrosoft}>Login without Microsoft</a>
     </div>
 </div>
