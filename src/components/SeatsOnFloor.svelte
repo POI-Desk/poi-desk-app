@@ -79,4 +79,6 @@
     </CrazyAnimation>
 {/if}
 
+<p></p>
+
 <FloorSelection ></FloorSelection>
