@@ -2,11 +2,12 @@
     import {graphql} from "$houdini";
     import {getContext, setContext} from "svelte";
     import BuildingSelection from "$components/BuildingSelection.svelte";
+    import {floorid} from "$lib/floorStore";
 
-    export let floorid: string;
-    let buildingId: string = "5b503aa3-0163-4b86-b7e2-edcc1acbc211"; // default value
+    // export let floorid = "";
+    let buildingId = "";
 
-    const { getSeats } = getContext('seats');
+    const { getSeats } : any = getContext('seats');
 
 
     export const _getFloorsInBuildingVariables = () => {
@@ -25,23 +26,25 @@
 
     $: floors = $getFloors.data?.getFloorsInBuilding;
 
-    function onFloorClicked(newFloorId: string) {
-        floorid = newFloorId;
-        getSeats.fetch({variables: {floorid}});
+
+    $: {
+        if ($floorid) {
+            getSeats.fetch({ variables: { floorid: $floorid } });
+        }
     }
 
     setContext('floors', { getFloors });
-
 </script>
 
 
-<div class="btn-group btn-group-vertical float-left">
+<div class="btn-group btn-group-vertical">
     {#if $getFloors.fetching}
         <p>loading seats...</p>
     {:else if floors}
         {#each floors as floor}
             <button class="btn btn-primary"
-                    on:click={() => onFloorClicked(floor?.pk_floorid ?? "")}>{floor?.floorname}</button>
+                    on:click={() => {$floorid = floor?.pk_floorid ?? ""}}
+            >{floor?.floorname}</button>
         {/each}
     {/if}
 </div>
