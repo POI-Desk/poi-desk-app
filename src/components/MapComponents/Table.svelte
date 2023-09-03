@@ -2,12 +2,13 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	export let initX: number = 0;
 	export let initY: number = 0;
+	export let scale: number = 1;
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
 	export let initDrag: boolean = false;
+	export let drag: HTMLElement | null;
+	export let seatnum: string = "";
 
-
-	let drag: HTMLElement;
 	let left: number = 0;
 	let top: number = 0;
 	let dragging = false;
@@ -16,14 +17,14 @@
 	let dispatch = createEventDispatcher();
 
 	onMount(() => {
-		left = initX;
-		top = initY;
+		left = initX / scale;
+		top = initY / scale;
 		if(initDrag){
 			handleDragStart(new MouseEvent('mousedown', {clientX: initMouseX, clientY: initMouseY}));
 		}
 	});
 
-	function closestNumber(n: number, m: number) {
+	const closestNumber = (n: number, m: number) => {
 		// find the quotient
 		let q = Math.floor(n / m);
 
@@ -35,17 +36,18 @@
 
 		return n2;
 	}
-	function handleDragStart(event: MouseEvent) {
+
+	const  handleDragStart = (event: MouseEvent) => {
 		dragging = true;
-		const offsetX = event.clientX - left;
-		const offsetY = event.clientY - top;
+		const offsetX = (event.clientX - left);
+		const offsetY = (event.clientY - top);
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
-				left = e.clientX - offsetX;
-				top = e.clientY - offsetY;
-				drag.style.left = `${closestNumber(left, 25)}px`;
-				drag.style.top = `${closestNumber(top, 25)}px`;
+				left = (e.clientX - offsetX);
+				top = (e.clientY - offsetY);
+				drag!.style.left = `${closestNumber(left, 25)}px`;
+				drag!.style.top = `${closestNumber(top, 25)}px`;
 			}
 		};
 
@@ -63,14 +65,18 @@
 		position = [left, top];
 		dispatch('updatePosition', position);
 	};
+
+	const selectTable = () => {
+		dispatch('selectTable', {drag, seatnum});
+	};
+
 </script>
 
 <button
 	class="btn no-animation"
-	style="position: absolute; height: 50px; width: 50px; left: {initX}px; top: {initY}px; transform: translate(-50%, -50%);"
+	style="position: absolute; height: 50px; width: 100px; left: {initX}px; top: {initY}px; transform: translate(-50%, -50%);"
 	bind:this={drag}
-	on:mousedown={handleDragStart}
+	on:mousedown={(e) => {handleDragStart(e); selectTable();}}
 	on:mouseup={updatePosition}
-	on:click={drag.remove}
 	>I</button
 >
