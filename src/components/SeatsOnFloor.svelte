@@ -5,16 +5,15 @@
     import Check from "$components/Check.svelte";
     import FloorSelection from "$components/FloorSelection.svelte";
     import {setContext} from "svelte";
+    import {floorid} from "$lib/floorStore";
 
-    let floorid = "";
     export let dateValue: string;
     let showModal: boolean = false;
     let selectedSeat: any;
     let visible: boolean = false;
 
-
     export const _getSeatsOnFloorVariables = () => {
-        return {floorid};
+        return {};
     }
 
     const getSeats = graphql(`
@@ -80,4 +79,6 @@
     </CrazyAnimation>
 {/if}
 
-<FloorSelection {floorid}></FloorSelection>
+<p></p>
+
+<FloorSelection ></FloorSelection>
