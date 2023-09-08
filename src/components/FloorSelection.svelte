@@ -3,20 +3,21 @@
     import {getContext, setContext} from "svelte";
     import BuildingSelection from "$components/BuildingSelection.svelte";
     import {floorid} from "$lib/floorStore";
+    import {buildingid} from "$lib/buildingStore";
 
     // export let floorid = "";
-    let buildingId = "";
+    // let buildingid = "";
 
-    const { getSeats } : any = getContext('seats');
+    const {getSeats}: any = getContext('seats');
 
 
     export const _getFloorsInBuildingVariables = () => {
-        return { buildingId };
+        return {$buildingid};
     }
 
     const getFloors = graphql(`
-        query getFloorsInBuilding($buildingId: ID!) @load {
-            getFloorsInBuilding(buildingId: $buildingId) {
+        query getFloorsInBuilding($buildingid: ID!) @load {
+            getFloorsInBuilding(buildingid: $buildingid) {
                 pk_floorid
                 floorname
             }
@@ -27,26 +28,45 @@
     $: floors = $getFloors.data?.getFloorsInBuilding;
 
 
-    $: {
-        if ($floorid) {
-            getSeats.fetch({ variables: { floorid: $floorid } });
+    async function selectFirstFloor() {
+        await getFloors.fetch({ variables: { buildingid: $buildingid } });
+
+        if (floors) {
+            $floorid = floors[0]?.pk_floorid || ""; // Set to the first floor
         }
     }
 
-    setContext('floors', { getFloors });
+    $: {
+        if ($buildingid) selectFirstFloor();
+    }
+
+
+    $: {
+        if ($floorid) {
+            getSeats.fetch({variables: {floorid: $floorid}});
+        }
+    }
+
+
+    setContext('floors', {getFloors});
 </script>
 
-
-<div class="btn-group btn-group-vertical">
-    {#if $getFloors.fetching}
-        <p>loading seats...</p>
-    {:else if floors}
-        {#each floors as floor}
-            <button class="btn btn-primary"
-                    on:click={() => {$floorid = floor?.pk_floorid ?? ""}}
-            >{floor?.floorname}</button>
-        {/each}
-    {/if}
+<div class="flex items-center">
+        <div class="btn-group btn-group-vertical">
+            {#if $getFloors.fetching}
+                <p>loading seats...</p>
+            {:else if floors}
+                {#each floors as floor}
+                    <button class="btn btn-primary"
+                            on:click={() => {$floorid = floor?.pk_floorid ?? ""}}
+                    >{floor?.floorname}</button>
+                {/each}
+            {/if}
+        </div>
 </div>
 
-<BuildingSelection {buildingId}></BuildingSelection>
+<div class="flex justify-center">
+    <div class="absolute bottom-20">
+        <BuildingSelection {buildingid}></BuildingSelection>
+    </div>
+</div>
