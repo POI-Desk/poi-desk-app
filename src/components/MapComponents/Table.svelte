@@ -59,16 +59,20 @@
 		drag?.style.setProperty('opacity', '1');
 		const transformedPos = transformPosition(
 			drag!.getBoundingClientRect(),
+			target.getBoundingClientRect(),
 			main.getBoundingClientRect()
 		);
 
 		if (drag?.parentElement) drag?.parentElement.removeChild(drag!);
 		target.appendChild(drag!);
-		offsetX += target.getBoundingClientRect().x / scale;
-		offsetY += target.getBoundingClientRect().y / scale;
+		offsetX += target.getBoundingClientRect().left / scale;
+		offsetY += target.getBoundingClientRect().top / scale;
+		
+		left = transformedPos.x / scale - offsetX;
+		top = transformedPos.y / scale - offsetY;
 
-		drag!.style.left = transformedPos.x / scale - offsetX + 'px';
-		drag!.style.top = transformedPos.y / scale - offsetY + 'px';
+		drag!.style.left = left + 'px';
+		drag!.style.top = top + 'px';
 	};
 
 	const disable = () => {
@@ -76,16 +80,21 @@
 		drag?.style.setProperty('opacity', '0.7');
 		const transformedPos = transformPosition(
 			drag!.getBoundingClientRect(),
+			main.getBoundingClientRect(),
 			target.getBoundingClientRect()
 		);
 
+
 		if (drag?.parentElement) drag?.parentElement.removeChild(drag!);
 		main.appendChild(drag!);
-		offsetX -= target.getBoundingClientRect().x / scale;
-		offsetY -= target.getBoundingClientRect().y / scale;
+		offsetX -= target.getBoundingClientRect().left / scale;
+		offsetY -= target.getBoundingClientRect().top / scale;
 
-		drag!.style.left = transformedPos.x / scale - offsetX + 'px';
-		drag!.style.top = transformedPos.y / scale - offsetY + 'px';
+		left = transformedPos.x / scale - offsetX;
+		top = transformedPos.y / scale - offsetY;
+
+		drag!.style.left = left + 'px';
+		drag!.style.top = top + 'px';
 	};
 
 	const handleDragStart = (event: MouseEvent) => {
@@ -100,8 +109,8 @@
 			if (dragging) {
 				left = e.clientX / (enabled ? scale : 1) - offsetX;
 				top = e.clientY / (enabled ? scale : 1) - offsetY;
-				let x = closestNumber(left, 25);
-				let y = closestNumber(top, 25);
+				let x = enabled ? closestNumber(left, 25) : left;
+				let y = enabled ? closestNumber(top, 25) : top;
 
 				drag!.style.left = `${x}px`;
 				drag!.style.top = `${y}px`;
@@ -130,12 +139,9 @@
 	const updateInstantiation = (event: MouseEvent) => {
 		if (!dragging) return;
 
-		const dragBoundings: DOMRect = drag!.getBoundingClientRect();
 		const inBoundings: boolean = inBoundingbox(
-			dragBoundings.left,
-			dragBoundings.top,
-			drawer.getBoundingClientRect(),
-			scale
+			drag!.getBoundingClientRect(),
+			drawer.getBoundingClientRect()
 		);
 
 		if (inBoundings && enabled) disable();
@@ -143,10 +149,9 @@
 	};
 </script>
 
-<!-- Button needs to be over seletion drawer in page when disabled and under when enabled -->
 <button
 	class="btn no-animation z-20"
-	style="position: absolute; height: 50px; width: 100px;"
+	style="position: absolute; height: 50px; width: 100px; transform: translate(-50%, -50%);"
 	bind:this={drag}
 	on:mousedown={handleDragStart}>T</button
 >

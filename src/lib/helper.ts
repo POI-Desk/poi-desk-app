@@ -11,13 +11,13 @@ export const closestNumber = (n: number, m: number) => {
 	return n2;
 };
 
-export const inBoundingbox = (x: number, y: number, box: DOMRect, scale: number) => {
-	return x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
+export const inBoundingbox = (element: DOMRect, box: DOMRect) => {
+	return element.left >= box.left && element.right - element.width <= box.right && element.top >= box.top && element.bottom - element.height <= box.bottom;
 };
 
-export const transformPosition = (element: DOMRect, oldParent: DOMRect) => {
+export const transformPosition = (element: DOMRect, newParent: DOMRect, oldParent: DOMRect) => {
 	let newPos = { x: 0, y: 0 };
-	newPos.x = element.left - oldParent.left;
-	newPos.y = element.top - oldParent.top;
+	newPos.x = (element.left - oldParent.left);
+	newPos.y = (element.top - oldParent.top);
 	return newPos;
 };

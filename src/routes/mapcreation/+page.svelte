@@ -17,7 +17,7 @@
 
 	let defaultSeatnum: string = '1';
 
-	let tables: Table[] = [];
+	let tables: { [key: string]: Table} = {};
 
 	onMount(() => {
 		panz = panzoom(grid, {
@@ -29,7 +29,8 @@
 		});
 
 		panz.on('zoom', (e: PanZoom) => {
-			tables.forEach((table) => {
+			Object.keys(tables).forEach((key) => {
+				let table = tables[key];
 				table.$set({
 					scale: e.getTransform().scale
 				});
@@ -113,13 +114,14 @@
 		);
 		panz.pause();
 		$allSeats.push($selectedSeat.seat!);
-		tables.push(element);
+		tables[defaultSeatnum] = element;
 		defaultSeatnum += '1';
 	};
 
 	const delSelectedSeat = () => {
 		$allSeats = $allSeats.filter((table) => table.seatnum !== $selectedSeat.seat?.seatnum);
-		$selectedSeat.element!.remove();
+		tables[$selectedSeat.seat!.seatnum].$destroy();
+		delete tables[$selectedSeat.seat!.seatnum];
 		$selectedSeat = {
 			element: null,
 			seat: null
