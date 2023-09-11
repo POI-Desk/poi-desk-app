@@ -7,9 +7,6 @@
 	let visibility = 'hidden';
 	let dateValue = new Date().toISOString().split('T')[0];
 
-	function showDateSelection() {
-		visibility = 'visible';
-	}
 
 	export const _getBookingsByDateVariables = () => {
 		return {

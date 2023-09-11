@@ -38,7 +38,7 @@
 
 <a class="btn btn-primary" href="./location">Location</a>
 
-<p>{$user?.pk_userId ?? 'no id'}</p>
+<p>{$user?.pk_userid ?? 'no id'}</p>
 <p>{$user?.username ?? 'no username'}</p>
 <p>{$location?.locationname ?? 'no location'}</p>
 <p>{$location?.pk_locationid ?? 'no location'}</p>

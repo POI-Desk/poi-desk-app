@@ -1,8 +1,1 @@
-query GetAllBookings {
-	allBookings {
-        pk_bookingid
-		bookingnumber
-		date
-	}
-}
 
