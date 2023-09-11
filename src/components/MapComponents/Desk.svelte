@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/helper';
-	import { allSeats, deskProps, selectedSeat } from '$lib/seatStore';
+	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
+	import { deskProps } from '$lib/map/props';
 	import { createEventDispatcher, onMount } from 'svelte';
 	export let enabled: boolean = false;
 	export let target: HTMLElement;
@@ -12,7 +13,7 @@
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
 	export let initDrag: boolean = false;
-	export let seatnum: string = '';
+	export let desknum: string = '';
 
 	let drag: HTMLElement | null;
 	let left: number = 0;
@@ -40,10 +41,10 @@
 		drag!.style.top = initY + 'px';
 		left = initX / scale;
 		top = initY / scale;
-		$selectedSeat = {
+		$selectedDesk = {
 			element: drag,
-			seat: {
-				seatnum: seatnum,
+			desk: {
+				desknum: desknum,
 				x: initX,
 				y: initY
 			}
@@ -107,7 +108,7 @@
 		offsetX = event.clientX / (enabled ? scale : 1) - left;
 		offsetY = event.clientY / (enabled ? scale : 1) - top;
 
-		dispatch('selectTable', { drag, seatnum });
+		dispatch('selectTable', { drag, desknum });
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
@@ -118,8 +119,8 @@
 
 				drag!.style.left = `${x}px`;
 				drag!.style.top = `${y}px`;
-				$selectedSeat.seat!.x = x;
-				$selectedSeat.seat!.y = y;
+				$selectedDesk.desk!.x = x;
+				$selectedDesk.desk!.y = y;
 			}
 		};
 

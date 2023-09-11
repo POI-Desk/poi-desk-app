@@ -1,11 +1,11 @@
 <script lang="ts">
 	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
-	import Table from '$components/MapComponents/Table.svelte';
-	import { addSeatsToFloor } from '$lib/mutations/seats';
+	import Desk from '$components/MapComponents/Desk.svelte';
+	import { addDesksToFloor as addDesksToFloor } from '$lib/mutations/desks';
 	import { onDestroy, onMount } from 'svelte';
 	import panzoom, { type PanZoom } from 'panzoom';
-	import { allSeats, deskProps, selectedSeat } from '$lib/seatStore';
-	import { closestNumber } from '$lib/helper';
+	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
+	import { defaultMapScale, deskProps } from '$lib/map/props';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -17,9 +17,9 @@
 
 	let openModal: boolean = false;
 
-	let defaultSeatnum: string = '1';
+	let defaultDesknum: string = '1';
 
-	let tables: { [key: string]: Table } = {};
+	let desks: { [key: string]: Desk } = {};
 
 	onMount(() => {
 		panz = panzoom(grid, {
@@ -32,8 +32,8 @@
 
 		panz.on('zoom', (e: PanZoom) => {
 			scale = e.getTransform().scale;
-			Object.keys(tables).forEach((key) => {
-				let table = tables[key];
+			Object.keys(desks).forEach((key) => {
+				let table = desks[key];
 				table.$set({
 					scale: scale
 				});
@@ -59,26 +59,26 @@
 	};
 
 	const handleMouseDown = (event: MouseEvent) => {
-		if (event.target === canvas && $selectedSeat.element) {
-			resetSelectedSeatStyle();
-			$selectedSeat = {
+		if (event.target === canvas && $selectedDesk.element) {
+			resetSelectedDeskStyle();
+			$selectedDesk = {
 				element: null,
-				seat: null
+				desk: null
 			};
 		}
 	};
 
 	const removeTable = () => {
-		if (!$selectedSeat.element || !$selectedSeat.seat) {
+		if (!$selectedDesk.element || !$selectedDesk.desk) {
 			return;
 		}
-		delSelectedSeat();
+		delSelectedDesk();
 	};
 
 	const createTable = (event: MouseEvent) => {
 		scale = panz.getTransform().scale;
-		resetSelectedSeatStyle();
-		const element = new Table({
+		resetSelectedDeskStyle();
+		const element = new Desk({
 			target: main,
 			props: {
 				enabled: false,
@@ -91,17 +91,17 @@
 				initMouseX: event.clientX,
 				initMouseY: event.clientY,
 				initDrag: true,
-				seatnum: defaultSeatnum
+				desknum: defaultDesknum
 			}
 		});
 
-		element.$on('selectTable', (event: CustomEvent<{ drag: HTMLElement; seatnum: string }>) => {
+		element.$on('selectTable', (event: CustomEvent<{ drag: HTMLElement; desknum: string }>) => {
 			panz.pause();
-			if ($selectedSeat.element === event.detail.drag) return;
-			resetSelectedSeatStyle();
-			$selectedSeat = {
+			if ($selectedDesk.element === event.detail.drag) return;
+			resetSelectedDeskStyle();
+			$selectedDesk = {
 				element: event.detail.drag,
-				seat: $allSeats.find((seat) => seat.seat!.seatnum === event.detail.seatnum)!.seat
+				desk: $allDesks.find((desk) => desk.desk!.desknum === event.detail.desknum)!.desk
 			};
 		});
 
@@ -110,26 +110,27 @@
 			(event: CustomEvent<{ left: number; top: number; enabled: boolean }>) => {
 				panz.resume();
 				if (!event.detail.enabled) {
-					delSelectedSeat();
+					delSelectedDesk();
 					return;
 				}
 				let left: number = event.detail.left;
 				let top: number = event.detail.top;
 				resizeGrid(left, top);
+        recalculateGridSize();
 			}
 		);
 		panz.pause();
-		$allSeats.push($selectedSeat);
-		tables[defaultSeatnum] = element;
-		defaultSeatnum += '1';
+		$allDesks.push($selectedDesk);
+		desks[defaultDesknum] = element;
+		defaultDesknum += '1';
 	};
 
 	//left and top are in local space of the parent element
 	const resizeGrid = (left: number, top: number) => {
-		let grid_width: number = +grid.style.width.slice(0, -2);
-		let grid_height: number = +grid.style.height.slice(0, -2);
-		let grid_top: number = +grid.style.top.slice(0, -2);
-		let grid_left: number = +grid.style.left.slice(0, -2);
+		const grid_width: number = +grid.style.width.slice(0, -2);
+		const grid_height: number = +grid.style.height.slice(0, -2);
+		const grid_top: number = +grid.style.top.slice(0, -2);
+		const grid_left: number = +grid.style.left.slice(0, -2);
 
 		let panzOffsetX: number = 0;
 		let panzOffsetY: number = 0;
@@ -139,20 +140,19 @@
 			panzOffsetX = left - deskProps.width * 0.5;
 		} else if (left > grid_width) {
 			grid.style.width = grid_width + (left - grid_width) + deskProps.width * 0.5 + 'px';
-		}
-		if (top < 0) {
+		} if (top < 0) {
 			grid.style.height = grid_height + Math.abs(top) + deskProps.height * 0.5 + 'px';
 			panzOffsetY = top - deskProps.height * 0.5;
 		} else if (top > grid_height) {
 			grid.style.height = grid_height + (top - grid_height) + deskProps.height * 0.5 + 'px';
 		}
 
-		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
-			$allSeats.forEach((desk) => {
+		if (panzOffsetX || panzOffsetY) {
+			$allDesks.forEach((desk) => {
 				const style: CSSStyleDeclaration = desk.element?.style!;
 				style.left = +style.left.slice(0, -2) - panzOffsetX + 'px';
 				style.top = +style.top.slice(0, -2) - panzOffsetY + 'px';
-				tables[desk.seat?.seatnum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
+				desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
 			});
 		}
 
@@ -164,19 +164,63 @@
 		);
 	};
 
-	const delSelectedSeat = () => {
-		$allSeats = $allSeats.filter((table) => table.seat!.seatnum !== $selectedSeat.seat?.seatnum);
-		tables[$selectedSeat.seat!.seatnum].$destroy();
-		delete tables[$selectedSeat.seat!.seatnum];
-		$selectedSeat = {
+	const recalculateGridSize = () => {
+    let left: number = Number.MAX_SAFE_INTEGER;
+    let right: number = Number.MIN_SAFE_INTEGER;
+    let top: number = Number.MAX_SAFE_INTEGER;
+    let bottom: number = Number.MIN_SAFE_INTEGER;
+		$allDesks.forEach((desk) => {
+			if (desk.desk?.x! < left) left = desk.desk?.x!;
+      if (desk.desk?.x! > right) right = desk.desk?.x!;
+      if (desk.desk?.y! < top) top = desk.desk?.y!;
+      if (desk.desk?.y! > bottom) bottom = desk.desk?.y!;
+		});
+
+    let horizontalOffset: number = 0;
+    let verticalOffset: number = 0;
+
+    let mapWidth: number = defaultMapScale.width;
+    let mapHeight: number = defaultMapScale.height;
+
+    //buggy wuggy
+    if (left > defaultMapScale.maxHorizontalDist){
+      horizontalOffset = -left + defaultMapScale.border;
+    }
+    if (right - left > defaultMapScale.width){
+      mapWidth = right - left + defaultMapScale.border * 2;
+    }
+    if (top > defaultMapScale.maxVerticalDist){
+      verticalOffset = -top + defaultMapScale.border;
+    }
+    if (bottom - top > defaultMapScale.height){
+      mapHeight = bottom - top + defaultMapScale.border * 2;
+    }
+
+    $allDesks.forEach((desk) => {
+      const style: CSSStyleDeclaration = desk.element?.style!;
+      style.left = +style.left.slice(0, -2) + horizontalOffset + 'px';
+      style.top = +style.top.slice(0, -2) + verticalOffset + 'px';
+      desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
+    });
+    grid.style.width = mapWidth + 'px';
+    grid.style.height = mapHeight + 'px';
+    canvas.width = mapWidth;
+    canvas.height = mapHeight;
+	}
+
+	const delSelectedDesk = () => {
+		$allDesks = $allDesks.filter((table) => table.desk!.desknum !== $selectedDesk.desk?.desknum);
+		desks[$selectedDesk.desk!.desknum].$destroy();
+		delete desks[$selectedDesk.desk!.desknum];
+		$selectedDesk = {
 			element: null,
-			seat: null
+			desk: null
 		};
 	};
 
-	const resetSelectedSeatStyle = () => {
-		if (!$selectedSeat.element) return;
-		$selectedSeat.element.style.removeProperty('border');
+	const resetSelectedDeskStyle = () => {
+		if (!$selectedDesk.element) return;
+		$selectedDesk.element.style.removeProperty('border');
 	};
 
 	const toggleModal = () => {
@@ -184,9 +228,9 @@
 	};
 
 	const saveMap = () => {
-		addSeatsToFloor.mutate({
+		addDesksToFloor.mutate({
 			floorid: '3af4f424-a92b- -bfdb-55bd768218be',
-			seats: $allSeats.map((s) => s.seat)
+			desks: $allDesks.map((s) => s.desk)
 		});
 	};
 
@@ -205,17 +249,17 @@
 		<button on:mousedown={createTable} class="btn btn-primary">Table</button>
 		<button on:click={toggleModal} class="btn btn-primary">Save</button>
 	</div>
-	<div bind:this={container} class="border overflow-auto w-screen">
+	<div bind:this={container} class="overflow-auto w-screen">
 		<div
 			bind:this={grid}
 			on:mouseenter={enterGrid}
 			on:mouseleave={leaveGrid}
 			role="grid"
 			tabindex="0"
-			style="width: 750px; height: 1000px;"
-			class="z-0 border"
+			style="width: {defaultMapScale.width}px; height: {defaultMapScale.height}px;"
+			class="z-0"
 		>
-			<canvas bind:this={canvas} width="750" height="1000" draggable="false" class="bg-slate-500" />
+			<canvas bind:this={canvas} width={defaultMapScale.width} height={defaultMapScale.height} draggable="false" class="bg-slate-500" />
 		</div>
 	</div>
 </main>

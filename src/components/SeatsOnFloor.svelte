@@ -33,7 +33,7 @@
         query getSeatsOnFloor($floorid: ID!) @load {
             getSeatsOnFloor(floorid: $floorid) {
                 pk_seatid
-                seatnum
+                desknum
                 x
                 y
                 bookings {
@@ -85,7 +85,7 @@
         <button on:click={() => toggleModal(seat)}
                 class="btn btn-accent"
                 class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
-        >{seat?.seatnum}</button>
+        >{seat?.desknum}</button>
     {/each}
 {:else}
     <p>can't find seats</p>
