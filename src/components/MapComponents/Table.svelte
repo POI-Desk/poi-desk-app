@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/helper';
-	import { selectedSeat } from '$lib/seatStore';
+	import { allSeats, deskProps, selectedSeat } from '$lib/seatStore';
 	import { createEventDispatcher, onMount } from 'svelte';
 	export let enabled: boolean = false;
 	export let target: HTMLElement;
@@ -20,6 +20,11 @@
 	let dragging: boolean = false;
 	let offsetX: number = 0;
 	let offsetY: number = 0;
+
+	export const setCoords = (x: number, y: number) => {
+		left = x;
+		top = y;
+	};
 
 	let position = {
 		x: 0,
@@ -67,7 +72,7 @@
 		target.appendChild(drag!);
 		offsetX += target.getBoundingClientRect().left / scale;
 		offsetY += target.getBoundingClientRect().top / scale;
-		
+
 		left = transformedPos.x / scale - offsetX;
 		top = transformedPos.y / scale - offsetY;
 
@@ -83,7 +88,6 @@
 			main.getBoundingClientRect(),
 			target.getBoundingClientRect()
 		);
-
 
 		if (drag?.parentElement) drag?.parentElement.removeChild(drag!);
 		main.appendChild(drag!);
@@ -124,11 +128,11 @@
 			window.removeEventListener('mousemove', handleDragMove);
 			window.removeEventListener('mouseup', handleDragEnd);
 			window.removeEventListener('mousemove', updateInstantiation);
-			position = {
-				x: left,
-				y: top
-			};
-			dispatch('releaseTable', { left, top, enabled });
+			dispatch('releaseTable', {
+				left: closestNumber(left, 25),
+				top: closestNumber(top, 25),
+				enabled
+			});
 		};
 
 		window.addEventListener('mousemove', handleDragMove);
@@ -144,14 +148,14 @@
 			drawer.getBoundingClientRect()
 		);
 
-		if (inBoundings && enabled) disable();
-		else if (!inBoundings && !enabled) enable();
+		if (!inBoundings && enabled) disable();
+		else if (inBoundings && !enabled) enable();
 	};
 </script>
 
 <button
 	class="btn no-animation z-20"
-	style="position: absolute; height: 50px; width: 100px; transform: translate(-50%, -50%);"
+	style="position: absolute; height: {deskProps.height}px; width: {deskProps.width}px; transform: translate(-50%, -50%);"
 	bind:this={drag}
 	on:mousedown={handleDragStart}>T</button
 >

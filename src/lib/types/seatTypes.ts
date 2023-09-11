@@ -1,6 +1,6 @@
-import type { Seatinput } from "./seatinput";
+import type { Seatinput } from '$houdini';
 
 export type SelectedSeat = {
-    element: HTMLElement | null;
-    seat: Seatinput | null;
-}
+	element: HTMLElement | null;
+	seat: Seatinput | null;
+};
