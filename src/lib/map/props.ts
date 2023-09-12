@@ -1,6 +1,17 @@
-export const deskProps = {
-	width: 200,
-	height: 100
+import type { PanZoomOptions } from "panzoom";
+import type { TransformType } from "./transformType";
+
+export const deskProps: TransformType = {
+	width: 100,
+	height: 50
+};
+
+export const panzoomProps: PanZoomOptions = {
+    smoothScroll: false,
+    maxZoom: 3,
+    minZoom: 0.25,
+    initialZoom: 1,
+    autocenter: true
 };
 
 //values to represent the default values for the map
@@ -12,7 +23,7 @@ export const defaultMapScale = {
     //min space on desk place between desks and border of the map in px
     border: 50,
     //max distance from origin before recentering in px
-    maxHorizontalDist: 375,
+    maxHorizontalDist: 600,
     //max distance from origin before recentering in px
-    maxVerticalDist: 500,
+    maxVerticalDist: 850,
 };

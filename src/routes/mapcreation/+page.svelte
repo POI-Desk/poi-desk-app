@@ -5,7 +5,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
-	import { defaultMapScale, deskProps } from '$lib/map/props';
+	import { defaultMapScale, deskProps, panzoomProps } from '$lib/map/props';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -22,13 +22,7 @@
 	let desks: { [key: string]: Desk } = {};
 
 	onMount(() => {
-		panz = panzoom(grid, {
-			smoothScroll: false,
-			maxZoom: 3,
-			minZoom: 0.5,
-			initialZoom: 1,
-			autocenter: true
-		});
+		panz = panzoom(grid, panzoomProps);
 
 		panz.on('zoom', (e: PanZoom) => {
 			scale = e.getTransform().scale;
@@ -116,7 +110,7 @@
 				let left: number = event.detail.left;
 				let top: number = event.detail.top;
 				resizeGrid(left, top);
-				//normalizeGridSize();
+				normalizeGridSize();
 			}
 		);
 		panz.pause();
@@ -126,6 +120,7 @@
 	};
 
 	//left and top are in local space of the parent element
+	//TODO: unifie the offset with the normalizeGridSize function
 	const resizeGrid = (left: number, top: number) => {
 		const grid_width: number = +grid.style.width.slice(0, -2);
 		const grid_height: number = +grid.style.height.slice(0, -2);
@@ -139,17 +134,16 @@
 		const deskH = deskProps.height * 0.5;
 
 		if (left < 0 + deskW) {
-			//TODO implement this for heigt etc
-			grid.style.width = grid_width + (left > 0 ? deskW - left : Math.abs(left) + deskW) + 'px';
-			panzOffsetX = left - deskW;
+			grid.style.width = grid_width + (left > 0 ? deskW - left : Math.abs(left) + deskW) + defaultMapScale.border + 'px';
+			panzOffsetX = left - (deskW + defaultMapScale.border);
 		} else if (left > grid_width - deskW) {
-			grid.style.width = grid_width + (left - grid_width) + deskW + 'px';
+			grid.style.width = grid_width + (left - grid_width) + deskW + defaultMapScale.border + 'px';
 		}
 		if (top < 0 + deskH) {
-			grid.style.height = grid_height + (top > 0 ? deskH - top : Math.abs(top) + deskH) + 'px';
-			panzOffsetY = top - deskH;
+			grid.style.height = grid_height + (top > 0 ? deskH - top : Math.abs(top) + deskH) + defaultMapScale.border + 'px';
+			panzOffsetY = top - (deskH + defaultMapScale.border);
 		} else if (top > grid_height - deskH) {
-			grid.style.height = grid_height + (top - grid_height) + deskH + 'px';
+			grid.style.height = grid_height + (top - grid_height) + deskH + defaultMapScale.border + 'px';
 		}
 
 		if (panzOffsetX || panzOffsetY) {
@@ -188,20 +182,35 @@
 			if (canvas.height - desk.desk?.y! < bottom) bottom = canvas.height - desk.desk?.y!;
 		});
 
+		console.log(left, right, top, bottom);
+
 		let horizontalOffset: number = 0;
 		let verticalOffset: number = 0;
 
-		let mapWidth: number = defaultMapScale.width;
-		let mapHeight: number = defaultMapScale.height;
+		let mapWidth: number = canvas.width;
+		let mapHeight: number = canvas.height;
 
-		console.log(left, right, top, bottom);
+		//TODO: bro mach das mal weiter
+		if (left > defaultMapScale.maxHorizontalDist){
+			horizontalOffset = -left + deskProps.width * 0.5 + defaultMapScale.border;
+		}
+		if (top > defaultMapScale.maxVerticalDist){
+			verticalOffset = -top + deskProps.height * 0.5 + defaultMapScale.border;
+		}
 
-		// $allDesks.forEach((desk) => {
-		// 	const style: CSSStyleDeclaration = desk.element?.style!;
-		// 	style.left = +style.left.slice(0, -2) + horizontalOffset + 'px';
-		// 	style.top = +style.top.slice(0, -2) + verticalOffset + 'px';
-		// 	desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
-		// });
+		panz.moveTo(
+			panz.getTransform().x - horizontalOffset * scale,
+			panz.getTransform().y - verticalOffset * scale
+		);
+
+		$allDesks.forEach((desk) => {
+			const style: CSSStyleDeclaration = desk.element?.style!;
+			desk.desk!.x = +style.left.slice(0, -2) + horizontalOffset;
+			desk.desk!.y = +style.top.slice(0, -2) + verticalOffset;
+			style.left = desk.desk?.x + 'px';
+			style.top = desk.desk?.y + 'px';
+			desks[desk.desk?.desknum!].setCoords(desk.desk?.x!, desk.desk?.y!);
+		});
 		// grid.style.width = mapWidth + 'px';
 		// grid.style.height = mapHeight + 'px';
 		// canvas.width = mapWidth;
