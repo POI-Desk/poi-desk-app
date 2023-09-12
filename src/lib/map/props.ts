@@ -1,6 +1,6 @@
 export const deskProps = {
-	width: 100,
-	height: 50
+	width: 200,
+	height: 100
 };
 
 //values to represent the default values for the map

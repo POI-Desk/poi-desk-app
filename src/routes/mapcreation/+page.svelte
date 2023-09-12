@@ -116,7 +116,7 @@
 				let left: number = event.detail.left;
 				let top: number = event.detail.top;
 				resizeGrid(left, top);
-        recalculateGridSize();
+				//normalizeGridSize();
 			}
 		);
 		panz.pause();
@@ -135,23 +135,35 @@
 		let panzOffsetX: number = 0;
 		let panzOffsetY: number = 0;
 
-		if (left < 0) {
-			grid.style.width = grid_width + Math.abs(left) + deskProps.width * 0.5 + 'px';
-			panzOffsetX = left - deskProps.width * 0.5;
-		} else if (left > grid_width) {
-			grid.style.width = grid_width + (left - grid_width) + deskProps.width * 0.5 + 'px';
-		} if (top < 0) {
-			grid.style.height = grid_height + Math.abs(top) + deskProps.height * 0.5 + 'px';
-			panzOffsetY = top - deskProps.height * 0.5;
-		} else if (top > grid_height) {
-			grid.style.height = grid_height + (top - grid_height) + deskProps.height * 0.5 + 'px';
+		const deskW = deskProps.width * 0.5;
+		const deskH = deskProps.height * 0.5;
+
+		if (left < 0 + deskW) {
+			//TODO implement this for heigt etc
+			grid.style.width = grid_width + (left > 0 ? deskW - left : Math.abs(left) + deskW) + 'px';
+			panzOffsetX = left - deskW;
+		} else if (left > grid_width - deskW) {
+			grid.style.width = grid_width + (left - grid_width) + deskW + 'px';
+		}
+		if (top < 0 + deskH) {
+			grid.style.height = grid_height + (top > 0 ? deskH - top : Math.abs(top) + deskH) + 'px';
+			panzOffsetY = top - deskH;
+		} else if (top > grid_height - deskH) {
+			grid.style.height = grid_height + (top - grid_height) + deskH + 'px';
 		}
 
 		if (panzOffsetX || panzOffsetY) {
 			$allDesks.forEach((desk) => {
 				const style: CSSStyleDeclaration = desk.element?.style!;
-				style.left = +style.left.slice(0, -2) - panzOffsetX + 'px';
-				style.top = +style.top.slice(0, -2) - panzOffsetY + 'px';
+				let l: number = +style.left.slice(0, -2) - panzOffsetX;
+				let t: number = +style.top.slice(0, -2) - panzOffsetY;
+
+				style.left = l + 'px';
+				style.top = t + 'px';
+				if (desk.desk?.desknum! === $selectedDesk.desk?.desknum!) {
+					$selectedDesk.desk!.x = l;
+					$selectedDesk.desk!.y = t;
+				}
 				desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
 			});
 		}
@@ -164,49 +176,37 @@
 		);
 	};
 
-	const recalculateGridSize = () => {
-    let left: number = Number.MAX_SAFE_INTEGER;
-    let right: number = Number.MIN_SAFE_INTEGER;
-    let top: number = Number.MAX_SAFE_INTEGER;
-    let bottom: number = Number.MIN_SAFE_INTEGER;
+	const normalizeGridSize = () => {
+		let left: number = Number.MAX_SAFE_INTEGER;
+		let right: number = Number.MAX_SAFE_INTEGER;
+		let top: number = Number.MAX_SAFE_INTEGER;
+		let bottom: number = Number.MAX_SAFE_INTEGER;
 		$allDesks.forEach((desk) => {
 			if (desk.desk?.x! < left) left = desk.desk?.x!;
-      if (desk.desk?.x! > right) right = desk.desk?.x!;
-      if (desk.desk?.y! < top) top = desk.desk?.y!;
-      if (desk.desk?.y! > bottom) bottom = desk.desk?.y!;
+			if (canvas.width - desk.desk?.x! < right) right = canvas.width - desk.desk?.x!;
+			if (desk.desk?.y! < top) top = desk.desk?.y!;
+			if (canvas.height - desk.desk?.y! < bottom) bottom = canvas.height - desk.desk?.y!;
 		});
 
-    let horizontalOffset: number = 0;
-    let verticalOffset: number = 0;
+		let horizontalOffset: number = 0;
+		let verticalOffset: number = 0;
 
-    let mapWidth: number = defaultMapScale.width;
-    let mapHeight: number = defaultMapScale.height;
+		let mapWidth: number = defaultMapScale.width;
+		let mapHeight: number = defaultMapScale.height;
 
-    //buggy wuggy
-    if (left > defaultMapScale.maxHorizontalDist){
-      horizontalOffset = -left + defaultMapScale.border;
-    }
-    if (right - left > defaultMapScale.width){
-      mapWidth = right - left + defaultMapScale.border * 2;
-    }
-    if (top > defaultMapScale.maxVerticalDist){
-      verticalOffset = -top + defaultMapScale.border;
-    }
-    if (bottom - top > defaultMapScale.height){
-      mapHeight = bottom - top + defaultMapScale.border * 2;
-    }
+		console.log(left, right, top, bottom);
 
-    $allDesks.forEach((desk) => {
-      const style: CSSStyleDeclaration = desk.element?.style!;
-      style.left = +style.left.slice(0, -2) + horizontalOffset + 'px';
-      style.top = +style.top.slice(0, -2) + verticalOffset + 'px';
-      desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
-    });
-    grid.style.width = mapWidth + 'px';
-    grid.style.height = mapHeight + 'px';
-    canvas.width = mapWidth;
-    canvas.height = mapHeight;
-	}
+		// $allDesks.forEach((desk) => {
+		// 	const style: CSSStyleDeclaration = desk.element?.style!;
+		// 	style.left = +style.left.slice(0, -2) + horizontalOffset + 'px';
+		// 	style.top = +style.top.slice(0, -2) + verticalOffset + 'px';
+		// 	desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
+		// });
+		// grid.style.width = mapWidth + 'px';
+		// grid.style.height = mapHeight + 'px';
+		// canvas.width = mapWidth;
+		// canvas.height = mapHeight;
+	};
 
 	const delSelectedDesk = () => {
 		$allDesks = $allDesks.filter((table) => table.desk!.desknum !== $selectedDesk.desk?.desknum);
@@ -259,7 +259,13 @@
 			style="width: {defaultMapScale.width}px; height: {defaultMapScale.height}px;"
 			class="z-0"
 		>
-			<canvas bind:this={canvas} width={defaultMapScale.width} height={defaultMapScale.height} draggable="false" class="bg-slate-500" />
+			<canvas
+				bind:this={canvas}
+				width={defaultMapScale.width}
+				height={defaultMapScale.height}
+				draggable="false"
+				class="bg-slate-500"
+			/>
 		</div>
 	</div>
 </main>
