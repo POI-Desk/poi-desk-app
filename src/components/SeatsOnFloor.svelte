@@ -6,7 +6,6 @@
     import FloorSelection from "$components/FloorSelection.svelte";
     import {setContext} from "svelte";
     import {floorid} from "$lib/floorStore";
-    import {buildingid} from "$lib/buildingStore";
     import BuildingSelection from "$components/BuildingSelection.svelte";
 
     export let dateValue: string;

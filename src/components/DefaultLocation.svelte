@@ -1,7 +1,6 @@
 <script lang="ts">
-	import {createEventDispatcher, onDestroy} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import { graphql } from '$houdini';
-	import {buildingid} from "$lib/buildingStore";
 
 	const dispatch = createEventDispatcher();
 
@@ -23,10 +22,6 @@
     function setAsDefault(){
 		defaultLocation.mutate({uid: "4ee4a365-2a5f-4830-8f8f-c50733ab7695", lid: chosenLocation.pk_locationid});
     }
-
-	onDestroy(() => {
-		$buildingid = "reload";
-	})
 
 </script>
 <div class="modal" class:modal-open={true}>
