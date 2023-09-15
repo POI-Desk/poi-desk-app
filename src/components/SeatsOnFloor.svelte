@@ -53,16 +53,23 @@
 </script>
 
 
-{#await getSeats.fetch({variables: {floorid: $floorid}})}
-    <p>loading seats...</p>
-{:then fetched}
-    {#each fetched?.data?.getSeatsOnFloor ?? [] as seat}
-        <button on:click={() => toggleModal(seat)}
-                class="btn btn-accent"
-                class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
-        >{seat?.seatnum}</button>
-    {/each}
-{/await}
+<div class="grid grid-rows-2">
+    <FloorSelection></FloorSelection>
+
+    <div class="grid grid-cols-5 gap-2">
+        {#await getSeats.fetch({variables: {floorid: $floorid}})}
+            <p>loading seats...</p>
+        {:then fetched}
+            {#each fetched?.data?.getSeatsOnFloor ?? [] as seat}
+                <button on:click={() => toggleModal(seat)}
+                        class="btn btn-accent"
+                        class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
+                >{seat?.seatnum}</button>
+            {/each}
+        {/await}
+
+    </div>
+</div>
 
 {#if showModal}
     <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
@@ -77,9 +84,6 @@
     </CrazyAnimation>
 {/if}
 
-<p></p>
-
-<FloorSelection></FloorSelection>
 
 <div class="flex justify-center">
     <div class="absolute bottom-20">
