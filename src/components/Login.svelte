@@ -23,7 +23,7 @@
             const result = await createOrLoginAsUser.mutate({
                 username: username
             });
-            $user.pk_userId = result.data?.createOrLoginAsUser?.pk_userid
+            $user.pk_userid = result.data?.createOrLoginAsUser?.pk_userid
         } catch (error) {
             console.error("Error:", error);
         }

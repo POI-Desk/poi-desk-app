@@ -1,4 +1,4 @@
 export type User = {
-    pk_userId: string;
+    pk_userid: string;
     username: string;
 };

@@ -75,7 +75,7 @@
 							date: date.toISOString().split('T')[0],
 							isMorning: $interval.morning,
 							isAfternoon: $interval.afternoon,
-							userId: $user.pk_userId,
+							userId: $user.pk_userid,
 							seatId: seat.pk_seatid
 						});
 					}}>Confirm</button
