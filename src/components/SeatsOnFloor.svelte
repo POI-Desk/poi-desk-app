@@ -6,6 +6,8 @@
     import FloorSelection from "$components/FloorSelection.svelte";
     import {setContext} from "svelte";
     import {floorid} from "$lib/floorStore";
+    import {buildingid} from "$lib/buildingStore";
+    import BuildingSelection from "$components/BuildingSelection.svelte";
 
     export let dateValue: string;
     let showModal: boolean = false;
@@ -13,7 +15,7 @@
     let visible: boolean = false;
 
     export const _getSeatsOnFloorVariables = () => {
-        return {};
+        return $floorid;
     }
 
     const getSeats = graphql(`
@@ -33,7 +35,7 @@
            }
         `);
 
-    $: seats = $getSeats.data?.getSeatsOnFloor;
+    // $: seats = $getSeats.data?.getSeatsOnFloor;
 
 
     function toggleModal(seat: any) {
@@ -48,23 +50,20 @@
         }, 5000);
     }
 
-    setContext('seats', { getSeats });
+    setContext('seats', {getSeats});
 </script>
 
 
-
-{#if $getSeats.fetching}
+{#await getSeats.fetch({variables: {floorid: $floorid}})}
     <p>loading seats...</p>
-{:else if seats}
-    {#each seats as seat}
+{:then fetched}
+    {#each fetched?.data?.getSeatsOnFloor ?? [] as seat}
         <button on:click={() => toggleModal(seat)}
                 class="btn btn-accent"
                 class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
         >{seat?.seatnum}</button>
     {/each}
-{:else}
-    <p>can't find seats</p>
-{/if}
+{/await}
 
 {#if showModal}
     <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
@@ -75,10 +74,16 @@
 
 {#if visible}
     <CrazyAnimation>
-        <Check />
+        <Check/>
     </CrazyAnimation>
 {/if}
 
 <p></p>
 
-<FloorSelection ></FloorSelection>
+<FloorSelection></FloorSelection>
+
+<div class="flex justify-center">
+    <div class="absolute bottom-20">
+        <BuildingSelection></BuildingSelection>
+    </div>
+</div>
