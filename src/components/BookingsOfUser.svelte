@@ -2,7 +2,7 @@
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
     import { delBooking } from '$lib/mutations/booking';
-
+	import { getBookings } from '$lib/bookingStore';
 
     
 
@@ -11,23 +11,25 @@
 		await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
 	};
 	
-    $: userid = $user?.pk_userid;
+    $: usrid = $user?.pk_userid;
 	
 
-	export const _getBookingsByUseridVariables = () => {
-		return {userid};
-	};
+	// export const _getBookingsByUseridVariables = () => {
+	// 	return {userid: usrid};
+	// };
 
 
-	const getBookings = graphql(`
-		query getBookingsByUserid($userid: ID!) @load {
-			getBookingsByUserid(userid: $userid) {
-				pk_bookingid
-				bookingnumber
-				date
-			}
-		}
-	`);
+	getBookings.fetch({variables: {userid: usrid ?? ""}});
+
+	// const getBookings = graphql(`
+	// 	query getBookingsByUserid($userid: ID!) @load {
+	// 		getBookingsByUserid(userid: $userid) {
+	// 			pk_bookingid
+	// 			bookingnumber
+	// 			date
+	// 		}
+	// 	}
+	// `);
 
 
 
@@ -35,7 +37,7 @@
 
     $: {
         if ($user) {
-            getBookings.fetch({variables: {userid: $user.pk_userid}});
+            getBookings.fetch({variables: {userid: $user.pk_userid ?? ""}});
         }
     }
 
@@ -53,7 +55,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#await getBookings.fetch({variables: {userid}})}
+			{#await getBookings.fetch({variables: {userid: usrid}})}
                 {console.log("fetching book")}
             {:then fetched}
 				{#each bookings??[] as booking}

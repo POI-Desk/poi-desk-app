@@ -6,8 +6,8 @@
     import FloorSelection from "$components/FloorSelection.svelte";
     import {setContext} from "svelte";
     import {floorid} from "$lib/floorStore";
+    import { dateValue } from "$lib/dateStore";
 
-    export let dateValue: string;
     let showModal: boolean = false;
     let selectedSeat: any;
     let visible: boolean = false;
@@ -59,7 +59,7 @@
     {#each seats as seat}
         <button on:click={() => toggleModal(seat)}
                 class="btn btn-accent"
-                class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
+                class:btn-error={seat?.bookings?.find(b => b?.date === $dateValue)}
         >{seat?.seatnum}</button>
     {/each}
 {:else}
@@ -67,7 +67,7 @@
 {/if}
 
 {#if showModal}
-    <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
+    <Booking date={new Date($dateValue)} seat={selectedSeat} on:close={() => {
         toggleModal(null);
         getSeats.fetch({policy: CachePolicy.NetworkOnly});
     }} on:play={spinnnnn}/>

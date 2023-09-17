@@ -4,6 +4,7 @@
 	import DateSelection from '$components/DateSelection.svelte';
 	import {user} from '$lib/userStore';
 	import {location} from '$lib/locationStore';
+	import SearchBar from '$components/SearchBar.svelte';
 
 	let visible = false;
 	let triggerEl: any;
@@ -43,4 +44,6 @@
 <p>{$location?.locationname ?? 'no location'}</p>
 <p>{$location?.pk_locationid ?? 'no location'}</p>
 
+
+<SearchBar />
 <DateSelection />
