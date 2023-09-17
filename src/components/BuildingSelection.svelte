@@ -1,12 +1,12 @@
 <script lang="ts">
     import {graphql} from "$houdini";
     import {location} from "$lib/locationStore";
-    import {getContext, onMount} from "svelte";
+    import {onMount} from "svelte";
     import {buildingid} from "$lib/buildingStore";
+    import {getFloors} from "$lib/floorStore";
 
     $: locationid = $location?.pk_locationid;
-    // export let buildingid = "";
-    const {getFloors}: any = getContext("floors");
+
 
     export const _getBuildingsInLocationVariables = () => {
         return {locationid};
@@ -41,13 +41,14 @@
             getFloors.fetch({variables: {buildingid: $buildingid}});
         }
     }
+
 </script>
 
 <div class="btn-group btn-group-horizontal">
-    {#if $getBuildings.fetching}
+    {#await getBuildings.fetch({variables: {locationid}})}
         <p>loading buildings...</p>
-    {:else if buildings}
-        {#each buildings as building}
+    {:then fetched}
+        {#each fetched.data?.getBuildingsInLocation ?? [] as building}
             <button
                     class="btn btn-primary"
                     on:click={() => {
@@ -57,5 +58,5 @@
                 {building?.buildingname}
             </button>
         {/each}
-    {/if}
+    {/await}
 </div>
