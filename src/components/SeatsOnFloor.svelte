@@ -7,8 +7,8 @@
     import {setContext} from "svelte";
     import {floorid} from "$lib/floorStore";
     import BuildingSelection from "$components/BuildingSelection.svelte";
+    import { dateValue } from "$lib/dateStore";
 
-    export let dateValue: string;
     let showModal: boolean = false;
     let selectedSeat: any;
     let visible: boolean = false;
@@ -72,7 +72,7 @@
 </div>
 
 {#if showModal}
-    <Booking date={new Date(dateValue)} seat={selectedSeat} on:close={() => {
+    <Booking date={new Date($dateValue)} seat={selectedSeat} on:close={() => {
         toggleModal(null);
         getSeats.fetch({policy: CachePolicy.NetworkOnly});
     }} on:play={spinnnnn}/>

@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
+	import {dateValue} from "../lib/dateStore";
 	// import type { PageLoad } from './$houdini';
 	//import DateSelection
 
 	let visibility = 'hidden';
-	let dateValue = new Date().toISOString().split('T')[0];
+	$dateValue = new Date().toISOString().split('T')[0];
 
-	function showDateSelection() {
-		visibility = 'visible';
-	}
 
 	export const _getBookingsByDateVariables = () => {
 		return {
-			date: dateValue
+			date: $dateValue
 		};
 	};
 
@@ -30,7 +28,7 @@
 
 	const getBookings = () => {
 		console.log(dateValue);
-		store.fetch({ variables: { date: dateValue } });
+		store.fetch({ variables: { date: $dateValue } });
 	};
 </script>
 
@@ -40,7 +38,7 @@
 			class="timeselect input input-bordered"
 			type="date"
 			id="calendar"
-			bind:value={dateValue}
+			bind:value={$dateValue}
 			on:change={getBookings}
 			placeholder="bingbong"
 		/>
@@ -55,4 +53,4 @@
 <!--	</ul>-->
 <!--{/if}-->
 
-<SeatsOnFloor {dateValue}/>
+<SeatsOnFloor {$dateValue}/>
