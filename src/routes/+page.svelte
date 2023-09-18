@@ -2,12 +2,14 @@
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
+
+	import type { PageData } from './$types';
+	import SeatsOnFloor from '$components/SeatsOnFloor.svelte';
 	import {user} from '$lib/userStore';
 	import {location} from '$lib/locationStore';
 	import SearchBar from '$components/SearchBar.svelte';
 
 	let visible = false;
-	let triggerEl: any;
 	let panelVisible = false;
 
 	function togglePanel() {
@@ -35,6 +37,7 @@
 {/if}
 
 
+
 <a class="btn btn-primary" href="./login">Login</a>
 
 <a class="btn btn-primary" href="./location">Location</a>
@@ -47,3 +50,4 @@
 
 <SearchBar />
 <DateSelection />
+

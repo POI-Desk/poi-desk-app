@@ -1,87 +1,115 @@
 <script lang="ts">
-    import {CachePolicy, graphql} from "$houdini";
-    import Booking from "$components/Booking.svelte";
-    import CrazyAnimation from "$components/CrazyAnimation.svelte";
-    import Check from "$components/Check.svelte";
-    import FloorSelection from "$components/FloorSelection.svelte";
-    import {setContext} from "svelte";
-    import {floorid} from "$lib/floorStore";
+	import { CachePolicy, graphql } from '$houdini';
+	import Booking from '$components/Booking.svelte';
+	import CrazyAnimation from '$components/CrazyAnimation.svelte';
+	import Check from '$components/Check.svelte';
     import BuildingSelection from "$components/BuildingSelection.svelte";
-    import { dateValue } from "$lib/dateStore";
 
-    let showModal: boolean = false;
-    let selectedSeat: any;
-    let visible: boolean = false;
+	let floorid = '5c36ec41-e3b0-40dc-b755-e2251b08010e';
+	export let dateValue: string;
+	let curdeskId: string;
+	let curDayTime: string;
+	let showModal: boolean = false;
+	let selectedDesk: any;
+	let visible: boolean = false;
 
-    export const _getSeatsOnFloorVariables = () => {
-        return $floorid;
-    }
+	export const _getDesksOnFloorVariables = () => {
+		return { floorid };
+	};
 
-    const getSeats = graphql(`
-        query getSeatsOnFloor($floorid: ID!) @load {
-            getSeatsOnFloor(floorid: $floorid) {
-                pk_seatid
-                seatnum
-                x
-                y
-                bookings {
-                    user {
-                        pk_userid
-                    }
-                    date
-                }
-            }
-           }
-        `);
+	export const _isBookedAtVariables = () => {
+		return { curdeskId, dateValue, curDayTime };
+	};
 
-    // $: seats = $getSeats.data?.getSeatsOnFloor;
+	const getFloors = graphql(`
+		query getAllFloors @load {
+			getAllFloors {
+				pk_floorid
+				floorname
+			}
+		}
+	`);
 
+	const getdesks = graphql(`
+		query getDesksOnFloor($floorid: ID!) @load {
+			getDesksOnFloor(floorid: $floorid) {
+				pk_deskid
+				desknum
+				x
+				y
+				bookings {
+					user {
+						pk_userid
+					}
+					date
+				}
+			}
+		}
+	`);
 
-    function toggleModal(seat: any) {
-        showModal = !showModal;
-        selectedSeat = seat;
-    }
+	$: desks = $getdesks.data?.getDesksOnFloor;
+	$: floors = $getFloors.data?.getAllFloors;
 
-    function spinnnnn() {
-        visible = true;
-        setTimeout(() => {
-            visible = false;
-        }, 5000);
-    }
+	function onFloorClicked(newFloorId: string) {
+		floorid = newFloorId;
+		getdesks.fetch({ variables: { floorid } });
+	}
 
-    setContext('seats', {getSeats});
+	function toggleModal(desk: any) {
+		showModal = !showModal;
+		selectedDesk = desk;
+	}
+
+	function spinnnnn() {
+		visible = true;
+		setTimeout(() => {
+			visible = false;
+		}, 5000);
+	}
 </script>
 
-
-<div class="grid grid-rows-2">
-    <FloorSelection></FloorSelection>
-
-    <div class="grid grid-cols-5 gap-2">
-        {#await getSeats.fetch({variables: {floorid: $floorid}})}
-            <p>loading seats...</p>
-        {:then fetched}
-            {#each fetched?.data?.getSeatsOnFloor ?? [] as seat}
-                <button on:click={() => toggleModal(seat)}
-                        class="btn btn-accent"
-                        class:btn-error={seat?.bookings?.find(b => b?.date === dateValue)}
-                >{seat?.seatnum}</button>
-            {/each}
-        {/await}
-
-    </div>
+<div class="btn-group btn-group-vertical">
+	{#if $getFloors.fetching}
+		<p>loading desks...</p>
+	{:else if floors}
+		{#each floors as floor}
+			<button class="btn btn-primary" on:click={() => onFloorClicked(floor?.pk_floorid ?? '')}
+				>{floor?.floorname}</button
+			>
+		{/each}
+	{/if}
 </div>
 
+{#if $getdesks.fetching}
+	<p>loading desks...</p>
+{:else if desks}
+	{#each desks as desk}
+		<button
+			on:click={() => toggleModal(desk)}
+			class="btn btn-accent"
+			class:btn-error={desk?.bookings?.find((b) => b?.date === dateValue)}>{desk?.desknum}</button
+		>
+	{/each}
+{:else}
+	<p>can't find desks</p>
+{/if}
+
 {#if showModal}
-    <Booking date={new Date($dateValue)} seat={selectedSeat} on:close={() => {
-        toggleModal(null);
-        getSeats.fetch({policy: CachePolicy.NetworkOnly});
-    }} on:play={spinnnnn}/>
+	<Booking
+		date={new Date(dateValue)}
+		desk={selectedDesk}
+		on:close={() => {
+			toggleModal(null);
+			getdesks.fetch({ policy: CachePolicy.NetworkOnly });
+		}}
+		on:play={spinnnnn}
+	/>
 {/if}
 
 {#if visible}
-    <CrazyAnimation>
-        <Check/>
-    </CrazyAnimation>
+	<CrazyAnimation>
+		<Check />
+	</CrazyAnimation>
 {/if}
 
 
