@@ -1,6 +1,8 @@
 <script lang="ts">
 	import {createEventDispatcher} from 'svelte';
 	import { graphql } from '$houdini';
+	import type { Location } from '$lib/types/locationType';
+	import { user } from '$lib/userStore';
 
 	const dispatch = createEventDispatcher();
 
@@ -8,19 +10,23 @@
 		dispatch('close');
 	}
 
+	$: currentUser = $user;
 	let isModalOpen = false;
 
-	export let chosenLocation: {pk_locationid: string | null, locationname: string | null};
+	export let chosenLocation: Location;
 	
+
+
 	const defaultLocation = graphql(`
 		mutation DefaultLocation($uid: ID!, $lid: ID){
         	setdefaultLocation(userid: $uid, locationid: $lid)
     	}
 	`);
 
-	
-    function setAsDefault(){
-		defaultLocation.mutate({uid: "4ee4a365-2a5f-4830-8f8f-c50733ab7695", lid: chosenLocation.pk_locationid});
+    async function setAsDefault(){
+			await defaultLocation.mutate({uid: currentUser.pk_userId, lid: chosenLocation.pk_locationid});
+			closeModal();
+
     }
 
 </script>
