@@ -1,25 +1,21 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-    import { delBooking } from '$lib/mutations/booking';
+	import { delBooking } from '$lib/mutations/booking';
 	import { getBookings } from '$lib/bookingStore';
-
-    
 
 	const deleteBooking = async (id: string) => {
 		await delBooking.mutate({ id });
 		await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
 	};
-	
-    $: usrid = $user?.pk_userid;
-	
+
+	$: usrid = $user?.pk_userid;
 
 	// export const _getBookingsByUseridVariables = () => {
 	// 	return {userid: usrid};
 	// };
 
-
-	getBookings.fetch({variables: {userid: usrid ?? ""}});
+	getBookings.fetch({ variables: { userid: usrid ?? '' } });
 
 	// const getBookings = graphql(`
 	// 	query getBookingsByUserid($userid: ID!) @load {
@@ -31,17 +27,13 @@
 	// 	}
 	// `);
 
+	$: bookings = $getBookings.data?.getBookingsByUserid;
 
-
-    $: bookings = $getBookings.data?.getBookingsByUserid;
-
-    $: {
-        if ($user) {
-            getBookings.fetch({variables: {userid: $user.pk_userid ?? ""}});
-        }
-    }
-
-
+	$: {
+		if ($user) {
+			getBookings.fetch({ variables: { userid: $user.pk_userid ?? '' } });
+		}
+	}
 </script>
 
 <div class="overflow-x-auto">
@@ -51,14 +43,14 @@
 				<th>ID</th>
 				<th>Number</th>
 				<th>Date</th>
-				<th /> 
+				<th />
 			</tr>
 		</thead>
 		<tbody>
-			{#await getBookings.fetch({variables: {userid: usrid}})}
-                {console.log("fetching book")}
-            {:then fetched}
-				{#each bookings??[] as booking}
+			{#await getBookings.fetch({ variables: { userid: usrid } })}
+				{console.log('fetching book')}
+			{:then fetched}
+				{#each bookings ?? [] as booking}
 					<tr>
 						<th>{booking?.pk_bookingid}</th>
 						<td>{booking?.bookingnumber}</td>
@@ -69,7 +61,7 @@
 									await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst');
 								}}
 								class="btn btn-error btn-sm btn-outline">Delete</button
-							> 
+							>
 						</td>
 					</tr>
 				{/each}

@@ -21,8 +21,9 @@
     $: {
         if (users) {
             searchUsers = users.map((user) => ({
-                pk_userid: user?.pk_userid || null,
-                username: user?.username || null,
+                pk_userid: user?.pk_userid,
+                username: user?.username,
+                location: null
             }));
         }
     }
@@ -38,11 +39,14 @@
 		return {};
     }
 
-    const getSeat = graphql(`
-        query getSeatOfBooking($bookingid: ID!) @load {
-            getSeatOfBooking(bookingid: $bookingid) {
-                pk_seatid
-                seatnum
+    const getDesk = graphql(`
+        query getDeskOfBooking($bookingid: ID!) @load {
+            getBookingById(id: $bookingid) {
+                desk{
+                    desknum
+                    y
+                    x
+                }
             }
         }
     `)
@@ -58,9 +62,9 @@
                       
             if (booking?.date == $dateValue) {
                 bookingsOnDate.push(booking);       
-                await getSeat.fetch({variables: {bookingid: booking.pk_bookingid ?? ""}}).then(() => {
-                    let seat = $getSeat.data?.getSeatOfBooking;
-                    console.log(user.username + " sitzt heute auf " + seat.seatnum);  
+                await getDesk.fetch({variables: {bookingid: booking.pk_bookingid ?? ""}}).then(() => {
+                    let desk = $getDesk.data?.getBookingById?.desk;
+                    console.log(user.username + " sitzt heute auf " + desk?.desknum);  
                 })
             }
         }

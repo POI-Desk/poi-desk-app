@@ -7,37 +7,31 @@
 	let username = '';
 	let pk_userId: string = '';
 	$: $user.username = username;
-	$: $user.pk_userId = pk_userId;
+	$: $user.pk_userid = pk_userId;
 
 	const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
 			createOrLoginAsUser(username: $username) {
 				pk_userid
 				username
+				location {
+					pk_locationid
+					locationname
+				}
 			}
 		}
 	`);
-
 
 	let hasDefaultLocatione: boolean = false;
 	export const _hasDefaultLocationVariables = () => {
-		if ($user.pk_userId)
-			return { uid: $user.pk_userId };
+		if ($user.pk_userid) return { uid: $user.pk_userid };
 	};
-	const checkIfDefaultLocation = graphql(`
-		query hasDefaultLocation($uid: ID) {
-			hasDefaultLocation(id: $uid){
-				locationname
-				pk_locationid
-			}
-		}
-	`);
+
 	let tempLocation: Location;
 	$: $location = tempLocation;
 
 	async function checkLocation() {
-		//checkIfDefaultLocation.fetch({uid: $user.pk_userId})
-		let loc = await $checkIfDefaultLocation.data?.hasDefaultLocation;
+		let loc: Location | null = $user.location;
 		if (loc) {
 			$location = {
 				locationname: loc.locationname!,
@@ -53,13 +47,12 @@
 			const result = await createOrLoginAsUser.mutate({
 				username: username
 			});
-			$user.pk_userId = result.data?.createOrLoginAsUser?.pk_userid!;
+			$user.pk_userid = result.data?.createOrLoginAsUser?.pk_userid!;
 			await checkLocation();
 		} catch (error) {
 			console.error('Error:', error);
 		}
 	}
-
 </script>
 
 <h1 class="text-center">POI-Desk</h1>
@@ -70,9 +63,7 @@
 		<input type="text" class="input input-primary" id="usernameInput" bind:value={username} />
 	</div>
 	<div class="p-3">
-		<a
-			class="btn btn-primary"
-			on:click={loginWithoutMicrosoft}>
+		<a class="btn btn-primary" on:click={loginWithoutMicrosoft}>
 			<a href="../{hasDefaultLocatione ? '' : 'location'}">Login without Microsoft</a></a
 		>
 	</div>
