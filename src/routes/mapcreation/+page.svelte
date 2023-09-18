@@ -120,7 +120,6 @@
 	};
 
 	//left and top are in local space of the parent element
-	//TODO: unifie the offset with the normalizeGridSize function
 	const resizeGrid = (left: number, top: number) => {
 		const grid_width: number = +grid.style.width.slice(0, -2);
 		const grid_height: number = +grid.style.height.slice(0, -2);
@@ -134,13 +133,21 @@
 		const deskH = deskProps.height * 0.5;
 
 		if (left < 0 + deskW) {
-			grid.style.width = grid_width + (left > 0 ? deskW - left : Math.abs(left) + deskW) + defaultMapScale.border + 'px';
+			grid.style.width =
+				grid_width +
+				(left > 0 ? deskW - left : Math.abs(left) + deskW) +
+				defaultMapScale.border +
+				'px';
 			panzOffsetX = left - (deskW + defaultMapScale.border);
 		} else if (left > grid_width - deskW) {
 			grid.style.width = grid_width + (left - grid_width) + deskW + defaultMapScale.border + 'px';
 		}
 		if (top < 0 + deskH) {
-			grid.style.height = grid_height + (top > 0 ? deskH - top : Math.abs(top) + deskH) + defaultMapScale.border + 'px';
+			grid.style.height =
+				grid_height +
+				(top > 0 ? deskH - top : Math.abs(top) + deskH) +
+				defaultMapScale.border +
+				'px';
 			panzOffsetY = top - (deskH + defaultMapScale.border);
 		} else if (top > grid_height - deskH) {
 			grid.style.height = grid_height + (top - grid_height) + deskH + defaultMapScale.border + 'px';
@@ -171,37 +178,35 @@
 	};
 
 	const normalizeGridSize = () => {
+		if ($allDesks.length === 0) {
+			grid.style.width = defaultMapScale.width + 'px';
+			grid.style.height = defaultMapScale.height + 'px';
+			canvas.width = defaultMapScale.width;
+			canvas.height = defaultMapScale.height;
+			return;
+		}
+
 		let left: number = Number.MAX_SAFE_INTEGER;
-		let right: number = Number.MAX_SAFE_INTEGER;
+		let right: number = Number.MIN_SAFE_INTEGER;
 		let top: number = Number.MAX_SAFE_INTEGER;
-		let bottom: number = Number.MAX_SAFE_INTEGER;
+		let bottom: number = Number.MIN_SAFE_INTEGER;
 		$allDesks.forEach((desk) => {
 			if (desk.desk?.x! < left) left = desk.desk?.x!;
-			if (canvas.width - desk.desk?.x! < right) right = canvas.width - desk.desk?.x!;
 			if (desk.desk?.y! < top) top = desk.desk?.y!;
-			if (canvas.height - desk.desk?.y! < bottom) bottom = canvas.height - desk.desk?.y!;
 		});
-
-		console.log(left, right, top, bottom);
 
 		let horizontalOffset: number = 0;
 		let verticalOffset: number = 0;
 
-		let mapWidth: number = canvas.width;
-		let mapHeight: number = canvas.height;
+		let mapWidth: number = defaultMapScale.width;
+		let mapHeight: number = defaultMapScale.height;
 
-		//TODO: bro mach das mal weiter
-		if (left > defaultMapScale.maxHorizontalDist){
+		if (left > defaultMapScale.maxHorizontalDist) {
 			horizontalOffset = -left + deskProps.width * 0.5 + defaultMapScale.border;
 		}
-		if (top > defaultMapScale.maxVerticalDist){
+		if (top > defaultMapScale.maxVerticalDist) {
 			verticalOffset = -top + deskProps.height * 0.5 + defaultMapScale.border;
 		}
-
-		panz.moveTo(
-			panz.getTransform().x - horizontalOffset * scale,
-			panz.getTransform().y - verticalOffset * scale
-		);
 
 		$allDesks.forEach((desk) => {
 			const style: CSSStyleDeclaration = desk.element?.style!;
@@ -210,11 +215,26 @@
 			style.left = desk.desk?.x + 'px';
 			style.top = desk.desk?.y + 'px';
 			desks[desk.desk?.desknum!].setCoords(desk.desk?.x!, desk.desk?.y!);
+			if (desk.desk?.y! > bottom) bottom = desk.desk?.y!;
+			if (desk.desk?.x! > right) right = desk.desk?.x!;
 		});
-		// grid.style.width = mapWidth + 'px';
-		// grid.style.height = mapHeight + 'px';
-		// canvas.width = mapWidth;
-		// canvas.height = mapHeight;
+
+		if (right > defaultMapScale.width - deskProps.width * 0.5) {
+			mapWidth = right + deskProps.width * 0.5 + defaultMapScale.border;
+		}
+		if (bottom > defaultMapScale.height - deskProps.height * 0.5) {
+			mapHeight = bottom + deskProps.height * 0.5 + defaultMapScale.border;
+		}
+
+		panz.moveTo(
+			panz.getTransform().x - horizontalOffset * scale,
+			panz.getTransform().y - verticalOffset * scale
+		);
+
+		grid.style.width = mapWidth + 'px';
+		grid.style.height = mapHeight + 'px';
+		canvas.width = mapWidth;
+		canvas.height = mapHeight;
 	};
 
 	const delSelectedDesk = () => {
@@ -225,6 +245,7 @@
 			element: null,
 			desk: null
 		};
+		normalizeGridSize();
 	};
 
 	const resetSelectedDeskStyle = () => {

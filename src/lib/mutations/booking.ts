@@ -5,3 +5,11 @@ export const delBooking = graphql(`
 		deleteBooking(bookingId: $id)
 	}
 `);
+
+export const bookDesk = graphql(`
+	mutation BookDesk($booking: Bookinginput!) {
+		bookDesk(booking: $booking) {
+			bookingnumber
+		}
+	}
+`);
