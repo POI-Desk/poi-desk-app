@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import { graphql } from '$houdini';
 	import type { Location } from '$lib/types/locationType';
 	import { user } from '$lib/userStore';
@@ -26,6 +26,7 @@
     async function setAsDefault(){
 			await defaultLocation.mutate({uid: currentUser.pk_userId, lid: chosenLocation.pk_locationid});
 			closeModal();
+
     }
 
 </script>

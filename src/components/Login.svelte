@@ -18,6 +18,7 @@
 		}
 	`);
 
+
 	let hasDefaultLocatione: boolean = false;
 	export const _hasDefaultLocationVariables = () => {
 		if ($user.pk_userId)
@@ -35,7 +36,7 @@
 	$: $location = tempLocation;
 
 	async function checkLocation() {
-		checkIfDefaultLocation.fetch({uid: $user.pk_userId})
+		//checkIfDefaultLocation.fetch({uid: $user.pk_userId})
 		let loc = await $checkIfDefaultLocation.data?.hasDefaultLocation;
 		if (loc) {
 			$location = {
@@ -58,6 +59,7 @@
 			console.error('Error:', error);
 		}
 	}
+
 </script>
 
 <h1 class="text-center">POI-Desk</h1>

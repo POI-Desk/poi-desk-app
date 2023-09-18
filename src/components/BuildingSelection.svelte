@@ -1,22 +1,20 @@
 <script lang="ts">
     import {graphql} from "$houdini";
     import {location} from "$lib/locationStore";
-    import {getContext} from "svelte";
+    import {onMount} from "svelte";
+    import {buildingid} from "$lib/buildingStore";
+    import {getFloors} from "$lib/floorStore";
 
-    // let floorid = "5c36ec41-e3b0-40dc-b755-e2251b08010e";
-    $: locationId = $location?.pk_locationid;
-    export let buildingId = '';
-    const { getFloors } = getContext('floors');
-    console.log(locationId)
+    $: locationid = $location?.pk_locationid;
 
 
     export const _getBuildingsInLocationVariables = () => {
-        return { locationId };
+        return {locationid};
     }
 
     const getBuildings = graphql(`
-        query getBuildingsInLocation($locationId: ID!) @load {
-            getBuildingsInLocation (locationId: $locationId) {
+        query getBuildingsInLocation($locationid: ID!) @load {
+            getBuildingsInLocation(locationid: $locationid) {
                 pk_buildingid
                 buildingname
             }
@@ -25,24 +23,40 @@
 
     $: buildings = $getBuildings.data?.getBuildingsInLocation;
 
-    // function onFloorClicked(newFloorId: string) {
-    //     floorid = newFloorId;
-    //     getSeats.fetch({variables: {floorid}});
-    // }
-    function onBuildingClicked(newBuildingId: string) {
-        buildingId = newBuildingId;
-        getFloors.fetch({variables: {buildingId}});
+    onMount(() => {
+        selectFirstBuilding();
+    })
+
+    async function selectFirstBuilding() {
+        await getBuildings.fetch({variables: {locationid}});
+
+        if (buildings) {
+            $buildingid = buildings[0]?.pk_buildingid || ""; // Set to the first building
+        }
     }
+
+
+    $: {
+        if ($buildingid) {
+            getFloors.fetch({variables: {buildingid: $buildingid}});
+        }
+    }
+
 </script>
 
-<div class="btn-group btn-group-vertical">
-    {#if $getBuildings.fetching}
+<div class="btn-group btn-group-horizontal">
+    {#await getBuildings.fetch({variables: {locationid}})}
         <p>loading buildings...</p>
-    {:else if buildings}
-        {#each buildings as building}
-            <button class="btn btn-primary"
-                    on:click={() => onBuildingClicked(building?.pk_buildingid ?? "")}
-            >{building?.buildingname}</button>
+    {:then fetched}
+        {#each fetched.data?.getBuildingsInLocation ?? [] as building}
+            <button
+                    class="btn btn-primary"
+                    on:click={() => {
+                    $buildingid = building?.pk_buildingid ?? "";
+                }}
+            >
+                {building?.buildingname}
+            </button>
         {/each}
-    {/if}
+    {/await}
 </div>
