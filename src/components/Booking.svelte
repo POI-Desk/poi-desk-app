@@ -3,22 +3,21 @@
 	import Confirmation from './ModalContents/Confirmation.svelte';
 	import Selection from './ModalContents/Selection.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { graphql, type Bookinginput } from '$houdini';
 	import { interval } from '$lib/bookingStore';
 	import { bookDesk } from '$lib/mutations/booking';
 
-	const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
-	// this function is called when the user clicks on the "Book"/"Cancel" button
-	// and closes the Modal by dispatching an event to the parent page setting the
-	// variable showModal to false
-	function closeModal() {
-		dispatch('close');
-	}
+    // this function is called when the user clicks on the "Book"/"Cancel" button
+    // and closes the Modal by dispatching an event to the parent page setting the
+    // variable showModal to false
+    function closeModal() {
+        dispatch('close');
+    }
 
-	function playAnimation() {
-		dispatch('play');
-	}
+    function playAnimation() {
+        dispatch('play');
+    }
 
 	let time: string = 'none';
 	let modalConfirmVisible: boolean = false;
@@ -63,15 +62,15 @@
 							}
 						});
 					}}>Confirm</button
-				>
-			</div>
-		{/if}
+                >
+            </div>
+        {/if}
 
-		<!-- TODO: send to server code missing and adding to Outlook? -->
-		{#if $addOutlook}
-			<p>Life is Roblox</p>
-		{/if}
-	</div>
+        <!-- TODO: send to server code missing and adding to Outlook? -->
+        {#if $addOutlook}
+            <p>Life is Roblox</p>
+        {/if}
+    </div>
 </div>
 
 <style>

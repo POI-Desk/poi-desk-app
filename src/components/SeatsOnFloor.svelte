@@ -3,6 +3,7 @@
 	import Booking from '$components/Booking.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import Check from '$components/Check.svelte';
+    import BuildingSelection from "$components/BuildingSelection.svelte";
 
 	let floorid = '5c36ec41-e3b0-40dc-b755-e2251b08010e';
 	export let dateValue: string;
@@ -110,3 +111,10 @@
 		<Check />
 	</CrazyAnimation>
 {/if}
+
+
+<div class="flex justify-center">
+    <div class="absolute bottom-20">
+        <BuildingSelection></BuildingSelection>
+    </div>
+</div>
