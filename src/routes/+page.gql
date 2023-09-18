@@ -1,6 +1,0 @@
-query getAlls {
-    getAllFloors {
-        pk_floorid
-        floorname
-    }
-}
