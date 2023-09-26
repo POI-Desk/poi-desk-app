@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
+	import SeatsOnFloor from "$components/DesksOnFloor.svelte";
 	import {dateValue} from "../lib/dateStore";
 	import BuildingSelection from "$components/BuildingSelection.svelte";
 	// import type { PageLoad } from './$houdini';

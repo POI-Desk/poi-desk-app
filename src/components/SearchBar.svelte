@@ -32,8 +32,8 @@
     $: bookingsOfSelectedUser = $getBookings.data?.getBookingsByUserid;
     let bookingsOnDate = [];
 
-    export let selectedUsername: string;
-    export let selectedUser: User; 
+    let selectedUsername: string;
+    let selectedUser: User;
 
     export const _getSeatOfBookingVariables = () => {
 		return {};
@@ -77,7 +77,6 @@
 </script>
 
 <div>
-
     <div class="dropdown">
         <input class="input input-bordered" placeholder="Search for user" bind:value={selectedUsername}/>
         <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-80 flex-nowrap overflow-auto">

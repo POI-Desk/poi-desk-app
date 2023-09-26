@@ -20,7 +20,7 @@
 		selectedDesk = desk;
 	}
 
-	function spinnnnn() {
+	function confirm() {
 		visible = true;
 		setTimeout(() => {
 			visible = false;
@@ -52,7 +52,7 @@
 	<Booking date={new Date($dateValue)} desk={selectedDesk} on:close={() => {
         toggleModal(null);
         getDesks.fetch({policy: CachePolicy.NetworkOnly});
-    }} on:play={spinnnnn}/>
+    }} on:play={confirm}/>
 {/if}
 
 {#if visible}
