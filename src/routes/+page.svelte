@@ -8,6 +8,7 @@
 	import {user} from '$lib/userStore';
 	import {location} from '$lib/locationStore';
 	import SearchBar from '$components/SearchBar.svelte';
+	import BuildingSelection from "$components/BuildingSelection.svelte";
 
 	let visible = false;
 	let panelVisible = false;
@@ -50,4 +51,13 @@
 
 <SearchBar />
 <DateSelection />
+
+<div class="flex justify-center">
+	<div class="absolute bottom-20">
+		<BuildingSelection></BuildingSelection>
+	</div>
+</div>
+
+<SeatsOnFloor/>
+
 

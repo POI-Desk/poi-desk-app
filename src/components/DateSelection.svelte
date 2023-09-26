@@ -2,6 +2,7 @@
 	import { graphql } from '$houdini';
 	import SeatsOnFloor from "$components/SeatsOnFloor.svelte";
 	import {dateValue} from "../lib/dateStore";
+	import BuildingSelection from "$components/BuildingSelection.svelte";
 	// import type { PageLoad } from './$houdini';
 	//import DateSelection
 
@@ -52,5 +53,3 @@
 <!--		{/each}-->
 <!--	</ul>-->
 <!--{/if}-->
-
-<SeatsOnFloor {$dateValue}/>

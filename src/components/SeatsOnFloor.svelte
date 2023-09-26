@@ -1,59 +1,19 @@
 <script lang="ts">
-	import { CachePolicy, graphql } from '$houdini';
-	import Booking from '$components/Booking.svelte';
-	import CrazyAnimation from '$components/CrazyAnimation.svelte';
-	import Check from '$components/Check.svelte';
-    import BuildingSelection from "$components/BuildingSelection.svelte";
+	import {CachePolicy} from "$houdini";
+	import Booking from "$components/Booking.svelte";
+	import CrazyAnimation from "$components/CrazyAnimation.svelte";
+	import Check from "$components/Check.svelte";
+	import FloorSelection from "$components/FloorSelection.svelte";
+	import {floorid} from "$lib/floorStore";
+	import BuildingSelection from "$components/BuildingSelection.svelte";
+	import {dateValue} from "$lib/dateStore";
+	import {getDesks} from "$lib/deskStore"
 
-	let floorid = '5c36ec41-e3b0-40dc-b755-e2251b08010e';
-	export let dateValue: string;
-	let curdeskId: string;
-	let curDayTime: string;
 	let showModal: boolean = false;
 	let selectedDesk: any;
 	let visible: boolean = false;
 
-	export const _getDesksOnFloorVariables = () => {
-		return { floorid };
-	};
 
-	export const _isBookedAtVariables = () => {
-		return { curdeskId, dateValue, curDayTime };
-	};
-
-	const getFloors = graphql(`
-		query getAllFloors @load {
-			getAllFloors {
-				pk_floorid
-				floorname
-			}
-		}
-	`);
-
-	const getdesks = graphql(`
-		query getDesksOnFloor($floorid: ID!) @load {
-			getDesksOnFloor(floorid: $floorid) {
-				pk_deskid
-				desknum
-				x
-				y
-				bookings {
-					user {
-						pk_userid
-					}
-					date
-				}
-			}
-		}
-	`);
-
-	$: desks = $getdesks.data?.getDesksOnFloor;
-	$: floors = $getFloors.data?.getAllFloors;
-
-	function onFloorClicked(newFloorId: string) {
-		floorid = newFloorId;
-		getdesks.fetch({ variables: { floorid } });
-	}
 
 	function toggleModal(desk: any) {
 		showModal = !showModal;
@@ -66,55 +26,44 @@
 			visible = false;
 		}, 5000);
 	}
+
 </script>
 
-<div class="btn-group btn-group-vertical">
-	{#if $getFloors.fetching}
-		<p>loading desks...</p>
-	{:else if floors}
-		{#each floors as floor}
-			<button class="btn btn-primary" on:click={() => onFloorClicked(floor?.pk_floorid ?? '')}
-				>{floor?.floorname}</button
-			>
-		{/each}
-	{/if}
+
+<div class="grid grid-rows-2">
+	<FloorSelection></FloorSelection>
+
+	<div class="grid grid-cols-5 gap-2">
+		{#await getDesks.fetch({variables: {floorid: $floorid}})}
+			<p>loading desks...</p>
+		{:then fetched}
+			{#each fetched?.data?.getDesksOnFloor ?? [] as desk}
+				<button on:click={() => toggleModal(desk)}
+						class="btn btn-accent"
+						class:btn-error={desk?.bookings?.find(b => b?.date === $dateValue)}
+				>{desk?.desknum}</button>
+			{/each}
+		{/await}
+
+	</div>
 </div>
 
-{#if $getdesks.fetching}
-	<p>loading desks...</p>
-{:else if desks}
-	{#each desks as desk}
-		<button
-			on:click={() => toggleModal(desk)}
-			class="btn btn-accent"
-			class:btn-error={desk?.bookings?.find((b) => b?.date === dateValue)}>{desk?.desknum}</button
-		>
-	{/each}
-{:else}
-	<p>can't find desks</p>
-{/if}
-
 {#if showModal}
-	<Booking
-		date={new Date(dateValue)}
-		desk={selectedDesk}
-		on:close={() => {
-			toggleModal(null);
-			getdesks.fetch({ policy: CachePolicy.NetworkOnly });
-		}}
-		on:play={spinnnnn}
-	/>
+	<Booking date={new Date($dateValue)} desk={selectedDesk} on:close={() => {
+        toggleModal(null);
+        getDesks.fetch({policy: CachePolicy.NetworkOnly});
+    }} on:play={spinnnnn}/>
 {/if}
 
 {#if visible}
 	<CrazyAnimation>
-		<Check />
+		<Check/>
 	</CrazyAnimation>
 {/if}
 
 
 <div class="flex justify-center">
-    <div class="absolute bottom-20">
-        <BuildingSelection></BuildingSelection>
-    </div>
+	<div class="absolute bottom-20">
+		<BuildingSelection></BuildingSelection>
+	</div>
 </div>

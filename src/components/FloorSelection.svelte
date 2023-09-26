@@ -1,13 +1,7 @@
 <script lang="ts">
-    import {getContext, setContext} from "svelte";
     import {floorid, getFloors} from "$lib/floorStore";
     import {buildingid} from "$lib/buildingStore";
-
-    // export let floorid = "";
-    // let buildingid = "";
-
-    const {getSeats}: any = getContext('seats');
-
+    import {getDesks} from "$lib/deskStore";
 
     $: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -27,12 +21,10 @@
 
     $: {
         if ($floorid) {
-            getSeats.fetch({variables: {floorid: $floorid}});
+            getDesks.fetch({variables: {floorid: $floorid}});
         }
     }
 
-
-    setContext('floors', {getFloors});
 </script>
 
 <div class="flex items-center">
@@ -48,4 +40,3 @@
         {/await}
     </div>
 </div>
-
