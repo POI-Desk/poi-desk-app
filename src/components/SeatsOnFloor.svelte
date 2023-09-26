@@ -24,7 +24,7 @@
 		visible = true;
 		setTimeout(() => {
 			visible = false;
-		}, 5000);
+		}, 500);
 	}
 
 </script>
