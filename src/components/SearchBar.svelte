@@ -35,7 +35,7 @@
     let selectedUsername: string;
     let selectedUser: User;
 
-    export const _getSeatOfBookingVariables = () => {
+    export const _getDeskOfBookingVariables = () => {
 		return {};
     }
 
@@ -52,7 +52,7 @@
     `)
 
 
-    async function onUserClicked(user: User) {        
+    async function onUserClicked(user: User) {
         selectedUsername = user?.username ?? "";
         selectedUser = user;        
         getBookings.fetch({variables: {userid: user.pk_userid ?? ""}});

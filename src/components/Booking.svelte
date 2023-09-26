@@ -5,6 +5,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { interval } from '$lib/bookingStore';
 	import { bookDesk } from '$lib/mutations/booking';
+	import { user } from '$lib/userStore';
 
     const dispatch = createEventDispatcher();
 
@@ -21,14 +22,14 @@
 
 	let time: string = 'none';
 	let modalConfirmVisible: boolean = false;
-	export let desk: any = undefined; //get table from parent page
+	export let desk: any = undefined; //get desk from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
 
 	console.log(desk);
 </script>
 
 <!-- useless Modal Stuff -->
-<!-- Modal is always set on true and gets spawned when clicking a table on the map -->
+<!-- Modal is always set on true and gets spawned when clicking a desk on the map -->
 <!-- modalConfirmVisible is a check that blends in the confirm page when clicking on "confirmation" -->
 
 <div class="modal" class:modal-open={true}>
@@ -52,12 +53,17 @@
 					on:click={() => {
 						closeModal();
 						playAnimation();
+						console.log(date.toISOString().split('T')[0],
+								$interval.morning,
+								$interval.afternoon,
+								$user.pk_userid,
+								desk.pk_deskid)
 						bookDesk.mutate({
 							booking: {
 								date: date.toISOString().split('T')[0],
 								ismorning: $interval.morning,
 								isafternoon: $interval.afternoon,
-								userid: '767fbcb6-6de7-4354-9020-00a30cc2e218', // TODO: get user id from auth
+								userid: $user.pk_userid,
 								deskid: desk.pk_deskid
 							}
 						});

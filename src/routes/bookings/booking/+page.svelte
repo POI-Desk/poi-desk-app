@@ -7,7 +7,7 @@
 	let date: Date = new Date();
 	
 	let showModal: boolean = false;
-	let table: string = 'A11';
+	let desk: string = 'A11';
 	let visible = false;
 	
 	function spinnnnn() {
@@ -31,13 +31,13 @@
 </h1>
 
 <h1 class="text-5xl m-5">
-	Current Table: {table}
+	Current Desk: {desk}
 </h1>
 
-<button class="btn btn-primary" on:click={toggleModal}> Book Table </button>
+<button class="btn btn-primary" on:click={toggleModal}> Book Desk </button>
 
 {#if showModal}
-	<Booking {date} {table} on:close={toggleModal} on:play={spinnnnn} />
+	<Booking {date} {desk} on:close={toggleModal} on:play={spinnnnn} />
 {/if}
 {#if visible}
 	<CrazyAnimation>

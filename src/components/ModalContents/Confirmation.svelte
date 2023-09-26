@@ -2,7 +2,7 @@
 	import { addOutlook, interval } from '$lib/bookingStore';
 
 
-	export let desk: any = undefined; //get table from parent page
+	export let desk: any = undefined; //get desk from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
 </script>
 
@@ -10,8 +10,8 @@
 	<li class="step step-primary">Register Workspace</li>
 	<li class="step step-primary">Confirm Selection</li>
 </ul>
-<h3 class="font-bold text-lg">Book Table {desk.seatnum}</h3>
-<p class="py-4">Table: {desk.seatnum}</p>
+<h3 class="font-bold text-lg">Book Desk {desk.seatnum}</h3>
+<p class="py-4">Desk: {desk.desknum}</p>
 <p class="py-4">Date: {date.toLocaleDateString()}</p>
 <p class="py-4">Time: {JSON.stringify($interval)}</p>
 {#if $addOutlook}
