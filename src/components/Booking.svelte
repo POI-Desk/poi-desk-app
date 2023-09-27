@@ -25,7 +25,12 @@
 	export let desk: any = undefined; //get desk from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
 
-	console.log(desk);
+	let hasBookings: boolean = desk.bookings.length !== 0;
+	let isBookedMorning: boolean = hasBookings && desk.bookings[0].ismorning || desk.bookings[1]?.ismorning;
+	let isBookedAfternoon: boolean = hasBookings && desk.bookings[0].isafternoon || desk.bookings[1]?.isafternoon;
+	let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
+
+	console.log(desk)
 </script>
 
 <!-- useless Modal Stuff -->
@@ -35,13 +40,13 @@
 <div class="modal" class:modal-open={true}>
 	<div class="modal-box flex flex-col">
 		{#if !modalConfirmVisible}
-			<Selection {desk} {date} />
+			<Selection {desk} {date} {hasBookings} {isBookedMorning} {isBookedAfternoon} {isFullDay}/>
 			<div class="modal-action">
 				<button class="btn btn-error" on:click={closeModal}>Cancel</button>
 				<button
 					class="btn btn-primary modal-button"
-					disabled={!$interval.afternoon && !$interval.morning}
-					on:click={() => (modalConfirmVisible = true)}>Book</button
+					disabled={!$interval.afternoon && !$interval.morning || isFullDay}
+					on:click={() => isFullDay ? null : (modalConfirmVisible = true)}>Book</button
 				>
 			</div>
 		{:else}

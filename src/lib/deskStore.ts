@@ -14,8 +14,11 @@ export const getDesks = graphql(`
             bookings {
                 user {
                     pk_userid
+                    username
                 }
                 date
+                ismorning
+                isafternoon
             }
         }
     }
