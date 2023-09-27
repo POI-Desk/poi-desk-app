@@ -50,15 +50,10 @@
 				<button class="btn btn-error" on:click={() => (modalConfirmVisible = false)}>Back</button>
 				<button
 					class="btn btn-primary modal-button"
-					on:click={() => {
+					on:click={async () => {
 						closeModal();
 						playAnimation();
-						console.log(date.toISOString().split('T')[0],
-								$interval.morning,
-								$interval.afternoon,
-								$user.pk_userid,
-								desk.pk_deskid)
-						bookDesk.mutate({
+						await bookDesk.mutate({
 							booking: {
 								date: date.toISOString().split('T')[0],
 								ismorning: $interval.morning,
