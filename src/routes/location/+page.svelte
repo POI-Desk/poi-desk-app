@@ -1,20 +1,22 @@
 <script lang="ts">
-	import DefaultLocation from '$components/DefaultLocation.svelte';
 	import type { PageData } from './$houdini';
-	import { location } from '$lib/locationStore';
+	import { location, chosenLocation } from '$lib/locationStore';
 	import type { Location } from '$lib/types/locationType';
 
-	let chosenLocation: Location;
-	let showModal: boolean = false;
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
-	function toggleModal() {
-		showModal = !showModal;
-	}
+	const modalStore = getModalStore();
+
+	const modal: ModalSettings = {
+		type: 'component',
+		// Pass the component registry key as a string:
+		component: 'modalDefaultLocation',
+	};
 
 	export let data: PageData;
 	$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
-	$: $location = chosenLocation;
+	$: $location = $chosenLocation;
 </script>
 
 <div class="grid place-items-center place-content-center space-y-6 h-screen">
@@ -22,17 +24,17 @@
 	{#if locations}
 		{#each locations as location}
 			<button
-				class="btn btn-block btn-primary px-14"
+				class="btn btn-block variant-filled-primary px-14"
 				on:click={() => {
-					chosenLocation = {locationname: location?.locationname || "" ,pk_locationid: location?.pk_locationid || "" };
-					toggleModal();
+					$chosenLocation = {
+						locationname: location?.locationname || '',
+						pk_locationid: location?.pk_locationid || ''
+					};
+					modalStore.trigger(modal);
 				}}
 			>
-					{location?.locationname}
+				{location?.locationname}
 			</button>
 		{/each}
-	{/if}
-	{#if showModal}
-		<DefaultLocation {chosenLocation} on:close={toggleModal} />
 	{/if}
 </div>

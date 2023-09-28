@@ -155,7 +155,7 @@
 </script>
 
 <button
-	class="btn no-animation z-20"
+	class="btn no-animation z-20 duration-0 variant-filled"
 	style="position: absolute; height: {deskProps.height}px; width: {deskProps.width}px; transform: translate(-50%, -50%);"
 	bind:this={drag}
 	on:mousedown={handleDragStart}>T</button

@@ -60,7 +60,7 @@
 								on:click|stopPropagation={async () => {
 									await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst');
 								}}
-								class="btn btn-error btn-sm btn-outline">Delete</button
+								class="btn variant-filled-error btn-sm btn-outline">Delete</button
 							>
 						</td>
 					</tr>

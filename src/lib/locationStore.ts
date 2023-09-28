@@ -5,3 +5,8 @@ export const location = writable<Location>({
     pk_locationid: "",
     locationname: ""
 });
+
+export const chosenLocation = writable<Location>({
+	pk_locationid: '',
+	locationname: ''
+});

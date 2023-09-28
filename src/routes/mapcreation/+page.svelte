@@ -276,8 +276,8 @@
 <main bind:this={main} class="overflow-hidden flex flex-row h-screen">
 	<SaveMapModal {openModal} on:closeModal={toggleModal} />
 	<div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
-		<button on:mousedown={createTable} class="btn btn-primary">Table</button>
-		<button on:click={toggleModal} class="btn btn-primary">Save</button>
+		<button on:mousedown={createTable} class="btn variant-filled-primary">Table</button>
+		<button on:click={toggleModal} class="btn variant-filled-primary">Save</button>
 	</div>
 	<div bind:this={container} class="overflow-auto w-screen">
 		<div

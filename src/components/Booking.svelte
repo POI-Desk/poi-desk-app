@@ -1,31 +1,38 @@
 <script lang="ts">
 	import { addOutlook } from '$lib/bookingStore';
-	import Confirmation from './ModalContents/Confirmation.svelte';
 	import Selection from './ModalContents/Selection.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { interval } from '$lib/bookingStore';
 	import { bookDesk } from '$lib/mutations/booking';
 	import { user } from '$lib/userStore';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore } from '@skeletonlabs/skeleton';
+	import Confirmation from './ModalContents/Confirmation.svelte';
 
-    const dispatch = createEventDispatcher();
+	const modalStore = getModalStore();
 
-    // this function is called when the user clicks on the "Book"/"Cancel" button
-    // and closes the Modal by dispatching an event to the parent page setting the
-    // variable showModal to false
-    function closeModal() {
-        dispatch('close');
-    }
+	const dispatch = createEventDispatcher();
 
-    function playAnimation() {
-        dispatch('play');
-    }
+	// this function is called when the user clicks on the "Book"/"Cancel" button
+	// and closes the Modal by dispatching an event to the parent page setting the
+	// variable showModal to false
+	function closeModal() {
+		dispatch('close');
+	}
+
+	function playAnimation() {
+		dispatch('play');
+	}
 
 	let time: string = 'none';
 	let modalConfirmVisible: boolean = false;
 	export let desk: any = undefined; //get desk from parent page
 	export let date: Date = new Date(2022, 12, 2); // get date from parent page
 
-	console.log(desk);
+	const modal: ModalSettings = {
+		type: 'component',
+		component: 'modalConfirmation'
+	};
 </script>
 
 <!-- useless Modal Stuff -->
@@ -37,9 +44,9 @@
 		{#if !modalConfirmVisible}
 			<Selection {desk} {date} />
 			<div class="modal-action">
-				<button class="btn btn-error" on:click={closeModal}>Cancel</button>
+				<button class="btn variant-filled-error" on:click={closeModal}>Cancel</button>
 				<button
-					class="btn btn-primary modal-button"
+					class="btn variant-filled-primary modal-button"
 					disabled={!$interval.afternoon && !$interval.morning}
 					on:click={() => (modalConfirmVisible = true)}>Book</button
 				>
@@ -47,9 +54,11 @@
 		{:else}
 			<Confirmation {desk} {date} />
 			<div class="modal-action">
-				<button class="btn btn-error" on:click={() => (modalConfirmVisible = false)}>Back</button>
+				<button class="btn variant-filled-error" on:click={() => (modalConfirmVisible = false)}
+					>Back</button
+				>
 				<button
-					class="btn btn-primary modal-button"
+					class="btn variant-filled-primary modal-button"
 					on:click={async () => {
 						closeModal();
 						playAnimation();
@@ -63,15 +72,15 @@
 							}
 						});
 					}}>Confirm</button
-                >
-            </div>
-        {/if}
+				>
+			</div>
+		{/if}
 
-        <!-- TODO: send to server code missing and adding to Outlook? -->
-        {#if $addOutlook}
-            <p>Life is Roblox</p>
-        {/if}
-    </div>
+		<!-- TODO: send to server code missing and adding to Outlook? -->
+		{#if $addOutlook}
+			<p>Life is Roblox</p>
+		{/if}
+	</div>
 </div>
 
 <style>
