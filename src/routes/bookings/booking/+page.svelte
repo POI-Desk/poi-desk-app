@@ -5,22 +5,21 @@
 	import type { PageData } from './$types';
 
 	let date: Date = new Date();
-	
+
 	let showModal: boolean = false;
 	let desk: string = 'A11';
 	let visible = false;
-	
+
 	function spinnnnn() {
 		visible = true;
 		setTimeout(() => {
 			visible = false;
 		}, 5000);
-	};
-	
+	}
 
 	function toggleModal() {
 		showModal = !showModal;
-	};
+	}
 	export let data: PageData;
 </script>
 
@@ -34,7 +33,7 @@
 	Current Desk: {desk}
 </h1>
 
-<button class="btn btn-primary" on:click={toggleModal}> Book Desk </button>
+<button class="btn variant-filled-primary" on:click={toggleModal}> Book Desk </button>
 
 {#if showModal}
 	<Booking {date} {desk} on:close={toggleModal} on:play={spinnnnn} />
@@ -43,7 +42,6 @@
 	<CrazyAnimation>
 		<Check />
 	</CrazyAnimation>
-
 {/if}
 
 <style>
