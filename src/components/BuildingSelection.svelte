@@ -47,7 +47,7 @@
 	{:then fetched}
 		{#each fetched.data?.getBuildingsInLocation ?? [] as building}
 			<button
-				class="btn variant-filled-primary"
+				class="btn variant-filled-primary !mx-2"
 				on:click={() => {
 					$buildingid = building?.pk_buildingid ?? '';
 				}}

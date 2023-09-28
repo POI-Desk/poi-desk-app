@@ -35,24 +35,25 @@
 <!--	</CrazyAnimation>-->
 <!--{/if}-->
 
-<a class="btn variant-filled-primary" href="./login">Login</a>
+<div class="m-3">
+	<a class="btn variant-filled-primary" href="./login">Login</a>
 
-<a class="btn variant-filled-primary" href="./location">Location</a>
+	<a class="btn variant-filled-primary" href="./location">Location</a>
+	<!--Debugging-->
+	<p>{$user?.pk_userid ?? 'no id'}</p>
+	<p>{$user?.username ?? 'no username'}</p>
+	<p>{$location?.locationname ?? 'no location'}</p>
+	<p>{$location?.pk_locationid ?? 'no location'}</p>
+	<!---->
+	<SearchBar />
 
-<!--Debugging-->
-<p>{$user?.pk_userid ?? 'no id'}</p>
-<p>{$user?.username ?? 'no username'}</p>
-<p>{$location?.locationname ?? 'no location'}</p>
-<p>{$location?.pk_locationid ?? 'no location'}</p>
-<!---->
+	<DateSelection />
 
-<SearchBar />
-<DateSelection />
-
-<div class="flex justify-center">
-	<div class="absolute bottom-20">
-		<BuildingSelection />
+	<div class="flex justify-center">
+		<div class="absolute bottom-20">
+			<BuildingSelection />
+		</div>
 	</div>
-</div>
 
-<SeatsOnFloor />
+	<SeatsOnFloor />
+</div>

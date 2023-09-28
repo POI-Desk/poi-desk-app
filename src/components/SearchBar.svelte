@@ -78,7 +78,7 @@
 
 <div>
     <div class="dropdown">
-        <input class="input" placeholder="Search for user" bind:value={selectedUsername}/>
+        <input class="input w-1/5 my-3" placeholder="Search for user" bind:value={selectedUsername}/>
         <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-80 flex-nowrap overflow-auto">
             {#each filteredUsers as usr}
                 <li><button on:click|preventDefault={() => onUserClicked(usr)}>{usr.username}</button></li>
