@@ -3,6 +3,7 @@ import type { Interval } from './types/bookingTypes';
 import type { Booking } from './types/bookingTypes';
 import {graphql} from "$houdini";
 
+
 export const interval = writable<Interval>({
 	morning: false,
 	afternoon: false
@@ -17,6 +18,8 @@ export const booking = writable<Booking>({
     afternoon: false
   }
 });
+
+export const selectedDesk = writable<any>();
 
 export const addOutlook = writable(false);
 

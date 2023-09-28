@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { CachePolicy } from '$houdini';
-	import Booking from '$components/Booking.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import Check from '$components/Check.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
@@ -8,15 +7,18 @@
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	import { dateValue } from '$lib/dateStore';
 	import { getDesks } from '$lib/deskStore';
+	import { selectedDesk } from '$lib/bookingStore';
 
-	let showModal: boolean = false;
-	let selectedDesk: any;
-	let visible: boolean = false;
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
-	function toggleModal(desk: any) {
-		showModal = !showModal;
-		selectedDesk = desk;
+	const modalStore = getModalStore();
+
+	const modal : ModalSettings = {
+		type: 'component',
+		component: 'modalBooking'
 	}
+
+	let visible: boolean;
 
 	function confirm() {
 		visible = true;
@@ -35,7 +37,10 @@
 		{:then fetched}
 			{#each fetched?.data?.getDesksOnFloor ?? [] as desk}
 				<button
-					on:click={() => toggleModal(desk)}
+					on:click={() => {
+						$selectedDesk = desk;
+						modalStore.trigger(modal);
+					}}
 					class="btn variant-filled-success"
 					class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
 					>{desk?.desknum}</button
@@ -45,10 +50,11 @@
 	</div>
 </div>
 
+<!--
 {#if showModal}
 	<Booking
 		date={new Date($dateValue)}
-		desk={selectedDesk}
+		desk={$selectedDesk}
 		on:close={() => {
 			toggleModal(null);
 			getDesks.fetch({ policy: CachePolicy.NetworkOnly });
@@ -56,6 +62,7 @@
 		on:play={confirm}
 	/>
 {/if}
+-->
 
 {#if visible}
 	<CrazyAnimation>
