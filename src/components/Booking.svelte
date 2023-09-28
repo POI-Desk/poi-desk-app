@@ -52,13 +52,10 @@
 			<div class="modal-action">
 				<button class="btn variant-filled-error" on:click={closeModal}>Cancel</button>
 				<button
-					class="btn variant-filled-primary modal-button"
-					disabled={!$interval.afternoon && !$interval.morning}
-					on:click={() => (modalConfirmVisible = true)}>Book</button
 					class="btn btn-primary modal-button"
 					disabled={!$interval.afternoon && !$interval.morning || isFullDay}
-					on:click={() => isFullDay ? null : (modalConfirmVisible = true)}>Book</button
-				>
+					on:click={() => isFullDay ? null : (modalConfirmVisible = true)}>Book
+				</button>
 			</div>
 		{:else}
 			<Confirmation {desk} {date} />
