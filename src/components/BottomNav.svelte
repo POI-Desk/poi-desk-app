@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<div class="btm-nav z-20">
+<div class="flex justify-around my-5">
 	<a href="/" class={$page.url.pathname === '/' ? 'active' : ''}>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

@@ -5,10 +5,10 @@
 
 	import type { PageData } from './$types';
 	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
-	import {user} from '$lib/userStore';
-	import {location} from '$lib/locationStore';
+	import { user } from '$lib/userStore';
+	import { location } from '$lib/locationStore';
 	import SearchBar from '$components/SearchBar.svelte';
-	import BuildingSelection from "$components/BuildingSelection.svelte";
+	import BuildingSelection from '$components/BuildingSelection.svelte';
 	//
 	// let visible = false;
 	// let panelVisible = false;
@@ -29,18 +29,15 @@
 	// }
 </script>
 
-
 <!--{#if visible}-->
 <!--	<CrazyAnimation>-->
 <!--		<Check />-->
 <!--	</CrazyAnimation>-->
 <!--{/if}-->
 
+<a class="btn variant-filled-primary" href="./login">Login</a>
 
-
-<a class="btn btn-primary" href="./login">Login</a>
-
-<a class="btn btn-primary" href="./location">Location</a>
+<a class="btn variant-filled-primary" href="./location">Location</a>
 
 <!--Debugging-->
 <p>{$user?.pk_userid ?? 'no id'}</p>
@@ -54,10 +51,8 @@
 
 <div class="flex justify-center">
 	<div class="absolute bottom-20">
-		<BuildingSelection></BuildingSelection>
+		<BuildingSelection />
 	</div>
 </div>
 
-<SeatsOnFloor/>
-
-
+<SeatsOnFloor />

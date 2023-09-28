@@ -63,7 +63,7 @@
 		<input type="text" class="input input-primary" id="usernameInput" bind:value={username} />
 	</div>
 	<div class="p-3">
-		<a class="btn btn-primary" on:click={loginWithoutMicrosoft}>
+		<a class="btn variant-filled-primary" on:click={loginWithoutMicrosoft}>
 			<a href="../{hasDefaultLocatione ? '' : 'location'}">Login without Microsoft</a></a
 		>
 	</div>
