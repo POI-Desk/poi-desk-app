@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { addOutlook, interval } from '$lib/bookingStore';
 
-	export let parent: any;
+	//export let parent: any;
 
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	const modalStore = getModalStore();

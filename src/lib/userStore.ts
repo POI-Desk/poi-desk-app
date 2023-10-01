@@ -3,5 +3,6 @@ import type { User } from "./types/userTypes";
 
 export const user = writable<User> ({
     pk_userid: '',
-    username: ''
+    username: '',
+    location: null,
 });

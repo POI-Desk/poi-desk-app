@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { chosenLocation } from '$lib/locationStore';
 	import { createEventDispatcher } from 'svelte';
 	import { graphql } from '$houdini';
-	import type { Location } from '$lib/types/locationType';
 	import { user } from '$lib/userStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
-	export let parent: any;
+	//export let parent: any;
 
 	$: currentUser = $user;
 	const modalStore = getModalStore();
@@ -19,7 +17,7 @@
 	async function setAsDefault() {
 		await defaultLocation.mutate({
 			uid: currentUser.pk_userid,
-			lid: $chosenLocation.pk_locationid
+			lid: $user.location?.pk_locationid!
 		});
 	}
 
@@ -29,7 +27,7 @@
 {#if $modalStore[0]}
 	<div class={cBase}>
 		<div>
-			<h1 class="text-2xl">Do you want to set {$chosenLocation.locationname} as your default</h1>
+			<h1 class="text-2xl">Do you want to set {$user.location?.locationname} as your default</h1>
 			<div class="flex">
 				<a
 					class="btn variant-filled-success px-14 justify-self-start"
