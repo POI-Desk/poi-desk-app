@@ -27,8 +27,7 @@
 			});
 			$user = result.data?.createOrLoginAsUser!;
 			window.location.href = $user.location == null ? '../location' : '..';
-			console.log($user, $user.location == null, $user.location == null ? '../location' : '..')
-		} catch (error) {
+			} catch (error) {
 			console.error('Error:', error);
 		}
 	}
@@ -43,7 +42,7 @@
 	</div>
 	<div class="p-3">
 		<button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-			<!--<a href="{$user.location == null ? '../location' : '..'}">-->Login without Microsoft<!--</a>-->
+			Login without Microsoft
 		</button>
 	</div>
 </div>
