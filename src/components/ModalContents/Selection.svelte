@@ -42,8 +42,21 @@
     </ul>
 {/if}
 
-<h3 class="font-bold text-lg">Desk {desk.desknum}</h3>
-<p class="py-3">Date: {date.toLocaleDateString()}</p>
+<div>
+    <h3 class="font-bold text-lg">Desk {desk.desknum}</h3>
+    <p class="py-3">Date: {date.toLocaleDateString()}</p>
+    {#if (desk.attributes.length > 0)}
+        <p>Attributes:
+            {#each desk.attributes as attribute, i}
+                {#if (i === desk.attributes.length - 1)}
+                    {attribute.attributename}
+                {:else}
+                    {attribute.attributename},&nbsp;
+                {/if}
+            {/each}
+        </p>
+    {/if}
+</div>
 
 <div class="form-control">
     <label class="label cursor-pointer">

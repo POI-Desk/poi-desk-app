@@ -20,6 +20,9 @@ export const getDesks = graphql(`
                 ismorning
                 isafternoon
             }
+            attributes {
+                attributename
+            }
         }
     }
 `);
