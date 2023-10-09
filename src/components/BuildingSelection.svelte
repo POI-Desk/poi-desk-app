@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { location } from '$lib/locationStore';
+	import { user } from '$lib/userStore';
 	import { onMount } from 'svelte';
 	import { buildingid } from '$lib/buildingStore';
 	import { getFloors } from '$lib/floorStore';
 
-	$: locationid = $location?.pk_locationid;
+	$: locationid = $user.location?.pk_locationid!;
 
 	export const _getBuildingsInLocationVariables = () => {
 		return { locationid };

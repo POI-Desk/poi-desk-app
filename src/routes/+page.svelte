@@ -6,7 +6,6 @@
 	import type { PageData } from './$types';
 	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
 	import { user } from '$lib/userStore';
-	import { location } from '$lib/locationStore';
 	import SearchBar from '$components/SearchBar.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	//
@@ -42,8 +41,8 @@
 	<!--Debugging-->
 	<p>{$user?.pk_userid ?? 'no id'}</p>
 	<p>{$user?.username ?? 'no username'}</p>
-	<p>{$location?.locationname ?? 'no location'}</p>
-	<p>{$location?.pk_locationid ?? 'no location'}</p>
+	<p>{$user.location?.locationname ?? 'no location'}</p>
+	<p>{$user.location?.pk_locationid ?? 'no location'}</p>
 	<!---->
 	<SearchBar />
 

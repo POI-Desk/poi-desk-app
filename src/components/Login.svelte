@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-	import { location } from '$lib/locationStore';
-	import type { Location } from '$lib/types/locationType';
 
 	let username = '';
 	let pk_userId: string = '';
@@ -22,34 +20,14 @@
 		}
 	`);
 
-	let hasDefaultLocatione: boolean = false;
-	export const _hasDefaultLocationVariables = () => {
-		if ($user.pk_userid) return { uid: $user.pk_userid };
-	};
-
-	let tempLocation: Location;
-	$: $location = tempLocation;
-
-	async function checkLocation() {
-		let loc: Location | null = $user.location;
-		if (loc) {
-			$location = {
-				locationname: loc.locationname!,
-				pk_locationid: loc.pk_locationid!
-			};
-			hasDefaultLocatione = true;
-		}
-		console.log(loc, hasDefaultLocatione, $location);
-	}
-
 	async function loginWithoutMicrosoft() {
 		try {
 			const result = await createOrLoginAsUser.mutate({
 				username: username
 			});
-			$user.pk_userid = result.data?.createOrLoginAsUser?.pk_userid!;
-			await checkLocation();
-		} catch (error) {
+			$user = result.data?.createOrLoginAsUser!;
+			window.location.href = $user.location == null ? '../location' : '..';
+			} catch (error) {
 			console.error('Error:', error);
 		}
 	}
@@ -63,8 +41,8 @@
 		<input type="text" class="input input-primary" id="usernameInput" bind:value={username} />
 	</div>
 	<div class="p-3">
-		<a class="btn variant-filled-primary" on:click={loginWithoutMicrosoft}>
-			<a href="../{hasDefaultLocatione ? '' : 'location'}">Login without Microsoft</a></a
-		>
+		<button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
+			Login without Microsoft
+		</button>
 	</div>
 </div>
