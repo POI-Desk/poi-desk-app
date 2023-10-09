@@ -1,5 +1,4 @@
 <script lang="ts">
-	//amongus
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { interval, selectedDesk } from '$lib/bookingStore';
