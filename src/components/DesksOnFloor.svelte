@@ -1,4 +1,5 @@
 <script lang="ts">
+	//amongus
 	import { CachePolicy } from '$houdini';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import Check from '$components/Check.svelte';
