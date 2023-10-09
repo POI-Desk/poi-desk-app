@@ -2,10 +2,7 @@
 	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
 
-	let username = '';
-	let pk_userId: string = '';
-	$: $user.username = username;
-	$: $user.pk_userid = pk_userId;
+	let username: string = '';
 
 	const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
@@ -21,6 +18,7 @@
 	`);
 
 	async function loginWithoutMicrosoft() {
+		//TODO: IF USERNAME IS EMPTY, DONT LOGIN
 		try {
 			const result = await createOrLoginAsUser.mutate({
 				username: username

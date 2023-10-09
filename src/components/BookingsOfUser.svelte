@@ -3,12 +3,15 @@
 	import { user } from '$lib/userStore';
 	import { delBooking } from '$lib/mutations/booking';
 	import { getBookings } from '$lib/bookingStore';
+	import BookingCard from '$components/BookingCard.svelte';
 
+	
 	const deleteBooking = async (id: string) => {
 		await delBooking.mutate({ id });
-		await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
+		await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
 	};
 
+	$: console.log("User:",$user?.pk_userid)
 	$: usrid = $user?.pk_userid;
 
 	// export const _getBookingsByUseridVariables = () => {
@@ -30,13 +33,14 @@
 	$: bookings = $getBookings.data?.getBookingsByUserid;
 
 	$: {
-		if ($user) {
+		if ($user.pk_userid != '') {
 			getBookings.fetch({ variables: { userid: $user.pk_userid ?? '' } });
 		}
 	}
+
 </script>
 
-<div class="overflow-x-auto">
+<!-- <div class="overflow-x-auto">
 	<table class="table">
 		<thead>
 			<tr>
@@ -65,7 +69,21 @@
 						</td>
 					</tr>
 				{/each}
-			{/await}
+			{/await}	
 		</tbody>
 	</table>
+</div> -->
+
+<div class="flex flex-wrap">
+	{#await getBookings.fetch({ variables: { userid: usrid } })}
+	{:then} 
+		{#each bookings ?? [] as booking}
+			<BookingCard 
+				pk_bookingid = {booking?.pk_bookingid}
+				bookingnumber = {booking?.bookingnumber}
+				date = {booking?.date}
+				on:deleteBooking={async () => await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst')}
+				/>
+		{/each}
+	{/await}
 </div>
