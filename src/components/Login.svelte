@@ -4,10 +4,7 @@
 	import { location } from '$lib/locationStore';
 	import type { Location } from '$lib/types/locationType';
 
-	let username = '';
-	let pk_userId: string = '';
-	$: $user.username = username;
-	$: $user.pk_userid = pk_userId;
+	let username: string = '';
 
 	const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
@@ -23,12 +20,10 @@
 	`);
 
 	let hasDefaultLocatione: boolean = false;
+
 	export const _hasDefaultLocationVariables = () => {
 		if ($user.pk_userid) return { uid: $user.pk_userid };
 	};
-
-	let tempLocation: Location;
-	$: $location = tempLocation;
 
 	async function checkLocation() {
 		let loc: Location | null = $user.location;
@@ -43,10 +38,12 @@
 	}
 
 	async function loginWithoutMicrosoft() {
+		//TODO: IF USERNAME IS EMPTY, DONT LOGIN
 		try {
 			const result = await createOrLoginAsUser.mutate({
 				username: username
 			});
+			$user.username = result.data?.createOrLoginAsUser?.username!;
 			$user.pk_userid = result.data?.createOrLoginAsUser?.pk_userid!;
 			await checkLocation();
 		} catch (error) {
@@ -63,8 +60,12 @@
 		<input type="text" class="input input-primary" id="usernameInput" bind:value={username} />
 	</div>
 	<div class="p-3">
-		<a class="btn variant-filled-primary" on:click={loginWithoutMicrosoft}>
-			<a href="../{hasDefaultLocatione ? '' : 'location'}">Login without Microsoft</a></a
+		<a
+			href="../{hasDefaultLocatione ? '' : 'location'}"
+			class="btn variant-filled-primary"
+			on:click={loginWithoutMicrosoft}
+		>
+			Login without Microsoft</a
 		>
 	</div>
 </div>

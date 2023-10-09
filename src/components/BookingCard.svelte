@@ -1,0 +1,69 @@
+<script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+  import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { currentBooking } from '$lib/bookingStore';
+	import type { Interval } from '$lib/types/bookingTypes';
+
+	const dispatch = createEventDispatcher();
+
+	function deleteBooking(id: string) {
+		dispatch('deleteBooking', id);
+	}
+
+	export let pk_bookingid: string;
+	export let bookingnumber: string;
+  export let table_id: string;
+	export let date: string;
+
+
+	const modalStore = getModalStore();
+
+	const modal: ModalSettings = {
+		type: 'component',
+		component: 'modalEditBooking'
+	};
+
+  function toggleModal() {
+    $currentBooking.booking_id = pk_bookingid;
+    $currentBooking.table_id = bookingnumber;
+    $currentBooking.date = date;
+
+    modalStore.trigger(modal);
+  }
+
+</script>
+
+<div class="flex bg-slate-500 rounded-lg border-box m-3">
+	<div class="w-1/3 rounded-lg">
+		<img
+			class="rounded-lg w-full h-full"
+			src="https://media.istockphoto.com/id/1322277517/photo/wild-grass-in-the-mountains-at-sunset.jpg?s=612x612&w=0&k=20&c=6mItwwFFGqKNKEAzv0mv6TaxhLN3zSE43bWmFN--J5w="
+			alt=""
+			srcset=""
+		/>
+	</div>
+
+	<div class="w-2/3 rounded-lg ml-3 my-3">
+		<h1 class="text-xl">
+			{pk_bookingid}
+		</h1>
+		<h1 class="text-xl">
+			<i class="fa fa-id-badge" aria-hidden="true" />
+			{bookingnumber}
+		</h1>
+		<h1 class="text-xl">
+			<i class="fa fa-calendar" aria-hidden="true" />
+			{date}
+		</h1>
+		<button
+			on:click={() => deleteBooking(pk_bookingid ?? 'lol du stinkst')}
+			class="btn variant-filled-error btn-sm btn-outline">Delete</button
+		>
+		<button on:click={toggleModal} class="btn variant-filled-primary btn-sm btn-outline"
+			>Edit (Vyskocil)</button
+		>
+	</div>
+</div>
+
+<style>
+</style>

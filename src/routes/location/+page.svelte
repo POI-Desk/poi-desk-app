@@ -1,4 +1,5 @@
 <script lang="ts">
+	// TODO: BITTE KEINE PAGE SONDERN MODAL @LEOPOLD
 	import type { PageData } from './$houdini';
 	import { location, chosenLocation } from '$lib/locationStore';
 	import type { Location } from '$lib/types/locationType';
@@ -24,7 +25,8 @@
 	{#if locations}
 		{#each locations as location}
 			<button
-				class="btn btn-block variant-filled-primary px-14"
+				class="btn btn-block variant-filled-primary w-2/3 px-14" 
+				
 				on:click={() => {
 					$chosenLocation = {
 						locationname: location?.locationname || '',

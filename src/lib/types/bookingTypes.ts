@@ -1,5 +1,5 @@
 export type Booking = {
-	booking_id: number;
+	booking_id: string;
 	table_id: string;
 	date: string;
 	interval: Interval;
