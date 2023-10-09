@@ -75,10 +75,13 @@
     </label>
 </div>
 
-<div class="form-control">
-    <label class="label cursor-pointer">
-        <span class="label-text">Add to Outlook</span>
-        <hr class="w-1/4 border-gray-500"/>
-        <input type="checkbox" class="checkbox" bind:checked={$addOutlook}/>
-    </label>
-</div>
+
+{#if !isFullDay}
+    <div class="form-control">
+        <label class="label cursor-pointer">
+            <span class="label-text">Add to Outlook</span>
+            <hr class="w-1/4 border-gray-500"/>
+            <input type="checkbox" class="checkbox" bind:checked={$addOutlook}/>
+        </label>
+    </div>
+{/if}

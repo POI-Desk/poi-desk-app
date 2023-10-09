@@ -38,7 +38,7 @@
 	let isBookedAfternoon: boolean = hasBookings && desk.bookings[0].isafternoon || desk.bookings[1]?.isafternoon;
 	let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
 
-	console.log(desk)
+	// console.log(desk)
 </script>
 
 <!-- useless Modal Stuff -->
