@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { closestNumber, inBoundingbox, transformPosition } from '$lib/helper';
+	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
 	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
 	import { deskProps } from '$lib/map/props';
 	import { createEventDispatcher, onMount } from 'svelte';

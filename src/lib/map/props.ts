@@ -16,14 +16,14 @@ export const panzoomProps: PanZoomOptions = {
 
 //values to represent the default values for the map
 export const defaultMapScale = {
-	//width in px
+	//width in px, dividable by 25
 	width: 750,
-	//height in px
-	height: 1000,
-	//min space on desk place between desks and border of the map in px
+	//height in px, dividable by 25
+	height: 750,
+	//min space on desk place between desks and border of the map in px, dividable by 25
 	border: 50,
-	//max distance from origin before recentering in px
-	maxHorizontalDist: 600,
-	//max distance from origin before recentering in px
-	maxVerticalDist: 850
+	//max distance from origin before recentering in px, dividable by 25
+	maxHorizontalDist: 750,
+	//max distance from origin before recentering in px, dividable by 25
+	maxVerticalDist: 750
 };
