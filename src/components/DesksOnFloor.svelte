@@ -15,8 +15,7 @@
 
 	const modal : ModalSettings = {
 		type: 'component',
-		component: 'modalBooking',
-		meta: {fn: confirmBooking}
+		component: 'modalBooking'
 	}
 
 

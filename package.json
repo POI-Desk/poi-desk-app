@@ -37,6 +37,6 @@
     },
     "type": "module",
     "dependencies": {
-        "panzoom": "^9.4.3",
+        "panzoom": "^9.4.3"
     }
 }
