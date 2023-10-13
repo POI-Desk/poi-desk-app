@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { floorid, getFloors } from '$lib/floorStore';
+	import { floorid } from '$lib/floorStore';
 	import { buildingid } from '$lib/buildingStore';
-	import { getDesks } from '$lib/deskStore';
+
+    import {getDesks} from "$lib/queries/deskQueries";
+	import {getFloors} from "$lib/queries/floorQueries";
 
 	$: floors = $getFloors.data?.getFloorsInBuilding;
 

@@ -4,24 +4,25 @@
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import Check from '$components/Check.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
-	import { floorid } from '$lib/floorStore';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
-	import { dateValue } from '$lib/dateStore';
-	import { getDesks } from '$lib/deskStore';
-	import { selectedDesk } from '$lib/bookingStore';
-
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { floorid } from '$lib/floorStore';
+	import { dateValue } from '$lib/dateStore';
+	import { selectedDesk } from '$lib/bookingStore';
+	import { getDesks } from "$lib/queries/deskQueries";
 
 	const modalStore = getModalStore();
 
 	const modal : ModalSettings = {
 		type: 'component',
-		component: 'modalBooking'
+		component: 'modalBooking',
+		meta: {fn: confirmBooking}
 	}
+
 
 	let visible: boolean;
 
-	function confirm() {
+	function confirmBooking() {
 		visible = true;
 		setTimeout(() => {
 			visible = false;

@@ -3,7 +3,8 @@
 	import { user } from '$lib/userStore';
 	import { onMount } from 'svelte';
 	import { buildingid } from '$lib/buildingStore';
-	import { getFloors } from '$lib/floorStore';
+
+	import {getFloors} from "$lib/queries/floorQueries";
 
 	$: locationid = $user.location?.pk_locationid!;
 

@@ -39,8 +39,9 @@
 
 	<a class="btn variant-filled-primary" href="./location">Location</a>
 	<!--Debugging-->
-	<p>{$user?.pk_userid ?? 'no id'}</p>
-	<p>{$user?.username ?? 'no username'}</p>
+	<p>{$user.pk_userid ?? 'no id'}</p>
+	<p>{$user.username ?? 'no username'}</p>
+	{console.log($user)}
 	<p>{$user.location?.locationname ?? 'no location'}</p>
 	<p>{$user.location?.pk_locationid ?? 'no location'}</p>
 	<!---->

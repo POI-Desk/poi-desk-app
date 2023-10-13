@@ -21,6 +21,7 @@
 				deskid: $selectedDesk.pk_deskid
 			}
 		});
+
 		modalStore.close();
 	}
 	let date: Date = new Date($dateValue); //sieht schöner aus
