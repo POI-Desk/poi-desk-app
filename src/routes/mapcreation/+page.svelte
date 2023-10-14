@@ -1,3 +1,5 @@
+<!-- TODO: MAKE ALL COMPONENTS IN THE MAP UNIFIED IN ONE LIST + POSSIBLY SEPERATE LISTS FOR API -->
+
 <script lang="ts">
 	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
 	import Desk from '$components/MapComponents/DeskComponent.svelte';
@@ -6,6 +8,7 @@
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
 	import { defaultMapScale, deskProps, panzoomProps } from '$lib/map/props';
+	import WallComponent from '$components/MapComponents/RoomComponent.svelte';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -27,8 +30,8 @@
 		panz.on('zoom', (e: PanZoom) => {
 			scale = e.getTransform().scale;
 			Object.keys(desks).forEach((key) => {
-				let table = desks[key];
-				table.$set({
+				let desk = desks[key];
+				desk.$set({
 					scale: scale
 				});
 			});
@@ -48,7 +51,7 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
-			removeTable();
+			removeDesk();
 		}
 	};
 
@@ -62,14 +65,14 @@
 		}
 	};
 
-	const removeTable = () => {
+	const removeDesk = () => {
 		if (!$selectedDesk.element || !$selectedDesk.desk) {
 			return;
 		}
 		delSelectedDesk();
 	};
 
-	const createTable = (event: MouseEvent) => {
+	const createDesk = (event: MouseEvent) => {
 		scale = panz.getTransform().scale;
 		resetSelectedDeskStyle();
 		const element = new Desk({
@@ -89,7 +92,7 @@
 			}
 		});
 
-		element.$on('selectTable', (event: CustomEvent<{ drag: HTMLElement; desknum: string }>) => {
+		element.$on('selectDesk', (event: CustomEvent<{ drag: HTMLElement; desknum: string }>) => {
 			panz.pause();
 			if ($selectedDesk.element === event.detail.drag) return;
 			resetSelectedDeskStyle();
@@ -100,7 +103,7 @@
 		});
 
 		element.$on(
-			'releaseTable',
+			'releaseDesk',
 			(event: CustomEvent<{ left: number; top: number; enabled: boolean }>) => {
 				panz.resume();
 				if (!event.detail.enabled) {
@@ -119,12 +122,10 @@
 		defaultDesknum += '1';
 	};
 
-	//left and top are in local space of the parent element
+	//x and y are in local space of the parent element
 	const resizeGrid = (x: number, y: number) => {
 		const grid_width: number = +grid.style.width.slice(0, -2);
 		const grid_height: number = +grid.style.height.slice(0, -2);
-		const grid_top: number = +grid.style.top.slice(0, -2);
-		const grid_left: number = +grid.style.left.slice(0, -2);
 
 		let panzOffsetX: number = 0;
 		let panzOffsetY: number = 0;
@@ -147,7 +148,7 @@
 			grid.style.height = grid_height + (y - grid_height) + deskH + defaultMapScale.border + 'px';
 		}
 
-		if (panzOffsetX || panzOffsetY) {
+		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
 			$allDesks.forEach((desk) => {
 				const style: CSSStyleDeclaration = desk.element?.style!;
 				let l: number = +style.left.slice(0, -2) - panzOffsetX;
@@ -242,7 +243,7 @@
 	};
 
 	const delSelectedDesk = () => {
-		$allDesks = $allDesks.filter((table) => table.desk!.desknum !== $selectedDesk.desk?.desknum);
+		$allDesks = $allDesks.filter((desk) => desk.desk!.desknum !== $selectedDesk.desk?.desknum);
 		desks[$selectedDesk.desk!.desknum].$destroy();
 		delete desks[$selectedDesk.desk!.desknum];
 		$selectedDesk = {
@@ -264,7 +265,7 @@
 	const saveMap = () => {
 		addDesksToFloor.mutate({
 			floorid: '3af4f424-a92b- -bfdb-55bd768218be',
-			desks: $allDesks.map((s) => s.desk)
+			desks: $allDesks.map((s) => s.desk!)
 		});
 	};
 
@@ -280,7 +281,7 @@
 <main bind:this={main} class="overflow-hidden flex flex-row h-screen">
 	<SaveMapModal {openModal} on:closeModal={toggleModal} />
 	<div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
-		<button on:mousedown={createTable} class="btn variant-filled-primary">Table</button>
+		<button on:mousedown={createDesk} class="btn variant-filled-primary">Desk</button>
 		<button on:click={toggleModal} class="btn variant-filled-primary">Save</button>
 	</div>
 	<div bind:this={container} class="overflow-auto w-screen">

@@ -6,6 +6,11 @@ export const deskProps: TransformType = {
 	height: 50
 };
 
+export const roomProps: TransformType = {
+  width: 25,
+  height: 25
+};
+
 export const panzoomProps: PanZoomOptions = {
 	smoothScroll: false,
 	maxZoom: 3,
