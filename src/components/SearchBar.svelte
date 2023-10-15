@@ -3,6 +3,7 @@
 	import type { User } from "$lib/types/userTypes";
 	import { getBookings } from "$lib/bookingStore";
 	import { dateValue } from "$lib/dateStore";
+	import { CachePolicy } from "houdini";
 
 
     const getUsers = graphql(`

@@ -1,12 +1,17 @@
 import type { PanZoomOptions } from 'panzoom';
 import type { TransformType } from '../types/transformType';
+import type { MapObjectType } from '$lib/types/mapObjectTypes';
 
 export const deskProps: TransformType = {
+  x: 0,
+  y: 0,
 	width: 100,
 	height: 50
 };
 
 export const roomProps: TransformType = {
+  x: 0,
+  y: 0,
   width: 25,
   height: 25
 };
@@ -18,6 +23,12 @@ export const panzoomProps: PanZoomOptions = {
 	initialZoom: 1,
 	autocenter: true
 };
+
+//TODO: make safer
+export const mapObjectType: MapObjectType = {
+  Desk: 'Desk',
+  Room: 'Room'
+}
 
 //values to represent the default values for the map
 export const defaultMapScale = {

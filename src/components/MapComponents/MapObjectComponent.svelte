@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
-	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
-	import { deskProps } from '$lib/map/props';
+	import { deskProps, mapObjectType } from '$lib/map/props';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import type { MapObjectType } from '$lib/types/mapObjectTypes';
+	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
+
+  export let type: string;
 	export let enabled: boolean = false;
 	export let target: HTMLElement;
 	export let main: HTMLElement;
@@ -13,7 +16,7 @@
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
 	export let initDrag: boolean = false;
-	export let desknum: string = '';
+	export let MapObjectNum: string = '';
 
 	let drag: HTMLElement | null;
 	let left: number = 0;
@@ -37,13 +40,11 @@
 		drag!.style.top = initY + 'px';
 		left = initX / scale;
 		top = initY / scale;
-		$selectedDesk = {
-			element: drag,
-			desk: {
-				desknum: desknum,
-				x: initX,
-				y: initY
-			}
+		$selectedMapObject = {
+      x: initX,
+      y: initY,
+      width: deskProps.width,
+      height: deskProps.height,
 		};
 		if (initDrag) {
 			handleDragStart(new MouseEvent('mousedown', { clientX: initMouseX, clientY: initMouseY }));
@@ -104,7 +105,7 @@
 		offsetX = event.clientX / (enabled ? scale : 1) - left;
 		offsetY = event.clientY / (enabled ? scale : 1) - top;
 
-		dispatch('selectDesk', { drag, desknum });
+		dispatch('selectDesk', { drag, MapObjectNum });
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
@@ -115,8 +116,8 @@
 
 				drag!.style.left = `${x}px`;
 				drag!.style.top = `${y}px`;
-				$selectedDesk.desk!.x = x;
-				$selectedDesk.desk!.y = y;
+				$selectedMapObject!.x = x;
+				$selectedMapObject!.y = y;
 			}
 		};
 
@@ -150,9 +151,15 @@
 	};
 </script>
 
-<button
-	class="btn no-animation z-20 duration-0 variant-filled"
-	style="position: absolute; height: {deskProps.height}px; width: {deskProps.width}px; transform: translate(-50%, -50%);"
-	bind:this={drag}
-	on:mousedown={handleDragStart}>T</button
->
+{#if type === mapObjectType.Desk}
+  <button
+    class="btn no-animation z-20 duration-0 variant-filled"
+    style="position: absolute; height: {deskProps.height}px; width: {deskProps.width}px; transform: translate(-50%, -50%);"
+    bind:this={drag}
+    on:mousedown={handleDragStart}>T</button
+  >
+{:else if type === mapObjectType.Room}
+  <div style="width: {deskProps.width}px; height: {deskProps.height}px;">
+    Room
+  </div>
+{/if}
