@@ -3,17 +3,28 @@ import type { TransformType } from '../types/transformType';
 import type { MapObjectType } from '$lib/types/mapObjectTypes';
 
 export const deskProps: TransformType = {
-  x: 0,
-  y: 0,
+	x: 0,
+	y: 0,
 	width: 100,
 	height: 50
 };
 
 export const roomProps: TransformType = {
-  x: 0,
-  y: 0,
-  width: 25,
-  height: 25
+	x: 0,
+	y: 0,
+	width: 25,
+	height: 25
+};
+
+export const getTransformFromType = (type: string) => {
+	switch (type) {
+		case mapObjectType.Desk:
+			return deskProps;
+		case mapObjectType.Room:
+			return roomProps;
+		default:
+			return deskProps;
+	}
 };
 
 export const panzoomProps: PanZoomOptions = {
@@ -26,12 +37,12 @@ export const panzoomProps: PanZoomOptions = {
 
 //TODO: make safer
 export const mapObjectType: MapObjectType = {
-  Desk: 'Desk',
-  Room: 'Room'
-}
+	Desk: 'Desk',
+	Room: 'Room'
+};
 
 //values to represent the default values for the map
-export const defaultMapScale = {
+export const defaultMapProps = {
 	//width in px, dividable by 25
 	width: 750,
 	//height in px, dividable by 25
