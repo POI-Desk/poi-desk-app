@@ -37,6 +37,7 @@
     },
     "type": "module",
     "dependencies": {
+        "npm": "^10.2.0",
         "panzoom": "^9.4.3"
     }
 }
