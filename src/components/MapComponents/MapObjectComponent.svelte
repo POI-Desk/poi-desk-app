@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
-	import { deskProps, mapObjectType } from '$lib/map/props';
-	import { createEventDispatcher, onMount } from 'svelte';
-	import type { MapObject, MapObjectType } from '$lib/types/mapObjectTypes';
-	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
+	import { mapObjectType } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
+	import type { MapObject } from '$lib/types/mapObjectTypes';
+	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let mapObject: MapObject;
 	export let enabled: boolean = false;
@@ -13,7 +12,6 @@
 	export let drawer: HTMLElement;
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
-	export let mapObjectNum: string = '';
 
 	let drag: HTMLElement | null;
 	let dragging: boolean = false;
@@ -31,8 +29,8 @@
 		if (enabled) enable();
 		else disable();
 
-		mapObject.transform.x = mapObject.transform.x / $map.scale;
-		mapObject.transform.y = mapObject.transform.y / $map.scale;
+		mapObject.transform.x = mapObject.transform.x * $map.scale;
+		mapObject.transform.y = mapObject.transform.y * $map.scale;
 		handleDragStart(new MouseEvent('mousedown', { clientX: initMouseX, clientY: initMouseY }));
 		const offsetX = initMouseX / $map.scale - mapObject.transform.x;
 		const offsetY = initMouseY / $map.scale - mapObject.transform.y;
@@ -83,8 +81,7 @@
 		drag?.style.setProperty('border', '1px solid red');
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
-
-		dispatch('selectDesk', { drag, mapObjectNum });
+		dispatch('select', mapObject.transform);
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
@@ -103,7 +100,7 @@
 			window.removeEventListener('mousemove', handleDragMove);
 			window.removeEventListener('mouseup', handleDragEnd);
 			window.removeEventListener('mousemove', updateInstantiation);
-			dispatch('releaseDesk', {
+			dispatch('release', {
 				left: closestNumber(mapObject.transform.x, 25),
 				top: closestNumber(mapObject.transform.y, 25),
 				enabled
@@ -130,14 +127,17 @@
 	export const rerenderPosition = () => {
 		mapObject = mapObject;
 	};
+
+	export const removeSelectedStyle = () => {
+		drag?.style.removeProperty('border');
+	};
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
 	<button
 		class="btn no-animation z-20 duration-0 variant-filled"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
-			.width}px; transform: translate(-50%, -50%); left: {mapObject.transform.x}px; top: {mapObject
-			.transform.y}px;"
+			.width}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
 		bind:this={drag}
 		on:mousedown={handleDragStart}>T</button
 	>
@@ -146,8 +146,7 @@
 		bind:this={drag}
 		class="z-20 duration-0"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform
-			.y}px; transform: translate(-50%, -50%);"
+			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
 	>
 		Room
 	</div>

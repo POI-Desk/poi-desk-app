@@ -1,12 +1,8 @@
 <!-- TODO: MAKE ALL COMPONENTS IN THE MAP UNIFIED IN ONE LIST + POSSIBLY SEPERATE LISTS FOR API -->
-<!-- TODO: HARDCORE BUGS, FIX THEM USE MAPOBJECT, LOOK INTO REFFERENCING TRANSFORM TO THE COMPOENNETS -->
 
 <script lang="ts">
-	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
-	import { addDesksToFloor as addDesksToFloor } from '$lib/mutations/desks';
-	import { onDestroy, onMount } from 'svelte';
-	import panzoom, { type PanZoom } from 'panzoom';
+	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
 	import {
 		defaultMapProps,
 		deskProps,
@@ -14,10 +10,12 @@
 		mapObjectType,
 		panzoomProps
 	} from '$lib/map/props';
-	import { selectedMapObject, allMapObjects } from '$lib/stores/mapObjectStore';
-	import type { TransformType } from '$lib/types/transformType';
 	import { map } from '$lib/stores/mapCreationStore';
+	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
+	import type { TransformType } from '$lib/types/transformType';
+	import panzoom, { type PanZoom } from 'panzoom';
+	import { onDestroy, onMount } from 'svelte';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -90,21 +88,20 @@
 				main: main,
 				drawer: container,
 				initMouseX: event.clientX,
-				initMouseY: event.clientY,
-				mapObjectNum: defaultObjNum
+				initMouseY: event.clientY
 			}
 		});
 
-		element.$on('selectDesk', (event: CustomEvent<{ transform: TransformType }>) => {
+		element.$on('select', (event: CustomEvent<TransformType>) => {
 			panz.pause();
 			resetSelectedMapObjectStyle();
 			$selectedMapObject = $allMapObjects.find(
-				(mapObject) => mapObject.transform === event.detail.transform
+				(mapObject) => mapObject.transform === event.detail
 			)!;
 		});
 
 		element.$on(
-			'releaseDesk',
+			'release',
 			(event: CustomEvent<{ left: number; top: number; enabled: boolean }>) => {
 				panz.resume();
 				if (!event.detail.enabled) {
@@ -235,11 +232,12 @@
 		delete mapObjects[$selectedMapObject!.id];
 		$selectedMapObject = null;
 		normalizeGridSize();
+		rerenderObjectPositions();
 	};
 
 	const resetSelectedMapObjectStyle = () => {
 		if (!$selectedMapObject) return;
-		//$selectedMapObject.element.style.removeProperty('border');
+		mapObjects[$selectedMapObject.id].removeSelectedStyle();
 	};
 
 	const toggleModal = () => {

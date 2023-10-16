@@ -1,13 +1,10 @@
 <script lang="ts">
-	import Check from '$components/Check.svelte';
-	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
 
-	import type { PageData } from './$types';
-	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
-	import { user } from '$lib/userStore';
-	import SearchBar from '$components/SearchBar.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
+	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
+	import SearchBar from '$components/SearchBar.svelte';
+	import { user } from '$lib/userStore';
 	//
 	// let visible = false;
 	// let panelVisible = false;
