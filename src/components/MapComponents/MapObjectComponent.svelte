@@ -78,10 +78,10 @@
 
 	const handleDragStart = (event: MouseEvent) => {
 		dragging = true;
-		drag?.style.setProperty('border', '1px solid red');
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
+		drag?.style.setProperty('border', '1px solid red');
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging) {
@@ -101,8 +101,7 @@
 			window.removeEventListener('mouseup', handleDragEnd);
 			window.removeEventListener('mousemove', updateInstantiation);
 			dispatch('release', {
-				left: closestNumber(mapObject.transform.x, 25),
-				top: closestNumber(mapObject.transform.y, 25),
+				transform: mapObject.transform,
 				enabled
 			});
 		};
@@ -142,12 +141,13 @@
 		on:mousedown={handleDragStart}>T</button
 	>
 {:else if mapObject.type === mapObjectType.Room}
-	<div
-		bind:this={drag}
-		class="z-20 duration-0"
+	<button
+		class="btn no-animation z-10 duration-0 variant-filled"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
 	>
 		Room
-	</div>
+	</button>
 {/if}

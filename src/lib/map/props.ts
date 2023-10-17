@@ -12,8 +12,8 @@ export const deskProps: TransformType = {
 export const roomProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 25,
-	height: 25
+	width: 150,
+	height: 100
 };
 
 export const getTransformFromType = (type: string) => {

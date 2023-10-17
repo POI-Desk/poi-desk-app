@@ -1,8 +1,9 @@
+import { readonly } from 'svelte/store';
 import type { TransformType } from './transformType';
 
 export type MapObjectType = {
-	Desk: string;
-	Room: string;
+	readonly Desk: string;
+	readonly Room: string;
 };
 
 export type MapObject = {

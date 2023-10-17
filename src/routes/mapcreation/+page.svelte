@@ -5,7 +5,6 @@
 	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
 	import {
 		defaultMapProps,
-		deskProps,
 		getTransformFromType,
 		mapObjectType,
 		panzoomProps
@@ -13,7 +12,13 @@
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
-	import type { TransformType } from '$lib/types/transformType';
+	import {
+		maxBottomTransform,
+		maxLeftTransform,
+		maxRightTransform,
+		maxTopTransform,
+		type TransformType
+	} from '$lib/types/transformType';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -100,21 +105,16 @@
 			)!;
 		});
 
-		element.$on(
-			'release',
-			(event: CustomEvent<{ left: number; top: number; enabled: boolean }>) => {
-				panz.resume();
-				if (!event.detail.enabled) {
-					delSelectedMapObject();
-					return;
-				}
-				let left: number = event.detail.left;
-				let top: number = event.detail.top;
-				resizeGrid(left, top);
-				normalizeGridSize();
-				rerenderObjectPositions();
+		element.$on('release', (event: CustomEvent<{ transform: TransformType; enabled: boolean }>) => {
+			panz.resume();
+			if (!event.detail.enabled) {
+				delSelectedMapObject();
+				return;
 			}
-		);
+			resizeGrid(event.detail.transform);
+			normalizeGridSize();
+			rerenderObjectPositions();
+		});
 		panz.pause();
 		$selectedMapObject = mapObject;
 		$allMapObjects.push(mapObject);
@@ -123,36 +123,33 @@
 	};
 
 	//x and y are in local space of the parent element
-	const resizeGrid = (x: number, y: number) => {
+	const resizeGrid = (transform: TransformType) => {
 		let panzOffsetX: number = 0;
 		let panzOffsetY: number = 0;
+		const x: number = transform.x;
+		const y: number = transform.y;
 
-		const objW = deskProps.width * 0.5;
-		const objH = deskProps.height * 0.5;
+		const objW = transform.width;
+		const objH = transform.height;
 
-		if (x < 0 + defaultMapProps.border + objW) {
-			$map.width += (x > 0 ? objW - x : Math.abs(x) + objW) + defaultMapProps.border;
-			panzOffsetX = x - (objW + defaultMapProps.border);
+		if (x < 0 + defaultMapProps.border) {
+			$map.width += (x > 0 ? x : Math.abs(x)) + defaultMapProps.border;
+			panzOffsetX = x - defaultMapProps.border;
 		} else if (x > $map.width - (defaultMapProps.border + objW)) {
 			$map.width += x - $map.width + objW + defaultMapProps.border;
 		}
-		if (y < 0 + defaultMapProps.border + objH) {
-			$map.height += (y > 0 ? objH - y : Math.abs(y) + objH) + defaultMapProps.border;
-			panzOffsetY = y - (objH + defaultMapProps.border);
+		if (y < 0 + defaultMapProps.border) {
+			$map.height += (y > 0 ? -y : Math.abs(y)) + defaultMapProps.border;
+			panzOffsetY = y - defaultMapProps.border;
 		} else if (y > $map.height - (defaultMapProps.border + objH)) {
 			$map.height += y - $map.height + objH + defaultMapProps.border;
 		}
 
 		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
-			//TODO: this does not rerender
 			$allMapObjects.forEach((mapObject) => {
 				mapObject.transform.x -= panzOffsetX;
 				mapObject.transform.y -= panzOffsetY;
 			});
-			// console.log(deskProps);
-			// $allMapObjects.forEach((mapObject) => {
-			// 	console.log(mapObject.id, mapObject.transform);
-			// });
 		}
 		panz.moveTo(
 			panz.getTransform().x + panzOffsetX * $map.scale,
@@ -167,13 +164,13 @@
 			return;
 		}
 
-		let left: number = Number.MAX_SAFE_INTEGER;
-		let right: number = Number.MIN_SAFE_INTEGER;
-		let top: number = Number.MAX_SAFE_INTEGER;
-		let bottom: number = Number.MIN_SAFE_INTEGER;
+		let left: TransformType = { ...maxLeftTransform };
+		let right: TransformType = { ...maxRightTransform };
+		let top: TransformType = { ...maxTopTransform };
+		let bottom: TransformType = { ...maxBottomTransform };
 		$allMapObjects.forEach((mapObject) => {
-			if (mapObject.transform.x! < left) left = mapObject.transform.x!;
-			if (mapObject.transform.y! < top) top = mapObject.transform.y!;
+			if (mapObject.transform.x! < left.x) left = { ...mapObject.transform };
+			if (mapObject.transform.y! < top.y) top = { ...mapObject.transform };
 		});
 
 		let horizontalOffset: number = 0;
@@ -183,32 +180,32 @@
 		let mapHeight: number = defaultMapProps.height;
 
 		if (
-			left > defaultMapProps.maxHorizontalDist ||
-			(left > defaultMapProps.border + deskProps.width * 0.5 &&
-				left < defaultMapProps.border + deskProps.width + ($map.width - defaultMapProps.width))
+			left.x > defaultMapProps.maxHorizontalDist ||
+			(left.x > defaultMapProps.border &&
+				left.x < defaultMapProps.border + ($map.width - defaultMapProps.width))
 		) {
-			horizontalOffset = -left + deskProps.width * 0.5 + defaultMapProps.border;
+			horizontalOffset = -left.x + defaultMapProps.border;
 		}
 		if (
-			top > defaultMapProps.maxVerticalDist ||
-			(left > defaultMapProps.border + deskProps.height * 0.5 &&
-				left < defaultMapProps.border + deskProps.height + ($map.height - defaultMapProps.width))
+			top.y > defaultMapProps.maxVerticalDist ||
+			(top.y > defaultMapProps.border &&
+				top.y < defaultMapProps.border + ($map.height - defaultMapProps.width))
 		) {
-			verticalOffset = -top + deskProps.height * 0.5 + defaultMapProps.border;
+			verticalOffset = -top.y + defaultMapProps.border;
 		}
 
 		$allMapObjects.forEach((mapObject) => {
 			mapObject.transform.x += horizontalOffset;
 			mapObject.transform.y += verticalOffset;
-			if (mapObject.transform.y! > bottom) bottom = mapObject.transform.y!;
-			if (mapObject.transform.x! > right) right = mapObject.transform.x!;
+			if (mapObject.transform.y! > bottom.y) bottom = { ...mapObject.transform };
+			if (mapObject.transform.x! > right.x) right = { ...mapObject.transform };
 		});
 
-		if (right > defaultMapProps.width - (defaultMapProps.border + deskProps.width * 0.5)) {
-			mapWidth = right + deskProps.width * 0.5 + defaultMapProps.border;
+		if (right.x > defaultMapProps.width - (defaultMapProps.border + right.width)) {
+			mapWidth = right.x + right.width + defaultMapProps.border;
 		}
-		if (bottom > defaultMapProps.height - (defaultMapProps.border + deskProps.height * 0.5)) {
-			mapHeight = bottom + deskProps.height * 0.5 + defaultMapProps.border;
+		if (bottom.y > defaultMapProps.height - (defaultMapProps.border + bottom.height)) {
+			mapHeight = bottom.y + bottom.height + defaultMapProps.border;
 		}
 
 		panz.moveTo(
