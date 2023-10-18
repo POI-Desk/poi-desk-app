@@ -23,16 +23,94 @@
 		});
 		modalStore.close();
 	}
+
+	function onExitHandler() {
+		modalStore.close();
+	}
 	let date: Date = new Date($dateValue); //sieht schöner aus
-	
-	let stepperLock: boolean = true; 
+
+	let stepperLock: boolean = true;
 	$: stepperLock = $interval.morning === false && $interval.afternoon === false;
-	
-	const modalStore = getModalStore(); 
+
+	const modalStore = getModalStore();
 </script>
 
 {#if $modalStore[0]}
-	<div class='card p-4 w-modal shadow-xl space-y-4'>
+	<div class="fixed bg-slate-300 top-0 left-0 card h-screen w-screen">
+		
+		<div class="flex flex-row mt-10 items-center justify-center">
+			<div class="flex flex-row rounded-full bg-white w-1/3 justify-around content-center items-center">
+				<i class="fa fa-arrow-left" aria-hidden="true"></i>
+				<h1>{$selectedDesk.desknum}</h1>
+				<i class="fa fa-arrow-right" aria-hidden="true"></i>
+			</div>
+			<button class="flex-none rounded-full absolute right-10" on:click={onExitHandler}>
+				<i class="fa fa-times text-3xl" aria-hidden="true" />
+			</button>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<!--
 		<Stepper on:complete={onCompleteHandler}>
 			<Step locked={stepperLock}>
 				<svelte:fragment slot="header">
@@ -69,6 +147,6 @@
 				<p class="py-4">Date: {date.toLocaleDateString()}</p>
 				<p class="py-4">Time: {JSON.stringify($interval)}</p>
 			</Step>
-		</Stepper>
+		</Stepper>-->
 	</div>
 {/if}
