@@ -1,0 +1,82 @@
+@tailwind components;
+@tailwind utilities;
+@tailwind base;
+
+@layer components {
+	.handle {
+		@apply absolute;
+		@apply box-border;
+	}
+
+	.handle-north {
+		@apply h-[10px];
+		@apply w-full;
+		@apply top-[-5px];
+		@apply cursor-row-resize;
+		/* background: orange; */
+	}
+
+	.handle-east {
+		@apply h-full;
+		@apply w-[10px];
+		@apply right-[-5px];
+		@apply cursor-col-resize;
+		/* background: orange; */
+	}
+
+	.handle-south {
+		@apply h-[10px];
+		@apply w-full;
+		@apply bottom-[-5px];
+		@apply cursor-row-resize;
+		/* background: orange; */
+	}
+
+	.handle-west {
+		@apply h-full;
+		@apply w-[10px];
+		@apply left-[-5px];
+		@apply cursor-col-resize;
+		/* background: orange; */
+	}
+
+	.handle-northwest {
+		@apply h-[20px];
+		@apply w-[20px];
+		@apply top-[-10px];
+		@apply left-[-10px];
+		@apply rounded-full;
+		@apply cursor-nw-resize;
+		/* background: orange; */
+	}
+
+	.handle-northeast {
+		@apply h-[20px];
+		@apply w-[20px];
+		@apply top-[-10px];
+		@apply right-[-10px];
+		@apply rounded-full;
+		@apply cursor-ne-resize;
+		/* background: orange; */
+	}
+
+	.handle-southwest {
+		@apply h-[20px];
+		@apply w-[20px];
+		@apply bottom-[-10px];
+		@apply left-[-10px];
+		@apply rounded-full;
+		@apply cursor-sw-resize;
+		/* background: orange; */
+	}
+
+	.handle-southeast {
+		@apply h-[20px];
+		@apply w-[20px];
+		@apply bottom-[-10px];
+		@apply right-[-10px];
+		@apply rounded-full;
+		@apply cursor-se-resize;
+		/* background: orange; */
+	}
+}
