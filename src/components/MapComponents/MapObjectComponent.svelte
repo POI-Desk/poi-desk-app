@@ -9,6 +9,7 @@
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onMount } from 'svelte';
+	//Look into this so import is not needed
 	import '../../styles/handles.css';
 
 	export let mapObject: MapObject;
@@ -24,6 +25,16 @@
 	let resizing: boolean = false;
 	let offsetX: number = 0;
 	let offsetY: number = 0;
+
+	let right: HTMLDivElement | null = null;
+	let bottom: HTMLDivElement | null = null;
+	let left: HTMLDivElement | null = null;
+	let top: HTMLDivElement | null = null;
+	let topLeft: HTMLDivElement | null = null;
+	let topRight: HTMLDivElement | null = null;
+	let bottomLeft: HTMLDivElement | null = null;
+	let bottomRight: HTMLDivElement | null = null;
+	let grabbers: HTMLDivElement[] = [];
 
 	// export const setCoords = (x: number, y: number) => {
 	// 	left = x;
@@ -88,7 +99,7 @@
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
-		drag.style.setProperty('border', '1px solid red');
+		applySelectedStyle();
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging && !resizing) {
@@ -135,53 +146,61 @@
 	};
 
 	export const removeSelectedStyle = () => {
-		drag?.style.removeProperty('border');
+		drag.classList.remove('selected-border');
+		grabbers.forEach((grabber) => {
+			grabber.classList.remove('handle', `handle-${grabber.title}`);
+		});
+		if (mapObject.type == mapObjectType.Room) {
+			drag.classList.add('border-2', 'border-black');
+		}
+	};
+
+	export const applySelectedStyle = () => {
+		drag.classList.add('selected-border');
+		grabbers.forEach((grabber) => {
+			grabber.classList.add('handle', `handle-${grabber.title}`);
+		});
+		if (mapObject.type == mapObjectType.Room) {
+			drag.classList.remove('border-2', 'border-black');
+		}
 	};
 
 	function resize(element: HTMLElement) {
 		let active: HTMLElement | null = null;
 
-		const right = document.createElement('div');
+		right = document.createElement('div');
 		right.title = 'east';
-		right.classList.add('handle');
-		right.classList.add('handle-east');
+		right.classList.add('handle', 'handle-east');
 
-		const left = document.createElement('div');
+		left = document.createElement('div');
 		left.title = 'west';
-		left.classList.add('handle');
-		left.classList.add('handle-west');
+		left.classList.add('handle', 'handle-west');
 
-		const top = document.createElement('div');
+		top = document.createElement('div');
 		top.title = 'north';
-		top.classList.add('handle');
-		top.classList.add('handle-north');
+		top.classList.add('handle', 'handle-north');
 
-		const bottom = document.createElement('div');
+		bottom = document.createElement('div');
 		bottom.title = 'south';
-		bottom.classList.add('handle');
-		bottom.classList.add('handle-south');
+		bottom.classList.add('handle', 'handle-south');
 
-		const topLeft = document.createElement('div');
+		topLeft = document.createElement('div');
 		topLeft.title = 'northwest';
-		topLeft.classList.add('handle');
-		topLeft.classList.add('handle-northwest');
+		topLeft.classList.add('handle', 'handle-northwest');
 
-		const topRight = document.createElement('div');
+		topRight = document.createElement('div');
 		topRight.title = 'northeast';
-		topRight.classList.add('handle');
-		topRight.classList.add('handle-northeast');
+		topRight.classList.add('handle', 'handle-northeast');
 
-		const bottomLeft = document.createElement('div');
+		bottomLeft = document.createElement('div');
 		bottomLeft.title = 'southwest';
-		bottomLeft.classList.add('handle');
-		bottomLeft.classList.add('handle-southwest');
+		bottomLeft.classList.add('handle', 'handle-southwest');
 
-		const bottomRight = document.createElement('div');
+		bottomRight = document.createElement('div');
 		bottomRight.title = 'southeast';
-		bottomRight.classList.add('handle');
-		bottomRight.classList.add('handle-southeast');
+		bottomRight.classList.add('handle', 'handle-southeast');
 
-		const grabbers = [right, left, top, bottom, topLeft, topRight, bottomLeft, bottomRight];
+		grabbers = [right, left, top, bottom, topLeft, topRight, bottomLeft, bottomRight];
 
 		let initialTransform: TransformType | null = null,
 			initialPos: { x: number; y: number } | null = null;
@@ -197,7 +216,7 @@
 			active = event.target as HTMLElement;
 
 			initialTransform = { ...mapObject.transform };
-			initialPos = { x: event.pageX, y: event.pageY };
+			initialPos = { x: event.pageX / $map.scale, y: event.pageY / $map.scale };
 		}
 
 		function onMouseup(event: MouseEvent) {
@@ -213,27 +232,27 @@
 			let delta: number = 0;
 
 			if (direction.match('east')) {
-				delta = closestNumber(event.pageX - initialPos!.x, 25);
+				delta = closestNumber(event.pageX / $map.scale - initialPos!.x, 25);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 
 			if (direction.match('west')) {
-				delta = closestNumber(initialPos!.x - event.pageX, 25);
+				delta = closestNumber(initialPos!.x - event.pageX / $map.scale, 25);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.x = initialTransform!.x - delta;
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 
 			if (direction.match('north')) {
-				delta = closestNumber(initialPos!.y - event.pageY, 25);
+				delta = closestNumber(initialPos!.y - event.pageY / $map.scale, 25);
 				if (initialTransform!.height + delta < 50) return;
 				mapObject.transform.y = initialTransform!.y - delta;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
 
 			if (direction.match('south')) {
-				delta = closestNumber(event.pageY - initialPos!.y, 25);
+				delta = closestNumber(event.pageY / $map.scale - initialPos!.y, 25);
 				if (initialTransform!.height + delta < 50) return;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
@@ -266,7 +285,7 @@
 	>
 {:else if mapObject.type === mapObjectType.Room}
 	<button
-		class="flex justify-center z-10 duration-0 border-solid border-black border-2 border-collapse"
+		class="flex justify-center z-10 duration-0"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
 		bind:this={drag}

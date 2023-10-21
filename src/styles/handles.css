@@ -41,42 +41,59 @@
 	}
 
 	.handle-northwest {
-		@apply h-[20px];
-		@apply w-[20px];
-		@apply top-[-10px];
-		@apply left-[-10px];
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply top-[-7px];
+		@apply left-[-7px];
 		@apply rounded-full;
 		@apply cursor-nw-resize;
 		/* background: orange; */
 	}
 
 	.handle-northeast {
-		@apply h-[20px];
-		@apply w-[20px];
-		@apply top-[-10px];
-		@apply right-[-10px];
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply top-[-7px];
+		@apply right-[-7px];
 		@apply rounded-full;
 		@apply cursor-ne-resize;
 		/* background: orange; */
 	}
 
 	.handle-southwest {
-		@apply h-[20px];
-		@apply w-[20px];
-		@apply bottom-[-10px];
-		@apply left-[-10px];
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply bottom-[-7px];
+		@apply left-[-7px];
 		@apply rounded-full;
 		@apply cursor-sw-resize;
 		/* background: orange; */
 	}
 
 	.handle-southeast {
-		@apply h-[20px];
-		@apply w-[20px];
-		@apply bottom-[-10px];
-		@apply right-[-10px];
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply bottom-[-7px];
+		@apply right-[-7px];
 		@apply rounded-full;
 		@apply cursor-se-resize;
 		/* background: orange; */
+	}
+
+	.selected-border {
+		@apply border-[#8B80F9];
+		@apply border-2;
 	}
 }
