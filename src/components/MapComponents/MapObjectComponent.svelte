@@ -165,7 +165,7 @@
 		}
 	};
 
-	function resize(element: HTMLElement) {
+	function resizeRectangle(element: HTMLElement) {
 		let active: HTMLElement | null = null;
 
 		right = document.createElement('div');
@@ -272,6 +272,7 @@
 			}
 		};
 	}
+
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
@@ -290,7 +291,7 @@
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
-		use:resize
+		use:resizeRectangle
 	>
 		Room
 	</button>

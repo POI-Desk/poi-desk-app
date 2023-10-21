@@ -197,8 +197,8 @@
 		$allMapObjects.forEach((mapObject) => {
 			mapObject.transform.x += horizontalOffset;
 			mapObject.transform.y += verticalOffset;
-			if (mapObject.transform.y! > bottom.y) bottom = { ...mapObject.transform };
-			if (mapObject.transform.x! > right.x) right = { ...mapObject.transform };
+			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height) bottom = { ...mapObject.transform };
+			if (mapObject.transform.x! + mapObject.transform.width > right.x + right.width) right = { ...mapObject.transform };
 		});
 
 		if (right.x > defaultMapProps.width - (defaultMapProps.border + right.width)) {
@@ -251,6 +251,12 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden flex flex-row h-screen">
+  <!-- <button class="btn" on:click={() => {
+    if ($selectedMapObject != null){
+      $selectedMapObject.type = mapObjectType.Room;
+      mapObjects[$selectedMapObject.id].rerenderPosition();
+    }
+    }}>Change</button> -->
 	<SaveMapModal {openModal} on:closeModal={toggleModal} />
 	<div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
 		<button
