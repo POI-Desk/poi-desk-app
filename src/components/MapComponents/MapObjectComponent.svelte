@@ -147,27 +147,39 @@
 
 	export const removeSelectedStyle = () => {
 		drag.classList.remove('selected-border');
+
 		grabbers.forEach((grabber) => {
-			grabber.classList.remove('handle', `handle-${grabber.title}`);
+			grabber.classList.remove('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
 		});
 		if (mapObject.type == mapObjectType.Room) {
 			drag.classList.add('border-2', 'border-black');
 		}
+    else if (mapObject.type == mapObjectType.Wall) {
+      drag.classList.add('bg-black');
+    }
+    else if (mapObject.type == mapObjectType.Door) {
+      drag.classList.add('bg-[#D9D9D9]');
+    }
 	};
 
 	export const applySelectedStyle = () => {
 		drag.classList.add('selected-border');
 		grabbers.forEach((grabber) => {
-			grabber.classList.add('handle', `handle-${grabber.title}`);
+			grabber.classList.add('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
 		});
 		if (mapObject.type == mapObjectType.Room) {
 			drag.classList.remove('border-2', 'border-black');
 		}
+    else if (mapObject.type == mapObjectType.Wall) {
+      drag.classList.remove('bg-black');
+    }
+    else if (mapObject.type == mapObjectType.Door) {
+      drag.classList.remove('bg-[#D9D9D9]');
+    }
 	};
 
 	function resizeRectangle(element: HTMLElement) {
 		let active: HTMLElement | null = null;
-
 		right = document.createElement('div');
 		right.title = 'east';
 		right.classList.add('handle', 'handle-east');
@@ -273,11 +285,81 @@
 		};
 	}
 
+  function resizeWall(element: HTMLElement) {
+    let active: HTMLElement | null = null;
+    right = document.createElement('div');
+		right.title = 'east';
+		right.classList.add('handle', 'handle-east-point');
+
+		left = document.createElement('div');
+		left.title = 'west';
+		left.classList.add('handle', 'handle-west-point');
+
+		grabbers = [right, left];
+
+		let initialTransform: TransformType | null = null,
+			initialPos: { x: number; y: number } | null = null;
+
+		grabbers.forEach((grabber) => {
+			element.appendChild(grabber);
+			grabber.addEventListener('mousedown', onMousedown);
+		});
+
+		function onMousedown(event: MouseEvent) {
+			resizing = true;
+			const parent = target.parentElement!.getBoundingClientRect();
+			active = event.target as HTMLElement;
+
+			initialTransform = { ...mapObject.transform };
+			initialPos = { x: event.pageX / $map.scale, y: event.pageY / $map.scale };
+		}
+
+		function onMouseup(event: MouseEvent) {
+			resizing = false;
+			initialTransform = null;
+			initialPos = null;
+		}
+
+		function onMove(event: MouseEvent) {
+			if (!active || !initialPos) return;
+
+			const direction = active.title;
+			let delta: number = 0;
+
+			if (direction.match('east')) {
+				delta = closestNumber(event.pageX / $map.scale - initialPos!.x, 25);
+				if (initialTransform!.width + delta < 50) return;
+				mapObject.transform.width = initialTransform!.width + delta;
+			}
+
+			if (direction.match('west')) {
+				delta = closestNumber(initialPos!.x - event.pageX / $map.scale, 25);
+				if (initialTransform!.width + delta < 50) return;
+				mapObject.transform.x = initialTransform!.x - delta;
+				mapObject.transform.width = initialTransform!.width + delta;
+			}
+		}
+
+		window.addEventListener('mousemove', onMove);
+		window.addEventListener('mouseup', onMouseup);
+
+		return {
+			destroy() {
+				window.removeEventListener('mousemove', onMove);
+				window.removeEventListener('mousemove', onMousedown);
+
+				grabbers.forEach((grabber) => {
+					element.removeChild(grabber);
+				});
+			}
+		};
+	}
+
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
 	<button
-		class="btn no-animation z-20 duration-0 variant-filled"
+		class="btn no-animation z-40 duration-0 variant-filled"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
 			.width}px; left: {mapObject.transform.x}px; top: {mapObject.transform
 			.y}px; transform: rotate({mapObject.transform.rotation}deg);"
@@ -295,4 +377,24 @@
 	>
 		Room
 	</button>
+{:else if mapObject.type === mapObjectType.Wall}
+  <button
+  class="flex justify-center z-20 duration-0 -translate-y-1/2"
+  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
+  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+	bind:this={drag}
+	on:mousedown={handleDragStart}
+  use:resizeWall
+  >
+  </button>
+{:else if mapObject.type === mapObjectType.Door}
+  <button
+  class="flex justify-center z-30 duration-0 -translate-y-1/2"
+  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
+  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+  bind:this={drag}
+  on:mousedown={handleDragStart}
+  use:resizeWall
+  >
+  </button>
 {/if}

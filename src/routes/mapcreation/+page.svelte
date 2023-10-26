@@ -2,7 +2,7 @@
 
 <script lang="ts">
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
-	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
+	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
 	import {
 		defaultMapProps,
 		getTransformFromType,
@@ -19,6 +19,7 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
+	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -41,6 +42,7 @@
 		panz.on('zoom', (e: PanZoom) => {
 			$map.scale = e.getTransform().scale;
 		});
+    panz.moveTo(window.innerWidth / 2 - $map.width / 2, window.innerHeight / 2 - $map.height / 2);
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
@@ -250,25 +252,10 @@
 	};
 </script>
 
-<main bind:this={main} class="overflow-hidden flex flex-row h-screen">
-  <!-- <button class="btn" on:click={() => {
-    if ($selectedMapObject != null){
-      $selectedMapObject.type = mapObjectType.Room;
-      mapObjects[$selectedMapObject.id].rerenderPosition();
-    }
-    }}>Change</button> -->
-	<SaveMapModal {openModal} on:closeModal={toggleModal} />
-	<div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
-		<button
-			on:mousedown={(e) => createMapObject(e, mapObjectType.Desk)}
-			class="btn variant-filled-primary">Desk</button
-		>
-		<button
-			on:mousedown={(e) => createMapObject(e, mapObjectType.Room)}
-			class="btn variant-filled-primary">Room</button
-		>
-	</div>
-	<div bind:this={container} class="overflow-auto w-screen">
+<main bind:this={main} class="overflow-hidden h-full">
+  <MapObjectSelector on:create={(event) => createMapObject(event.detail.e, event.detail.type)} />
+
+	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
 			on:mouseenter={enterGrid}
@@ -283,7 +270,7 @@
 				width={$map.width}
 				height={$map.height}
 				draggable="false"
-				class="bg-slate-500"
+				class="bg-[#D9D9D9]"
 			/>
 		</div>
 	</div>
@@ -294,3 +281,19 @@
 	@import 'tailwindcss/components';
 	@import 'tailwindcss/utilities';
 </style>
+
+
+	<!-- <div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
+		<button
+			on:mousedown={(e) => createMapObject(e, mapObjectType.Desk)}
+			class="btn variant-filled-primary">Desk</button
+		>
+		<button
+			on:mousedown={(e) => createMapObject(e, mapObjectType.Room)}
+			class="btn variant-filled-primary">Room</button
+		>
+    <button
+    on:mousedown={(e) => createMapObject(e, mapObjectType.Wall)}
+    class="btn variant-filled-primary">Wall</button
+  >
+	</div> -->

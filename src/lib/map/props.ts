@@ -18,14 +18,34 @@ export const roomProps: TransformType = {
 	rotation: 0
 };
 
+export const wallProps: TransformType = {
+  x: 0,
+  y: 0,
+  width: 200,
+  height: 10,
+  rotation: 0
+};
+
+export const doorProps: TransformType = {
+  x: 0,
+  y: 0,
+  width: 50,
+  height: 20,
+  rotation: 0
+};
+
 export const getTransformFromType = (type: string) => {
 	switch (type) {
 		case mapObjectType.Desk:
 			return deskProps;
 		case mapObjectType.Room:
 			return roomProps;
+    case mapObjectType.Wall:
+      return wallProps;
+    case mapObjectType.Door:
+      return doorProps;
 		default:
-			return deskProps;
+			throw new Error(`Invalid type ${type}`);
 	}
 };
 
@@ -34,13 +54,13 @@ export const panzoomProps: PanZoomOptions = {
 	maxZoom: 3,
 	minZoom: 0.25,
 	initialZoom: 1,
-	autocenter: true
 };
 
-//TODO: make safer
 export const mapObjectType: MapObjectType = {
 	Desk: 'Desk',
-	Room: 'Room'
+	Room: 'Room',
+  Wall: 'Wall',
+  Door: 'Door'
 };
 
 //values to represent the default values for the map
