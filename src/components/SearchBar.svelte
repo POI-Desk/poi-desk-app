@@ -3,29 +3,40 @@
 	import type { User } from "$lib/types/userTypes";
 	import { getBookings } from "$lib/bookingStore";
 	import { dateValue } from "$lib/dateStore";
+	import { onMount } from "svelte";
+	import { user } from "$lib/userStore";
 
+    export const _getAllUsersVariables = () => {
+        return "";
+    }
 
     const getUsers = graphql(`
-		query getAllUsers @load {
-			getAllUsers {
+		query getAllUsers ($input: String, $pageNumber: Int, $pageSize: Int) @load {
+			getAllUsers (input: $input, pageNumber: $pageNumber, pageSize: $pageSize){
 				pk_userid
                 username
 			}
 		}
 	`);
 
-    $: users = $getUsers.data?.getAllUsers || [];
+    //$: users = getUsers.fetch({ variables: { pageNumber: 1, pageSize: 2}});
 
     let searchUsers: User[] = [];
 
-    $: {
-        if (users) {
+    onMount(() => {
+        getSearchUsers();
+    })
+
+    async function getSearchUsers() {
+        // TODO change page size and page number
+        await getUsers.fetch({ variables: { input: selectedUsername, pageNumber: 0, pageSize: 2}}).then(() => {
+            let users = $getUsers.data?.getAllUsers;
             searchUsers = users.map((user) => ({
                 pk_userid: user?.pk_userid,
                 username: user?.username,
                 location: null
             }));
-        }
+        })
     }
 
    
@@ -70,9 +81,15 @@
         }
     }
 
-    $: filteredUsers = searchUsers.filter(function(usr) {
-        return usr.username?.toLowerCase().includes(selectedUsername?.toLowerCase() ?? "");
-    })
+    // $: filteredUsers = searchUsers.filter(function(usr) {
+    //     return usr.username?.toLowerCase().includes(selectedUsername?.toLowerCase() ?? "");
+    // })
+    
+    $: {
+        if (selectedUsername) {
+            getSearchUsers();
+        }
+    }
 
 </script>
 
@@ -80,9 +97,10 @@
     <div class="dropdown">
         <input class="input w-1/5 my-3" placeholder="Search for user" bind:value={selectedUsername}/>
         <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 max-h-80 flex-nowrap overflow-auto">
-            {#each filteredUsers as usr}
+            {#each searchUsers as usr}
                 <li><button on:click|preventDefault={() => onUserClicked(usr)}>{usr.username}</button></li>
             {/each}
+            <li><button>load more...</button></li>
         </ul>
         <span>You selected: {selectedUsername}</span>
     </div>

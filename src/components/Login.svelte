@@ -24,7 +24,7 @@
                 username: username
             });
             $user = result.data?.createOrLoginAsUser!;
-            window.location.href = $user.location == null ? '../location' : '..';
+            //window.location.href = $user.location == null ? '../location' : '..';
         } catch (error) {
             console.error('Error:', error);
         }
@@ -40,7 +40,7 @@
     </div>
     <div class="p-3">
         <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-            <a> Login without Microsoft </a>
+            <a href="../"> Login without Microsoft </a>
         </button>
     </div>
 </div>
