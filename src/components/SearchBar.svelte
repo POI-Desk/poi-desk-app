@@ -21,15 +21,16 @@
 
     //$: users = getUsers.fetch({ variables: { pageNumber: 1, pageSize: 2}});
 
+    let pageNumber = 0;
     let searchUsers: User[] = [];
+    const pageSizeConst = 2;
 
     onMount(() => {
-        getSearchUsers();
+        getSearchUsers(0);
     })
 
-    async function getSearchUsers() {
-        // TODO change page size and page number
-        await getUsers.fetch({ variables: { input: selectedUsername, pageNumber: 0, pageSize: 2}}).then(() => {
+    async function getSearchUsers(pageNumber_param: number) {
+        await getUsers.fetch({ variables: { input: selectedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst}}).then(() => {
             let users = $getUsers.data?.getAllUsers;
             searchUsers = users.map((user) => ({
                 pk_userid: user?.pk_userid,
@@ -81,14 +82,29 @@
         }
     }
 
-    // $: filteredUsers = searchUsers.filter(function(usr) {
-    //     return usr.username?.toLowerCase().includes(selectedUsername?.toLowerCase() ?? "");
-    // })
     
     $: {
         if (selectedUsername) {
-            getSearchUsers();
+            getSearchUsers(pageNumber);
         }
+    }
+
+    let loadMore: boolean = true;
+
+    function handleLoadMore() {
+        pageNumber ++;
+        getSearchUsers(pageNumber);
+        checkLoadMore(pageNumber++);
+    }
+
+    function checkLoadMore(pageNumber: number) {
+        getSearchUsers(pageNumber);
+        if (searchUsers) {loadMore = true;}
+        else {loadMore = false;}
+    }
+
+    function handleLoadLess() {
+        pageNumber --;
     }
 
 </script>
@@ -100,7 +116,15 @@
             {#each searchUsers as usr}
                 <li><button on:click|preventDefault={() => onUserClicked(usr)}>{usr.username}</button></li>
             {/each}
-            <li><button>load more...</button></li>
+            <li>
+                {#if loadMore}
+                    <button on:click={handleLoadMore}>load more...</button>
+                {/if}
+                {#if pageNumber > 0}
+                    <button on:click={handleLoadLess}>load less...</button>
+                {/if}
+            </li>
+            
         </ul>
         <span>You selected: {selectedUsername}</span>
     </div>
