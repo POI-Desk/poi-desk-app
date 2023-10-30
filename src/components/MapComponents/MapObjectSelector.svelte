@@ -80,34 +80,33 @@ function resize(element: HTMLElement) {
 		};
 	}
 </script>
-
+<!-- shadow-[18px_0px_5px_-15px_rgba(0,0,0,0.3)] -->
 <div bind:this={selector} 
-  class="absolute top-1/2 -translate-y-1/2 bg-[#D9D9D9] z-[100] rounded-full shadow-[18px_0px_5px_-15px_rgba(0,0,0,0.3)] grid grid-rows-4"
+  class="absolute top-1/2 -translate-y-1/2 bg-[#D9D9D9] z-[100] rounded-full shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] grid grid-rows-4"
   style="width: {transform.width}%; height: {transform.height}%; right: {transform.x}px;"
-  draggable="false"
   use:resize
   >
-  <div on:mousedown={(e) => onCreate(e, mapObjectType.Desk)} tabindex="0" role="button" class="bg-red-600 rounded-t-full flex items-center justify-center">
-    <p>Desk</p>
+  <div on:mousedown={(e) => onCreate(e, mapObjectType.Desk)} tabindex="0" role="button" class="border-b-2 border-b-[#CCC5B9] rounded-t-full flex items-center justify-center">
+    <p class="select-none">Desk</p>
   </div>
   <div class=" grid grid-cols-2 grid-rows-2">
-    <div class="bg-blue-600 flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Wall)} tabindex="0" role="button">
-      <p>Wall</p>
+    <div class="border-r-2 border-r-[#CCC5B9] border-b-2 border-b-[#CCC5B9] border-t-2 border-t-[#CCC5B9] flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Wall)} tabindex="0" role="button">
+      <p class="select-none">Wall</p>
     </div>
-    <div class="bg-yellow-600">
+    <div class="border-l-2 border-l-[#CCC5B9] border-b-2 border-b-[#CCC5B9] border-t-2 border-t-[#CCC5B9]">
 
     </div>	
-    <div class="bg-purple-600">
+    <div class="border-r-2 border-r-[#CCC5B9] border-t-2 border-t-[#CCC5B9] border-b-2 border-b-[#CCC5B9]">
 
     </div>
-    <div class="bg-green-600  flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Door)} tabindex="0" role="button">
-      <p>Door</p>
+    <div class="border-l-2 border-l-[#CCC5B9] border-t-2 border-t-[#CCC5B9] border-b-2 border-b-[#CCC5B9] flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Door)} tabindex="0" role="button">
+      <p class="select-none">Door</p>
     </div>	
   </div>
-  <div class="bg-slate-800 flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Room)} tabindex="0" role="button">
-    <p class="bg-white" >Room</p>
+  <div class="border-t-2 border-t-[#CCC5B9] border-b-2 border-b-[#CCC5B9] flex items-center justify-center" on:mousedown={(e) => onCreate(e, mapObjectType.Room)} tabindex="0" role="button">
+    <p class="select-none">Room</p>
   </div>
-  <div class="bg-sky-700 rounded-b-full">
-
+  <div class="border-t-2 border-t-[#CCC5B9] rounded-b-full">
+    
   </div>
 </div>

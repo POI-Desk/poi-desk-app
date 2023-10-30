@@ -281,19 +281,3 @@
 	@import 'tailwindcss/components';
 	@import 'tailwindcss/utilities';
 </style>
-
-
-	<!-- <div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
-		<button
-			on:mousedown={(e) => createMapObject(e, mapObjectType.Desk)}
-			class="btn variant-filled-primary">Desk</button
-		>
-		<button
-			on:mousedown={(e) => createMapObject(e, mapObjectType.Room)}
-			class="btn variant-filled-primary">Room</button
-		>
-    <button
-    on:mousedown={(e) => createMapObject(e, mapObjectType.Wall)}
-    class="btn variant-filled-primary">Wall</button
-  >
-	</div> -->

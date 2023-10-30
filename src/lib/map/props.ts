@@ -5,7 +5,7 @@ import type { MapObjectType } from '$lib/types/mapObjectTypes';
 export const deskProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 100,
+	width: 100 + 6, // + x is the border (wallProps.height)
 	height: 50,
 	rotation: 0
 };
@@ -13,26 +13,28 @@ export const deskProps: TransformType = {
 export const roomProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 150,
-	height: 100,
+	width: 100 + 6,  // + x is the border (wallProps.height)
+	height: 100 + 6, // + x is the border (wallProps.height)
 	rotation: 0
 };
 
 export const wallProps: TransformType = {
   x: 0,
   y: 0,
-  width: 200,
-  height: 10,
+  width: 200 + 6,
+  height: 6,  //INFO: do not make an odd number
   rotation: 0
 };
 
 export const doorProps: TransformType = {
   x: 0,
   y: 0,
-  width: 50,
-  height: 20,
+  width: 50 + 6,  // + x is the border (wallProps.height)
+  height: 20 ,
   rotation: 0
 };
+
+export const mapMagnetSteps = 25;
 
 export const getTransformFromType = (type: string) => {
 	switch (type) {
