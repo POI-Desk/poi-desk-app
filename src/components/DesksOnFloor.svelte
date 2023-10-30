@@ -14,10 +14,10 @@
 
 	const modalStore = getModalStore();
 
-	const modal : ModalSettings = {
+	const modal: ModalSettings = {
 		type: 'component',
 		component: 'modalBooking'
-	}
+	};
 
 
 	let visible: boolean;
@@ -31,7 +31,7 @@
 </script>
 
 <div class="grid grid-rows-2">
-    <FloorSelection/>
+	<FloorSelection />
 
 	<div class="grid grid-cols-5 gap-2">
 		{#await getDesks.fetch({ variables: { floorid: $floorid } })}
@@ -67,13 +67,13 @@
 -->
 
 {#if visible}
-    <CrazyAnimation>
-        <Check/>
-    </CrazyAnimation>
+	<CrazyAnimation>
+		<Check />
+	</CrazyAnimation>
 {/if}
 
 <div class="flex justify-center">
-    <div class="absolute bottom-20">
-        <BuildingSelection/>
-    </div>
+	<div class="absolute bottom-20">
+		<BuildingSelection />
+	</div>
 </div>

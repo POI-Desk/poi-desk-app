@@ -1,5 +1,5 @@
 <script>
-	import BookingsOfUser from "$components/BookingsOfUser.svelte";
+	import BookingsOfUser from "$components/PersonalBookingComponents/BookingsOfUser.svelte";
 
 </script>
 <h1 class="text-3xl text-center mt-3">Bookings</h1>
