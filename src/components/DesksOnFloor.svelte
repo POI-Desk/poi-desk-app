@@ -1,15 +1,16 @@
 <script lang="ts">
 	//amongus
-	import { CachePolicy } from '$houdini';
-	import CrazyAnimation from '$components/CrazyAnimation.svelte';
-	import Check from '$components/Check.svelte';
-	import FloorSelection from '$components/FloorSelection.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { floorid } from '$lib/floorStore';
-	import { dateValue } from '$lib/dateStore';
+	import Check from '$components/Check.svelte';
+	import CrazyAnimation from '$components/CrazyAnimation.svelte';
+	import FloorSelection from '$components/FloorSelection.svelte';
 	import { selectedDesk } from '$lib/bookingStore';
-	import { getDesks } from "$lib/queries/deskQueries";
+	import { dateValue } from '$lib/dateStore';
+	import { floorid } from '$lib/floorStore';
+
+	import { CachePolicy } from '$houdini';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getDesks } from '$lib/queries/deskQueries';
 
 	const modalStore = getModalStore();
 

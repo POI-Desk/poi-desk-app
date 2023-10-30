@@ -1,11 +1,27 @@
+<!-- TODO: MAKE ALL COMPONENTS IN THE MAP UNIFIED IN ONE LIST + POSSIBLY SEPERATE LISTS FOR API -->
+
 <script lang="ts">
-	import SaveMapModal from '$components/MapComponents/SaveMapModal.svelte';
-	import Desk from '$components/MapComponents/Desk.svelte';
-	import { addDesksToFloor as addDesksToFloor } from '$lib/mutations/desks';
-	import { onDestroy, onMount } from 'svelte';
+	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
+	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
+	import {
+		defaultMapProps,
+		getTransformFromType,
+		mapObjectType,
+		panzoomProps
+	} from '$lib/map/props';
+	import { map } from '$lib/stores/mapCreationStore';
+	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
+	import type { MapObject } from '$lib/types/mapObjectTypes';
+	import {
+		maxBottomTransform,
+		maxLeftTransform,
+		maxRightTransform,
+		maxTopTransform,
+		type TransformType
+	} from '$lib/types/transformType';
+	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
-	import { allDesks, selectedDesk } from '$lib/map/creator/deskStore';
-	import { defaultMapScale, deskProps, panzoomProps } from '$lib/map/props';
+	import { onDestroy, onMount } from 'svelte';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -13,26 +29,20 @@
 
 	let canvas: HTMLCanvasElement;
 	let panz: PanZoom;
-	let scale: number = 1;
 
 	let openModal: boolean = false;
 
-	let defaultDesknum: string = '1';
+	let defaultObjNum: string = '1';
 
-	let desks: { [key: string]: Desk } = {};
+	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
 	onMount(() => {
 		panz = panzoom(grid, panzoomProps);
 
 		panz.on('zoom', (e: PanZoom) => {
-			scale = e.getTransform().scale;
-			Object.keys(desks).forEach((key) => {
-				let table = desks[key];
-				table.$set({
-					scale: scale
-				});
-			});
+			$map.scale = e.getTransform().scale;
 		});
+    panz.moveTo(window.innerWidth / 2 - $map.width / 2, window.innerHeight / 2 - $map.height / 2);
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
@@ -48,220 +58,189 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
-			removeTable();
+			removeMapObject();
 		}
 	};
 
 	const handleMouseDown = (event: MouseEvent) => {
-		if (event.target === canvas && $selectedDesk.element) {
-			resetSelectedDeskStyle();
-			$selectedDesk = {
-				element: null,
-				desk: null
-			};
+		if (event.target === canvas) {
+			resetSelectedMapObjectStyle();
+			$selectedMapObject = null;
 		}
 	};
 
-	const removeTable = () => {
-		if (!$selectedDesk.element || !$selectedDesk.desk) {
+	const removeMapObject = () => {
+		if (!$selectedMapObject) {
 			return;
 		}
-		delSelectedDesk();
+		delSelectedMapObject();
 	};
 
-	const createTable = (event: MouseEvent) => {
-		scale = panz.getTransform().scale;
-		resetSelectedDeskStyle();
-		const element = new Desk({
+	const createMapObject = (event: MouseEvent, type: string) => {
+		resetSelectedMapObjectStyle();
+		let mapObject: MapObject = {
+			id: defaultObjNum,
+			type: type,
+			transform: { ...getTransformFromType(type) }
+		};
+		mapObject.transform.x = event.clientX - main.getBoundingClientRect().left;
+		mapObject.transform.y = event.clientY - main.getBoundingClientRect().top;
+
+		const element = new MapObjectComponent({
 			target: main,
 			props: {
+				mapObject: mapObject,
 				enabled: false,
 				target: grid,
 				main: main,
 				drawer: container,
-				initX: event.clientX - main.getBoundingClientRect().left,
-				initY: event.clientY - main.getBoundingClientRect().top,
-				scale: scale,
 				initMouseX: event.clientX,
-				initMouseY: event.clientY,
-				initDrag: true,
-				desknum: defaultDesknum
+				initMouseY: event.clientY
 			}
 		});
 
-		element.$on('selectTable', (event: CustomEvent<{ drag: HTMLElement; desknum: string }>) => {
+		element.$on('select', (event: CustomEvent<TransformType>) => {
 			panz.pause();
-			if ($selectedDesk.element === event.detail.drag) return;
-			resetSelectedDeskStyle();
-			$selectedDesk = {
-				element: event.detail.drag,
-				desk: $allDesks.find((desk) => desk.desk!.desknum === event.detail.desknum)!.desk
-			};
+			resetSelectedMapObjectStyle();
+			$selectedMapObject = $allMapObjects.find(
+				(mapObject) => mapObject.transform === event.detail
+			)!;
 		});
 
-		element.$on(
-			'releaseTable',
-			(event: CustomEvent<{ left: number; top: number; enabled: boolean }>) => {
-				panz.resume();
-				if (!event.detail.enabled) {
-					delSelectedDesk();
-					return;
-				}
-				let left: number = event.detail.left;
-				let top: number = event.detail.top;
-				resizeGrid(left, top);
-				normalizeGridSize();
+		element.$on('release', (event: CustomEvent<{ transform: TransformType; enabled: boolean }>) => {
+			panz.resume();
+			if (!event.detail.enabled) {
+				delSelectedMapObject();
+				return;
 			}
-		);
+			resizeGrid(event.detail.transform);
+			normalizeGridSize();
+			rerenderObjectPositions();
+		});
 		panz.pause();
-		$allDesks.push($selectedDesk);
-		desks[defaultDesknum] = element;
-		defaultDesknum += '1';
+		$selectedMapObject = mapObject;
+		$allMapObjects.push(mapObject);
+		mapObjects[defaultObjNum] = element;
+		defaultObjNum += '1';
 	};
 
-	//left and top are in local space of the parent element
-	const resizeGrid = (left: number, top: number) => {
-		const grid_width: number = +grid.style.width.slice(0, -2);
-		const grid_height: number = +grid.style.height.slice(0, -2);
-		const grid_top: number = +grid.style.top.slice(0, -2);
-		const grid_left: number = +grid.style.left.slice(0, -2);
-
+	//x and y are in local space of the parent element
+	const resizeGrid = (transform: TransformType) => {
 		let panzOffsetX: number = 0;
 		let panzOffsetY: number = 0;
+		const x: number = transform.x;
+		const y: number = transform.y;
 
-		const deskW = deskProps.width * 0.5;
-		const deskH = deskProps.height * 0.5;
+		const objW = transform.width;
+		const objH = transform.height;
 
-		if (left < 0 + deskW) {
-			grid.style.width =
-				grid_width +
-				(left > 0 ? deskW - left : Math.abs(left) + deskW) +
-				defaultMapScale.border +
-				'px';
-			panzOffsetX = left - (deskW + defaultMapScale.border);
-		} else if (left > grid_width - deskW) {
-			grid.style.width = grid_width + (left - grid_width) + deskW + defaultMapScale.border + 'px';
+		if (x < 0 + defaultMapProps.border) {
+			$map.width += (x > 0 ? x : Math.abs(x)) + defaultMapProps.border;
+			panzOffsetX = x - defaultMapProps.border;
+		} else if (x > $map.width - (defaultMapProps.border + objW)) {
+			$map.width += x - $map.width + objW + defaultMapProps.border;
 		}
-		if (top < 0 + deskH) {
-			grid.style.height =
-				grid_height +
-				(top > 0 ? deskH - top : Math.abs(top) + deskH) +
-				defaultMapScale.border +
-				'px';
-			panzOffsetY = top - (deskH + defaultMapScale.border);
-		} else if (top > grid_height - deskH) {
-			grid.style.height = grid_height + (top - grid_height) + deskH + defaultMapScale.border + 'px';
+		if (y < 0 + defaultMapProps.border) {
+			$map.height += (y > 0 ? -y : Math.abs(y)) + defaultMapProps.border;
+			panzOffsetY = y - defaultMapProps.border;
+		} else if (y > $map.height - (defaultMapProps.border + objH)) {
+			$map.height += y - $map.height + objH + defaultMapProps.border;
 		}
 
-		if (panzOffsetX || panzOffsetY) {
-			$allDesks.forEach((desk) => {
-				const style: CSSStyleDeclaration = desk.element?.style!;
-				let l: number = +style.left.slice(0, -2) - panzOffsetX;
-				let t: number = +style.top.slice(0, -2) - panzOffsetY;
-
-				style.left = l + 'px';
-				style.top = t + 'px';
-				if (desk.desk?.desknum! === $selectedDesk.desk?.desknum!) {
-					$selectedDesk.desk!.x = l;
-					$selectedDesk.desk!.y = t;
-				}
-				desks[desk.desk?.desknum!].setCoords(+style.left.slice(0, -2), +style.top.slice(0, -2));
+		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
+			$allMapObjects.forEach((mapObject) => {
+				mapObject.transform.x -= panzOffsetX;
+				mapObject.transform.y -= panzOffsetY;
 			});
 		}
-
-		canvas.width = +grid.style.width.slice(0, -2);
-		canvas.height = +grid.style.height.slice(0, -2);
 		panz.moveTo(
-			panz.getTransform().x + panzOffsetX * scale,
-			panz.getTransform().y + panzOffsetY * scale
+			panz.getTransform().x + panzOffsetX * $map.scale,
+			panz.getTransform().y + panzOffsetY * $map.scale
 		);
 	};
 
 	const normalizeGridSize = () => {
-		if ($allDesks.length === 0) {
-			grid.style.width = defaultMapScale.width + 'px';
-			grid.style.height = defaultMapScale.height + 'px';
-			canvas.width = defaultMapScale.width;
-			canvas.height = defaultMapScale.height;
+		if ($allMapObjects.length === 0) {
+			$map.width = defaultMapProps.width;
+			$map.height = defaultMapProps.height;
 			return;
 		}
 
-		let left: number = Number.MAX_SAFE_INTEGER;
-		let right: number = Number.MIN_SAFE_INTEGER;
-		let top: number = Number.MAX_SAFE_INTEGER;
-		let bottom: number = Number.MIN_SAFE_INTEGER;
-		$allDesks.forEach((desk) => {
-			if (desk.desk?.x! < left) left = desk.desk?.x!;
-			if (desk.desk?.y! < top) top = desk.desk?.y!;
+		let left: TransformType = { ...maxLeftTransform };
+		let right: TransformType = { ...maxRightTransform };
+		let top: TransformType = { ...maxTopTransform };
+		let bottom: TransformType = { ...maxBottomTransform };
+		$allMapObjects.forEach((mapObject) => {
+			if (mapObject.transform.x! < left.x) left = { ...mapObject.transform };
+			if (mapObject.transform.y! < top.y) top = { ...mapObject.transform };
 		});
 
 		let horizontalOffset: number = 0;
 		let verticalOffset: number = 0;
 
-		let mapWidth: number = defaultMapScale.width;
-		let mapHeight: number = defaultMapScale.height;
+		let mapWidth: number = defaultMapProps.width;
+		let mapHeight: number = defaultMapProps.height;
 
-		if (left > defaultMapScale.maxHorizontalDist) {
-			horizontalOffset = -left + deskProps.width * 0.5 + defaultMapScale.border;
+		if (
+			left.x > defaultMapProps.maxHorizontalDist ||
+			(left.x > defaultMapProps.border &&
+				left.x < defaultMapProps.border + ($map.width - defaultMapProps.width))
+		) {
+			horizontalOffset = -left.x + defaultMapProps.border;
 		}
-		if (top > defaultMapScale.maxVerticalDist) {
-			verticalOffset = -top + deskProps.height * 0.5 + defaultMapScale.border;
+		if (
+			top.y > defaultMapProps.maxVerticalDist ||
+			(top.y > defaultMapProps.border &&
+				top.y < defaultMapProps.border + ($map.height - defaultMapProps.width))
+		) {
+			verticalOffset = -top.y + defaultMapProps.border;
 		}
 
-		$allDesks.forEach((desk) => {
-			const style: CSSStyleDeclaration = desk.element?.style!;
-			desk.desk!.x = +style.left.slice(0, -2) + horizontalOffset;
-			desk.desk!.y = +style.top.slice(0, -2) + verticalOffset;
-			style.left = desk.desk?.x + 'px';
-			style.top = desk.desk?.y + 'px';
-			desks[desk.desk?.desknum!].setCoords(desk.desk?.x!, desk.desk?.y!);
-			if (desk.desk?.y! > bottom) bottom = desk.desk?.y!;
-			if (desk.desk?.x! > right) right = desk.desk?.x!;
+		$allMapObjects.forEach((mapObject) => {
+			mapObject.transform.x += horizontalOffset;
+			mapObject.transform.y += verticalOffset;
+			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height) bottom = { ...mapObject.transform };
+			if (mapObject.transform.x! + mapObject.transform.width > right.x + right.width) right = { ...mapObject.transform };
 		});
 
-		if (right > defaultMapScale.width - deskProps.width * 0.5) {
-			mapWidth = right + deskProps.width * 0.5 + defaultMapScale.border;
+		if (right.x > defaultMapProps.width - (defaultMapProps.border + right.width)) {
+			mapWidth = right.x + right.width + defaultMapProps.border;
 		}
-		if (bottom > defaultMapScale.height - deskProps.height * 0.5) {
-			mapHeight = bottom + deskProps.height * 0.5 + defaultMapScale.border;
+		if (bottom.y > defaultMapProps.height - (defaultMapProps.border + bottom.height)) {
+			mapHeight = bottom.y + bottom.height + defaultMapProps.border;
 		}
 
 		panz.moveTo(
-			panz.getTransform().x - horizontalOffset * scale,
-			panz.getTransform().y - verticalOffset * scale
+			panz.getTransform().x - horizontalOffset * $map.scale,
+			panz.getTransform().y - verticalOffset * $map.scale
 		);
 
-		grid.style.width = mapWidth + 'px';
-		grid.style.height = mapHeight + 'px';
-		canvas.width = mapWidth;
-		canvas.height = mapHeight;
+		$map.height = mapHeight;
+		$map.width = mapWidth;
 	};
 
-	const delSelectedDesk = () => {
-		$allDesks = $allDesks.filter((table) => table.desk!.desknum !== $selectedDesk.desk?.desknum);
-		desks[$selectedDesk.desk!.desknum].$destroy();
-		delete desks[$selectedDesk.desk!.desknum];
-		$selectedDesk = {
-			element: null,
-			desk: null
-		};
+	const rerenderObjectPositions = () => {
+		for (const [key, value] of Object.entries(mapObjects)) {
+			value.rerenderPosition();
+		}
+	};
+
+	const delSelectedMapObject = () => {
+		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== $selectedMapObject!.id);
+		mapObjects[$selectedMapObject!.id].$destroy();
+		delete mapObjects[$selectedMapObject!.id];
+		$selectedMapObject = null;
 		normalizeGridSize();
+		rerenderObjectPositions();
 	};
 
-	const resetSelectedDeskStyle = () => {
-		if (!$selectedDesk.element) return;
-		$selectedDesk.element.style.removeProperty('border');
+	const resetSelectedMapObjectStyle = () => {
+		if (!$selectedMapObject) return;
+		mapObjects[$selectedMapObject.id].removeSelectedStyle();
 	};
 
 	const toggleModal = () => {
 		openModal = !openModal;
-	};
-
-	const saveMap = () => {
-		addDesksToFloor.mutate({
-			floorid: '3af4f424-a92b- -bfdb-55bd768218be',
-			desks: $allDesks.map((s) => s.desk)
-		});
 	};
 
 	const enterGrid = (event: MouseEvent) => {
@@ -273,28 +252,25 @@
 	};
 </script>
 
-<main bind:this={main} class="overflow-hidden flex flex-row h-screen">
-	<SaveMapModal {openModal} on:closeModal={toggleModal} />
-	<div class="w-2/12 h-screen bg-gray-600 shadow-xl shadow-black z-10">
-		<button on:mousedown={createTable} class="btn variant-filled-primary">Table</button>
-		<button on:click={toggleModal} class="btn variant-filled-primary">Save</button>
-	</div>
-	<div bind:this={container} class="overflow-auto w-screen">
+<main bind:this={main} class="overflow-hidden h-full">
+  <MapObjectSelector on:create={(event) => createMapObject(event.detail.e, event.detail.type)} />
+
+	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
 			on:mouseenter={enterGrid}
 			on:mouseleave={leaveGrid}
 			role="grid"
 			tabindex="0"
-			style="width: {defaultMapScale.width}px; height: {defaultMapScale.height}px;"
+			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
 			<canvas
 				bind:this={canvas}
-				width={defaultMapScale.width}
-				height={defaultMapScale.height}
+				width={$map.width}
+				height={$map.height}
 				draggable="false"
-				class="bg-slate-500"
+				class="bg-[#D9D9D9]"
 			/>
 		</div>
 	</div>
