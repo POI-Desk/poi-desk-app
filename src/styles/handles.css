@@ -1,0 +1,125 @@
+@tailwind components;
+@tailwind utilities;
+@tailwind base;
+
+@layer components {
+	.handle {
+		@apply absolute;
+		@apply box-border;
+	}
+
+	.handle-north {
+		@apply h-[10px];
+		@apply w-full;
+		@apply top-[-5px];
+		@apply cursor-row-resize;
+		/* background: orange; */
+	}
+
+	.handle-east {
+		@apply h-full;
+		@apply w-[10px];
+		@apply right-[-5px];
+		@apply cursor-col-resize;
+		/* background: orange; */
+	}
+
+  .handle-east-point{
+    @apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+    @apply top-1/2;
+		@apply right-[-7px];
+		@apply rounded-full;
+		@apply cursor-col-resize;
+    @apply -translate-y-1/2;
+  }
+
+  .handle-west-point{
+    @apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+    @apply top-1/2;
+		@apply left-[-7px];
+		@apply rounded-full;
+		@apply cursor-col-resize;
+    @apply -translate-y-1/2;
+  }
+
+	.handle-south {
+		@apply h-[10px];
+		@apply w-full;
+		@apply bottom-[-5px];
+		@apply cursor-row-resize;
+		/* background: orange; */
+	}
+
+	.handle-west {
+		@apply h-full;
+		@apply w-[10px];
+		@apply left-[-5px];
+		@apply cursor-col-resize;
+		/* background: orange; */
+	}
+
+	.handle-northwest {
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply top-[-7px];
+		@apply left-[-7px];
+		@apply rounded-full;
+		@apply cursor-nw-resize;
+		/* background: orange; */
+	}
+
+	.handle-northeast {
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply top-[-7px];
+		@apply right-[-7px];
+		@apply rounded-full;
+		@apply cursor-ne-resize;
+		/* background: orange; */
+	}
+
+	.handle-southwest {
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply bottom-[-7px];
+		@apply left-[-7px];
+		@apply rounded-full;
+		@apply cursor-sw-resize;
+		/* background: orange; */
+	}
+
+	.handle-southeast {
+		@apply border-[#8B80F9];
+		@apply border-[2px];
+		@apply bg-[#FFFCF2];
+		@apply h-[15px];
+		@apply w-[15px];
+		@apply bottom-[-7px];
+		@apply right-[-7px];
+		@apply rounded-full;
+		@apply cursor-se-resize;
+		/* background: orange; */
+	}
+  
+	.selected-border {
+		@apply border-[#8B80F9];
+		@apply border-2;
+	}
+}
