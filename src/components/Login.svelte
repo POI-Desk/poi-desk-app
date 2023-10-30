@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-
-	let username = '';
-	let pk_userId: string = '';
-	$: $user.username = username;
-	$: $user.pk_userid = pk_userId;
+	import {goto} from '$app/navigation'
 
 	const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
@@ -20,14 +16,18 @@
 		}
 	`);
 
-	async function loginWithoutMicrosoft() {
+	let path: string = '/location';
+	let username: string = '';
+
+	async function loginWithoutMicrosoft(){
 		try {
 			const result = await createOrLoginAsUser.mutate({
 				username: username
-			});
-			$user = result.data?.createOrLoginAsUser!;
-			window.location.href = $user.location == null ? '../location' : '..';
-			} catch (error) {
+		});
+		$user = result.data?.createOrLoginAsUser!;
+		path = $user.location == null ? '/location' : '/';
+		goto(path);
+		} catch (error) {
 			console.error('Error:', error);
 		}
 	}
@@ -41,8 +41,8 @@
 		<input type="text" class="input input-primary" id="usernameInput" bind:value={username} />
 	</div>
 	<div class="p-3">
-		<button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-			Login without Microsoft
-		</button>
+			<button id="login" class="btn variant-filled-primary p-3" on:click={() => loginWithoutMicrosoft()}>
+				Login Without Microsoft
+			</button>
 	</div>
 </div>
