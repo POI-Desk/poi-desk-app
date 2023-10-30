@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { currentBooking, interval } from '$lib/bookingStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
-	export let parent: any;
 	const modalStore = getModalStore();
 
 </script>

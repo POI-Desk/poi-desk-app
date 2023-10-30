@@ -3,7 +3,7 @@
 	import { user } from '$lib/userStore';
 	import { delBooking } from '$lib/mutations/booking';
 	import { getBookings } from '$lib/bookingStore';
-	import BookingCard from '$components/BookingCard.svelte';
+	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
 
 	
 	const deleteBooking = async (id: string) => {

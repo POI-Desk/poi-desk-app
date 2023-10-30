@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ModalDefaultLocation from './../components/ModalContents/ModalDefaultLocation.svelte';
-	import ModalBooking from '$components/ModalContents/ModalBooking.svelte';
-	import ModalEditBooking from '$components/ModalContents/ModalEditBooking.svelte';
+	import ModalDefaultLocation from '../components/SetBookingComponents/ModalContents/ModalDefaultLocation.svelte';
+	import ModalBooking from '$components/SetBookingComponents/ModalContents/ModalBooking.svelte';
+	import ModalEditBooking from '$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte';
 	import '../app.css';
 	import BottomNav from '$components/BottomNav.svelte';
 	import { AppShell, Modal } from '@skeletonlabs/skeleton';
