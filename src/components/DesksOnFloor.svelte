@@ -6,10 +6,11 @@
 	import FloorSelection from '$components/FloorSelection.svelte';
 	import { selectedDesk } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
-	import { getDesks } from '$lib/deskStore';
 	import { floorid } from '$lib/floorStore';
 
+	import { CachePolicy } from '$houdini';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getDesks } from '$lib/queries/deskQueries';
 
 	const modalStore = getModalStore();
 
@@ -18,9 +19,10 @@
 		component: 'modalBooking'
 	}
 
+
 	let visible: boolean;
 
-	function confirm() {
+	function confirmBooking() {
 		visible = true;
 		setTimeout(() => {
 			visible = false;
