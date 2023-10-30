@@ -1,24 +1,27 @@
 <script lang="ts">
+	//amongus
 	import { CachePolicy } from '$houdini';
-	import Booking from '$components/Booking.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
 	import Check from '$components/Check.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
-	import { floorid } from '$lib/floorStore';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { floorid } from '$lib/floorStore';
 	import { dateValue } from '$lib/dateStore';
-	import { getDesks } from '$lib/deskStore';
+	import { selectedDesk } from '$lib/bookingStore';
+	import { getDesks } from "$lib/queries/deskQueries";
 
-	let showModal: boolean = false;
-	let selectedDesk: any;
-	let visible: boolean = false;
+	const modalStore = getModalStore();
 
-	function toggleModal(desk: any) {
-		showModal = !showModal;
-		selectedDesk = desk;
+	const modal : ModalSettings = {
+		type: 'component',
+		component: 'modalBooking'
 	}
 
-	function confirm() {
+
+	let visible: boolean;
+
+	function confirmBooking() {
 		visible = true;
 		setTimeout(() => {
 			visible = false;
@@ -27,7 +30,7 @@
 </script>
 
 <div class="grid grid-rows-2">
-	<FloorSelection />
+    <FloorSelection/>
 
 	<div class="grid grid-cols-5 gap-2">
 		{#await getDesks.fetch({ variables: { floorid: $floorid } })}
@@ -35,7 +38,10 @@
 		{:then fetched}
 			{#each fetched?.data?.getDesksOnFloor ?? [] as desk}
 				<button
-					on:click={() => toggleModal(desk)}
+					on:click={() => {
+						$selectedDesk = desk;
+						modalStore.trigger(modal);
+					}}
 					class="btn variant-filled-success"
 					class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
 					>{desk?.desknum}</button
@@ -45,10 +51,11 @@
 	</div>
 </div>
 
+<!--
 {#if showModal}
 	<Booking
 		date={new Date($dateValue)}
-		desk={selectedDesk}
+		desk={$selectedDesk}
 		on:close={() => {
 			toggleModal(null);
 			getDesks.fetch({ policy: CachePolicy.NetworkOnly });
@@ -56,15 +63,16 @@
 		on:play={confirm}
 	/>
 {/if}
+-->
 
 {#if visible}
-	<CrazyAnimation>
-		<Check />
-	</CrazyAnimation>
+    <CrazyAnimation>
+        <Check/>
+    </CrazyAnimation>
 {/if}
 
 <div class="flex justify-center">
-	<div class="absolute bottom-20">
-		<BuildingSelection />
-	</div>
+    <div class="absolute bottom-20">
+        <BuildingSelection/>
+    </div>
 </div>

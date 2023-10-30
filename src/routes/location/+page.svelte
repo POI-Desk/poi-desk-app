@@ -1,4 +1,5 @@
 <script lang="ts">
+	// TODO: BITTE KEINE PAGE SONDERN MODAL @LEOPOLD
 	import type { PageData } from './$houdini';
 	import {user} from '$lib/userStore'
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
@@ -21,7 +22,8 @@
 	{#if locations}
 		{#each locations as location}
 			<button
-				class="btn btn-block variant-filled-primary px-14"
+				class="btn btn-block variant-filled-primary w-2/3 px-14" 
+				
 				on:click={() => {
 					$user.location = {
 						locationname: location?.locationname,
