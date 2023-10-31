@@ -26,6 +26,8 @@ export const _getBookingsByUseridVariables = () => {
 export const getBookings = graphql(`
 	query getBookingsByUserid($userid: ID!) @load {
 		getBookingsByUserid(userid: $userid) {
+			isafternoon
+			ismorning
 			pk_bookingid
 			bookingnumber
 			date

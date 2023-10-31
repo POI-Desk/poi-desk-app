@@ -18,7 +18,6 @@
 		}
 	`);
 
-
 	let path: string = '/location';
 	let username: string = '';
 
@@ -34,7 +33,6 @@
 			console.error('Error:', error);
 		}
 	}
-
 </script>
 
 <h1 class="text-center">POI-Desk</h1>
@@ -46,7 +44,7 @@
     </div>
     <div class="p-3">
         <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-            <a> Login without Microsoft </a>
+            <a href="../"> Login without Microsoft </a>
         </button>
     </div>
 </div>
