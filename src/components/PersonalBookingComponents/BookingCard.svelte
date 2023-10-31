@@ -2,7 +2,6 @@
 	import { createEventDispatcher } from 'svelte';
   import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentBooking } from '$lib/bookingStore';
-	import type { Interval } from '$lib/types/bookingTypes';
 
 	const dispatch = createEventDispatcher();
 
@@ -12,7 +11,6 @@
 
 	export let pk_bookingid: string;
 	export let bookingnumber: string;
-  export let table_id: string;
 	export let date: string;
 
 
@@ -24,10 +22,6 @@
 	};
 
   function toggleModal() {
-    $currentBooking.booking_id = pk_bookingid;
-    $currentBooking.table_id = bookingnumber;
-    $currentBooking.date = date;
-
     modalStore.trigger(modal);
   }
 
@@ -60,7 +54,7 @@
 			class="btn variant-filled-error btn-sm btn-outline">Delete</button
 		>
 		<button on:click={toggleModal} class="btn variant-filled-primary btn-sm btn-outline"
-			>Edit (Vyskocil)</button
+			>Edit</button
 		>
 	</div>
 </div>

@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { graphql } from '$houdini';
-    import { user } from '$lib/userStore';
 
-    let username: string = '';
+	import { graphql } from '$houdini';
+	import { user } from '$lib/userStore';
+	import {goto} from '$app/navigation'
+
 
     const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
@@ -17,18 +18,21 @@
 		}
 	`);
 
-    async function loginWithoutMicrosoft() {
-        //TODO: IF USERNAME IS EMPTY, DONT LOGIN
-        try {
-            const result = await createOrLoginAsUser.mutate({
-                username: username
-            });
-            $user = result.data?.createOrLoginAsUser!;
-            //window.location.href = $user.location == null ? '../location' : '..';
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
+	let path: string = '/location';
+	let username: string = '';
+
+	async function loginWithoutMicrosoft(){
+		try {
+			const result = await createOrLoginAsUser.mutate({
+				username: username
+		});
+		$user = result.data?.createOrLoginAsUser!;
+		path = $user.location == null ? '/location' : '/';
+		goto(path);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
 </script>
 
 <h1 class="text-center">POI-Desk</h1>

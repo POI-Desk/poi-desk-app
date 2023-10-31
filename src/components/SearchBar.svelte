@@ -14,7 +14,7 @@
 		query getAllUsers ($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers (input: $input, pageNumber: $pageNumber, pageSize: $pageSize){
 				pk_userid
-                username
+				username
 			}
 		}
 	`);
@@ -75,14 +75,13 @@
         }
     }
 
-   
-    $: bookingsOfSelectedUser = $getBookings.data?.getBookingsByUserid;
-    let bookingsOnDate = [];
+	$: bookingsOfSelectedUser = $getBookings.data?.getBookingsByUserid;
+	let bookingsOnDate = [];
 
     let typedUsername: string;
     let selectedUser: User;
 
-    export const _getDeskOfBookingVariables = () => {
+	export const _getDeskOfBookingVariables = () => {
 		return {};
     }
 
@@ -139,6 +138,9 @@
         pageNumber --;
     }
 
+	$: filteredUsers = searchUsers.filter(function (usr) {
+		return usr.username?.toLowerCase().includes(selectedUsername?.toLowerCase() ?? '');
+	});
 </script>
 
 <div>

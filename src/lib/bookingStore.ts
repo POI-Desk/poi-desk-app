@@ -1,6 +1,6 @@
+import { graphql } from '$houdini';
 import { writable } from 'svelte/store';
 import type { Booking, Interval } from './types/bookingTypes';
-import { graphql } from '$houdini';
 
 export const interval = writable<Interval>({
 	morning: false,

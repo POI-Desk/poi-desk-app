@@ -1,22 +1,23 @@
 <script lang="ts">
 	//amongus
-	import { CachePolicy } from '$houdini';
-	import CrazyAnimation from '$components/CrazyAnimation.svelte';
-	import Check from '$components/Check.svelte';
-	import FloorSelection from '$components/FloorSelection.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { floorid } from '$lib/floorStore';
-	import { dateValue } from '$lib/dateStore';
+	import Check from '$components/Check.svelte';
+	import CrazyAnimation from '$components/CrazyAnimation.svelte';
+	import FloorSelection from '$components/FloorSelection.svelte';
 	import { selectedDesk } from '$lib/bookingStore';
-	import { getDesks } from "$lib/queries/deskQueries";
+	import { dateValue } from '$lib/dateStore';
+	import { floorid } from '$lib/floorStore';
+
+	import { CachePolicy } from '$houdini';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getDesks } from '$lib/queries/deskQueries';
 
 	const modalStore = getModalStore();
 
-	const modal : ModalSettings = {
+	const modal: ModalSettings = {
 		type: 'component',
 		component: 'modalBooking'
-	}
+	};
 
 
 	let visible: boolean;
@@ -30,7 +31,7 @@
 </script>
 
 <div class="grid grid-rows-2">
-    <FloorSelection/>
+	<FloorSelection />
 
 	<div class="grid grid-cols-5 gap-2">
 		{#await getDesks.fetch({ variables: { floorid: $floorid } })}
@@ -66,13 +67,13 @@
 -->
 
 {#if visible}
-    <CrazyAnimation>
-        <Check/>
-    </CrazyAnimation>
+	<CrazyAnimation>
+		<Check />
+	</CrazyAnimation>
 {/if}
 
 <div class="flex justify-center">
-    <div class="absolute bottom-20">
-        <BuildingSelection/>
-    </div>
+	<div class="absolute bottom-20">
+		<BuildingSelection />
+	</div>
 </div>
