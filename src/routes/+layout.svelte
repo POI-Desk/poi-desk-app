@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalDefaultLocation from '../components/SetBookingComponents/ModalContents/ModalDefaultLocation.svelte';
+	import ModalDefaultLocation from '../components/DefaultLocationComponents/ModalContents/ModalDefaultLocation.svelte';
 	import ModalBooking from '$components/SetBookingComponents/ModalContents/ModalBooking.svelte';
 	import ModalEditBooking from '$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte';
 	import '../app.css';

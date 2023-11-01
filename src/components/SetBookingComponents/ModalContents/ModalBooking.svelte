@@ -13,12 +13,12 @@
 	$interval.morning = false;
 	$interval.afternoon = false;
 
-	async function onCompleteHandler() {
+	async function finishBooking() {
 		console.log($dateValue);
 		console.log($interval);
 		console.log($user.pk_userid)
 		console.log($selectedDesk.pk_deskid);
-		await bookDesk.mutate({
+		const value = await bookDesk.mutate({
 			booking: {
 				date: $dateValue,
 				ismorning: $interval.morning,
@@ -27,6 +27,7 @@
 				deskid: $selectedDesk.pk_deskid
 			}
 		});
+		console.log(value);
 		modalStore.close();
 	}
 
@@ -135,7 +136,7 @@
 					</div>
 				</div>
 			</div>
-			<button on:click={() => onCompleteHandler()} class="btn rounded-3xl text-xl bg-indigo-500"
+			<button on:click={() => finishBooking()} class="btn rounded-3xl text-xl bg-indigo-500"
 				>Buchen</button
 			>
 		{/if}

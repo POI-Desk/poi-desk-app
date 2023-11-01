@@ -23,6 +23,14 @@ export const getDesks = graphql(`
             attributes {
                 attributename
             }
+            floor{
+                pk_floorid
+                floorname
+                building{
+                    pk_buildingid
+                    buildingname
+                }
+            }
         }
     }
 `);
