@@ -19,6 +19,7 @@
 	export let drawer: HTMLElement;
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
+	export let initialDrag: boolean;
 
 	let drag: HTMLElement;
 	let dragging: boolean = false;
@@ -26,8 +27,7 @@
 	let offsetX: number = 0;
 	let offsetY: number = 0;
 
-  let selected: boolean = false;
-
+	let selected: boolean = false;
 
 	let right: HTMLDivElement | null = null;
 	let bottom: HTMLDivElement | null = null;
@@ -47,6 +47,7 @@
 	let dispatch = createEventDispatcher();
 
 	onMount(() => {
+		if (!initialDrag) return;
 		if (enabled) enable();
 		else disable();
 
@@ -57,7 +58,7 @@
 		const offsetY = initMouseY / $map.scale - mapObject.transform.y;
 		const x = initMouseX / $map.scale - offsetX;
 		const y = initMouseY / $map.scale - offsetY;
-    const wallOffset = mapObject.type == mapObjectType.Room ? wallProps.height / 2 : 0;
+		const wallOffset = mapObject.type == mapObjectType.Room ? wallProps.height / 2 : 0;
 		mapObject.transform.x = enabled ? closestNumber(x, mapMagnetSteps) - wallOffset : x;
 		mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
 	});
@@ -109,8 +110,12 @@
 			if (dragging && !resizing) {
 				mapObject.transform.x = e.clientX / (enabled ? $map.scale : 1) - offsetX;
 				mapObject.transform.y = e.clientY / (enabled ? $map.scale : 1) - offsetY;
-				let x: number = enabled ? closestNumber(mapObject.transform.x, mapMagnetSteps) : mapObject.transform.x;
-				let y: number = enabled ? closestNumber(mapObject.transform.y, mapMagnetSteps) : mapObject.transform.y;
+				let x: number = enabled
+					? closestNumber(mapObject.transform.x, mapMagnetSteps)
+					: mapObject.transform.x;
+				let y: number = enabled
+					? closestNumber(mapObject.transform.y, mapMagnetSteps)
+					: mapObject.transform.y;
 
 				mapObject!.transform.x = x;
 				mapObject!.transform.y = y;
@@ -150,18 +155,24 @@
 	};
 
 	export const removeSelectedStyle = () => {
-    selected = false;
+		selected = false;
 
 		grabbers.forEach((grabber) => {
-			grabber.classList.remove('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
+			grabber.classList.remove(
+				'handle',
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+			);
 		});
 	};
 
 	export const applySelectedStyle = () => {
-    selected = true;
+		selected = true;
 
 		grabbers.forEach((grabber) => {
-			grabber.classList.add('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
+			grabber.classList.add(
+				'handle',
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+			);
 		});
 	};
 
@@ -272,9 +283,9 @@
 		};
 	}
 
-  function resizeWall(element: HTMLElement) {
-    let active: HTMLElement | null = null;
-    right = document.createElement('div');
+	function resizeWall(element: HTMLElement) {
+		let active: HTMLElement | null = null;
+		right = document.createElement('div');
 		right.title = 'east';
 		right.classList.add('handle', 'handle-east-point');
 
@@ -341,7 +352,6 @@
 			}
 		};
 	}
-
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
@@ -352,93 +362,87 @@
 			.y}px; transform: rotate({mapObject.transform.rotation}deg);"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
-  role="button"
-  tabindex="0"
-    >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill="#000000"
-      rx="5"
-      ry="5"
-      stroke={selected ? "#8B80F9" : ""}
-      stroke-width="4"
-      />
-    </svg>
-  </div>
+		role="button"
+		tabindex="0"
+	>
+		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
+			<rect
+				width={mapObject.transform.width}
+				height={mapObject.transform.height}
+				fill="#000000"
+				rx="5"
+				ry="5"
+				stroke={selected ? '#8B80F9' : ''}
+				stroke-width="4"
+			/>
+		</svg>
+	</div>
 {:else if mapObject.type === mapObjectType.Room}
 	<button
 		class="flex justify-center z-10 duration-0"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y - wallProps.height / 2}px;"
+			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y -
+			wallProps.height / 2}px;"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeRectangle
 	>
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity="0"
-      stroke={ selected ? "#8B80F9" : "#000000"}
-      stroke-width={wallProps.height * 2}
-      />   
-    </svg>
+		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
+			<rect
+				width={mapObject.transform.width}
+				height={mapObject.transform.height}
+				fill-opacity="0"
+				stroke={selected ? '#8B80F9' : '#000000'}
+				stroke-width={wallProps.height * 2}
+			/>
+		</svg>
 	</button>
 {:else if mapObject.type === mapObjectType.Wall}
-  <button
-  class="flex justify-center z-20 duration-0 -translate-y-1/2"
-  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
-	bind:this={drag}
-	on:mousedown={handleDragStart}
-  use:resizeWall
-  >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity={selected ? 0 : 1}
-      fill={ selected ? "" : "#000000"}
-      stroke={ selected ? "#8B80F9" : ""}
-      stroke-width="4"
-      />
-    </svg>
-  </button>
-  {:else if mapObject.type === mapObjectType.Door}
-  <button
-  class="flex justify-center z-30 duration-0 -translate-y-1/2"
-  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
-  bind:this={drag}
-  on:mousedown={handleDragStart}
-  use:resizeWall
-  >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill="#D9D9D9"
-      />
-      <rect
-      x={mapObject.transform.width - wallProps.height}
-      width={wallProps.height}
-      height={mapObject.transform.height}
-      />
-      <rect
-      width={wallProps.height}
-      height={mapObject.transform.height}
-      />
-      {#if selected}
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity="0"
-      stroke="#8B80F9"
-      stroke-width="4"
-      />
-      {/if}
-    </svg>
-  </button>
+	<button
+		class="flex justify-center z-20 duration-0 -translate-y-1/2"
+		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
+			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+		use:resizeWall
+	>
+		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
+			<rect
+				width={mapObject.transform.width}
+				height={mapObject.transform.height}
+				fill-opacity={selected ? 0 : 1}
+				fill={selected ? '' : '#000000'}
+				stroke={selected ? '#8B80F9' : ''}
+				stroke-width="4"
+			/>
+		</svg>
+	</button>
+{:else if mapObject.type === mapObjectType.Door}
+	<button
+		class="flex justify-center z-30 duration-0 -translate-y-1/2"
+		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
+			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+		use:resizeWall
+	>
+		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
+			<rect width={mapObject.transform.width} height={mapObject.transform.height} fill="#D9D9D9" />
+			<rect
+				x={mapObject.transform.width - wallProps.height}
+				width={wallProps.height}
+				height={mapObject.transform.height}
+			/>
+			<rect width={wallProps.height} height={mapObject.transform.height} />
+			{#if selected}
+				<rect
+					width={mapObject.transform.width}
+					height={mapObject.transform.height}
+					fill-opacity="0"
+					stroke="#8B80F9"
+					stroke-width="4"
+				/>
+			{/if}
+		</svg>
+	</button>
 {/if}

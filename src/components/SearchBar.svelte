@@ -32,7 +32,7 @@
     async function getSearchUsers(pageNumber_param: number) {
         await getUsers.fetch({ variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst}}).then(() => {
             let users = $getUsers.data?.getAllUsers;
-            searchUsers = users.map((user) => ({
+            searchUsers = users?.map((user) => ({
                 pk_userid: user?.pk_userid,
                 username: user?.username,
                 location: null

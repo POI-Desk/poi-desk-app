@@ -14,7 +14,7 @@
 			ref: ModalBooking,
 			slot: '<p>skeleton</p>'
 		},
-		modalDefaultLocation:{
+		modalDefaultLocation: {
 			ref: ModalDefaultLocation,
 			slot: '<p>skeleton</p>'
 		},
@@ -25,10 +25,10 @@
 	};
 </script>
 
-<Modal components="{modalComponentRegistry}" />
+<Modal components={modalComponentRegistry} />
 <AppShell>
 	<slot />
 	<svelte:fragment slot="footer">
-		<BottomNav />
+		<!-- <BottomNav /> -->
 	</svelte:fragment>
 </AppShell>

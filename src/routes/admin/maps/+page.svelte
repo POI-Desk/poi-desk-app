@@ -1,13 +1,22 @@
 <!-- TODO: MAKE ALL COMPONENTS IN THE MAP UNIFIED IN ONE LIST + POSSIBLY SEPERATE LISTS FOR API -->
 
 <script lang="ts">
+	import FloorSelection from '$components/FloorSelection.svelte';
+	// import { getBuildings } from '$lib/queries/buildingQueries';
+	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
+	import AdminFloorSelector from '$components/MapComponents/AdminFloorSelector.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
+	import { graphql } from '$houdini';
 	import {
 		defaultMapProps,
+		deskProps,
+		doorProps,
 		getTransformFromType,
 		mapObjectType,
-		panzoomProps
+		panzoomProps,
+		roomProps,
+		wallProps
 	} from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
@@ -19,7 +28,6 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -36,13 +44,78 @@
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
-	onMount(() => {
-		panz = panzoom(grid, panzoomProps);
+	let currentBuildingID: string = '';
+	let currentFloorID: string = '';
 
+	const getBuildings = graphql(`
+		query getBuildings($floorId: ID!) {
+			getBuildingsInLocation(locationid: $floorId) {
+				pk_buildingid
+				buildingname
+				floors {
+					pk_floorid
+					floorname
+				}
+			}
+		}
+	`);
+
+	const getMapByFloor = graphql(`
+		query getMapByFloor($floorID: ID!) {
+			getMapByFloor(floorId: $floorID) {
+				pk_mapId
+				height
+				width
+				desks {
+					desknum
+					x
+					y
+					rotation
+				}
+				rooms {
+					pk_roomId
+					x
+					y
+					width
+					height
+				}
+				walls {
+					pk_wallId
+					x
+					y
+					rotation
+					width
+				}
+				doors {
+					pk_doorId
+					x
+					y
+					rotation
+					width
+				}
+			}
+		}
+	`);
+
+	const locationIdVienna: string = '241ef7e9-0cb8-46fb-a378-2c9614b8f9e4'; //TODO: get from admin user
+	const locationIdHagenberg: string = '9a9dd736-dfd8-4bcb-b51b-dc73ba315a76'; //TODO: get from admin user
+	let buildings: any;
+	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
+
+	const fetchBuildings = async (id: string) => {
+		await getBuildings.fetch({ variables: { floorId: id } });
+	};
+
+	onMount(async () => {
+		await fetchBuildings(locationIdVienna);
+		currentBuildingID = buildings[0].pk_buildingid;
+		currentFloorID = buildings[0].floors[0].pk_floorid;
+
+		panz = panzoom(grid, panzoomProps);
 		panz.on('zoom', (e: PanZoom) => {
 			$map.scale = e.getTransform().scale;
 		});
-    panz.moveTo(window.innerWidth / 2 - $map.width / 2, window.innerHeight / 2 - $map.height / 2);
+		panz.moveTo(window.innerWidth / 2 - $map.width / 2, window.innerHeight / 2 - $map.height / 2);
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
@@ -76,26 +149,34 @@
 		delSelectedMapObject();
 	};
 
-	const createMapObject = (event: MouseEvent, type: string) => {
+	const createMapObject = (
+		event: MouseEvent,
+		type: string,
+		initialTransform: TransformType | null
+	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
 			id: defaultObjNum,
 			type: type,
-			transform: { ...getTransformFromType(type) }
+			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
 		};
-		mapObject.transform.x = event.clientX - main.getBoundingClientRect().left;
-		mapObject.transform.y = event.clientY - main.getBoundingClientRect().top;
+
+		if (initialTransform == null) {
+			mapObject.transform.x = event.clientX - main.getBoundingClientRect().left;
+			mapObject.transform.y = event.clientY - main.getBoundingClientRect().top;
+		}
 
 		const element = new MapObjectComponent({
-			target: main,
+			target: initialTransform == null ? main : grid,
 			props: {
 				mapObject: mapObject,
-				enabled: false,
+				enabled: initialTransform != null,
 				target: grid,
 				main: main,
 				drawer: container,
 				initMouseX: event.clientX,
-				initMouseY: event.clientY
+				initMouseY: event.clientY,
+				initialDrag: initialTransform == null
 			}
 		});
 
@@ -199,8 +280,10 @@
 		$allMapObjects.forEach((mapObject) => {
 			mapObject.transform.x += horizontalOffset;
 			mapObject.transform.y += verticalOffset;
-			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height) bottom = { ...mapObject.transform };
-			if (mapObject.transform.x! + mapObject.transform.width > right.x + right.width) right = { ...mapObject.transform };
+			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height)
+				bottom = { ...mapObject.transform };
+			if (mapObject.transform.x! + mapObject.transform.width > right.x + right.width)
+				right = { ...mapObject.transform };
 		});
 
 		if (right.x > defaultMapProps.width - (defaultMapProps.border + right.width)) {
@@ -250,11 +333,85 @@
 	const leaveGrid = (event: MouseEvent) => {
 		panz.pause();
 	};
+
+	const changeBuilding = async (buildingID: string) => {
+		if (buildingID === currentBuildingID) return;
+		currentBuildingID = buildingID;
+		//TODO: look into the 'any' type problem
+		await changeFloor(
+			buildings.filter((b) => b.pk_buildingid === buildingID)[0].floors[0].pk_floorid
+		);
+		buildings = buildings;
+	};
+
+	const changeFloor = async (floorID: string) => {
+		if (floorID === currentFloorID) return;
+
+		for (const [key, value] of Object.entries(mapObjects)) {
+			value.$destroy();
+		}
+		mapObjects = {};
+		await getMapByFloor.fetch({ variables: { floorID: floorID } });
+		drawMap();
+		currentFloorID = floorID;
+	};
+
+	const drawMap = () => {
+		if (!$getMapByFloor.data?.getMapByFloor) return;
+		$allMapObjects = [];
+		$selectedMapObject = null;
+
+		$map.height = $getMapByFloor.data.getMapByFloor.height;
+		$map.width = $getMapByFloor.data.getMapByFloor.width;
+		$map.scale = 1;
+		$getMapByFloor.data?.getMapByFloor.desks!.map((desk) => {
+			createMapObject({ clientX: desk.x, clientY: desk.y } as MouseEvent, mapObjectType.Desk, {
+				x: desk.x,
+				y: desk.y,
+				width: deskProps.width,
+				height: deskProps.height,
+				rotation: desk.rotation
+			} as TransformType);
+		});
+		$getMapByFloor.data?.getMapByFloor.doors!.map((door) => {
+			createMapObject({ clientX: door.x, clientY: door.y } as MouseEvent, mapObjectType.Door, {
+				x: door.x,
+				y: door.y,
+				width: door.width,
+				height: doorProps.height,
+				rotation: door.rotation
+			} as TransformType);
+		});
+		$getMapByFloor.data?.getMapByFloor.rooms!.map((room) => {
+			createMapObject({ clientX: room.x, clientY: room.y } as MouseEvent, mapObjectType.Room, {
+				x: room.x,
+				y: room.y,
+				width: room.width,
+				height: room.height,
+				rotation: roomProps.rotation
+			} as TransformType);
+		});
+		$getMapByFloor.data?.getMapByFloor.walls!.map((wall) => {
+			createMapObject({ clientX: wall.x, clientY: wall.y } as MouseEvent, mapObjectType.Wall, {
+				x: wall.x,
+				y: wall.y,
+				width: wall.width,
+				height: wallProps.height,
+				rotation: wall.rotation
+			} as TransformType);
+		});
+	};
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-  <MapObjectSelector on:create={(event) => createMapObject(event.detail.e, event.detail.type)} />
-
+	<MapObjectSelector
+		on:create={(event) => createMapObject(event.detail.e, event.detail.type, null)}
+	/>
+	<AdminBuildingSelector on:changeBuilding={(event) => changeBuilding(event.detail)} {buildings} />
+	<AdminFloorSelector
+		on:changeFloor={(event) => changeFloor(event.detail)}
+		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors}
+	/>
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
