@@ -8,6 +8,7 @@
 
 	//icons
 	import { Calendar, Clock, MapPin, Building, Armchair, Cuboid } from 'lucide-svelte';
+	import {refreshDesks} from "$lib/refreshStore";
 
 
 	$interval.morning = false;
@@ -28,6 +29,8 @@
 			}
 		});
 		console.log(value);
+
+		$refreshDesks = !$refreshDesks;
 		modalStore.close();
 	}
 
