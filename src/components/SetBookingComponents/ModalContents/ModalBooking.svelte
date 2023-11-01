@@ -8,8 +8,7 @@
 
 	//icons
 	import { Calendar, Clock, MapPin, Building, Armchair, Cuboid } from 'lucide-svelte';
-	import {refreshDesks} from "$lib/refreshStore";
-
+	import { refreshDesks } from '$lib/refreshStore';
 
 	$interval.morning = false;
 	$interval.afternoon = false;
@@ -17,7 +16,7 @@
 	async function finishBooking() {
 		console.log($dateValue);
 		console.log($interval);
-		console.log($user.pk_userid)
+		console.log($user.pk_userid);
 		console.log($selectedDesk.pk_deskid);
 		const value = await bookDesk.mutate({
 			booking: {
@@ -42,17 +41,36 @@
 
 	let time: string = 'default';
 
-	let stepperLock: boolean = true;
-	$: stepperLock = $interval.morning === false && $interval.afternoon === false;
-
 	let selection: boolean = true;
+
+	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+
+	let hasBookings: boolean = currentBookingsOnDate.length > 0;
+
+	let isBookedMorning: boolean =
+		((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
+		false;
+
+	let isBookedAfternoon: boolean =
+		((hasBookings && currentBookingsOnDate[0].isafternoon) ||
+			currentBookingsOnDate[1]?.isafternoon) ??
+		false;
+
+	let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
 
 	const modalStore = getModalStore();
 
 	const cBase = 'card p-4 shadow-xl space-y-4';
 
 	function whenSelection() {
-		selection = !selection;
+		console.log('has bookings: ' + hasBookings);
+		console.log('is booked morning: ' + isBookedMorning);
+		console.log('is booked afternoon: ' + isBookedAfternoon);
+		console.log('is full day: ' + isFullDay);
+
+		if (!isFullDay) {
+			selection = !selection;
+		}
 	}
 
 	console.log($selectedDesk);
