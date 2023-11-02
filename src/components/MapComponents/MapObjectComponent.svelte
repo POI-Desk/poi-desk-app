@@ -4,13 +4,17 @@
 
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
-	import { mapMagnetSteps, mapObjectType, wallProps } from '$lib/map/props';
+	import { mapMagnetSteps, mapObjectType, wallProps, wallThinkness } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onMount } from 'svelte';
 	//Look into this so import is not needed
 	import '../../styles/handles.css';
+	import DeskSvg from './MapObjects/DeskSVG.svelte';
+	import RoomSvg from './MapObjects/RoomSVG.svelte';
+	import WallSvg from './MapObjects/WallSVG.svelte';
+	import DoorSvg from './MapObjects/DoorSVG.svelte';
 
 	export let mapObject: MapObject;
 	export let enabled: boolean = false;
@@ -358,91 +362,58 @@
 	<div
 		class="z-40 duration-0"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
-			.width}px; left: {mapObject.transform.x}px; top: {mapObject.transform
+			.width}px; left: {mapObject.transform.x + wallThinkness / 2}px; top: {mapObject.transform
 			.y}px; transform: rotate({mapObject.transform.rotation}deg);"
-		bind:this={drag}
-		on:mousedown={handleDragStart}
 		role="button"
 		tabindex="0"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
 	>
-		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
-			<rect
-				width={mapObject.transform.width}
-				height={mapObject.transform.height}
-				fill="#000000"
-				rx="5"
-				ry="5"
-				stroke={selected ? '#8B80F9' : ''}
-				stroke-width="4"
-			/>
-		</svg>
+		<DeskSvg
+			height={mapObject.transform.height}
+			width={mapObject.transform.width}
+			{selected}
+			text={mapObject.id}
+		/>
 	</div>
 {:else if mapObject.type === mapObjectType.Room}
-	<button
+	<div
 		class="flex justify-center z-10 duration-0"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y -
-			wallProps.height / 2}px;"
+			wallThinkness / 2}px;"
+		role="button"
+		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeRectangle
 	>
-		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
-			<rect
-				width={mapObject.transform.width}
-				height={mapObject.transform.height}
-				fill-opacity="0"
-				stroke={selected ? '#8B80F9' : '#000000'}
-				stroke-width={wallProps.height * 2}
-			/>
-		</svg>
-	</button>
+		<RoomSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+	</div>
 {:else if mapObject.type === mapObjectType.Wall}
-	<button
+	<div
 		class="flex justify-center z-20 duration-0 -translate-y-1/2"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		role="button"
+		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeWall
 	>
-		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
-			<rect
-				width={mapObject.transform.width}
-				height={mapObject.transform.height}
-				fill-opacity={selected ? 0 : 1}
-				fill={selected ? '' : '#000000'}
-				stroke={selected ? '#8B80F9' : ''}
-				stroke-width="4"
-			/>
-		</svg>
-	</button>
+		<WallSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+	</div>
 {:else if mapObject.type === mapObjectType.Door}
-	<button
+	<div
 		class="flex justify-center z-30 duration-0 -translate-y-1/2"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		role="button"
+		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeWall
 	>
-		<svg width={mapObject.transform.width} height={mapObject.transform.height}>
-			<rect width={mapObject.transform.width} height={mapObject.transform.height} fill="#D9D9D9" />
-			<rect
-				x={mapObject.transform.width - wallProps.height}
-				width={wallProps.height}
-				height={mapObject.transform.height}
-			/>
-			<rect width={wallProps.height} height={mapObject.transform.height} />
-			{#if selected}
-				<rect
-					width={mapObject.transform.width}
-					height={mapObject.transform.height}
-					fill-opacity="0"
-					stroke="#8B80F9"
-					stroke-width="4"
-				/>
-			{/if}
-		</svg>
-	</button>
+		<DoorSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+	</div>
 {/if}

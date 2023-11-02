@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher } from 'svelte';
 
 	export let floors: any[];
@@ -11,11 +12,9 @@
 </script>
 
 <div
-	class="absolute w-11 h-1/4 left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-[#FAF8FC] border-2 border-[#CCC5B9] shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] grid grid-rows-{floors
-		? floors.length
-		: 0} divide-y-2 divide-[#CCC5B9]"
+	class="absolute w-11 h-1/4 left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-[#FAF8FC] border-2 border-[#CCC5B9] shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] grid grid-rows-{floors.length} divide-y-2 divide-[#CCC5B9]"
 >
-	{#if floors}
+	{#if floors.length > 0}
 		{#each floors as floor}
 			<button
 				on:click={() => changeFloor(floor.pk_floorid)}
@@ -25,6 +24,6 @@
 			</button>
 		{/each}
 	{:else}
-		<div>HELLo</div>
+		<div class="h-full rounded-full placeholder animate-pulse" />
 	{/if}
 </div>

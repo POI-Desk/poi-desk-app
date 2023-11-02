@@ -5,9 +5,11 @@
 	// import { getBuildings } from '$lib/queries/buildingQueries';
 	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
 	import AdminFloorSelector from '$components/MapComponents/AdminFloorSelector.svelte';
+	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
 	import { graphql } from '$houdini';
+
 	import {
 		defaultMapProps,
 		deskProps,
@@ -28,6 +30,7 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
+	import { ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -40,12 +43,11 @@
 
 	let openModal: boolean = false;
 
-	let defaultObjNum: string = '1';
-
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
 	let currentBuildingID: string = '';
 	let currentFloorID: string = '';
+	let loadingMap: boolean = false;
 
 	const getBuildings = graphql(`
 		query getBuildings($floorId: ID!) {
@@ -106,16 +108,16 @@
 		await getBuildings.fetch({ variables: { floorId: id } });
 	};
 
-	onMount(async () => {
-		await fetchBuildings(locationIdVienna);
-		currentBuildingID = buildings[0].pk_buildingid;
-		currentFloorID = buildings[0].floors[0].pk_floorid;
-
-		panz = panzoom(grid, panzoomProps);
+	onMount(() => {
+		initializeMap();
+		panz = panzoom(grid, {
+			...panzoomProps
+		});
 		panz.on('zoom', (e: PanZoom) => {
 			$map.scale = e.getTransform().scale;
 		});
-		panz.moveTo(window.innerWidth / 2 - $map.width / 2, window.innerHeight / 2 - $map.height / 2);
+
+		recenterMap();
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
@@ -142,6 +144,24 @@
 		}
 	};
 
+	const initializeMap = async () => {
+		await fetchBuildings(locationIdVienna);
+		await changeBuilding(buildings[1].pk_buildingid, buildings[1].floors[1].pk_floorid);
+	};
+
+	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
+		if (!smooth)
+			panz.moveTo(
+				window.innerWidth / 2 - ($map.width / 2 + offsetX) * $map.scale,
+				window.innerHeight / 2 - ($map.height / 2 + offsetY) * $map.scale
+			);
+		else
+			panz.smoothMoveTo(
+				window.innerWidth / 2 - ($map.width / 2 + offsetX) * $map.scale,
+				window.innerHeight / 2 - ($map.height / 2 + offsetY) * $map.scale
+			);
+	};
+
 	const removeMapObject = () => {
 		if (!$selectedMapObject) {
 			return;
@@ -152,11 +172,12 @@
 	const createMapObject = (
 		event: MouseEvent,
 		type: string,
-		initialTransform: TransformType | null
+		initialTransform: TransformType | null,
+		id: string = ''
 	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
-			id: defaultObjNum,
+			id: id === '' ? genRandomId(5) : id,
 			type: type,
 			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
 		};
@@ -183,9 +204,7 @@
 		element.$on('select', (event: CustomEvent<TransformType>) => {
 			panz.pause();
 			resetSelectedMapObjectStyle();
-			$selectedMapObject = $allMapObjects.find(
-				(mapObject) => mapObject.transform === event.detail
-			)!;
+			selectMapObject($allMapObjects.find((mapObject) => mapObject.transform === event.detail)!);
 		});
 
 		element.$on('release', (event: CustomEvent<{ transform: TransformType; enabled: boolean }>) => {
@@ -199,10 +218,31 @@
 			rerenderObjectPositions();
 		});
 		panz.pause();
-		$selectedMapObject = mapObject;
+		$selectedMapObject = initialTransform == null ? mapObject : null;
 		$allMapObjects.push(mapObject);
-		mapObjects[defaultObjNum] = element;
-		defaultObjNum += '1';
+		mapObjects[mapObject.id] = element;
+
+		$allMapObjects = $allMapObjects;
+		mapObjects = mapObjects;
+	};
+
+	const genRandomId = (length: number) => {
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		const charactersLength = characters.length;
+		let result;
+		do {
+			result = '';
+			for (let i = 0; i < length; i++) {
+				result += characters.charAt(Math.floor(Math.random() * charactersLength));
+			}
+		} while (mapObjects[result] != null);
+		return result;
+	};
+
+	const selectMapObject = (obj: MapObject) => {
+		resetSelectedMapObjectStyle();
+		$selectedMapObject = obj;
+		mapObjects[obj.id].applySelectedStyle();
 	};
 
 	//x and y are in local space of the parent element
@@ -334,24 +374,40 @@
 		panz.pause();
 	};
 
-	const changeBuilding = async (buildingID: string) => {
+	const zoomToObjectId = (id: string) => {
+		if (!mapObjects[id]) return;
+		const obj: MapObject = $allMapObjects.find((obj) => obj.id === id)!;
+		const transform: TransformType = obj.transform;
+		selectMapObject(obj);
+		let longerSide: number = Math.max(transform.width, transform.height);
+		panz.zoomAbs(window.innerWidth / 2, window.innerHeight / 2, 3 * (400 / longerSide));
+		recenterMap(
+			true,
+			-($map.width / 2) + transform.x + transform.width / 2,
+			-($map.height / 2) + transform.y + transform.height / 2
+		);
+	};
+
+	const changeBuilding = async (buildingID: string, customFloorID: string | null) => {
 		if (buildingID === currentBuildingID) return;
 		currentBuildingID = buildingID;
 		//TODO: look into the 'any' type problem
-		await changeFloor(
-			buildings.filter((b) => b.pk_buildingid === buildingID)[0].floors[0].pk_floorid
-		);
+		let floorID: string =
+			customFloorID ??
+			buildings.filter((b) => b.pk_buildingid === buildingID)[0]?.floors[0].pk_floorid;
+		await changeFloor(floorID);
 		buildings = buildings;
 	};
 
 	const changeFloor = async (floorID: string) => {
 		if (floorID === currentFloorID) return;
-
 		for (const [key, value] of Object.entries(mapObjects)) {
 			value.$destroy();
 		}
 		mapObjects = {};
+		loadingMap = true;
 		await getMapByFloor.fetch({ variables: { floorID: floorID } });
+		loadingMap = false;
 		drawMap();
 		currentFloorID = floorID;
 	};
@@ -365,13 +421,18 @@
 		$map.width = $getMapByFloor.data.getMapByFloor.width;
 		$map.scale = 1;
 		$getMapByFloor.data?.getMapByFloor.desks!.map((desk) => {
-			createMapObject({ clientX: desk.x, clientY: desk.y } as MouseEvent, mapObjectType.Desk, {
-				x: desk.x,
-				y: desk.y,
-				width: deskProps.width,
-				height: deskProps.height,
-				rotation: desk.rotation
-			} as TransformType);
+			createMapObject(
+				{ clientX: desk.x, clientY: desk.y } as MouseEvent,
+				mapObjectType.Desk,
+				{
+					x: desk.x,
+					y: desk.y,
+					width: deskProps.width,
+					height: deskProps.height,
+					rotation: desk.rotation
+				} as TransformType,
+				desk.desknum
+			);
 		});
 		$getMapByFloor.data?.getMapByFloor.doors!.map((door) => {
 			createMapObject({ clientX: door.x, clientY: door.y } as MouseEvent, mapObjectType.Door, {
@@ -400,6 +461,7 @@
 				rotation: wall.rotation
 			} as TransformType);
 		});
+		recenterMap();
 	};
 </script>
 
@@ -407,10 +469,17 @@
 	<MapObjectSelector
 		on:create={(event) => createMapObject(event.detail.e, event.detail.type, null)}
 	/>
-	<AdminBuildingSelector on:changeBuilding={(event) => changeBuilding(event.detail)} {buildings} />
+	<AdminBuildingSelector
+		on:changeBuilding={(event) => changeBuilding(event.detail, null)}
+		{buildings}
+	/>
 	<AdminFloorSelector
 		on:changeFloor={(event) => changeFloor(event.detail)}
-		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors}
+		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors ?? []}
+	/>
+	<AdminSerachbar
+		names={$allMapObjects.map((o) => o.id)}
+		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
@@ -422,6 +491,11 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
+			{#if loadingMap}
+				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
+					<ProgressBar value={undefined} />
+				</div>
+			{/if}
 			<canvas
 				bind:this={canvas}
 				width={$map.width}
