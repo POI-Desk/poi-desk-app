@@ -9,20 +9,22 @@
 <div class="z-[{z}]">
 	<svg {width} {height}>
 		<rect
-			{width}
-			{height}
-			fill="#000000"
-			rx="5"
-			ry="5"
-			stroke={selected ? '#8B80F9' : ''}
-			stroke-width="4"
+			x="1"
+			y="1"
+			width={width - 2}
+			height={height - 2}
+			rx="2"
+			ry="2"
+			fill="#1A4775"
+			stroke={selected ? '#8B80F9' : '#000000'}
+			stroke-width="2"
 		/>
 		<text
 			x="5"
 			y={height - 5}
 			fill="white"
 			font-size="12"
-			class="select-none"
+			style="user-select: none;"
 			width="mapObject.transform.width"
 			height="mapObject.transform.height">{text}</text
 		>

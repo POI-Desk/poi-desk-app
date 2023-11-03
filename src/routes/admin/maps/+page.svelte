@@ -8,7 +8,7 @@
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import { graphql } from '$houdini';
+	import { CachePolicy, graphql } from '$houdini';
 
 	import {
 		defaultMapProps,
@@ -20,6 +20,7 @@
 		roomProps,
 		wallProps
 	} from '$lib/map/props';
+	import { createMap } from '$lib/mutations/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -30,7 +31,12 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import { ProgressBar, ProgressRadial } from '@skeletonlabs/skeleton';
+	import {
+		ProgressBar,
+		ProgressRadial,
+		getModalStore,
+		type ModalSettings
+	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -48,6 +54,16 @@
 	let currentBuildingID: string = '';
 	let currentFloorID: string = '';
 	let loadingMap: boolean = false;
+
+	const modalStore = getModalStore();
+
+	const modal: ModalSettings = {
+		type: 'component',
+		component: 'modalEditMapObject',
+		response: (r: { newId: string; oldId: string }) => {
+			changeMapObjectId(r.oldId, r.newId);
+		}
+	};
 
 	const getBuildings = graphql(`
 		query getBuildings($floorId: ID!) {
@@ -131,6 +147,15 @@
 		window.removeEventListener('mousedown', handleMouseDown);
 	});
 
+	const changeMapObjectId = (oldId: string, newId: string) => {
+		if (!oldId || !newId) return;
+		const mapObject: MapObject = $allMapObjects.find((obj) => obj.id === oldId)!;
+		mapObjects[newId] = mapObjects[oldId];
+		delete mapObjects[oldId];
+		mapObject.id = newId;
+		mapObjects[newId].rerenderMapObject();
+	};
+
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
 			removeMapObject();
@@ -152,8 +177,8 @@
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
 		if (!smooth)
 			panz.moveTo(
-				window.innerWidth / 2 - ($map.width / 2 + offsetX) * $map.scale,
-				window.innerHeight / 2 - ($map.height / 2 + offsetY) * $map.scale
+				window.innerWidth / 2 - ($map.width / 2 + offsetX) / $map.scale,
+				window.innerHeight / 2 - ($map.height / 2 + offsetY) / $map.scale
 			);
 		else
 			panz.smoothMoveTo(
@@ -215,8 +240,14 @@
 			}
 			resizeGrid(event.detail.transform);
 			normalizeGridSize();
-			rerenderObjectPositions();
+			rerenderObjects();
 		});
+
+		element.$on('openModal', (event: CustomEvent<MapObject>) => {
+			selectMapObject(event.detail);
+			modalStore.trigger(modal);
+		});
+
 		panz.pause();
 		$selectedMapObject = initialTransform == null ? mapObject : null;
 		$allMapObjects.push(mapObject);
@@ -342,9 +373,9 @@
 		$map.width = mapWidth;
 	};
 
-	const rerenderObjectPositions = () => {
+	const rerenderObjects = () => {
 		for (const [key, value] of Object.entries(mapObjects)) {
-			value.rerenderPosition();
+			value.rerenderMapObject();
 		}
 	};
 
@@ -354,7 +385,7 @@
 		delete mapObjects[$selectedMapObject!.id];
 		$selectedMapObject = null;
 		normalizeGridSize();
-		rerenderObjectPositions();
+		rerenderObjects();
 	};
 
 	const resetSelectedMapObjectStyle = () => {
@@ -401,10 +432,6 @@
 
 	const changeFloor = async (floorID: string) => {
 		if (floorID === currentFloorID) return;
-		for (const [key, value] of Object.entries(mapObjects)) {
-			value.$destroy();
-		}
-		mapObjects = {};
 		loadingMap = true;
 		await getMapByFloor.fetch({ variables: { floorID: floorID } });
 		loadingMap = false;
@@ -412,14 +439,44 @@
 		currentFloorID = floorID;
 	};
 
-	const drawMap = () => {
-		if (!$getMapByFloor.data?.getMapByFloor) return;
+	//TODO: create the map
+	const createNewMap = async (floorID: string) => {
+		const newMap = await createMap
+			.mutate({
+				floorId: floorID,
+				mapInput: { height: $map.height, width: $map.width }
+			})
+			.catch((e) => {
+				console.log(e);
+				return;
+			});
+
+		// $map.height = newMap.;
+		panz.zoomAbs(0, 0, 1);
+		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
+		recenterMap();
+	};
+
+	const emptyMap = () => {
 		$allMapObjects = [];
 		$selectedMapObject = null;
+		for (const [key, value] of Object.entries(mapObjects)) {
+			value.$destroy();
+		}
+		mapObjects = {};
+	};
+
+	const drawMap = () => {
+		emptyMap();
+		if (!$getMapByFloor.data?.getMapByFloor) {
+			//TODO: show map creation button
+			return;
+		}
 
 		$map.height = $getMapByFloor.data.getMapByFloor.height;
 		$map.width = $getMapByFloor.data.getMapByFloor.width;
-		$map.scale = 1;
+		panz.zoomAbs(0, 0, 1);
+
 		$getMapByFloor.data?.getMapByFloor.desks!.map((desk) => {
 			createMapObject(
 				{ clientX: desk.x, clientY: desk.y } as MouseEvent,
@@ -495,16 +552,23 @@
 				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
 					<ProgressBar value={undefined} />
 				</div>
+			{:else if $getMapByFloor.data?.getMapByFloor}
+				<canvas
+					bind:this={canvas}
+					width={$map.width}
+					height={$map.height}
+					draggable="false"
+					class="bg-[#D9D9D9]"
+				/>
 			{/if}
-			<canvas
-				bind:this={canvas}
-				width={$map.width}
-				height={$map.height}
-				draggable="false"
-				class="bg-[#D9D9D9]"
-			/>
 		</div>
 	</div>
+	{#if !loadingMap && !$getMapByFloor.data?.getMapByFloor}
+		<button
+			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
+			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button
+		>
+	{/if}
 </main>
 
 <style>

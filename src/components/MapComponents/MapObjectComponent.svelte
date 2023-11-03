@@ -15,6 +15,11 @@
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
+	import { selectedMapObject } from '$lib/stores/mapObjectStore';
+	import client from '../../client';
+	import { scale } from 'svelte/transition';
+	import { get } from 'svelte/store';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
 
 	export let mapObject: MapObject;
 	export let enabled: boolean = false;
@@ -142,6 +147,10 @@
 		window.addEventListener('mousemove', updateInstantiation);
 	};
 
+	const openModal = () => {
+		dispatch('openModal', mapObject);
+	};
+
 	const updateInstantiation = (event: MouseEvent) => {
 		if (!dragging) return;
 
@@ -154,7 +163,7 @@
 		else if (inBoundings && !enabled) enable();
 	};
 
-	export const rerenderPosition = () => {
+	export const rerenderMapObject = () => {
 		mapObject = mapObject;
 	};
 
@@ -368,6 +377,7 @@
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
+		on:dblclick={openModal}
 	>
 		<DeskSvg
 			height={mapObject.transform.height}
@@ -378,14 +388,43 @@
 	</div>
 {:else if mapObject.type === mapObjectType.Room}
 	<div
-		class="flex justify-center z-10 duration-0"
+		class="flex justify-center duration-0"
 		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
 			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y -
-			wallThinkness / 2}px;"
+			wallThinkness / 2}px; z-index: {selected ? 45 : 10};"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
-		on:mousedown={handleDragStart}
+		on:mousedown={(event) => {
+			// INFO: the funny:
+			const extension = 4;
+			if (
+				selected ||
+				(event.clientX >= drag.getBoundingClientRect().left - extension &&
+					event.clientX <=
+						drag.getBoundingClientRect().left + extension + wallThinkness * $map.scale) ||
+				(event.clientX >=
+					drag.getBoundingClientRect().left -
+						extension +
+						mapObject.transform.width * $map.scale -
+						wallThinkness * $map.scale &&
+					event.clientX <=
+						drag.getBoundingClientRect().left +
+							extension +
+							mapObject.transform.width * $map.scale) ||
+				(event.clientY >= drag.getBoundingClientRect().top - extension &&
+					event.clientY <=
+						drag.getBoundingClientRect().top + extension + wallThinkness * $map.scale) ||
+				(event.clientY >=
+					drag.getBoundingClientRect().top -
+						extension +
+						mapObject.transform.height * $map.scale -
+						wallThinkness * $map.scale &&
+					event.clientY <=
+						drag.getBoundingClientRect().top + extension + mapObject.transform.height * $map.scale)
+			)
+				handleDragStart(event);
+		}}
 		use:resizeRectangle
 	>
 		<RoomSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />

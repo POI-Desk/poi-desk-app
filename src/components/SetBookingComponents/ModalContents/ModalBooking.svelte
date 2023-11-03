@@ -9,14 +9,13 @@
 	//icons
 	import { Calendar, Clock, MapPin, Building, Armchair, Cuboid } from 'lucide-svelte';
 
-
 	$interval.morning = false;
 	$interval.afternoon = false;
 
 	async function onCompleteHandler() {
 		console.log($dateValue);
 		console.log($interval);
-		console.log($user.pk_userid)
+		console.log($user.pk_userid);
 		console.log($selectedDesk.pk_deskid);
 		await bookDesk.mutate({
 			booking: {
