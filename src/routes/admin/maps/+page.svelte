@@ -8,7 +8,7 @@
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import { CachePolicy, graphql } from '$houdini';
+	import { CachePolicy, fragment, graphql } from '$houdini';
 
 	import {
 		defaultMapProps,
@@ -21,6 +21,7 @@
 		wallProps
 	} from '$lib/map/props';
 	import { createMap } from '$lib/mutations/map';
+	import { getMapByFloor } from '$lib/queries/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -66,7 +67,7 @@
 	};
 
 	const getBuildings = graphql(`
-		query getBuildings($floorId: ID!) {
+		query GetBuildings($floorId: ID!) {
 			getBuildingsInLocation(locationid: $floorId) {
 				pk_buildingid
 				buildingname
@@ -78,42 +79,9 @@
 		}
 	`);
 
-	const getMapByFloor = graphql(`
-		query getMapByFloor($floorID: ID!) {
-			getMapByFloor(floorId: $floorID) {
-				pk_mapId
-				height
-				width
-				desks {
-					desknum
-					x
-					y
-					rotation
-				}
-				rooms {
-					pk_roomId
-					x
-					y
-					width
-					height
-				}
-				walls {
-					pk_wallId
-					x
-					y
-					rotation
-					width
-				}
-				doors {
-					pk_doorId
-					x
-					y
-					rotation
-					width
-				}
-			}
-		}
-	`);
+	$: mapData = $getMapByFloor.data?.getMapByFloor;
+	$: $map.height = mapData?.height ?? defaultMapProps.height;
+	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
 	const locationIdVienna: string = '241ef7e9-0cb8-46fb-a378-2c9614b8f9e4'; //TODO: get from admin user
 	const locationIdHagenberg: string = '9a9dd736-dfd8-4bcb-b51b-dc73ba315a76'; //TODO: get from admin user
@@ -393,10 +361,6 @@
 		mapObjects[$selectedMapObject.id].removeSelectedStyle();
 	};
 
-	const toggleModal = () => {
-		openModal = !openModal;
-	};
-
 	const enterGrid = (event: MouseEvent) => {
 		panz.resume();
 	};
@@ -433,25 +397,21 @@
 	const changeFloor = async (floorID: string) => {
 		if (floorID === currentFloorID) return;
 		loadingMap = true;
-		await getMapByFloor.fetch({ variables: { floorID: floorID } });
+		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
 		loadingMap = false;
 		drawMap();
 		currentFloorID = floorID;
 	};
 
-	//TODO: create the map
 	const createNewMap = async (floorID: string) => {
-		const newMap = await createMap
-			.mutate({
-				floorId: floorID,
-				mapInput: { height: $map.height, width: $map.width }
-			})
-			.catch((e) => {
-				console.log(e);
-				return;
-			});
+		const newMap = await createMap.mutate({
+			floorId: floorID,
+			mapInput: { height: defaultMapProps.height, width: defaultMapProps.height }
+		});
 
-		// $map.height = newMap.;
+		if (newMap.errors) return console.error(newMap.errors);
+		if (!newMap.data?.createMap) return;
+
 		panz.zoomAbs(0, 0, 1);
 		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
 		recenterMap();
@@ -468,16 +428,16 @@
 
 	const drawMap = () => {
 		emptyMap();
-		if (!$getMapByFloor.data?.getMapByFloor) {
+		if (!mapData) {
 			//TODO: show map creation button
 			return;
 		}
 
-		$map.height = $getMapByFloor.data.getMapByFloor.height;
-		$map.width = $getMapByFloor.data.getMapByFloor.width;
+		$map.height = mapData.height;
+		$map.width = mapData.width;
 		panz.zoomAbs(0, 0, 1);
 
-		$getMapByFloor.data?.getMapByFloor.desks!.map((desk) => {
+		mapData.desks!.map((desk) => {
 			createMapObject(
 				{ clientX: desk.x, clientY: desk.y } as MouseEvent,
 				mapObjectType.Desk,
@@ -491,7 +451,7 @@
 				desk.desknum
 			);
 		});
-		$getMapByFloor.data?.getMapByFloor.doors!.map((door) => {
+		mapData.doors!.map((door) => {
 			createMapObject({ clientX: door.x, clientY: door.y } as MouseEvent, mapObjectType.Door, {
 				x: door.x,
 				y: door.y,
@@ -500,7 +460,7 @@
 				rotation: door.rotation
 			} as TransformType);
 		});
-		$getMapByFloor.data?.getMapByFloor.rooms!.map((room) => {
+		mapData.rooms!.map((room) => {
 			createMapObject({ clientX: room.x, clientY: room.y } as MouseEvent, mapObjectType.Room, {
 				x: room.x,
 				y: room.y,
@@ -509,7 +469,7 @@
 				rotation: roomProps.rotation
 			} as TransformType);
 		});
-		$getMapByFloor.data?.getMapByFloor.walls!.map((wall) => {
+		mapData.walls!.map((wall) => {
 			createMapObject({ clientX: wall.x, clientY: wall.y } as MouseEvent, mapObjectType.Wall, {
 				x: wall.x,
 				y: wall.y,
@@ -552,7 +512,7 @@
 				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
 					<ProgressBar value={undefined} />
 				</div>
-			{:else if $getMapByFloor.data?.getMapByFloor}
+			{:else if mapData}
 				<canvas
 					bind:this={canvas}
 					width={$map.width}
@@ -563,7 +523,7 @@
 			{/if}
 		</div>
 	</div>
-	{#if !loadingMap && !$getMapByFloor.data?.getMapByFloor}
+	{#if !loadingMap && !mapData}
 		<button
 			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
 			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button

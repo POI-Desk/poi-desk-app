@@ -2,7 +2,8 @@ import type { PanZoomOptions } from 'panzoom';
 import type { TransformType } from '../types/transformType';
 import type { MapObjectType } from '$lib/types/mapObjectTypes';
 
-export const wallThinkness = 6;
+//TODO: make wallthinkness not part of the tarnsform
+export const wallThickness = 6;
 
 export const deskProps: TransformType = {
 	x: 0,
@@ -15,24 +16,24 @@ export const deskProps: TransformType = {
 export const roomProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 100 + wallThinkness,
-	height: 100 + wallThinkness,
+	width: 100,
+	height: 100,
 	rotation: 0
 };
 
 export const wallProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 200 + wallThinkness,
-	height: wallThinkness,
+	width: 200,
+	height: wallThickness,
 	rotation: 0
 };
 
 export const doorProps: TransformType = {
 	x: 0,
 	y: 0,
-	width: 50 + wallThinkness,
-	height: 20,
+	width: 50,
+	height: wallThickness * 3,
 	rotation: 0
 };
 

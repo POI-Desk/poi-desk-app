@@ -12,12 +12,17 @@ export const closestNumber = (n: number, m: number) => {
 };
 
 export const inBoundingbox = (element: DOMRect, box: DOMRect) => {
-	return element.left >= box.left && element.right - element.width <= box.right && element.top >= box.top && element.bottom - element.height <= box.bottom;
+	return (
+		element.left >= box.left &&
+		element.right - element.width <= box.right &&
+		element.top >= box.top &&
+		element.bottom - element.height <= box.bottom
+	);
 };
 
 export const transformPosition = (element: DOMRect, newParent: DOMRect, oldParent: DOMRect) => {
 	let newPos = { x: 0, y: 0 };
-	newPos.x = (element.left - oldParent.left);
-	newPos.y = (element.top - oldParent.top);
+	newPos.x = element.left - oldParent.left;
+	newPos.y = element.top - oldParent.top;
 	return newPos;
 };

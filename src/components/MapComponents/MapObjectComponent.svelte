@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
-	import { mapMagnetSteps, mapObjectType, wallProps, wallThinkness } from '$lib/map/props';
+	import { mapMagnetSteps, mapObjectType, wallProps, wallThickness } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
@@ -15,11 +15,6 @@
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
-	import { selectedMapObject } from '$lib/stores/mapObjectStore';
-	import client from '../../client';
-	import { scale } from 'svelte/transition';
-	import { get } from 'svelte/store';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
 
 	export let mapObject: MapObject;
 	export let enabled: boolean = false;
@@ -193,35 +188,27 @@
 		let active: HTMLElement | null = null;
 		right = document.createElement('div');
 		right.title = 'east';
-		right.classList.add('handle', 'handle-east');
 
 		left = document.createElement('div');
 		left.title = 'west';
-		left.classList.add('handle', 'handle-west');
 
 		top = document.createElement('div');
 		top.title = 'north';
-		top.classList.add('handle', 'handle-north');
 
 		bottom = document.createElement('div');
 		bottom.title = 'south';
-		bottom.classList.add('handle', 'handle-south');
 
 		topLeft = document.createElement('div');
 		topLeft.title = 'northwest';
-		topLeft.classList.add('handle', 'handle-northwest');
 
 		topRight = document.createElement('div');
 		topRight.title = 'northeast';
-		topRight.classList.add('handle', 'handle-northeast');
 
 		bottomLeft = document.createElement('div');
 		bottomLeft.title = 'southwest';
-		bottomLeft.classList.add('handle', 'handle-southwest');
 
 		bottomRight = document.createElement('div');
 		bottomRight.title = 'southeast';
-		bottomRight.classList.add('handle', 'handle-southeast');
 
 		grabbers = [right, left, top, bottom, topLeft, topRight, bottomLeft, bottomRight];
 
@@ -300,11 +287,9 @@
 		let active: HTMLElement | null = null;
 		right = document.createElement('div');
 		right.title = 'east';
-		right.classList.add('handle', 'handle-east-point');
 
 		left = document.createElement('div');
 		left.title = 'west';
-		left.classList.add('handle', 'handle-west-point');
 
 		grabbers = [right, left];
 
@@ -371,7 +356,7 @@
 	<div
 		class="z-40 duration-0"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
-			.width}px; left: {mapObject.transform.x + wallThinkness / 2}px; top: {mapObject.transform
+			.width}px; left: {mapObject.transform.x + wallThickness / 2}px; top: {mapObject.transform
 			.y}px; transform: rotate({mapObject.transform.rotation}deg);"
 		role="button"
 		tabindex="0"
@@ -389,9 +374,9 @@
 {:else if mapObject.type === mapObjectType.Room}
 	<div
 		class="flex justify-center duration-0"
-		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y -
-			wallThinkness / 2}px; z-index: {selected ? 45 : 10};"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected ? 45 : 10};"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
@@ -402,57 +387,73 @@
 				selected ||
 				(event.clientX >= drag.getBoundingClientRect().left - extension &&
 					event.clientX <=
-						drag.getBoundingClientRect().left + extension + wallThinkness * $map.scale) ||
+						drag.getBoundingClientRect().left + extension + wallThickness * $map.scale) ||
 				(event.clientX >=
 					drag.getBoundingClientRect().left -
 						extension +
-						mapObject.transform.width * $map.scale -
-						wallThinkness * $map.scale &&
+						(mapObject.transform.width + wallThickness) * $map.scale -
+						wallThickness * $map.scale &&
 					event.clientX <=
 						drag.getBoundingClientRect().left +
 							extension +
-							mapObject.transform.width * $map.scale) ||
+							(mapObject.transform.width + wallThickness) * $map.scale) ||
 				(event.clientY >= drag.getBoundingClientRect().top - extension &&
 					event.clientY <=
-						drag.getBoundingClientRect().top + extension + wallThinkness * $map.scale) ||
+						drag.getBoundingClientRect().top + extension + wallThickness * $map.scale) ||
 				(event.clientY >=
 					drag.getBoundingClientRect().top -
 						extension +
-						mapObject.transform.height * $map.scale -
-						wallThinkness * $map.scale &&
+						(mapObject.transform.height + wallThickness) * $map.scale -
+						wallThickness * $map.scale &&
 					event.clientY <=
-						drag.getBoundingClientRect().top + extension + mapObject.transform.height * $map.scale)
+						drag.getBoundingClientRect().top +
+							extension +
+							(mapObject.transform.height + wallThickness) * $map.scale)
 			)
 				handleDragStart(event);
 		}}
 		use:resizeRectangle
 	>
-		<RoomSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+		<RoomSvg
+			height={mapObject.transform.height + wallThickness}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
 	</div>
 {:else if mapObject.type === mapObjectType.Wall}
 	<div
 		class="flex justify-center z-20 duration-0 -translate-y-1/2"
-		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y}px;"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeWall
 	>
-		<WallSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+		<WallSvg
+			height={mapObject.transform.height}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
 	</div>
 {:else if mapObject.type === mapObjectType.Door}
 	<div
 		class="flex justify-center z-30 duration-0 -translate-y-1/2"
-		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y}px;"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 		use:resizeWall
 	>
-		<DoorSvg height={mapObject.transform.height} width={mapObject.transform.width} {selected} />
+		<DoorSvg
+			height={mapObject.transform.height}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
 	</div>
 {/if}
