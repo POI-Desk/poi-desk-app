@@ -35,51 +35,61 @@
             searchUsers = users.map((user) => ({
                 pk_userid: user?.pk_userid,
                 username: user?.username,
-                location: null
+                location: null,
+                userInfo: ""
             }));
+
         })
 
         for (const user of searchUsers) {
-            onUserClicked(user);
+            console.log(searchUsers);
+            console.log(user);
+            let index = searchUsers.indexOf(user);
+            console.log(index);
+            searchUsers[index] = await getUserInfo(user);
         }
+        
 
     }
 
     // let userInfo: string = "";
     let userLocation: string = "";
 
-    async function onUserClicked(user: User) {
-        //typedUsername = user?.username ?? "";
-        selectedUser = user;
-        getBookings.fetch({variables: {userid: user.pk_userid ?? ""}});
-        for (const booking of bookingsOfSelectedUser?? []) {
-            //console.log(booking?.date + "== " + $dateValue);
-            if (booking?.date == $dateValue) {
-                //bookingsOnDate.push(booking);       
-                await getDesk.fetch({variables: {bookingid: booking.pk_bookingid ?? ""}}).then(() => {
-                    let desk = $getDesk.data?.getBookingById?.desk;
-                    // console.log(user.username + " sitzt am nachmittag hier: " + booking.isafternoon)
-                    // console.log(user.username + " sitzt heute auf " + desk?.floor?.building?.location?.locationname);  
-                    userLocation = desk?.floor?.building.location?.locationname ?? "";
-                    if (booking.ismorning || booking.isafternoon) user.userInfo = "today in " + userLocation;
-                    else {
-                        console.log(user.username + "not in office today");
-                        user.userInfo = "not in office today"
-                    }
-                    console.log(user.username + " -> userLocation: " + userLocation + "; userInfo: " + user.userInfo);
-                })
-            }
-
-            
-
-        }
-    }
-
-	$: bookingsOfSelectedUser = $getBookings.data?.getBookingsByUserid;
+    $: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
 	let bookingsOnDate = [];
 
     let typedUsername: string;
-    let selectedUser: User;
+    let typedUser: User;
+
+
+    async function getUserInfo(user: User) {
+        typedUser = user;
+        await getBookings.fetch({variables: {userid: user.pk_userid ?? ""}});
+        for (const booking of bookingsOfUser?? []) {
+            if (booking?.date == $dateValue) {
+                await getDesk.fetch({variables: {bookingid: booking.pk_bookingid ?? ""}}).then(() => {
+                    let desk = $getDesk.data?.getBookingById?.desk;
+                    userLocation = desk?.floor?.building.location?.locationname ?? "";
+                    if (booking.ismorning && booking.isafternoon) {user.userInfo = "today in " + userLocation;}
+                    else if (booking.ismorning) {user.userInfo = "this morning in " + userLocation;}
+                    else if (booking.isafternoon) {user.userInfo = "this afternoon in " + userLocation;}
+                    
+                })
+            } else {
+                user.userInfo = "not in office today";
+            }
+        }
+        console.log(user.username + " -> userLocation: " + userLocation + "; userInfo: " + user.userInfo);
+        return user;
+    }
+
+    async function onUserClicked(user: User) {
+        await getBookings.fetch({variables: {userid: user.pk_userid ?? ""}});
+        console.log(bookingsOfUser);
+
+
+    }
+
 
 	export const _getDeskOfBookingVariables = () => {
 		return {};
@@ -138,10 +148,9 @@
         pageNumber --;
     }
 
-	$: filteredUsers = searchUsers.filter(function (usr) {
-		return usr.username?.toLowerCase().includes(selectedUsername?.toLowerCase() ?? '');
-	});
 </script>
+
+<!-- on:focusout|stopPropagation={handleDropdownFocusLoss}  -->
 
 <div>
     <div class="dropdown">
@@ -151,7 +160,7 @@
                 {#each searchUsers as usr}
                     <li>
                         <button on:click|preventDefault={() => onUserClicked(usr)}>{usr.username}</button>
-                        <!-- <span>{usr.userInfo}</span> -->
+                        <span>{usr.userInfo}</span>
                     </li>
                 {/each}
                 <li>
