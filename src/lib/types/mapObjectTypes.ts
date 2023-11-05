@@ -9,6 +9,7 @@ export type MapObjectType = {
 };
 
 export type MapObject = {
+  dbID: string | null;
 	id: string;
 	type: string;
 	transform: TransformType;

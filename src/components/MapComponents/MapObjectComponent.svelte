@@ -104,6 +104,8 @@
 	};
 
 	const handleDragStart = (event: MouseEvent) => {
+    if( event.button != 0) return;
+
 		dragging = true;
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
@@ -168,18 +170,17 @@
 		grabbers.forEach((grabber) => {
 			grabber.classList.remove(
 				'handle',
-				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${ mapObject.type == mapObjectType.Room ? '' : '-point'}`
 			);
 		});
 	};
 
 	export const applySelectedStyle = () => {
 		selected = true;
-
 		grabbers.forEach((grabber) => {
 			grabber.classList.add(
 				'handle',
-				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${ mapObject.type == mapObjectType.Room ? '' : '-point'}`
 			);
 		});
 	};
@@ -188,27 +189,28 @@
 		let active: HTMLElement | null = null;
 		right = document.createElement('div');
 		right.title = 'east';
-
+		right.classList.add('handle', 'handle-east');
 		left = document.createElement('div');
 		left.title = 'west';
-
+		left.classList.add('handle', 'handle-west');
 		top = document.createElement('div');
 		top.title = 'north';
-
+		top.classList.add('handle', 'handle-north');
 		bottom = document.createElement('div');
 		bottom.title = 'south';
-
+		bottom.classList.add('handle', 'handle-south');
 		topLeft = document.createElement('div');
 		topLeft.title = 'northwest';
-
+		topLeft.classList.add('handle', 'handle-northwest');
 		topRight = document.createElement('div');
 		topRight.title = 'northeast';
-
+		topRight.classList.add('handle', 'handle-northeast');
 		bottomLeft = document.createElement('div');
 		bottomLeft.title = 'southwest';
-
+		bottomLeft.classList.add('handle', 'handle-southwest');
 		bottomRight = document.createElement('div');
 		bottomRight.title = 'southeast';
+		bottomRight.classList.add('handle', 'handle-southeast');
 
 		grabbers = [right, left, top, bottom, topLeft, topRight, bottomLeft, bottomRight];
 
@@ -287,9 +289,10 @@
 		let active: HTMLElement | null = null;
 		right = document.createElement('div');
 		right.title = 'east';
-
+		right.classList.add('handle', 'handle-east-point');
 		left = document.createElement('div');
 		left.title = 'west';
+		left.classList.add('handle', 'handle-west-point');
 
 		grabbers = [right, left];
 
@@ -352,7 +355,7 @@
 	}
 </script>
 
-{#if mapObject.type === mapObjectType.Desk}
+{#if  mapObject.type === mapObjectType.Desk}
 	<div
 		class="z-40 duration-0"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
@@ -371,7 +374,7 @@
 			text={mapObject.id}
 		/>
 	</div>
-{:else if mapObject.type === mapObjectType.Room}
+{:else if  mapObject.type === mapObjectType.Room}
 	<div
 		class="flex justify-center duration-0"
 		style="position: absolute; width: {mapObject.transform.width +

@@ -26,7 +26,6 @@
 
 	const genRandomId = (length: number) => {
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-		console.log(characters.length);
 		const charactersLength = characters.length;
 		let result: string;
 		do {

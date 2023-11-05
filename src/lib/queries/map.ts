@@ -7,6 +7,7 @@ export const getMapByFloor = graphql(`
 			height
 			width
 			desks {
+        pk_deskid
 				desknum
 				x
 				y
