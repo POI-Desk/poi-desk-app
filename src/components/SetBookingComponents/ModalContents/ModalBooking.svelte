@@ -41,7 +41,7 @@
 
 	let time: string = 'default';
 
-	let selection: boolean = true;
+	let selectionPage: boolean = true;
 
 	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
 
@@ -63,13 +63,16 @@
 	const cBase = 'card p-4 shadow-xl space-y-4';
 
 	function whenSelection() {
-		console.log('has bookings: ' + hasBookings);
-		console.log('is booked morning: ' + isBookedMorning);
-		console.log('is booked afternoon: ' + isBookedAfternoon);
-		console.log('is full day: ' + isFullDay);
+		console.log('full day:', isFullDay);
+		console.log($interval);
 
 		if (!isFullDay) {
-			selection = !selection;
+			if (!$interval.morning && !$interval.afternoon) {
+				console.log('here');
+				return;
+			}
+			selectionPage = !selectionPage;
+			return;
 		}
 	}
 
@@ -83,20 +86,22 @@
 
 {#if $modalStore[0]}
 	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
-		{#if selection}
+		{#if selectionPage}
 			<div class="grid grid-cols-7 row-auto gap-4 text-center basis-full">
-				<div class="col-span-7 bg-red-500">
+
+				<div class="col-span-7 ">
+					<!--
 					{$selectedDesk.desknum}
-					<br /> CURRENTLY NOT WORKING
+					<br /> CURRENTLY NOT WORKING-->
 				</div>
 				<BookingDeskState shownInterval="morning" />
 				<!---->
 				<BookingDeskState shownInterval="afternoon" />
-
-				<div class="col-span-7 row-span-2 bg-red-500">
-					<div class="rounded-3xl w-full h-full bg-white">CURRENTLY NOT WORKING</div>
-				</div>
-				<div class="col-span-7 row-span-1 bg-red-500">
+				<!--
+				<div class="col-span-7 row-span-2">
+					<div class="rounded-3xl w-full h-full bg-white"></div>
+				</div>-->
+				<div class="col-span-7 row-span-1">
 					<button
 						on:click={() => whenSelection()}
 						class="btn rounded-3xl w-full h-full text-xl bg-white">Buchen</button
