@@ -5,5 +5,5 @@ export const user = writable<User> ({
     pk_userid: '',
     username: '',
     location: null,
-    userInfo: '',
+    userInfo: ''
 });
