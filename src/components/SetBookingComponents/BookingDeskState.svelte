@@ -1,33 +1,47 @@
 <script lang="ts">
 	import { interval, selectedDesk } from '$lib/bookingStore';
+	import { dateValue } from '$lib/dateStore';
 	import { fade } from 'svelte/transition';
+	import { user } from '$lib/userStore';
 
 	let morningSelected: boolean = false;
 	let afternoonSelected: boolean = false;
 	export let shownInterval: String = 'default';
 	// just for now
-	let morningAlreadyTaken: boolean = false;
-	let afternoonAlreadyTaken: boolean = false;
+	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+	let isBookedMorning: boolean = currentBookingsOnDate.some((booking: any) => booking.ismorning);
+	let isBookedAfternoon: boolean = currentBookingsOnDate.some(
+		(booking: any) => booking.isafternoon
+	);
 
-	// not clean code :( makes me sad 😭 😭 
-	// TODO: rewrite this
-	// code does like "work" but also not soooooo
-		if ($selectedDesk.bookings.length > 0) {
-		morningAlreadyTaken = $selectedDesk.bookings[0].ismorning;
-		afternoonAlreadyTaken = $selectedDesk.bookings[0].isafternoon;
+	console.log(currentBookingsOnDate);
+	let morningAlreadyTakenName: string = '';
+	let afternoonAlreadyTakenName: string = '';
+	for (const booking of currentBookingsOnDate) {
+		if (booking.date === $dateValue) {
+			if (booking.ismorning) {
+				morningAlreadyTakenName = booking.user.username;
+				console.log("morning already taken by: ", morningAlreadyTakenName);
+			}
+			if (booking.isafternoon) {
+				afternoonAlreadyTakenName = booking.user.username;
+				console.log("afternoon already taken by: ", afternoonAlreadyTakenName);
+
+			}
+		}
 	}
 
 	$: $interval.morning = morningSelected;
 	$: $interval.afternoon = afternoonSelected;
 
 	// TODO: change name to logged in user.
-	// TODO: change name when already taken to user who booked it. 
+	// TODO: change name when already taken to user who booked it.
 </script>
 
 <div class="col-span-5 row-span-5">
 	<!--amongus-->
 	{#if shownInterval == 'morning'}
-		{#if morningSelected && !morningAlreadyTaken}
+		{#if morningSelected && !isBookedMorning}
 			<div in:fade class="rounded-3xl grid grid-cols-2 bg-slate-500 w-full h-full">
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -36,14 +50,14 @@
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
-					Maximilian <br />Schwarzmüller
+					{$user.username}
 				</div>
 			</div>
-		{:else if !morningAlreadyTaken}
+		{:else if !isBookedMorning}
 			<div in:fade class="rounded-3xl grid grid-cols-2 variant-filled-primary w-full h-full">
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
-		{:else if morningAlreadyTaken}
+		{:else if isBookedMorning}
 			<div in:fade class="rounded-3xl grid grid-cols-2 bg-orange-500 w-full h-full">
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -52,12 +66,12 @@
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
-					Maximilian <br />Schwarzmüller
+					{morningAlreadyTakenName}
 				</div>
 			</div>
 		{/if}
 	{:else if shownInterval == 'afternoon'}
-		{#if afternoonSelected && !afternoonAlreadyTaken}
+		{#if afternoonSelected && !isBookedAfternoon}
 			<div in:fade class="rounded-3xl grid grid-cols-2 bg-slate-500 w-full h-full">
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -66,14 +80,14 @@
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
-					Maximilian <br />Schwarzmüller
+					{$user.username}
 				</div>
 			</div>
-		{:else if !afternoonAlreadyTaken}
+		{:else if !isBookedAfternoon}
 			<div in:fade class="rounded-3xl grid grid-cols-2 variant-filled-primary w-full h-full">
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
-		{:else if afternoonAlreadyTaken}
+		{:else if isBookedAfternoon}
 			<div in:fade class="rounded-3xl grid grid-cols-2 bg-orange-500 w-full h-full">
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -82,7 +96,7 @@
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
-					Maximilian <br />Schwarzmüller
+					{afternoonAlreadyTakenName}
 				</div>
 			</div>
 		{/if}
@@ -92,20 +106,19 @@
 	{#if shownInterval == 'morning'}
 		<button
 			class="btn rounded-full variant-filled-primary w-full h-full"
-			disabled={morningAlreadyTaken}
-			on:click={() => morningSelected = !morningSelected}
-			>07:00 <br /> 13:00 <br /> {morningAlreadyTaken}
+			disabled={isBookedMorning}
+			on:click={() => (morningSelected = !morningSelected)}
+			>07:00 <br /> 13:00 <br />
 		</button>
 	{:else if shownInterval == 'afternoon'}
 		<button
 			class="btn rounded-full variant-filled-primary w-full h-full"
-			disabled={afternoonAlreadyTaken}
-			on:click={() => afternoonSelected = !afternoonSelected}
-			>13:00 <br /> 20:00 <br /> {afternoonAlreadyTaken}
+			disabled={isBookedAfternoon}
+			on:click={() => (afternoonSelected = !afternoonSelected)}
+			>13:00 <br /> 20:00 <br />
 		</button>
 	{/if}
 </div>
 
 <style>
-	
 </style>
