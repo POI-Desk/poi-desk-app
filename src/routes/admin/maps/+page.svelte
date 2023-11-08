@@ -8,7 +8,15 @@
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import { CachePolicy, fragment, graphql, type UpdateDeskInput, type UpdateDoorInput, type UpdateRoomInput, type UpdateWallInput } from '$houdini';
+	import {
+		CachePolicy,
+		fragment,
+		graphql,
+		type UpdateDeskInput,
+		type UpdateDoorInput,
+		type UpdateRoomInput,
+		type UpdateWallInput
+	} from '$houdini';
 	import { compareObjectsByValues } from '$lib/map/helper';
 
 	import {
@@ -63,7 +71,7 @@
 		type: 'component',
 		component: 'modalEditMapObject',
 		response: (r: { newId: string; oldId: string }) => {
-      if (!r) return;
+			if (!r) return;
 			changeMapObjectId(r.oldId, r.newId);
 		}
 	};
@@ -81,53 +89,65 @@
 		}
 	`);
 
-  const updateMapObjects = graphql(`
-    mutation UpdateMapObjects($mapId: ID!, $deskInputs: [UpdateDeskInput!]!, $doorInputs: [UpdateDoorInput!]!, $roomInputs: [UpdateRoomInput!]!, $wallInputs: [UpdateWallInput!]!) {
-      updateMapObjects(mapId: $mapId, deskInputs: $deskInputs, doorInputs: $doorInputs, roomInputs: $roomInputs, wallInputs: $wallInputs){
-        pk_mapId
-        height
-        width
-        desks {
-          pk_deskid
-          desknum
-          x
-          y
-          rotation
-        }
-        rooms {
-          pk_roomId
-          x
-          y
-          width
-          height
-        }
-        walls {
-          pk_wallId
-          x
-          y
-          rotation
-          width
-        }
-        doors {
-          pk_doorId
-          x
-          y
-          rotation
-          width
-        }
-      }
-    }
-  `);
+	const updateMapObjects = graphql(`
+		mutation UpdateMapObjects(
+			$mapId: ID!
+			$deskInputs: [UpdateDeskInput!]!
+			$doorInputs: [UpdateDoorInput!]!
+			$roomInputs: [UpdateRoomInput!]!
+			$wallInputs: [UpdateWallInput!]!
+		) {
+			updateMapObjects(
+				mapId: $mapId
+				deskInputs: $deskInputs
+				doorInputs: $doorInputs
+				roomInputs: $roomInputs
+				wallInputs: $wallInputs
+			) {
+				pk_mapId
+				height
+				width
+				desks {
+					pk_deskid
+					desknum
+					x
+					y
+					rotation
+				}
+				rooms {
+					pk_roomId
+					x
+					y
+					width
+					height
+				}
+				walls {
+					pk_wallId
+					x
+					y
+					rotation
+					width
+				}
+				doors {
+					pk_doorId
+					x
+					y
+					rotation
+					width
+				}
+			}
+		}
+	`);
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
-  $: {
-    mapData;
-    drawMap();
-  }
+	$: {
+		mapData;
+		drawMap();
+	}
 	$: $map.height = mapData?.height ?? defaultMapProps.height;
 	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
-	const locationIdVienna: string = 'e95b03fa-43cf-4310-80af-9ac97731e956'; //TODO: get from admin user
+	const locationIdVienna: string = '241ef7e9-0cb8-46fb-a378-2c9614b8f9e4'; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
 
 	const fetchBuildings = async (id: string) => {
@@ -181,7 +201,7 @@
 
 	const initializeMap = async () => {
 		await fetchBuildings(locationIdVienna);
-    //Nullable assertion operator
+		//Nullable assertion operator
 		await changeBuilding(buildings[1].pk_buildingid, buildings[1].floors![1].pk_floorid);
 	};
 
@@ -210,11 +230,11 @@
 		type: string,
 		initialTransform: TransformType | null,
 		id: string = '',
-    dbID: string | null = null
+		dbID: string | null = null
 	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
-      dbID: dbID,
+			dbID: dbID,
 			id: id === '' ? genRandomId(5) : id,
 			type: type,
 			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
@@ -238,7 +258,7 @@
 				initialDrag: initialTransform == null
 			}
 		});
-    if (initialTransform) element.removeSelectedStyle();
+		if (initialTransform) element.removeSelectedStyle();
 
 		element.$on('select', (event: CustomEvent<TransformType>) => {
 			panz.pause();
@@ -445,7 +465,7 @@
 		loadingMap = true;
 		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
 		loadingMap = false;
-		
+
 		currentFloorID = floorID;
 	};
 
@@ -495,97 +515,175 @@
 					rotation: desk.rotation
 				} as TransformType,
 				desk.desknum,
-        desk.pk_deskid
+				desk.pk_deskid
 			);
 		});
 		mapData.doors!.map((door) => {
-			createMapObject({ clientX: door.x, clientY: door.y } as MouseEvent, mapObjectType.Door, {
-				x: door.x,
-				y: door.y,
-				width: door.width,
-				height: doorProps.height,
-				rotation: door.rotation
-			} as TransformType,
-      '',
-      door.pk_doorId
-      );
+			createMapObject(
+				{ clientX: door.x, clientY: door.y } as MouseEvent,
+				mapObjectType.Door,
+				{
+					x: door.x,
+					y: door.y,
+					width: door.width,
+					height: doorProps.height,
+					rotation: door.rotation
+				} as TransformType,
+				'',
+				door.pk_doorId
+			);
 		});
 		mapData.rooms!.map((room) => {
-			createMapObject({ clientX: room.x, clientY: room.y } as MouseEvent, mapObjectType.Room, {
-				x: room.x,
-				y: room.y,
-				width: room.width,
-				height: room.height,
-				rotation: roomProps.rotation
-			} as TransformType,
-      '',
-      room.pk_roomId
-      );
+			createMapObject(
+				{ clientX: room.x, clientY: room.y } as MouseEvent,
+				mapObjectType.Room,
+				{
+					x: room.x,
+					y: room.y,
+					width: room.width,
+					height: room.height,
+					rotation: roomProps.rotation
+				} as TransformType,
+				'',
+				room.pk_roomId
+			);
 		});
 		mapData.walls!.map((wall) => {
-			createMapObject({ clientX: wall.x, clientY: wall.y } as MouseEvent, mapObjectType.Wall, {
-				x: wall.x,
-				y: wall.y,
-				width: wall.width,
-				height: wallProps.height,
-				rotation: wall.rotation
-			} as TransformType,
-      '',
-      wall.pk_wallId
-      );
+			createMapObject(
+				{ clientX: wall.x, clientY: wall.y } as MouseEvent,
+				mapObjectType.Wall,
+				{
+					x: wall.x,
+					y: wall.y,
+					width: wall.width,
+					height: wallProps.height,
+					rotation: wall.rotation
+				} as TransformType,
+				'',
+				wall.pk_wallId
+			);
 		});
 		recenterMap();
 	};
 
-  const saveMap = async () => {
-    //TODO: Ignore objetcs with no changes
+	const saveMap = async () => {
+		//TODO: Ignore objetcs with no changes
 
-    if (mapData == null) return;
+		if (mapData == null) return;
 
-    const desks: UpdateDeskInput[] = $allMapObjects.filter((obj) => obj.type === mapObjectType.Desk).map((obj) => {
-      const desk = mapData!.desks?.find((d) => d.pk_deskid === obj.dbID);
-      if (compareObjectsByValues(
-        {"dbID": obj.dbID, "id": obj.id, "x": obj.transform.x, "y": obj.transform.y}, 
-        {"dbID": desk?.pk_deskid, "id": desk?.desknum, "x": desk?.x, "y": desk?.y}
-      )) return {} as UpdateDeskInput;
-      return getInputTypeFromMapObject(obj) as UpdateDeskInput;
-    }).filter((desk) => Object.keys(desk).length !== 0);
+		const desks: UpdateDeskInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Desk)
+			.map((obj) => {
+				const desk = mapData!.desks?.find((d) => d.pk_deskid === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{ dbID: obj.dbID, id: obj.id, x: obj.transform.x, y: obj.transform.y },
+						{ dbID: desk?.pk_deskid, id: desk?.desknum, x: desk?.x, y: desk?.y }
+					)
+				)
+					return {} as UpdateDeskInput;
+				return getInputTypeFromMapObject(obj) as UpdateDeskInput;
+			})
+			.filter((desk) => Object.keys(desk).length !== 0);
 
-    const rooms: UpdateRoomInput[] = $allMapObjects.filter((obj) => obj.type === mapObjectType.Room).map((obj) => {
-      const room = mapData!.rooms?.find((d) => d.pk_roomId === obj.dbID);
-      if (compareObjectsByValues(
-        {"dbID": obj.dbID, "x": obj.transform.x, "y": obj.transform.y, "width": obj.transform.width, "height": obj.transform.height}, 
-        {"dbID": room?.pk_roomId, "x": room?.x, "y": room?.y, "width": room?.width, "height": room?.height}
-      )) return {} as UpdateRoomInput;
-      return getInputTypeFromMapObject(obj) as UpdateRoomInput;
-    }).filter((room) => Object.keys(room).length !== 0);
+		const rooms: UpdateRoomInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Room)
+			.map((obj) => {
+				const room = mapData!.rooms?.find((d) => d.pk_roomId === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{
+							dbID: obj.dbID,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							width: obj.transform.width,
+							height: obj.transform.height
+						},
+						{
+							dbID: room?.pk_roomId,
+							x: room?.x,
+							y: room?.y,
+							width: room?.width,
+							height: room?.height
+						}
+					)
+				)
+					return {} as UpdateRoomInput;
+				return getInputTypeFromMapObject(obj) as UpdateRoomInput;
+			})
+			.filter((room) => Object.keys(room).length !== 0);
 
-    const walls: UpdateWallInput[] = $allMapObjects.filter((obj) => obj.type === mapObjectType.Wall).map((obj) => {
-      const wall = mapData!.walls?.find((d) => d.pk_wallId === obj.dbID);
-      if (compareObjectsByValues(
-        {"dbID": obj.dbID, "x": obj.transform.x, "y": obj.transform.y, "rotation": obj.transform.rotation, "width": obj.transform.width}, 
-        {"dbID": wall?.pk_wallId, "x": wall?.x, "y": wall?.y, "rotation": wall?.rotation, "width": wall?.width}
-      )) return {} as UpdateWallInput;
-      return getInputTypeFromMapObject(obj) as UpdateWallInput;
-    }).filter((wall) => Object.keys(wall).length !== 0);
+		const walls: UpdateWallInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Wall)
+			.map((obj) => {
+				const wall = mapData!.walls?.find((d) => d.pk_wallId === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{
+							dbID: obj.dbID,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							rotation: obj.transform.rotation,
+							width: obj.transform.width
+						},
+						{
+							dbID: wall?.pk_wallId,
+							x: wall?.x,
+							y: wall?.y,
+							rotation: wall?.rotation,
+							width: wall?.width
+						}
+					)
+				)
+					return {} as UpdateWallInput;
+				return getInputTypeFromMapObject(obj) as UpdateWallInput;
+			})
+			.filter((wall) => Object.keys(wall).length !== 0);
 
-    const doors: UpdateDoorInput[] = $allMapObjects.filter((obj) => obj.type === mapObjectType.Door).map((obj) => {
-      const door = mapData!.doors?.find((d) => d.pk_doorId === obj.dbID);
-      if (compareObjectsByValues(
-        {"dbID": obj.dbID, "x": obj.transform.x, "y": obj.transform.y, "rotation": obj.transform.rotation, "width": obj.transform.width}, 
-        {"dbID": door?.pk_doorId, "x": door?.x, "y": door?.y, "rotation": door?.rotation, "width": door?.width}
-      )) return {} as UpdateDoorInput;
-      return getInputTypeFromMapObject(obj) as UpdateDoorInput;
-    }).filter((door) => Object.keys(door).length !== 0);
+		const doors: UpdateDoorInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Door)
+			.map((obj) => {
+				const door = mapData!.doors?.find((d) => d.pk_doorId === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{
+							dbID: obj.dbID,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							rotation: obj.transform.rotation,
+							width: obj.transform.width
+						},
+						{
+							dbID: door?.pk_doorId,
+							x: door?.x,
+							y: door?.y,
+							rotation: door?.rotation,
+							width: door?.width
+						}
+					)
+				)
+					return {} as UpdateDoorInput;
+				return getInputTypeFromMapObject(obj) as UpdateDoorInput;
+			})
+			.filter((door) => Object.keys(door).length !== 0);
 
-    const updatedMap = await updateMapObjects.mutate({mapId: mapData?.pk_mapId, deskInputs: desks, roomInputs: rooms, wallInputs: walls, doorInputs: doors});
-    if (updatedMap.errors) console.error(updatedMap.errors);
-  };
-
+		const updatedMap = await updateMapObjects.mutate({
+			mapId: mapData?.pk_mapId,
+			deskInputs: desks,
+			roomInputs: rooms,
+			wallInputs: walls,
+			doorInputs: doors
+		});
+		if (updatedMap.errors) console.error(updatedMap.errors);
+	};
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-  <button on:click={saveMap} class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]">{$updateMapObjects.fetching ? 'loading' : 'SAVE'}</button>
+	<button
+		on:click={saveMap}
+		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
+		>{$updateMapObjects.fetching ? 'loading' : 'SAVE'}</button
+	>
 	<MapObjectSelector
 		on:create={(event) => createMapObject(event.detail.e, event.detail.type, null)}
 	/>
