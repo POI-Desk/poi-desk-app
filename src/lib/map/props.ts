@@ -97,7 +97,8 @@ export const panzoomProps: PanZoomOptions = {
 	smoothScroll: false,
 	maxZoom: 3,
 	minZoom: 0.25,
-	initialZoom: 1
+	initialZoom: 1,
+  autocenter: false,
 };
 
 export const mapObjectType: MapObjectType = {

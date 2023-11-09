@@ -5,6 +5,8 @@
 	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
 	import SearchBar from '$components/SearchBar.svelte';
 	import { user } from '$lib/userStore';
+	import FloorMap from '$components/MapComponents/FloorMap.svelte';
+	import FloorSelection from '$components/FloorSelection.svelte';
 	//
 	// let visible = false;
 	// let panelVisible = false;
@@ -32,24 +34,32 @@
 <!--{/if}-->
 
 <div class="m-3">
-	<a class="btn variant-filled-primary" href="./login">Login</a>
+  <FloorMap />
 
-	<a class="btn variant-filled-primary" href="./location">Location</a>
+  <div class="absolute top-3">
+    <a class="btn variant-filled-primary" href="./login">Login</a>
+    <a class="btn variant-filled-primary" href="./location">Location</a>
+    <DateSelection />
+  </div>
 	<!--Debugging-->
-	<p>{$user.pk_userid ?? 'no id'}</p>
+	<!-- <p>{$user.pk_userid ?? 'no id'}</p>
 	<p>{$user.username ?? 'no username'}</p>
 	<p>{$user.location?.locationname ?? 'no location'}</p>
-	<p>{$user.location?.pk_locationid ?? 'no location'}</p>
+	<p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
 	<!---->
-	<SearchBar />
-
-	<DateSelection />
-
+	<!-- <SearchBar /> -->
+  
+  <div class="absolute left-3 top-1/2 -translate-y-1/2">
+    <FloorSelection />
+  </div>
+  
 	<div class="flex justify-center">
-		<div class="absolute bottom-20">
-			<BuildingSelection />
+    <div class="absolute bottom-20">
+      <BuildingSelection />
 		</div>
 	</div>
+  
+  
+  <!-- <SeatsOnFloor /> -->
 
-	<SeatsOnFloor />
 </div>

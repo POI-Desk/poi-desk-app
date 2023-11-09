@@ -1,5 +1,3 @@
-<!-- TODO: MAKE ALL COMPONENTS IN THE MAP UNIFIED IN ONE LIST + POSSIBLY SEPERATE LISTS FOR API -->
-
 <script lang="ts">
 	import FloorSelection from '$components/FloorSelection.svelte';
 	// import { getBuildings } from '$lib/queries/buildingQueries';
@@ -30,8 +28,12 @@
 		roomProps,
 		wallProps
 	} from '$lib/map/props';
+	import { deleteDesks, updateDesksOnMap } from '$lib/mutations/desks';
+	import { deleteDoors, updateDoorsOnMap } from '$lib/mutations/door';
 	import { createMap } from '$lib/mutations/map';
-	import { getMapByFloor } from '$lib/queries/map';
+	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
+	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
+	import { getMapByFloor, getMapById } from '$lib/queries/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -51,6 +53,7 @@
 	import { Type } from 'lucide-svelte';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -89,65 +92,12 @@
 		}
 	`);
 
-	const updateMapObjects = graphql(`
-		mutation UpdateMapObjects(
-			$mapId: ID!
-			$deskInputs: [UpdateDeskInput!]!
-			$doorInputs: [UpdateDoorInput!]!
-			$roomInputs: [UpdateRoomInput!]!
-			$wallInputs: [UpdateWallInput!]!
-		) {
-			updateMapObjects(
-				mapId: $mapId
-				deskInputs: $deskInputs
-				doorInputs: $doorInputs
-				roomInputs: $roomInputs
-				wallInputs: $wallInputs
-			) {
-				pk_mapId
-				height
-				width
-				desks {
-					pk_deskid
-					desknum
-					x
-					y
-					rotation
-				}
-				rooms {
-					pk_roomId
-					x
-					y
-					width
-					height
-				}
-				walls {
-					pk_wallId
-					x
-					y
-					rotation
-					width
-				}
-				doors {
-					pk_doorId
-					x
-					y
-					rotation
-					width
-				}
-			}
-		}
-	`);
-
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
-	$: {
-		mapData;
-		drawMap();
-	}
+
 	$: $map.height = mapData?.height ?? defaultMapProps.height;
 	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
-	const locationIdVienna: string = '241ef7e9-0cb8-46fb-a378-2c9614b8f9e4'; //TODO: get from admin user
+	const locationIdVienna: string = 'e95b03fa-43cf-4310-80af-9ac97731e956'; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
 
 	const fetchBuildings = async (id: string) => {
@@ -464,6 +414,7 @@
 		if (floorID === currentFloorID) return;
 		loadingMap = true;
 		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
+    drawMap();
 		loadingMap = false;
 
 		currentFloorID = floorID;
@@ -492,10 +443,9 @@
 		mapObjects = {};
 	};
 
-	const drawMap = () => {
+	const drawMap = (recenter: boolean = true) => {
 		emptyMap();
 		if (!mapData) {
-			//TODO: show map creation button
 			return;
 		}
 
@@ -563,7 +513,7 @@
 				wall.pk_wallId
 			);
 		});
-		recenterMap();
+		if (recenter) recenterMap();
 	};
 
 	const saveMap = async () => {
@@ -667,14 +617,81 @@
 			})
 			.filter((door) => Object.keys(door).length !== 0);
 
-		const updatedMap = await updateMapObjects.mutate({
-			mapId: mapData?.pk_mapId,
-			deskInputs: desks,
-			roomInputs: rooms,
-			wallInputs: walls,
-			doorInputs: doors
-		});
-		if (updatedMap.errors) console.error(updatedMap.errors);
+      const deskIdsToDelete: string[] = mapData.desks?.filter(desk => !$allMapObjects?.find(d => d.dbID === desk.pk_deskid && d.type === mapObjectType.Desk))?.map(desk => desk.pk_deskid) ?? [];
+      const roomIdsToDelete: string[] = mapData.rooms?.filter(room => !$allMapObjects?.find(d => d.dbID === room.pk_roomId && d.type === mapObjectType.Room))?.map(room => room.pk_roomId) ?? [];
+      const doorIdsToDelete: string[] = mapData.doors?.filter(door => !$allMapObjects?.find(d => d.dbID === door.pk_doorId && d.type === mapObjectType.Door))?.map(door => door.pk_doorId) ?? [];
+      const wallIdsToDelete: string[] = mapData.walls?.filter(wall => !$allMapObjects?.find(d => d.dbID === wall.pk_wallId && d.type === mapObjectType.Wall))?.map(wall => wall.pk_wallId) ?? [];
+
+      let updateDesks;
+      if (desks.length > 0){
+        updateDesks = updateDesksOnMap.mutate({
+          mapId: mapData.pk_mapId,
+          deskInputs: desks,
+        });
+      }
+
+      let updateRooms;
+      if (rooms.length > 0){
+        updateRooms = updateRoomsOnMap.mutate({
+          mapId: mapData.pk_mapId,
+          roomInputs: rooms,
+        });
+      }
+
+      let updateWalls;
+      if (walls.length > 0){
+        updateWalls = updateWallsOnMap.mutate({
+          mapId: mapData.pk_mapId,
+          wallInputs: walls,
+        });
+      }
+
+      let updateDoors;
+      if (doors.length > 0){
+        updateDoors = updateDoorsOnMap.mutate({
+          mapId: mapData.pk_mapId,
+          doorInputs: doors,
+        });
+      }
+
+      let delDesks;
+      if (deskIdsToDelete?.length > 0){
+        delDesks = deleteDesks.mutate({
+          deskIds: deskIdsToDelete,
+        });
+      }
+
+      let delRooms;
+      if (roomIdsToDelete?.length > 0){
+        delRooms = deleteRooms.mutate({
+          roomIds: roomIdsToDelete,
+        });
+      }
+
+      let delDoors;
+      if (doorIdsToDelete?.length > 0){
+        delDoors = deleteDoors.mutate({
+          doorIds: doorIdsToDelete,
+        });
+      }
+
+      let delWalls;
+      if (wallIdsToDelete?.length > 0){
+        delWalls = deleteWalls.mutate({
+          wallIds: wallIdsToDelete,
+        });
+      }
+      
+
+      const resolves = await Promise.all([updateDesks, updateRooms, updateWalls, updateDoors, delDesks, delRooms, delDoors, delWalls]);
+
+      resolves.map((resolve) => {
+        if (!resolve) return;
+        if (resolve.errors) return console.error(resolve.errors);
+      });
+
+      await getMapByFloor.fetch({ variables: { floorID: currentFloorID }, policy: CachePolicy.NetworkOnly });
+      drawMap(false);
 	};
 </script>
 
@@ -682,7 +699,7 @@
 	<button
 		on:click={saveMap}
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$updateMapObjects.fetching ? 'loading' : 'SAVE'}</button
+		>{$getMapByFloor.fetching ? 'loading' : 'SAVE'}</button
 	>
 	<MapObjectSelector
 		on:create={(event) => createMapObject(event.detail.e, event.detail.type, null)}

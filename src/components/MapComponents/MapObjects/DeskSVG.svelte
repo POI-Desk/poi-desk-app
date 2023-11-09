@@ -1,12 +1,26 @@
 <script lang="ts">
+	import { wallThickness } from "$lib/map/props";
+	import type { TransformType } from "$lib/types/transformType";
+	import { createEventDispatcher } from "svelte";
+
 	export let width: number;
 	export let height: number;
 	export let selected: boolean = false;
 	export let text: string;
 	export let z: number = 0;
+  export let useAsMain: boolean = false;
+  export let transform: {x: number, y: number, rotation: number} = {
+    x: 0,
+    y: 0,
+    rotation: 0,
+  };
+
+  const dispatch = createEventDispatcher();
+
+  const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${transform.y}px;`;
 </script>
 
-<div class="z-[{z}]">
+<button class="z-{z}" style="{useAsMain ? style : ""}" on:click={() => dispatch('click')}>
 	<svg {width} {height}>
 		<rect
 			x="1"
@@ -29,4 +43,4 @@
 			height="mapObject.transform.height">{text}</text
 		>
 	</svg>
-</div>
+</button>
