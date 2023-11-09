@@ -20,7 +20,7 @@
   const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${transform.y}px;`;
 </script>
 
-<button class="z-{z}" style="{useAsMain ? style : ""}" on:click={() => dispatch('click')}>
+<button class="z-{z}" style="{useAsMain ? style : ""}" on:touchend={() => dispatch('click')} on:click={() => dispatch('click')}>
 	<svg {width} {height}>
 		<rect
 			x="1"

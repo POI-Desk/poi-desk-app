@@ -39,6 +39,7 @@
   <div class="absolute top-3">
     <a class="btn variant-filled-primary" href="./login">Login</a>
     <a class="btn variant-filled-primary" href="./location">Location</a>
+    <a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
     <DateSelection />
   </div>
 	<!--Debugging-->

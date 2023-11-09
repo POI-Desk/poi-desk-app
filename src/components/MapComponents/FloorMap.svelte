@@ -210,7 +210,7 @@
     <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
       <ProgressBar value={undefined} />
     </div>
-    {:else}
+    {:else if mapData}
       <canvas
       bind:this={canvas}
       width={map.width}
@@ -221,3 +221,8 @@
     {/if}
   </div>
 </div>
+{#if !$getMapByFloor.fetching && !mapData}
+<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
+  <p class="text-2xl">No map found for this floor</p>
+</div>
+{/if}
