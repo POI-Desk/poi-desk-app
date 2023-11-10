@@ -37,6 +37,8 @@
     },
     "type": "module",
     "dependencies": {
+        "@floating-ui/dom": "^1.5.3",
+        "chart.js": "^4.4.0",
         "lucide-svelte": "^0.290.0",
         "panzoom": "^9.4.3"
     }
