@@ -36,10 +36,10 @@
 
 	<a class="btn variant-filled-primary" href="./location">Location</a>
 	<!--Debugging-->
-	<p>{$user.pk_userid ?? 'no id'}</p>
-	<p>{$user.username ?? 'no username'}</p>
-	<p>{$user.location?.locationname ?? 'no location'}</p>
-	<p>{$user.location?.pk_locationid ?? 'no location'}</p>
+	<!-- <p>{$user.pk_userid ?? 'no id'}</p> -->
+	<p>You are logged in as {$user.username ?? 'no username'}</p>
+	<p>Your location is {$user.location?.locationname ?? 'no location'}</p>
+	<!-- <p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
 	<!---->
 	<SearchBar />
 

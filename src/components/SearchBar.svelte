@@ -166,7 +166,7 @@
 				{#each searchUsers as usr}
 					<li class="grid grid-cols-2 grid-rows-1">
 						<a
-                            style="grid-col: 1"
+							style="grid-col: 1"
 							href="/bookingsOfSearchedUser"
 							on:click|preventDefault={() => {
 								$searchedUser = usr;
@@ -177,11 +177,11 @@
 				{/each}
 				<li>
 					<div class="grid grid-cols-2 grid-rows-1">
-						{#if pageNumber > 0}
-							<div style="grid-col: 1">
+						<div style="grid-col: 1; width=100%;">
+							{#if pageNumber > 0}
 								<button on:click={handleLoadLess}>show less...</button>
-							</div>
-						{/if}
+							{/if}
+						</div>
 						{#if loadMore && typedUsername}
 							<div style="grid-col: 2">
 								<button on:click={handleLoadMore}>show more...</button>
