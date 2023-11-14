@@ -17,7 +17,8 @@
 
 	const modal: ModalSettings = {
 		type: 'component',
-		component: 'modalBooking'
+		component: 'modalBooking',
+		response: () => {$dateValue = new Date().toISOString().split('T')[0];}
 	};
 
 
