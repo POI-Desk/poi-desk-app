@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { wallThickness } from '$lib/map/props';
-	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher } from 'svelte';
 
 	export let width: number;
@@ -14,6 +13,14 @@
 		x: 0,
 		y: 0,
 		rotation: 0
+	};
+
+	export const setBooked = (isBooked: boolean) => {
+		booked = isBooked;
+	};
+
+	export const setText = (newText: string) => {
+		text = newText;
 	};
 
 	const dispatch = createEventDispatcher();

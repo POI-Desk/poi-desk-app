@@ -12,12 +12,6 @@ export const getMapByFloor = graphql(`
 				x
 				y
 				rotation
-				bookings {
-					pk_bookingid
-					date
-					ismorning
-					isafternoon
-				}
 			}
 			rooms {
 				pk_roomId

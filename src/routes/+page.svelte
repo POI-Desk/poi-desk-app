@@ -2,11 +2,18 @@
 	import DateSelection from '$components/DateSelection.svelte';
 
 	import BuildingSelection from '$components/BuildingSelection.svelte';
-	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
-	import SearchBar from '$components/SearchBar.svelte';
-	import { user } from '$lib/userStore';
-	import FloorMap from '$components/MapComponents/FloorMap.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
+	import FloorMap from '$components/MapComponents/FloorMap.svelte';
+	import { onMount } from 'svelte';
+	import { user } from '$lib/userStore';
+	import { goto } from '$app/navigation';
+
+	onMount(() => {
+		if (!$user.pk_userid) {
+			goto('/login');
+		}
+	});
+
 	//
 	// let visible = false;
 	// let panelVisible = false;

@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { CachePolicy } from '$houdini';
+	import { selectedDesk } from '$lib/bookingStore';
+	import { dateValue } from '$lib/dateStore';
+	import { floorid } from '$lib/floorStore';
 	import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
+	import { getBookingsByDate } from '$lib/queries/booking';
+	import { getDeskById } from '$lib/queries/deskQueries';
 	import { getMapByFloor } from '$lib/queries/map';
 	import type { MapTransform } from '$lib/types/mapTypes';
-	import { ProgressBar, type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
+	import { ProgressBar, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import type { PanZoom } from 'panzoom';
 	import panzoom from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
-	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
+	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
-	import { floorid } from '$lib/floorStore';
-	import { selectedDesk } from '$lib/bookingStore';
-	import { getDeskById } from '$lib/queries/deskQueries';
-	import { dateValue } from '$lib/dateStore';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
@@ -40,6 +41,13 @@
 	let wallObjects: { [key: string]: WallSvg } = {};
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
+
+	$: bookingsData = $getBookingsByDate.data?.getBookingsByDate;
+
+	$: {
+		bookingsData;
+		updateBookings();
+	}
 
 	$: {
 		$floorid;
@@ -69,8 +77,22 @@
 			variables: { floorID: $floorid },
 			policy: CachePolicy.NetworkOnly
 		});
-		console.log(mapData);
 		drawMap();
+		await updateBookings();
+	};
+
+	const updateBookings = async () => {
+		for (const key of Object.keys(deskObjects)) {
+			const desk: DeskSvg = deskObjects[key];
+			const booking = bookingsData?.find((b) => b?.desk.pk_deskid === key);
+			if (booking) {
+				desk.setBooked(true);
+				desk.setText(booking.user.username);
+			} else {
+				desk.setBooked(false);
+				desk.setText(mapData?.desks?.find((d) => d.pk_deskid === key)?.desknum!);
+			}
+		}
 	};
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
@@ -134,7 +156,7 @@
 						y: desk.y,
 						rotation: 0
 					},
-          booked: desk.bookings?.find((b) => b.date === $dateValue) != null
+					booked: false
 				}
 			});
 			deskSvg.$on('click', async () => {

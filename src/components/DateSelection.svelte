@@ -1,14 +1,6 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import SeatsOnFloor from "$components/DesksOnFloor.svelte";
-	import {dateValue} from "../lib/dateStore";
-	import BuildingSelection from "$components/BuildingSelection.svelte";
-	// import type { PageLoad } from './$houdini';
-	//import DateSelection
-
-	let visibility = 'hidden';
-	$dateValue = new Date().toISOString().split('T')[0];
-
+	import { getBookingsByDate } from '$lib/queries/booking';
+	import { dateValue } from '../lib/dateStore';
 
 	export const _getBookingsByDateVariables = () => {
 		return {
@@ -16,20 +8,11 @@
 		};
 	};
 
-	const store = graphql(`
-		query getBookingsByDate($date: String!) @load {
-			getBookingsByDate(date: $date) {
-				pk_bookingid
-				bookingnumber
-			}
-		}
-	`);
-
-	$: bookings = $store.data?.getBookingsByDate;
+	let visibility = 'hidden';
+	$dateValue = new Date().toISOString().split('T')[0];
 
 	const getBookings = () => {
-		console.log(dateValue);
-		store.fetch({ variables: { date: $dateValue } });
+		getBookingsByDate.fetch({ variables: { date: $dateValue } });
 	};
 </script>
 

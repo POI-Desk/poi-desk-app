@@ -1,5 +1,4 @@
 <script lang="ts">
-	import FloorSelection from '$components/FloorSelection.svelte';
 	// import { getBuildings } from '$lib/queries/buildingQueries';
 	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
 	import AdminFloorSelector from '$components/MapComponents/AdminFloorSelector.svelte';
@@ -8,7 +7,6 @@
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
 	import {
 		CachePolicy,
-		fragment,
 		graphql,
 		type UpdateDeskInput,
 		type UpdateDoorInput,
@@ -33,7 +31,7 @@
 	import { createMap, updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
-	import { getMapByFloor, getMapById } from '$lib/queries/map';
+	import { getMapByFloor } from '$lib/queries/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -44,16 +42,9 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import {
-		ProgressBar,
-		ProgressRadial,
-		getModalStore,
-		type ModalSettings
-	} from '@skeletonlabs/skeleton';
-	import { Type } from 'lucide-svelte';
+	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
-	import { get } from 'svelte/store';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -289,7 +280,7 @@
 		}
 
 		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
-			$allMapObjects.forEach((mapObject) => {
+			$allMapObjects.map((mapObject) => {
 				mapObject.transform.x -= panzOffsetX;
 				mapObject.transform.y -= panzOffsetY;
 			});
@@ -311,7 +302,7 @@
 		let right: TransformType = { ...maxRightTransform };
 		let top: TransformType = { ...maxTopTransform };
 		let bottom: TransformType = { ...maxBottomTransform };
-		$allMapObjects.forEach((mapObject) => {
+		$allMapObjects.map((mapObject) => {
 			if (mapObject.transform.x! < left.x) left = { ...mapObject.transform };
 			if (mapObject.transform.y! < top.y) top = { ...mapObject.transform };
 		});
@@ -337,7 +328,7 @@
 			verticalOffset = -top.y + defaultMapProps.border;
 		}
 
-		$allMapObjects.forEach((mapObject) => {
+		$allMapObjects.map((mapObject) => {
 			mapObject.transform.x += horizontalOffset;
 			mapObject.transform.y += verticalOffset;
 			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height)
@@ -363,7 +354,7 @@
 	};
 
 	const rerenderObjects = () => {
-		for (const [key, value] of Object.entries(mapObjects)) {
+		for (const [, value] of Object.entries(mapObjects)) {
 			value.rerenderMapObject();
 		}
 	};
@@ -382,11 +373,11 @@
 		mapObjects[$selectedMapObject.id].removeSelectedStyle();
 	};
 
-	const enterGrid = (event: MouseEvent) => {
+	const enterGrid = () => {
 		panz.resume();
 	};
 
-	const leaveGrid = (event: MouseEvent) => {
+	const leaveGrid = () => {
 		panz.pause();
 	};
 
@@ -442,7 +433,7 @@
 	const emptyMap = () => {
 		$allMapObjects = [];
 		$selectedMapObject = null;
-		for (const [key, value] of Object.entries(mapObjects)) {
+		for (const [, value] of Object.entries(mapObjects)) {
 			value.$destroy();
 		}
 		mapObjects = {};
