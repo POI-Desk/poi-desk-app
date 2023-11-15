@@ -148,7 +148,7 @@
 	const initializeMap = async () => {
 		await fetchBuildings(locationIdVienna);
 		//Nullable assertion operator
-		await changeBuilding(buildings[1].pk_buildingid, buildings[1].floors![1].pk_floorid);
+		await changeBuilding(buildings[0].pk_buildingid, buildings[0].floors![0].pk_floorid);
 	};
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
