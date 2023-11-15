@@ -8,16 +8,17 @@
 
 	//icons
 	import { Calendar, Clock, MapPin, Building, Armchair, Cuboid } from 'lucide-svelte';
+	import { refreshDesks } from '$lib/refreshStore';
 
 	$interval.morning = false;
 	$interval.afternoon = false;
 
-	async function onCompleteHandler() {
+	async function finishBooking() {
 		console.log($dateValue);
 		console.log($interval);
 		console.log($user.pk_userid);
 		console.log($selectedDesk.pk_deskid);
-		await bookDesk.mutate({
+		const value = await bookDesk.mutate({
 			booking: {
 				date: $dateValue,
 				ismorning: $interval.morning,
@@ -26,6 +27,9 @@
 				deskid: $selectedDesk.pk_deskid
 			}
 		});
+		console.log(value);
+
+		$refreshDesks = !$refreshDesks;
 		modalStore.close();
 	}
 
@@ -37,17 +41,39 @@
 
 	let time: string = 'default';
 
-	let stepperLock: boolean = true;
-	$: stepperLock = $interval.morning === false && $interval.afternoon === false;
+	let selectionPage: boolean = true;
 
-	let selection: boolean = true;
+	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+
+	let hasBookings: boolean = currentBookingsOnDate.length > 0;
+
+	let isBookedMorning: boolean =
+		((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
+		false;
+
+	let isBookedAfternoon: boolean =
+		((hasBookings && currentBookingsOnDate[0].isafternoon) ||
+			currentBookingsOnDate[1]?.isafternoon) ??
+		false;
+
+	let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
 
 	const modalStore = getModalStore();
 
 	const cBase = 'card p-4 shadow-xl space-y-4';
 
 	function whenSelection() {
-		selection = !selection;
+		console.log('full day:', isFullDay);
+		console.log($interval);
+
+		if (!isFullDay) {
+			if (!$interval.morning && !$interval.afternoon) {
+				console.log('here');
+				return;
+			}
+			selectionPage = !selectionPage;
+			return;
+		}
 	}
 
 	console.log($selectedDesk);
@@ -60,20 +86,22 @@
 
 {#if $modalStore[0]}
 	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
-		{#if selection}
+		{#if selectionPage}
 			<div class="grid grid-cols-7 row-auto gap-4 text-center basis-full">
-				<div class="col-span-7 bg-red-500">
+
+				<div class="col-span-7 ">
+					<!--
 					{$selectedDesk.desknum}
-					<br /> CURRENTLY NOT WORKING
+					<br /> CURRENTLY NOT WORKING-->
 				</div>
 				<BookingDeskState shownInterval="morning" />
 				<!---->
 				<BookingDeskState shownInterval="afternoon" />
-
-				<div class="col-span-7 row-span-2 bg-red-500">
-					<div class="rounded-3xl w-full h-full bg-white">CURRENTLY NOT WORKING</div>
-				</div>
-				<div class="col-span-7 row-span-1 bg-red-500">
+				<!--
+				<div class="col-span-7 row-span-2">
+					<div class="rounded-3xl w-full h-full bg-white"></div>
+				</div>-->
+				<div class="col-span-7 row-span-1">
 					<button
 						on:click={() => whenSelection()}
 						class="btn rounded-3xl w-full h-full text-xl bg-white">Buchen</button
@@ -134,7 +162,7 @@
 					</div>
 				</div>
 			</div>
-			<button on:click={() => onCompleteHandler()} class="btn rounded-3xl text-xl bg-indigo-500"
+			<button on:click={() => finishBooking()} class="btn rounded-3xl text-xl bg-indigo-500"
 				>Buchen</button
 			>
 		{/if}

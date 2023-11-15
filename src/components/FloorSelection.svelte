@@ -35,7 +35,7 @@
 					class="btn variant-filled-primary"
 					on:click={() => {
 						$floorid = floor?.pk_floorid ?? '';
-					}}>{floor?.floorname}</button
+					}}>{floor?.floorname.split(' ')[0]}</button
 				>
 			{/each}
 		{/await}

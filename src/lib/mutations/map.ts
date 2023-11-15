@@ -9,3 +9,13 @@ export const createMap = graphql(`
 		}
 	}
 `);
+
+export const updateMap = graphql(`
+  mutation updateMap($mapId: ID!, $mapInput: MapInput!) {
+    updateMap(mapId: $mapId, mapInput: $mapInput) {
+      pk_mapId
+      width
+      height
+    }
+  }
+`);

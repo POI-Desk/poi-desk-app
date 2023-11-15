@@ -6,8 +6,8 @@ export const getMapByFloor = graphql(`
 			pk_mapId
 			height
 			width
-			desks{
-        pk_deskid
+			desks {
+				pk_deskid
 				desknum
 				x
 				y
@@ -39,13 +39,13 @@ export const getMapByFloor = graphql(`
 `);
 
 export const getMapById = graphql(`
-  query getMapById($mapId: ID!) {
-    getMapById(mapId: $mapId) {
-      pk_mapId
+	query getMapById($mapId: ID!) {
+		getMapById(mapId: $mapId) {
+			pk_mapId
 			height
 			width
 			desks {
-        pk_deskid
+				pk_deskid
 				desknum
 				x
 				y
@@ -72,6 +72,6 @@ export const getMapById = graphql(`
 				rotation
 				width
 			}
-    }
-  }
+		}
+	}
 `);
