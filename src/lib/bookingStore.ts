@@ -7,6 +7,8 @@ export const interval = writable<Interval>({
 	afternoon: false
 });
 
+export const displayedTime = writable<string>('');
+
 export const morningSelected = writable<boolean>(false);
 export const afternoonSelected = writable<boolean>(false);
 

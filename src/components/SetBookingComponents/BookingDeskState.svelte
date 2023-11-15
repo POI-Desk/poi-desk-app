@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { interval, selectedDesk } from '$lib/bookingStore';
+	import { interval, selectedDesk, displayedTime } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
 	import { fade } from 'svelte/transition';
 	import { user } from '$lib/userStore';
@@ -14,25 +14,51 @@
 		(booking: any) => booking.isafternoon
 	);
 
-	console.log(currentBookingsOnDate);
 	let morningAlreadyTakenName: string = '';
 	let afternoonAlreadyTakenName: string = '';
 	for (const booking of currentBookingsOnDate) {
 		if (booking.date === $dateValue) {
 			if (booking.ismorning) {
 				morningAlreadyTakenName = booking.user.username;
-				console.log("morning already taken by: ", morningAlreadyTakenName);
 			}
 			if (booking.isafternoon) {
 				afternoonAlreadyTakenName = booking.user.username;
-				console.log("afternoon already taken by: ", afternoonAlreadyTakenName);
-
 			}
 		}
 	}
 
 	$: $interval.morning = morningSelected;
 	$: $interval.afternoon = afternoonSelected;
+
+	$: {
+		if ($dateValue) {
+			morningSelected = false;
+			afternoonSelected = false;
+			currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+			isBookedMorning = currentBookingsOnDate.some((booking: any) => booking.ismorning);
+			isBookedAfternoon = currentBookingsOnDate.some((booking: any) => booking.isafternoon);
+			for (const booking of currentBookingsOnDate) {
+				if (booking.date === $dateValue) {
+					if (booking.ismorning) {
+						morningAlreadyTakenName = booking.user.username;
+					}
+					if (booking.isafternoon) {
+						afternoonAlreadyTakenName = booking.user.username;
+					}
+				}
+			}
+		}
+	}
+	$: {
+  if ($interval.morning && $interval.afternoon) {
+    $displayedTime = '07:00 - 20:00';
+  } else if ($interval.morning) {
+    $displayedTime = '07:00 - 13:00';
+  } else if ($interval.afternoon) {
+    $displayedTime = '13:00 - 20:00';
+  }
+}
+
 
 	// TODO: change name to logged in user.
 	// TODO: change name when already taken to user who booked it.
@@ -42,57 +68,66 @@
 	<!--amongus-->
 	{#if shownInterval == 'morning'}
 		{#if morningSelected && !isBookedMorning}
-			<div in:fade class="rounded-3xl grid grid-cols-2 bg-slate-500 w-full h-full">
-				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
+			>
+				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
 				</div>
-				<div class="rounded-3xl bg-white text-black m-1">insert image here</div>
-				<div
-					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
-				>
+				<div class="rounded-3xl bg-white text-black" />
+				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
 					{$user.username}
 				</div>
 			</div>
 		{:else if !isBookedMorning}
-			<div in:fade class="rounded-3xl grid grid-cols-2 variant-filled-primary w-full h-full">
+			<div
+				in:fade
+				class=" rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
+			>
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
 		{:else if isBookedMorning}
-			<div in:fade class="rounded-3xl grid grid-cols-2 bg-orange-500 w-full h-full">
-				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-orange-500 w-full h-full"
+			>
+				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
 				</div>
-				<div class="rounded-3xl bg-white text-black m-1">insert image here</div>
-				<div
-					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
-				>
+				<div class="rounded-3xl bg-white text-black" />
+				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
 					{morningAlreadyTakenName}
 				</div>
 			</div>
 		{/if}
 	{:else if shownInterval == 'afternoon'}
 		{#if afternoonSelected && !isBookedAfternoon}
-			<div in:fade class="rounded-3xl grid grid-cols-2 bg-slate-500 w-full h-full">
-				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
+			>
+				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
 				</div>
-				<div class="rounded-3xl bg-white text-black m-1">insert image here</div>
-				<div
-					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
-				>
+				<div class="rounded-3xl bg-white text-black" />
+				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
 					{$user.username}
 				</div>
 			</div>
 		{:else if !isBookedAfternoon}
-			<div in:fade class="rounded-3xl grid grid-cols-2 variant-filled-primary w-full h-full">
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
+			>
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
 		{:else if isBookedAfternoon}
-			<div in:fade class="rounded-3xl grid grid-cols-2 bg-orange-500 w-full h-full">
+			<div in:fade class="rounded-3xl grid grid-cols-2 row-span-2 bg-orange-500 w-full h-full">
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
 				</div>
-				<div class="rounded-3xl bg-white text-black m-1">insert image here</div>
+				<div class="rounded-3xl bg-white text-black m-1" />
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
@@ -119,6 +154,3 @@
 		</button>
 	{/if}
 </div>
-
-<style>
-</style>
