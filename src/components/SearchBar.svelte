@@ -6,6 +6,8 @@
 	import { onMount } from 'svelte';
 	import { searchedUser } from '$lib/searchStore';
 	import { user } from '$lib/userStore';
+	import { goto } from '$app/navigation';
+	import { DivideSquare } from 'lucide-svelte';
 
 	export const _getAllUsersVariables = () => {
 		return '';
@@ -57,7 +59,6 @@
 	let userLocation: string = '';
 
 	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
-	let bookingsOnDate = [];
 
 	let typedUsername: string;
 	let typedUser: User;
@@ -68,6 +69,7 @@
 		if (bookingsOfUser?.length ?? 0 > 0) {
 			for (const booking of bookingsOfUser ?? []) {
 				if (booking?.date == $dateValue) {
+					console.log("WAAAHHHH ES IS DOCH EH DAS GLEICHE DATUM")
 					await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? '' } }).then(() => {
 						let desk = $getDesk.data?.getBookingById?.desk;
 						userLocation = desk?.floor?.building.location?.locationname ?? '';
@@ -164,15 +166,16 @@
 				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
-					<li class="grid grid-cols-2 grid-rows-1">
-						<a
+					<li >
+						<button class="grid grid-cols-2 grid-rows-1"
 							style="grid-col: 1"
-							href="/bookingsOfSearchedUser"
-							on:click|preventDefault={() => {
+							on:click={() => {
 								$searchedUser = usr;
-							}}>{usr.username}</a
-						>
-						<span style="grid-col: 2">{usr.userInfo}</span>
+								goto("/bookingsOfSearchedUser")
+							}}>{usr.username}
+							<span style="grid-col: 2">{usr.userInfo}</span>
+						</button>
+						
 					</li>
 				{/each}
 				<li>
