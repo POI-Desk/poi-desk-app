@@ -11,12 +11,14 @@
 	import { CachePolicy } from '$houdini';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { getDesks } from '$lib/queries/deskQueries';
+	import {refreshDesks} from "$lib/refreshStore";
 
 	const modalStore = getModalStore();
 
 	const modal: ModalSettings = {
 		type: 'component',
-		component: 'modalBooking'
+		component: 'modalBooking',
+		response: () => {$dateValue = new Date().toISOString().split('T')[0];}
 	};
 
 
@@ -32,23 +34,25 @@
 
 <div class="grid grid-rows-2">
 
-	<div class="grid grid-cols-5 gap-2">
-		{#await getDesks.fetch({ variables: { floorid: $floorid } })}
-			<p>loading desks...</p>
-		{:then fetched}
-			{#each fetched?.data?.getDesksOnFloor ?? [] as desk}
-				<button
-					on:click={() => {
-						$selectedDesk = desk;
-						modalStore.trigger(modal);
-					}}
-					class="btn variant-filled-success"
-					class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
-					>{desk?.desknum}</button
-				>
-			{/each}
-		{/await}
-	</div>
+	{#key $refreshDesks}
+		<div class="grid grid-cols-5 gap-2">
+			{#await getDesks.fetch({ policy: CachePolicy.NetworkOnly, variables: { floorid: $floorid } })}
+				<p>loading desks...</p>
+			{:then fetched}
+				{#each fetched?.data?.getDesksOnFloor ?? [] as desk}
+					<button
+						on:click={() => {
+							$selectedDesk = desk;
+							modalStore.trigger(modal);
+						}}
+						class="btn variant-filled-success"
+						class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
+						>{desk?.desknum}</button
+					>
+				{/each}
+			{/await}
+		</div>
+	{/key}
 </div>
 
 <!--

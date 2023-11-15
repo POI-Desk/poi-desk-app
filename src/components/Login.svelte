@@ -2,7 +2,7 @@
 
 	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-	import {goto} from '$app/navigation'
+	import {goto} from '$app/navigation';
 
 
     const createOrLoginAsUser = graphql(`
@@ -26,7 +26,7 @@
 			const result = await createOrLoginAsUser.mutate({
 				username: username
 		});
-		$user = result.data?.createOrLoginAsUser!;
+		$user = {...result.data?.createOrLoginAsUser!, userInfo: '' };
 		path = $user.location == null ? '/location' : '/';
 		goto(path);
 		} catch (error) {

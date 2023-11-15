@@ -55,6 +55,8 @@
     <p>{$user.location?.locationname ?? 'no location'}</p>
     <p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
 	<!---->
+
+	<!-- uncomment when rady -->
 	<!-- <SearchBar /> -->
 
 	<div class="absolute left-3 top-1/2 -translate-y-1/2">
