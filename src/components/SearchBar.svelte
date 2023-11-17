@@ -13,11 +13,16 @@
 		return '';
 	};
 
+
+
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
-				pk_userid
-				username
+				content {
+					pk_userid
+					username
+				}
+				hasNextPage
 			}
 		}
 	`);
@@ -26,6 +31,7 @@
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
 	const pageSizeConst = 3;
+	let hasNextPage: boolean;
 
 	onMount(() => {
 		getSearchUsers(0);
@@ -37,13 +43,14 @@
 				variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst }
 			})
 			.then(() => {
-				let users = $getUsers.data?.getAllUsers;
+				let users = $getUsers.data?.getAllUsers.content;
 				searchUsers = users.map((user) => ({
 					pk_userid: user?.pk_userid,
 					username: user?.username,
 					location: null,
 					userInfo: ''
-				}));
+				}))
+				hasNextPage = $getUsers.data?.getAllUsers?.hasNextPage ?? false;
 			});
 
 		for (const user of searchUsers) {
@@ -69,7 +76,6 @@
 		if (bookingsOfUser?.length ?? 0 > 0) {
 			for (const booking of bookingsOfUser ?? []) {
 				if (booking?.date == $dateValue) {
-					console.log("WAAAHHHH ES IS DOCH EH DAS GLEICHE DATUM")
 					await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? '' } }).then(() => {
 						let desk = $getDesk.data?.getBookingById?.desk;
 						userLocation = desk?.floor?.building.location?.locationname ?? '';
@@ -126,11 +132,14 @@
 
 	function handleDropDownClick() {
 		dropdownIsOpen = true;
+		console.log(dropdownIsOpen + " dropDown wurde geklickt")
 	}
 
-	function handleDropdownFocusLoss() {
+	const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
+		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return 
 		dropdownIsOpen = false;
-	}
+		console.log(dropdownIsOpen + " dropDown sollte wieder zu sein")
+	}	
 
 	$: {
 		if (typedUsername) {
@@ -154,16 +163,21 @@
 <!-- on:focusout|stopPropagation={handleDropdownFocusLoss}  -->
 
 <div>
-	<div class="dropdown">
+	<div class="dropdown" on:focusout={handleDropdownFocusLoss}>
 		<input
 			class="input w-3/4 my-3"
 			placeholder="Search for user"
 			bind:value={typedUsername}
 			on:click={handleDropDownClick}
+			
 		/>
+		
+		<div >
 		{#if dropdownIsOpen}
+		
 			<ul
-				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
+				
+				class=" dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li >
@@ -185,7 +199,7 @@
 								<button on:click={handleLoadLess}>show less...</button>
 							{/if}
 						</div>
-						{#if loadMore && typedUsername}
+						{#if hasNextPage && typedUsername}
 							<div style="grid-col: 2">
 								<button on:click={handleLoadMore}>show more...</button>
 							</div>
@@ -193,6 +207,8 @@
 					</div>
 				</li>
 			</ul>
+		
 		{/if}
+	</div>
 	</div>
 </div>
