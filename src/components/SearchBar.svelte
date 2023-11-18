@@ -5,9 +5,7 @@
 	import { dateValue } from '$lib/dateStore';
 	import { onMount } from 'svelte';
 	import { searchedUser } from '$lib/searchStore';
-	import { user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
-	import { DivideSquare } from 'lucide-svelte';
 
 	export const _getAllUsersVariables = () => {
 		return '';
@@ -136,6 +134,8 @@
 	}
 
 	const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
+		console.log("focus out du dummes dummes ding!");
+
 		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return 
 		dropdownIsOpen = false;
 		console.log(dropdownIsOpen + " dropDown sollte wieder zu sein")
@@ -150,7 +150,6 @@
 	let loadMore: boolean = true;
 
 	function handleLoadMore() {
-		// TODO was passiert, wenn es keine pages mehr gibt?
 		pageNumber++;
 		getSearchUsers(pageNumber);
 	}
@@ -160,7 +159,6 @@
 	}
 </script>
 
-<!-- on:focusout|stopPropagation={handleDropdownFocusLoss}  -->
 
 <div>
 	<div class="dropdown" on:focusout={handleDropdownFocusLoss}>
@@ -196,12 +194,17 @@
 					<div class="grid grid-cols-2 grid-rows-1">
 						<div style="grid-col: 1; width=100%;">
 							{#if pageNumber > 0}
-								<button on:click={handleLoadLess}>show less...</button>
+								<button on:click={() => {pageNumber --}}>show less...</button>
 							{/if}
 						</div>
 						{#if hasNextPage && typedUsername}
 							<div style="grid-col: 2">
-								<button on:click={handleLoadMore}>show more...</button>
+								<button on:click={
+									() => {
+										dropdownIsOpen = true;
+										pageNumber ++;
+										getSearchUsers(pageNumber);
+									}}>show more...</button>
 							</div>
 						{/if}
 					</div>
