@@ -5,17 +5,22 @@
 	import { dateValue } from '$lib/dateStore';
 	import { onMount } from 'svelte';
 	import { searchedUser } from '$lib/searchStore';
-	import { user } from '$lib/userStore';
+	import { goto } from '$app/navigation';
 
 	export const _getAllUsersVariables = () => {
 		return '';
 	};
 
+
+
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
-				pk_userid
-				username
+				content {
+					pk_userid
+					username
+				}
+				hasNextPage
 			}
 		}
 	`);
@@ -24,6 +29,7 @@
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
 	const pageSizeConst = 3;
+	let hasNextPage: boolean;
 
 	onMount(() => {
 		getSearchUsers(0);
@@ -35,13 +41,14 @@
 				variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst }
 			})
 			.then(() => {
-				let users = $getUsers.data?.getAllUsers;
+				let users = $getUsers.data?.getAllUsers.content;
 				searchUsers = users.map((user) => ({
 					pk_userid: user?.pk_userid,
 					username: user?.username,
 					location: null,
 					userInfo: ''
-				}));
+				}))
+				hasNextPage = $getUsers.data?.getAllUsers?.hasNextPage ?? false;
 			});
 
 		for (const user of searchUsers) {
@@ -57,7 +64,6 @@
 	let userLocation: string = '';
 
 	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
-	let bookingsOnDate = [];
 
 	let typedUsername: string;
 	let typedUser: User;
@@ -124,11 +130,16 @@
 
 	function handleDropDownClick() {
 		dropdownIsOpen = true;
+		console.log(dropdownIsOpen + " dropDown wurde geklickt")
 	}
 
-	function handleDropdownFocusLoss() {
+	const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
+		console.log("focus out du dummes dummes ding!");
+
+		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return 
 		dropdownIsOpen = false;
-	}
+		console.log(dropdownIsOpen + " dropDown sollte wieder zu sein")
+	}	
 
 	$: {
 		if (typedUsername) {
@@ -139,7 +150,6 @@
 	let loadMore: boolean = true;
 
 	function handleLoadMore() {
-		// TODO was passiert, wenn es keine pages mehr gibt?
 		pageNumber++;
 		getSearchUsers(pageNumber);
 	}
@@ -149,47 +159,59 @@
 	}
 </script>
 
-<!-- on:focusout|stopPropagation={handleDropdownFocusLoss}  -->
 
 <div>
-	<div class="dropdown">
+	<div class="dropdown" on:focusout={handleDropdownFocusLoss}>
 		<input
 			class="input w-3/4 my-3"
 			placeholder="Search for user"
 			bind:value={typedUsername}
 			on:click={handleDropDownClick}
+			
 		/>
+		
+		<div >
 		{#if dropdownIsOpen}
+		
 			<ul
-				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
+				
+				class=" dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
-					<li class="grid grid-cols-2 grid-rows-1">
-						<a
+					<li >
+						<button class="grid grid-cols-2 grid-rows-1"
 							style="grid-col: 1"
-							href="/bookingsOfSearchedUser"
-							on:click|preventDefault={() => {
+							on:click={() => {
 								$searchedUser = usr;
-							}}>{usr.username}</a
-						>
-						<span style="grid-col: 2">{usr.userInfo}</span>
+								goto("/bookingsOfSearchedUser")
+							}}>{usr.username}
+							<span style="grid-col: 2">{usr.userInfo}</span>
+						</button>
+						
 					</li>
 				{/each}
 				<li>
 					<div class="grid grid-cols-2 grid-rows-1">
 						<div style="grid-col: 1; width=100%;">
 							{#if pageNumber > 0}
-								<button on:click={handleLoadLess}>show less...</button>
+								<button on:click={() => {pageNumber --}}>show less...</button>
 							{/if}
 						</div>
-						{#if loadMore && typedUsername}
+						{#if hasNextPage && typedUsername}
 							<div style="grid-col: 2">
-								<button on:click={handleLoadMore}>show more...</button>
+								<button on:click={
+									() => {
+										dropdownIsOpen = true;
+										pageNumber ++;
+										getSearchUsers(pageNumber);
+									}}>show more...</button>
 							</div>
 						{/if}
 					</div>
 				</li>
 			</ul>
+		
 		{/if}
+	</div>
 	</div>
 </div>
