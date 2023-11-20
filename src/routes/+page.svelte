@@ -5,6 +5,8 @@
 	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
 	import SearchBar from '$components/SearchBar.svelte';
 	import { user } from '$lib/userStore';
+    import {getModalStore, type ModalSettings} from "@skeletonlabs/skeleton";
+    import {dateValue} from "$lib/dateStore";
 	//
 	// let visible = false;
 	// let panelVisible = false;
@@ -23,6 +25,18 @@
 	// 		visible = false;
 	// 	}, 5000);
 	// }
+
+    // --- Test Extended Booking
+    const modalStore = getModalStore();
+
+    const modal: ModalSettings = {
+        type: 'component',
+        component: 'modalExtendedBooking',
+        response: () => {
+            $dateValue = new Date().toISOString().split('T')[0];
+        }
+    };
+    // ---
 </script>
 
 <!--{#if visible}-->
@@ -35,6 +49,16 @@
 	<a class="btn variant-filled-primary" href="./login">Login</a>
 
 	<a class="btn variant-filled-primary" href="./location">Location</a>
+
+<!--    	Extended Booking Test-->
+    <button on:click={() => {
+                modalStore.trigger(modal);
+            }}
+            class="btn variant-filled-success"
+    >Test Extended Booking
+    </button>
+<!--    -->
+
 	<!--Debugging-->
 	<!-- <p>{$user.pk_userid ?? 'no id'}</p> -->
 	<p>You are logged in as {$user.username ?? 'no username'}</p>

@@ -7,11 +7,16 @@
 	import { AppShell, Modal } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
+	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 
 	initializeStores();
 	const modalComponentRegistry: Record<string, ModalComponent> = {
 		modalBooking: {
 			ref: ModalBooking,
+			slot: '<p>skeleton</p>'
+		},
+		modalExtendedBooking: {
+			ref: ModalExtendedBooking,
 			slot: '<p>skeleton</p>'
 		},
 		modalDefaultLocation:{
