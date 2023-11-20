@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
   import { user } from '$lib/userStore.js';
@@ -37,4 +37,4 @@
 </script>
 
 
-<canvas bind:this={chartCanvas} id="myChart"></canvas>
+<canvas bind:this={chartCanvas} id="myChart"></canvas> -->

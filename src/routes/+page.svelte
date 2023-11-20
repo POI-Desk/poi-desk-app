@@ -49,25 +49,7 @@
 		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
 		<DateSelection />
 	</div>
-	<!--Debugging-->
-	<!-- <p>{$user.pk_userid ?? 'no id'}</p>
-    <p>{$user.username ?? 'no username'}</p>
-    <p>{$user.location?.locationname ?? 'no location'}</p>
-    <p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
-	<!---->
+	<FloorSelection />
 
-	<!-- uncomment when rady -->
-	<!-- <SearchBar /> -->
-
-	<div class="absolute left-3 top-1/2 -translate-y-1/2">
-		<FloorSelection />
-	</div>
-
-	<div class="flex justify-center">
-		<div class="absolute bottom-20">
-			<BuildingSelection />
-		</div>
-	</div>
-
-	<!-- <SeatsOnFloor /> -->
+	<BuildingSelection />
 </div>

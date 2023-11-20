@@ -11,10 +11,6 @@ export const getBookingsByDate = graphql(`
 			desk {
 				pk_deskid
 			}
-			user {
-				pk_userid
-				username
-			}
 		}
 	}
 `);

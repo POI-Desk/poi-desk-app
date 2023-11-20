@@ -104,7 +104,7 @@
 	};
 
 	const handleDragStart = (event: MouseEvent) => {
-    if( event.button != 0) return;
+		if (event.button != 0) return;
 
 		dragging = true;
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
@@ -170,7 +170,7 @@
 		grabbers.forEach((grabber) => {
 			grabber.classList.remove(
 				'handle',
-				`handle-${grabber.title}${ mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
 			);
 		});
 	};
@@ -180,7 +180,7 @@
 		grabbers.forEach((grabber) => {
 			grabber.classList.add(
 				'handle',
-				`handle-${grabber.title}${ mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
 			);
 		});
 	};
@@ -355,7 +355,7 @@
 	}
 </script>
 
-{#if  mapObject.type === mapObjectType.Desk}
+{#if mapObject.type === mapObjectType.Desk}
 	<div
 		class="z-40 duration-0"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
@@ -367,19 +367,16 @@
 		on:mousedown={handleDragStart}
 		on:dblclick={openModal}
 	>
-		<DeskSvg
-			height={mapObject.transform.height}
-			width={mapObject.transform.width}
-			{selected}
-			text={mapObject.id}
-		/>
+		<DeskSvg {selected} text={mapObject.id} />
 	</div>
-{:else if  mapObject.type === mapObjectType.Room}
+{:else if mapObject.type === mapObjectType.Room}
 	<div
 		class="flex justify-center duration-0"
 		style="position: absolute; width: {mapObject.transform.width +
-			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject.transform
-			.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected ? 45 : 10};"
+			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
+			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
+			? 45
+			: 10};"
 		role="button"
 		tabindex="0"
 		bind:this={drag}

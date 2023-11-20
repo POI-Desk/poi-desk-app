@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { wallThickness } from '$lib/map/props';
+	import { deskProps, wallThickness } from '$lib/map/props';
 	import { createEventDispatcher } from 'svelte';
 
-	export let width: number;
-	export let height: number;
+	let width: number = deskProps.width;
+	let height: number = deskProps.height;
 	export let selected: boolean = false;
-	export let booked: boolean = false;
+	export let bookedMorning: boolean = false;
+	export let bookedAfternoon: boolean = false;
 	export let text: string;
 	export let z: number = 0;
 	export let useAsMain: boolean = false;
@@ -15,8 +16,12 @@
 		rotation: 0
 	};
 
-	export const setBooked = (isBooked: boolean) => {
-		booked = isBooked;
+	export const setBookedMorning = (isBookedMorning: boolean) => {
+		bookedMorning = isBookedMorning;
+	};
+
+	export const setBookedAfternoon = (isBookedAfternoon: boolean) => {
+		bookedAfternoon = isBookedAfternoon;
 	};
 
 	export const setText = (newText: string) => {
@@ -24,6 +29,11 @@
 	};
 
 	const dispatch = createEventDispatcher();
+
+	const borderThickness: number = 3;
+
+	const freeColor: string = '#ADDCFF';
+	const bookedColor: string = '#E8E4E7';
 
 	const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${
 		transform.y
@@ -38,24 +48,37 @@
 >
 	<svg {width} {height}>
 		<rect
-			x="1"
-			y="1"
-			width={width - 2}
-			height={height - 2}
+			x={borderThickness / 2}
+			y={borderThickness / 2}
+			width={width - borderThickness}
+			height={height - borderThickness}
 			rx="2"
 			ry="2"
-			fill={booked ? '#EB5E28' : '#1A4775'}
-			stroke={selected ? '#8B80F9' : '#000000'}
-			stroke-width="2"
+			stroke={selected ? '#8B80F9' : '#1A4775'}
+			stroke-width={borderThickness}
+			fill={bookedMorning || bookedAfternoon ? bookedColor : freeColor}
+		/>
+		<polygon
+			points="{borderThickness},{borderThickness} {width -
+				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
+			fill={bookedMorning ? bookedColor : freeColor}
+			stroke="none"
+		/>
+		<polygon
+			points="{width - borderThickness},{height - borderThickness} {width -
+				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
+			fill={bookedAfternoon ? bookedColor : freeColor}
+			stroke="none"
 		/>
 		<text
-			x="5"
-			y={height - 5}
-			fill="white"
-			font-size="12"
-			style="user-select: none;"
-			width="mapObject.transform.width"
-			height="mapObject.transform.height">{text}</text
+			x="50%"
+			y="50%"
+			text-anchor="middle"
+			dominant-baseline="middle"
+			fill="#1A4775"
+			font-size="16"
+			font-weight="bold"
+			style="user-select: none;">{text}</text
 		>
 	</svg>
 </button>

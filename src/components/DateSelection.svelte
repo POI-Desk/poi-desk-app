@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getBookingsByDate } from '$lib/queries/booking';
-	import { dateValue } from '../lib/dateStore';
+	import { dateValue } from '$lib/dateStore';
 
 	export const _getBookingsByDateVariables = () => {
 		return {

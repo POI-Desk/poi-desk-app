@@ -78,20 +78,25 @@
 			policy: CachePolicy.NetworkOnly
 		});
 		drawMap();
+		await getBookingsByDate.fetch({
+			variables: { date: $dateValue },
+			policy: CachePolicy.NetworkOnly
+		});
 		await updateBookings();
 	};
 
 	const updateBookings = async () => {
+		//TODO: make the booking fetch work here
+
 		for (const key of Object.keys(deskObjects)) {
 			const desk: DeskSvg = deskObjects[key];
-			const booking = bookingsData?.find((b) => b?.desk.pk_deskid === key);
-			if (booking) {
-				desk.setBooked(true);
-				desk.setText(booking.user.username);
-			} else {
-				desk.setBooked(false);
-				desk.setText(mapData?.desks?.find((d) => d.pk_deskid === key)?.desknum!);
-			}
+			const bookings = bookingsData?.filter((b) => b?.desk.pk_deskid === key);
+			bookings?.map((booking) => {
+				if (booking) {
+					if (booking.ismorning) desk.setBookedMorning(booking.ismorning);
+					if (booking.isafternoon) desk.setBookedAfternoon(booking.isafternoon);
+				}
+			});
 		}
 	};
 
@@ -146,8 +151,6 @@
 			const deskSvg = new DeskSvg({
 				target: grid,
 				props: {
-					height: deskProps.height,
-					width: deskProps.width,
 					text: desk.desknum,
 					z: 40,
 					useAsMain: true,
@@ -155,8 +158,7 @@
 						x: desk.x,
 						y: desk.y,
 						rotation: 0
-					},
-					booked: false
+					}
 				}
 			});
 			deskSvg.$on('click', async () => {
@@ -250,7 +252,7 @@
 				width={map.width}
 				height={map.height}
 				draggable="false"
-				class="bg-[#D9D9D9]"
+				class="bg-[#E8E4E7]"
 			/>
 		{/if}
 	</div>

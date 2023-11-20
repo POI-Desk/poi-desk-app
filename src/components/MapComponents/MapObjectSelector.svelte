@@ -14,7 +14,7 @@
 	let transform: TransformType = {
 		x: 44,
 		y: 0,
-		width: 10,
+		width: 8,
 		height: 50,
 		rotation: 0
 	};

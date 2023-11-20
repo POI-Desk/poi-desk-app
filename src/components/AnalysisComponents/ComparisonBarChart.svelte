@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import Chart from 'chart.js/auto';
     import { onMount } from 'svelte';
     import type { AnalysisResult, AnalysisComparisonInfo } from '$lib/types/analysisResultType';
@@ -111,4 +111,4 @@
 
 
 
-
+ -->

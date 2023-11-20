@@ -737,6 +737,9 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
+	<!--temporarily-->
+	<a href="/" class="btn variant-filled-primary m-2">MAP</a>
+	<!---->
 	<button
 		on:click={saveMap}
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"

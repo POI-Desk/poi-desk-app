@@ -50,15 +50,14 @@
 		}
 	}
 	$: {
-  if ($interval.morning && $interval.afternoon) {
-    $displayedTime = '07:00 - 20:00';
-  } else if ($interval.morning) {
-    $displayedTime = '07:00 - 13:00';
-  } else if ($interval.afternoon) {
-    $displayedTime = '13:00 - 20:00';
-  }
-}
-
+		if ($interval.morning && $interval.afternoon) {
+			$displayedTime = '07:00 - 20:00';
+		} else if ($interval.morning) {
+			$displayedTime = '07:00 - 13:00';
+		} else if ($interval.afternoon) {
+			$displayedTime = '13:00 - 20:00';
+		}
+	}
 
 	// TODO: change name to logged in user.
 	// TODO: change name when already taken to user who booked it.
@@ -116,18 +115,29 @@
 				</div>
 			</div>
 		{:else if !isBookedAfternoon}
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
+			>
+				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
+			</div>
+		{:else if isBookedAfternoon}
+			<div in:fade class="rounded-3xl grid grid-cols-2 row-span-2 bg-orange-500 w-full h-full">
+				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
+					POI/AT <br /> Vienna
+				</div>
 				<div class="rounded-3xl bg-white text-black m-1" />
 				<div
 					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
 				>
 					{afternoonAlreadyTakenName}
 				</div>
-			
-    {/if}
+			</div>
+		{/if}
 	{/if}
 </div>
 <div class="col-span-2 row-span-5">
-  {#if shownInterval == 'morning'}
+	{#if shownInterval == 'morning'}
 		<button
 			class="btn rounded-full variant-filled-primary w-full h-full"
 			disabled={isBookedMorning}
