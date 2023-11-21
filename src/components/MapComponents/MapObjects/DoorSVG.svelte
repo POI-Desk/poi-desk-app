@@ -16,7 +16,7 @@
 
 <div class="z-{z}" style="{useAsMain ? style : ""}">
 	<svg {width} {height}>
-		<rect {width} {height} fill="#E8E4E7" />
+		<rect {width} {height} fill="#dbd3e1" />
 		<rect x={width - wallProps.height} width={wallProps.height} {height} />
 		<rect width={wallProps.height} {height} />
 		{#if selected}

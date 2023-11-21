@@ -3,6 +3,8 @@
 	import type { PageData } from './$houdini';
 	import { user } from '$lib/userStore';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { floorid } from '$lib/floorStore';
+	import { buildingid } from '$lib/buildingStore';
 
 	const modalStore = getModalStore();
 
@@ -29,6 +31,8 @@
 						pk_locationid: location?.pk_locationid
 					};
 					modalStore.trigger(modal);
+					$floorid = '';
+					$buildingid = '';
 				}}
 			>
 				{location?.locationname}

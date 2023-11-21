@@ -91,12 +91,16 @@
 		for (const key of Object.keys(deskObjects)) {
 			const desk: DeskSvg = deskObjects[key];
 			const bookings = bookingsData?.filter((b) => b?.desk.pk_deskid === key);
+			let morning: boolean = false;
+			let afternoon: boolean = false;
 			bookings?.map((booking) => {
 				if (booking) {
-					if (booking.ismorning) desk.setBookedMorning(booking.ismorning);
-					if (booking.isafternoon) desk.setBookedAfternoon(booking.isafternoon);
+					if (booking.ismorning) morning = true;
+					if (booking.isafternoon) afternoon = true;
 				}
 			});
+			desk.setBookedAfternoon(afternoon);
+			desk.setBookedMorning(morning);
 		}
 	};
 
@@ -111,14 +115,6 @@
 				window.innerWidth / 2 - (map.width / 2 + offsetX) * map.scale,
 				window.innerHeight / 2 - (map.height / 2 + offsetY) * map.scale
 			);
-	};
-
-	const enterGrid = (event: MouseEvent) => {
-		panz.resume();
-	};
-
-	const leaveGrid = (event: MouseEvent) => {
-		panz.pause();
 	};
 
 	const emptyMap = () => {
@@ -235,8 +231,6 @@
 <div bind:this={container} class="absolute overflow-hidden w-screen h-screen">
 	<div
 		bind:this={grid}
-		on:mouseenter={enterGrid}
-		on:mouseleave={leaveGrid}
 		role="grid"
 		tabindex="0"
 		style="width: {map.width}px; height: {map.height}px;"
@@ -252,7 +246,7 @@
 				width={map.width}
 				height={map.height}
 				draggable="false"
-				class="bg-[#E8E4E7]"
+				class="bg-surface-100"
 			/>
 		{/if}
 	</div>

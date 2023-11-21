@@ -32,8 +32,10 @@
 
 	const borderThickness: number = 3;
 
-	const freeColor: string = '#ADDCFF';
-	const bookedColor: string = '#E8E4E7';
+	const freeColor: string = '#D1F3FF';
+	const bookedColor: string = '#9EBBD9';
+	//E680BA
+	//red: FF4538
 
 	const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${
 		transform.y

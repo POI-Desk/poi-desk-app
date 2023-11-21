@@ -20,11 +20,11 @@
 </script>
 
 <div
-	class="flex flex-col absolute w-1/5 top-11 left-1/2 z-[100] -translate-x-1/2 bg-[#FAF8FC] rounded-full"
+	class="flex flex-col absolute w-1/5 top-11 left-1/2 z-[100] -translate-x-1/2 rounded-full"
 >
 	<input
 		type="search"
-		class="w-full border-2 border-[#CCC5B9] shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] rounded-full"
+		class="w-full border-2 border-primary-300 shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] rounded-full bg-surface-50 text-primary-500 placeholder-primary-500 font-semibold"
 		placeholder="Search the map..."
 		bind:value={inputDemo}
 		use:popup={popupSettings}

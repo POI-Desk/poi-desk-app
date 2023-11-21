@@ -85,11 +85,6 @@
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
 
-	$: {
-		mapData;
-		console.log($getMapByFloor.data?.getMapByFloor);
-	}
-
 	$: $map.height = mapData?.height ?? defaultMapProps.height;
 	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
@@ -147,7 +142,6 @@
 
 	const initializeMap = async () => {
 		await fetchBuildings(locationIdVienna);
-		//Nullable assertion operator
 		await changeBuilding(buildings[0].pk_buildingid, buildings[0].floors![0].pk_floorid);
 	};
 
@@ -373,14 +367,6 @@
 		mapObjects[$selectedMapObject.id].removeSelectedStyle();
 	};
 
-	const enterGrid = () => {
-		panz.resume();
-	};
-
-	const leaveGrid = () => {
-		panz.pause();
-	};
-
 	const zoomToObjectId = (id: string) => {
 		if (!mapObjects[id]) return;
 		const obj: MapObject = $allMapObjects.find((obj) => obj.id === id)!;
@@ -398,7 +384,6 @@
 	const changeBuilding = async (buildingID: string, customFloorID: string | null) => {
 		if (buildingID === currentBuildingID) return;
 		currentBuildingID = buildingID;
-		//TODO: look into the 'any' type problem
 		let floorID: string =
 			customFloorID ??
 			buildings.filter((b) => b.pk_buildingid === buildingID)[0]?.floors![0].pk_floorid;
@@ -408,11 +393,9 @@
 
 	const changeFloor = async (floorID: string) => {
 		if (floorID === currentFloorID) return;
-		loadingMap = true;
+		emptyMap();
 		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		loadingMap = false;
 		drawMap();
-
 		currentFloorID = floorID;
 	};
 
@@ -433,12 +416,15 @@
 	const emptyMap = () => {
 		$allMapObjects = [];
 		$selectedMapObject = null;
+		$map.height = defaultMapProps.height;
+		$map.width = defaultMapProps.width;
 		for (const [, value] of Object.entries(mapObjects)) {
 			value.$destroy();
 		}
 		mapObjects = {};
 	};
 
+	//TODO: performance!!!!
 	const drawMap = (recenter: boolean = true) => {
 		emptyMap();
 		if (!mapData) {
@@ -674,7 +660,6 @@
 			});
 		}
 
-		console.log(mapData.pk_mapId);
 		let mapUpdate = updateMap.mutate({
 			mapId: mapData.pk_mapId,
 			mapInput: {
@@ -763,14 +748,12 @@
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
-			on:mouseenter={enterGrid}
-			on:mouseleave={leaveGrid}
 			role="grid"
 			tabindex="0"
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if loadingMap}
+			{#if $getMapByFloor.fetching}
 				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
 					<ProgressBar value={undefined} />
 				</div>
@@ -780,12 +763,12 @@
 					width={$map.width}
 					height={$map.height}
 					draggable="false"
-					class="bg-[#D9D9D9]"
+					class="bg-surface-200"
 				/>
 			{/if}
 		</div>
 	</div>
-	{#if !loadingMap && !mapData}
+	{#if !$getMapByFloor.fetching && !mapData}
 		<button
 			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
 			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button

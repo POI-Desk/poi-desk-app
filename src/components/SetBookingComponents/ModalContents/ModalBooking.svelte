@@ -93,15 +93,15 @@
 </script>
 
 {#if $modalStore[0]}
-	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
+	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-surface-300">
 		{#if selectionPage}
 			<div class="flex justify-center items-center">
-				<div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
+				<div class="flex items-center gap-x-5 rounded-full p-4 px-10 variant-filled-tertiary">
 					<!--
 					<button>
 						<ArrowBigLeft />
 					</button>-->
-					<h1>{$selectedDesk.desknum}</h1>
+					<h1 class="text-primary-500">{$selectedDesk.desknum}</h1>
 					<!--
 					<button>
 						<ArrowBigRight />
@@ -119,7 +119,7 @@
 				<!---->
 				<BookingDeskState shownInterval="afternoon" />
 			</div>
-			<div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
+			<div class="variant-filled-tertiary h-24 rounded-full flex items-center justify-between px-10">
 				<button on:click={subtractDay}>
 					<ArrowBigLeft />
 				</button>
@@ -128,67 +128,67 @@
 					<ArrowBigRight />
 				</button>
 			</div>
-			<div class="bg-white h-24 rounded-full">
-				<button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl"
+			<div class="variant-filled-tertiary h-24 rounded-full">
+				<button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
 					>Buchen</button
 				>
 			</div>
 		{:else}
-			<h1 class="text-center text-3xl p-3">Buchung</h1>
+			<h1 class="text-center text-3xl p-3 text-tertiary-500 font-semibold">Buchung</h1>
 			<div class="h-full flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-6 gap-7">
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Calendar />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{date.toLocaleDateString('de-DE')}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Clock />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$displayedTime}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<MapPin />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$user.location?.locationname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Building />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.floor.building.buildingname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Cuboid />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.floor.floorname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Armchair />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.desknum}
 					</div>
 				</div>
 			</div>
-			<div class="bg-white h-24 rounded-full">
-				<button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl"
+			<div class="variant-filled-tertiary h-24 rounded-full">
+				<button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
 					>Buchen</button
 				>
 			</div>

@@ -84,32 +84,32 @@
 <!-- shadow-[18px_0px_5px_-15px_rgba(0,0,0,0.3)] -->
 <div
 	bind:this={selector}
-	class="absolute top-1/2 -translate-y-1/2 z-[100] bg-[#FAF8FC] border-2 border-[#CCC5B9] rounded-full shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)]"
+	class="absolute top-1/2 -translate-y-1/2 z-[100] bg-surface-50 border-2 border-primary-300 rounded-full shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)]"
 	style="width: {transform.width}%; height: {transform.height}%; right: {transform.x}px;"
 	use:resize
 >
-	<div class="h-full grid grid-rows-4 divide-y-2 divide-[#CCC5B9]">
+	<div class="h-full grid grid-rows-4 divide-y-2 divide-primary-300">
 		<div
 			on:mousedown={(e) => onCreate(e, mapObjectType.Desk)}
 			tabindex="0"
 			role="button"
 			class="rounded-t-full flex items-center justify-center"
 		>
-			<p class="select-none">Desk</p>
+			<p class="select-none text-primary-500 font-semibold">Desk</p>
 		</div>
-		<div class="grid grid-rows-2 divide-y-2 divide-[#CCC5B9]">
-			<div class="grid grid-cols-2 divide-x-2 divide-[#CCC5B9]">
+		<div class="grid grid-rows-2 divide-y-2 divide-primary-300">
+			<div class="grid grid-cols-2 divide-x-2 divide-primary-300">
 				<div
 					class="flex items-center justify-center"
 					on:mousedown={(e) => onCreate(e, mapObjectType.Wall)}
 					tabindex="0"
 					role="button"
 				>
-					<p class="select-none">Wall</p>
+					<p class="select-none text-primary-500 font-semibold">Wall</p>
 				</div>
 				<div class="flex items-center justify-center" />
 			</div>
-			<div class="grid grid-cols-2 divide-x-2 divide-[#CCC5B9]">
+			<div class="grid grid-cols-2 divide-x-2 divide-primary-300">
 				<div class="flex items-center justify-center" />
 				<div
 					class=" flex items-center justify-center"
@@ -117,7 +117,7 @@
 					tabindex="0"
 					role="button"
 				>
-					<p class="select-none">Door</p>
+					<p class="select-none text-primary-500 font-semibold">Door</p>
 				</div>
 			</div>
 		</div>
@@ -127,7 +127,7 @@
 			tabindex="0"
 			role="button"
 		>
-			<p class="select-none">Room</p>
+			<p class="select-none text-primary-500 font-semibold">Room</p>
 		</div>
 		<div class=" rounded-b-full" />
 	</div>

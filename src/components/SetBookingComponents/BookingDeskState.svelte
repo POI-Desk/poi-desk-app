@@ -69,7 +69,7 @@
 		{#if morningSelected && !isBookedMorning}
 			<div
 				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] variant-filled-secondary w-full h-full"
 			>
 				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -82,14 +82,14 @@
 		{:else if !isBookedMorning}
 			<div
 				in:fade
-				class=" rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
+				class=" rounded-3xl grid grid-cols-2 row-span-2 variant-filled-tertiary w-full h-full"
 			>
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
 		{:else if isBookedMorning}
 			<div
 				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-orange-500 w-full h-full"
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] variant-filled-secondary w-full h-full"
 			>
 				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -104,7 +104,7 @@
 		{#if afternoonSelected && !isBookedAfternoon}
 			<div
 				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
+				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] variant-filled-secondary w-full h-full"
 			>
 				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
 					POI/AT <br /> Vienna
@@ -117,12 +117,15 @@
 		{:else if !isBookedAfternoon}
 			<div
 				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
+				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-tertiary w-full h-full"
 			>
 				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
 			</div>
 		{:else if isBookedAfternoon}
-			<div in:fade class="rounded-3xl grid grid-cols-2 row-span-2 bg-orange-500 w-full h-full">
+			<div
+				in:fade
+				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-secondary w-full h-full"
+			>
 				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
 					POI/AT <br /> Vienna
 				</div>
