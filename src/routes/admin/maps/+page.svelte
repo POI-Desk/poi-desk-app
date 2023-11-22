@@ -227,7 +227,6 @@
 		$allMapObjects.push(mapObject);
 		mapObjects[mapObject.id] = element;
 
-		$allMapObjects = $allMapObjects;
 		mapObjects = mapObjects;
 	};
 
@@ -424,7 +423,6 @@
 		mapObjects = {};
 	};
 
-	//TODO: performance!!!!
 	const drawMap = (recenter: boolean = true) => {
 		emptyMap();
 		if (!mapData) {
@@ -496,6 +494,7 @@
 			);
 		});
 		if (recenter) recenterMap();
+		$allMapObjects = $allMapObjects;
 	};
 
 	const saveMap = async () => {
@@ -731,7 +730,10 @@
 		>{$getMapByFloor.fetching ? 'loading' : 'SAVE'}</button
 	>
 	<MapObjectSelector
-		on:create={(event) => createMapObject(event.detail.e, event.detail.type, null)}
+		on:create={(event) => {
+			createMapObject(event.detail.e, event.detail.type, null);
+			$allMapObjects = $allMapObjects;
+		}}
 	/>
 	<AdminBuildingSelector
 		on:changeBuilding={(event) => changeBuilding(event.detail, null)}

@@ -1,8 +1,9 @@
-<!-- TODO: make selected object on top of other object -->
+<!--TODO: make selected object on top of other object -->
 <!-- TODO: look into the is in grid check -->
 <!-- TODO: better border for rooms (svg maby (probably)) -->
 
 <script lang="ts">
+
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
 	import { mapMagnetSteps, mapObjectType, wallProps, wallThickness } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
@@ -110,7 +111,7 @@
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
-		applySelectedStyle();
+		// applySelectedStyle();
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging && !resizing) {
@@ -144,9 +145,9 @@
 		window.addEventListener('mousemove', updateInstantiation);
 	};
 
-	const openModal = () => {
-		dispatch('openModal', mapObject);
-	};
+	// const openModal = () => {
+	// 	dispatch('openModal', mapObject);
+	// };
 
 	const updateInstantiation = (event: MouseEvent) => {
 		if (!dragging) return;
@@ -365,7 +366,6 @@
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
-		on:dblclick={openModal}
 	>
 		<DeskSvg {selected} text={mapObject.id} />
 	</div>
