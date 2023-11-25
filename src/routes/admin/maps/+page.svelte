@@ -222,12 +222,12 @@
 			modalStore.trigger(modal);
 		});
 
-		panz.pause();
+		if (initialTransform == null) {
+			panz.pause();
+		}
 		$selectedMapObject = initialTransform == null ? mapObject : null;
 		$allMapObjects.push(mapObject);
 		mapObjects[mapObject.id] = element;
-
-		mapObjects = mapObjects;
 	};
 
 	const genRandomId = (length: number) => {
@@ -495,6 +495,7 @@
 		});
 		if (recenter) recenterMap();
 		$allMapObjects = $allMapObjects;
+		mapObjects = mapObjects;
 	};
 
 	const saveMap = async () => {
@@ -722,7 +723,7 @@
 
 <main bind:this={main} class="overflow-hidden h-full">
 	<!--temporarily-->
-	<a href="/" class="btn variant-filled-primary m-2">MAP</a>
+	<a href="/" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
 	<!---->
 	<button
 		on:click={saveMap}
@@ -733,6 +734,7 @@
 		on:create={(event) => {
 			createMapObject(event.detail.e, event.detail.type, null);
 			$allMapObjects = $allMapObjects;
+			mapObjects = mapObjects;
 		}}
 	/>
 	<AdminBuildingSelector
@@ -765,7 +767,7 @@
 					width={$map.width}
 					height={$map.height}
 					draggable="false"
-					class="bg-surface-200"
+					class="canvasStyle"
 				/>
 			{/if}
 		</div>

@@ -84,7 +84,7 @@
 <!-- shadow-[18px_0px_5px_-15px_rgba(0,0,0,0.3)] -->
 <div
 	bind:this={selector}
-	class="absolute top-1/2 -translate-y-1/2 z-[100] bg-surface-50 border-2 border-primary-300 rounded-full shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)]"
+	class="absolute top-1/2 -translate-y-1/2 z-[100] bg-surface-50 border-2 border-primary-300 rounded-full shadow-around-10"
 	style="width: {transform.width}%; height: {transform.height}%; right: {transform.x}px;"
 	use:resize
 >

@@ -73,6 +73,7 @@
 
 	const updateMap = async () => {
 		if (!$floorid) return;
+		emptyMap();
 		await getMapByFloor.fetch({
 			variables: { floorID: $floorid },
 			policy: CachePolicy.NetworkOnly
@@ -137,7 +138,6 @@
 	};
 
 	const drawMap = () => {
-		emptyMap();
 		if (!mapData) return;
 		map.height = mapData.height;
 		map.width = mapData.width;
@@ -246,7 +246,7 @@
 				width={map.width}
 				height={map.height}
 				draggable="false"
-				class="bg-surface-100"
+				class="canvasStyle"
 			/>
 		{/if}
 	</div>

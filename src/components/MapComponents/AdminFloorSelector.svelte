@@ -12,7 +12,7 @@
 </script>
 
 <div
-	class="absolute w-11 h-1/4 left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50 border-2 border-primary-300 shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] grid grid-rows-{floors.length} divide-y-2 divide-primary-300"
+	class="absolute w-11 h-1/4 left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50 border-2 border-primary-300 shadow-around-10 grid grid-rows-{floors.length} divide-y-2 divide-primary-300"
 >
 	{#if floors.length > 0}
 		{#each floors as floor}

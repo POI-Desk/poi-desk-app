@@ -30,7 +30,7 @@
 </script>
 
 <div
-	class="absolute md:w-2/5 xl:w-1/5 w-3/5 h-11 bottom-11 left-1/2 z-[100] rounded-full -translate-x-1/2 bg-surface-50 border-2 border-primary-300 shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)] grid grid-cols-{buildings?.length ??
+	class="absolute md:w-2/5 xl:w-1/5 w-3/5 h-11 bottom-11 left-1/2 z-[100] rounded-full -translate-x-1/2 bg-surface-50 border-2 border-primary-300 shadow-around-10 grid grid-cols-{buildings?.length ??
 		1} divide-x-2 divide-primary-300"
 >
 	{#if $getBuildings.fetching}
