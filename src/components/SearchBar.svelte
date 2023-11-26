@@ -88,6 +88,7 @@
 							user.userInfo = 'this afternoon in ' + userLocation;
 						}
 					});
+					break;
 				} else {
 					user.userInfo = 'not in office today';
 				}
@@ -155,26 +156,26 @@
 </script>
 
 
-<div class="flex justify-center">
-	<div class="dropdown" on:focusout={handleDropdownFocusLoss}>
+<div class="flex justify-center w-full">
+	<div class="dropdown w-full" on:focusout={handleDropdownFocusLoss}>
 		<input
-			class="input my-3 w-96"
+			class="input my-3 w-full"
 			placeholder="Search for user"
 			bind:value={typedUsername}
 			on:click={handleDropDownClick}
 			
 		/>
 		
-		<div class="absolute left-0 right-0">
+		<div class="absolute left-0 right-0 w-full px-2">
 		{#if dropdownIsOpen}
 
 			<ul
 				
-				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
+				class="dropdown-content z-[1] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li class="m-1 flex justify-center">
-						<button class="w-96 p-1 border rounded-lg flex flex-col"
+						<button class="w-full px-3 border rounded-lg flex flex-col"
 							style="grid-row: 1; background-color: #d4d6d9;"
 							on:click={() => {
 								$searchedUser = usr;
@@ -189,7 +190,7 @@
 					</li>
 				{/each}
 					<li class="m-1">
-						<div class="grid grid-cols-2 grid-rows-1 w-96">
+						<div class="grid grid-cols-2 grid-rows-1">
 							<div style="grid-col: 1">
 								{#if pageNumber > 0}
 									<button on:click={() => {pageNumber --}}
@@ -213,6 +214,6 @@
 					</li>
 			</ul>
 		{/if}
+		</div>
 	</div>
-</div>
 </div>

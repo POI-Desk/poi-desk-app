@@ -9,7 +9,8 @@
     {#await getBookings.fetch({ variables: { userid: $searchedUser.pk_userid ?? '' } })}
         <p>Loading...</p>
     {:then bookings}
-        {#each bookings.data?.getBookingsByUserid ?? [] as booking}
+        {#if bookings.data?.getBookingsByUserid?.length ?? 0 > 0}
+            {#each bookings.data?.getBookingsByUserid ?? [] as booking}
             <div>
                 <div class="grid grid-cols-4 grid-rows-4 gap-1 border mt-1 rounded-xl ml-2 mr-2" style="background-color: #d4d6d9;">
                     <div class="col-span-1 row-span-4 mt-2 ml-1"><img src="/src/images/{booking.desk?.floor?.building?.location?.locationname}.png" alt="wien"> </div>
@@ -53,6 +54,10 @@
                     </div>
                 </div>
             </div>
-        {/each}
+            {/each}
+        {:else}
+            <p>Currently no Bookings</p>
+        {/if}
+        
     {/await}
 </div>
