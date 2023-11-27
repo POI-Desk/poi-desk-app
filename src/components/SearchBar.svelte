@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { searchedUser } from '$lib/searchStore';
 	import { goto } from '$app/navigation';
+	import { MapPin } from 'lucide-svelte';
 
 	export const _getAllUsersVariables = () => {
 		return '';
@@ -31,11 +32,12 @@
 	const pageSizeConst = 5;
 	let hasNextPage: boolean;
 
-	onMount(() => {
-		getSearchUsers(0);
-	});
+	// onMount(() => {
+	// 	getSearchUsers(0);
+	// });
 
 	async function getSearchUsers(pageNumber_param: number) {
+		console.log("geSearchUsers");
 		if (typedUsername === "") {
 			pageNumber = 1;
 		}
@@ -55,10 +57,7 @@
 			});
 
 		for (const user of searchUsers) {
-			console.log(searchUsers);
-			console.log(user);
 			let index = searchUsers.indexOf(user);
-			console.log(index);
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
@@ -158,20 +157,22 @@
 
 <div class="flex justify-center w-full">
 	<div class="dropdown w-full" on:focusout={handleDropdownFocusLoss}>
-		<input
-			class="input my-3 w-full"
-			placeholder="Search for user"
-			bind:value={typedUsername}
-			on:click={handleDropDownClick}
-			
-		/>
+		<div>
+			<input
+				class="input my-3 w-full"
+				placeholder="Search for user"
+				bind:value={typedUsername}
+				on:click={handleDropDownClick}
+				
+			/>
+		</div>
 		
 		<div class="absolute left-0 right-0 w-full px-2">
 		{#if dropdownIsOpen}
 
 			<ul
-				
-				class="dropdown-content z-[1] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
+				style="background-color: white;"
+				class="dropdown-content z-[0] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li class="m-1 flex justify-center">
@@ -194,14 +195,15 @@
 							<div style="grid-col: 1">
 								{#if pageNumber > 0}
 									<button on:click={() => {pageNumber --}}
-										class="border rounded-lg py-1 px-2">show less...</button>
+										class="border rounded-lg py-1 px-2" 
+										style="background-color: #d4d6d9;">show less...</button>
 								{/if}
 							</div>
 								{#if hasNextPage && typedUsername}
 									<div style="grid-col: 2" class="flex justify-end">
 										<button 
 										class="border rounded-lg py-1 px-2"
-										
+										style="background-color: #d4d6d9;"
 										on:click={
 											() => {
 												dropdownIsOpen = true;
