@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { searchedUser } from '$lib/searchStore';
 	import { goto } from '$app/navigation';
+	import { MapPin } from 'lucide-svelte';
 
 	export const _getAllUsersVariables = () => {
 		return '';
@@ -28,14 +29,18 @@
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
-	const pageSizeConst = 3;
+	const pageSizeConst = 5;
 	let hasNextPage: boolean;
 
-	onMount(() => {
-		getSearchUsers(0);
-	});
+	// onMount(() => {
+	// 	getSearchUsers(0);
+	// });
 
 	async function getSearchUsers(pageNumber_param: number) {
+		console.log("geSearchUsers");
+		if (typedUsername === "") {
+			pageNumber = 1;
+		}
 		await getUsers
 			.fetch({
 				variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst }
@@ -52,10 +57,7 @@
 			});
 
 		for (const user of searchUsers) {
-			console.log(searchUsers);
-			console.log(user);
 			let index = searchUsers.indexOf(user);
-			console.log(index);
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
@@ -85,6 +87,7 @@
 							user.userInfo = 'this afternoon in ' + userLocation;
 						}
 					});
+					break;
 				} else {
 					user.userInfo = 'not in office today';
 				}
@@ -134,7 +137,6 @@
 	}
 
 	const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
-		console.log("focus out du dummes dummes ding!");
 
 		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return 
 		dropdownIsOpen = false;
@@ -142,76 +144,78 @@
 	}	
 
 	$: {
+		if (!typedUsername) {
+			pageNumber = 0;
+		}
 		if (typedUsername) {
 			getSearchUsers(pageNumber);
 		}
 	}
 
-	let loadMore: boolean = true;
-
-	function handleLoadMore() {
-		pageNumber++;
-		getSearchUsers(pageNumber);
-	}
-
-	function handleLoadLess() {
-		pageNumber--;
-	}
 </script>
 
 
-<div>
-	<div class="dropdown" on:focusout={handleDropdownFocusLoss}>
-		<input
-			class="input w-3/4 my-3"
-			placeholder="Search for user"
-			bind:value={typedUsername}
-			on:click={handleDropDownClick}
-			
-		/>
-		
-		<div >
-		{#if dropdownIsOpen}
-		
-			<ul
+<div class="flex justify-center w-full">
+	<div class="dropdown w-full" on:focusout={handleDropdownFocusLoss}>
+		<div>
+			<input
+				class="input my-3 w-full"
+				placeholder="Search for user"
+				bind:value={typedUsername}
+				on:click={handleDropDownClick}
 				
-				class=" dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-3/4 max-h-80 flex-nowrap overflow-auto"
+			/>
+		</div>
+		
+		<div class="absolute left-0 right-0 w-full px-2">
+		{#if dropdownIsOpen}
+
+			<ul
+				style="background-color: white;"
+				class="dropdown-content z-[0] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
-					<li >
-						<button class="grid grid-cols-2 grid-rows-1"
-							style="grid-col: 1"
+					<li class="m-1 flex justify-center">
+						<button class="w-full px-3 border rounded-lg flex flex-col"
+							style="grid-row: 1; background-color: #d4d6d9;"
 							on:click={() => {
 								$searchedUser = usr;
 								goto("/bookingsOfSearchedUser")
-							}}>{usr.username}
-							<span style="grid-col: 2">{usr.userInfo}</span>
+							}}>
+							<div class="grid grid-cols-1 justify-items-start">
+								<span>{usr.username}</span>
+								<span style="grid-row: 2">{usr.userInfo}</span>
+							</div>
 						</button>
 						
 					</li>
 				{/each}
-				<li>
-					<div class="grid grid-cols-2 grid-rows-1">
-						<div style="grid-col: 1; width=100%;">
-							{#if pageNumber > 0}
-								<button on:click={() => {pageNumber --}}>show less...</button>
-							{/if}
-						</div>
-						{#if hasNextPage && typedUsername}
-							<div style="grid-col: 2">
-								<button on:click={
-									() => {
-										dropdownIsOpen = true;
-										pageNumber ++;
-										getSearchUsers(pageNumber);
-									}}>show more...</button>
+					<li class="m-1">
+						<div class="grid grid-cols-2 grid-rows-1">
+							<div style="grid-col: 1">
+								{#if pageNumber > 0}
+									<button on:click={() => {pageNumber --}}
+										class="border rounded-lg py-1 px-2" 
+										style="background-color: #d4d6d9;">show less...</button>
+								{/if}
 							</div>
-						{/if}
-					</div>
-				</li>
+								{#if hasNextPage && typedUsername}
+									<div style="grid-col: 2" class="flex justify-end">
+										<button 
+										class="border rounded-lg py-1 px-2"
+										style="background-color: #d4d6d9;"
+										on:click={
+											() => {
+												dropdownIsOpen = true;
+												pageNumber ++;
+												getSearchUsers(pageNumber);
+											}}>show more...</button>
+									</div>
+								{/if}
+						</div>
+					</li>
 			</ul>
-		
 		{/if}
-	</div>
+		</div>
 	</div>
 </div>
