@@ -96,7 +96,7 @@
 </script>
 
 {#if $modalStore[0]}
-	<div class="{cBase} relative rounded-xl lg:w-1/4 w-screen h-screen flex flex-col bg-slate-200">
+	<div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
 		{#if selectionPage}
 			<div class=" flex justify-center items-center">
 				<div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
