@@ -5,6 +5,7 @@
 	import SeatsOnFloor from '$components/DesksOnFloor.svelte';
 	import SearchBar from '$components/SearchBar.svelte';
 	import { user } from '$lib/userStore';
+	import {goto} from "$app/navigation";
 	//
 	// let visible = false;
 	// let panelVisible = false;
@@ -35,6 +36,8 @@
 	<a class="btn variant-filled-primary" href="./login">Login</a>
 
 	<a class="btn variant-filled-primary" href="./location">Location</a>
+
+	<button class="btn variant-filled-primary" on:click={() => {goto("/extendedUser")}}>Extended User</button>
 	<!--Debugging-->
 	<!-- <p>{$user.pk_userid ?? 'no id'}</p> -->
 	<p>You are logged in as {$user.username ?? 'no username'}</p>
