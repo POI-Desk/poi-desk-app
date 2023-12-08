@@ -13,11 +13,12 @@
 
     const modal: ModalSettings = {
         type: 'component',
-        component: 'modalBooking',
+        component: 'modalExtendedBooking',
         response: () => {
             $dateValue = new Date().toISOString().split('T')[0];
         }
     };
+
 
 
     // test data
@@ -77,5 +78,17 @@
 			}}
             disabled="{selectedDesks.length !== selectedUsers.length}"
     >Book
-    <button>
+    </button>
 </div>
+
+
+<!--    	Extended Booking Test-->
+<button on:click={() => {
+                modalStore.trigger(modal);
+            }}
+        class="btn variant-filled-success"
+>Test Extended Booking
+</button>
+<!--    -->
+
+
