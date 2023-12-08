@@ -31,6 +31,7 @@
 	let dropdownIsOpen: boolean = false;
 	const pageSizeConst = 5;
 	let hasNextPage: boolean;
+	
 
 	// onMount(() => {
 	// 	getSearchUsers(0);
@@ -69,6 +70,7 @@
 
 	let typedUsername: string;
 	let typedUser: User;
+	let mpUserUserinfo = new Map();
 
 	async function getUserInfo(user: User) {
 		typedUser = user;
@@ -80,23 +82,28 @@
 						let desk = $getDesk.data?.getBookingById?.desk;
 						userLocation = desk?.floor?.building.location?.locationname ?? '';
 						if (booking.ismorning && booking.isafternoon) {
-							user.userInfo = 'today in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'today in ' + userLocation)
+							//user.userInfo = 'today in ' + userLocation;
 						} else if (booking.ismorning) {
-							user.userInfo = 'this morning in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'this morning in ' + userLocation)
+							//user.userInfo = 'this morning in ' + userLocation;
 						} else if (booking.isafternoon) {
-							user.userInfo = 'this afternoon in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'this afternoon in ' + userLocation)
+							//user.userInfo = 'this afternoon in ' + userLocation;
 						}
 					});
 					break;
 				} else {
-					user.userInfo = 'not in office today';
+					mpUserUserinfo.set(user.pk_userid, 'not in office today')
+					//user.userInfo = 'not in office today';
 				}
 			}
 		} else {
-			user.userInfo = 'not in office today';
+			mpUserUserinfo.set(user.pk_userid, 'not in office today')
+			//user.userInfo = 'not in office today';
 		}
 		console.log(
-			user.username + ' -> userLocation: ' + userLocation + '; userInfo: ' + user.userInfo
+			user.username + ' -> userLocation: ' + userLocation + '; userInfo: ' + mpUserUserinfo.get(user.pk_userid)
 		);
 		return user;
 	}
@@ -155,8 +162,8 @@
 </script>
 
 
-<div class="flex justify-center w-full">
-	<div class="dropdown w-full" on:focusout={handleDropdownFocusLoss}>
+<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
+	<div class="dropdown w-full">
 		<div>
 			<input
 				class="input my-3 w-full"
@@ -167,12 +174,12 @@
 			/>
 		</div>
 		
-		<div class="absolute left-0 right-0 w-full px-2">
+		<div class="absolute left-0 right-0 w-full px-2 z-10">
 		{#if dropdownIsOpen}
 
 			<ul
 				style="background-color: white;"
-				class="dropdown-content z-[0] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
+				class="dropdown-content menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li class="m-1 flex justify-center">
@@ -184,7 +191,7 @@
 							}}>
 							<div class="grid grid-cols-1 justify-items-start">
 								<span>{usr.username}</span>
-								<span style="grid-row: 2">{usr.userInfo}</span>
+								<span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
 							</div>
 						</button>
 						
@@ -206,7 +213,7 @@
 										style="background-color: #d4d6d9;"
 										on:click={
 											() => {
-												dropdownIsOpen = true;
+												//dropdownIsOpen = true;
 												pageNumber ++;
 												getSearchUsers(pageNumber);
 											}}>show more...</button>
