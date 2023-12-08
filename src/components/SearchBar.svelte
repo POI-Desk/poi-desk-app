@@ -138,10 +138,10 @@
 
 	const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
 
-		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return 
+		if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return
 		dropdownIsOpen = false;
 		console.log(dropdownIsOpen + " dropDown sollte wieder zu sein")
-	}	
+	}
 
 	$: {
 		if (!typedUsername) {
@@ -163,10 +163,10 @@
 				placeholder="Search for user"
 				bind:value={typedUsername}
 				on:click={handleDropDownClick}
-				
+
 			/>
 		</div>
-		
+
 		<div class="absolute left-0 right-0 w-full px-2">
 		{#if dropdownIsOpen}
 
@@ -187,7 +187,7 @@
 								<span style="grid-row: 2">{usr.userInfo}</span>
 							</div>
 						</button>
-						
+
 					</li>
 				{/each}
 					<li class="m-1">
@@ -195,13 +195,13 @@
 							<div style="grid-col: 1">
 								{#if pageNumber > 0}
 									<button on:click={() => {pageNumber --}}
-										class="border rounded-lg py-1 px-2" 
+										class="border rounded-lg py-1 px-2"
 										style="background-color: #d4d6d9;">show less...</button>
 								{/if}
 							</div>
 								{#if hasNextPage && typedUsername}
 									<div style="grid-col: 2" class="flex justify-end">
-										<button 
+										<button
 										class="border rounded-lg py-1 px-2"
 										style="background-color: #d4d6d9;"
 										on:click={

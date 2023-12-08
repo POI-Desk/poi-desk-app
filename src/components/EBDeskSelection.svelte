@@ -24,9 +24,9 @@
     const selectedUsers = ["Maximilian", "Hugo", "Alina"]
     let selectedDesks: any[] = [];
 
-    $: if (selectedDesks) {
-        $refreshDesks = !$refreshDesks;
-    }
+    // $: if (selectedDesks) {
+    //     $refreshDesks = !$refreshDesks;
+    // }
 
     function handleClick(event, desk) {
         if (selectedDesks.includes(desk)) {
@@ -38,13 +38,15 @@
             selectedDesks.push(desk)
             event.target.classList.toggle('selected');
         }
-
+        selectedDesks = selectedDesks
     }
-
-    let wasSelected = false;
 </script>
 
 <a class="btn variant-filled-primary" href="./login">Login</a>
+
+<div>
+    {selectedUsers}
+</div>
 
 <div class="grid grid-rows-2">
     {#key $refreshDesks}
@@ -56,7 +58,6 @@
                     <button
                             on:click={(e) => handleClick(e, desk)}
                             class="btn variant-filled-success"
-                            class:selected={wasSelected}
                             class:variant-ghost={selectedDesks.includes(desk)}
                             class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
                     >{desk?.desknum}</button>
@@ -73,18 +74,8 @@
                     console.log(selectedUsers)
                     console.log(selectedDesks)
                 }
-
-                //modalStore.trigger(modal);
 			}}
             disabled="{selectedDesks.length !== selectedUsers.length}"
     >Book
-    </button>
+    <button>
 </div>
-
-<style>
-    @import "src/styles/handles.css";
-
-    .selected {
-        background-color: lightgray;
-    }
-</style>
