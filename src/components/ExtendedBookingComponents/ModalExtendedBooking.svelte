@@ -19,40 +19,23 @@
         X
     } from 'lucide-svelte';
     import { refreshDesks } from '$lib/refreshStore';
+    import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
 
     $interval.morning = false;
     $interval.afternoon = false;
 
 
-    // todo: change when selection is implemented
-    // --- test data
-    const selectedDesks = [
-        "7a3f0950-5ee4-4ca0-bf30-44ce6ef1c502",
-        "ed211c6d-41c2-4d13-853b-3f6a03130891",
-        "3e2bc5e3-45f1-4c56-849d-3f87b613de23",
-        "08080e0d-0917-47cd-81b9-b806eb4ae223"
-    ]
-
-    const selectedUsers = [
-        "08f283a2-3cc8-4a6b-a871-2f0bdb715dcc",
-        "0badbe89-d24a-4670-b7b3-394a89b745f1",
-        "8a8c65a2-b668-4881-8edd-c958d7dbb632",
-        "119de2ca-db5a-4631-91bd-4aef5b6a91ad"
-    ]
-    // ---
-
-
     async function finishBooking() {
         console.log("finishing booking")
-        for (const desk of selectedDesks) {
-            const i = selectedDesks.indexOf(desk);
+        for (const desk of $selectedDesks) {
+            const i = $selectedDesks.indexOf(desk);
             const value = await bookDesk.mutate({
                 booking: {
                     date: $dateValue,
                     ismorning: $interval.morning,
                     isafternoon: $interval.afternoon,
-                    userid: selectedUsers[i], // todo
-                    deskid: desk // todo
+                    userid: $selectedUsers[i].pk_userid,
+                    deskid: desk.pk_deskid
                 }
             });
             console.log(value)
@@ -148,9 +131,14 @@
             </div>
 
             <b>Desks:</b>
-            <p>{selectedDesks}</p>
+                {#each $selectedDesks as desk}
+                    {desk.desknum},
+                {/each}
             <b>Users:</b>
-            <p>{selectedUsers}</p>
+                ACHTUNG NOCH STATISCH:
+                {#each $selectedUsers as user}
+                    {user.username},
+                {/each}
 
             <div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
                 <button on:click={subtractDay}>
