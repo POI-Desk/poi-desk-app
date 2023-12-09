@@ -1,5 +1,4 @@
 <script lang="ts">
-    //amongus
     import {dateValue} from '$lib/dateStore';
     import {floorid} from '$lib/floorStore';
 
@@ -8,6 +7,8 @@
     import {getDesks} from '$lib/queries/deskQueries';
     import {refreshDesks} from "$lib/refreshStore";
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
+    import {interval} from "$lib/bookingStore";
+    import type {Desk} from "$lib/types/deskTypes";
 
     const modalStore = getModalStore();
 
@@ -38,7 +39,8 @@
             pk_locationid: "",
             locationname: ""
         },
-        userInfo: ""}]
+        userInfo: ""
+    }]
     // -----
 
     const modal: ModalSettings = {
@@ -49,30 +51,17 @@
         }
     };
 
-
-    // $: if (selectedDesks) {
-    //     $refreshDesks = !$refreshDesks;
-    // }
-
-    function handleClick(event, desk) {
+    function handleDeskSelection(desk: Desk) {
         if ($selectedDesks.includes(desk)) {
             $selectedDesks.splice($selectedDesks.indexOf(desk), 1)
-            event.target.classList.toggle('selected');
         } else if ($selectedDesks.length === $selectedUsers.length) {
             alert("Too Many Desks Selected!");
         } else {
             $selectedDesks.push(desk)
-            event.target.classList.toggle('selected');
         }
         $selectedDesks = $selectedDesks
     }
 </script>
-
-<a class="btn variant-filled-primary" href="./login">Login</a>
-
-<div>
-    {$selectedUsers}
-</div>
 
 <div class="grid grid-rows-2">
     {#key $refreshDesks}
@@ -82,7 +71,7 @@
             {:then fetched}
                 {#each fetched?.data?.getDesksOnFloor ?? [] as desk}
                     <button
-                            on:click={(e) => handleClick(e, desk)}
+                            on:click={() => handleDeskSelection(desk)}
                             class="btn variant-filled-success"
                             class:variant-ghost={$selectedDesks.includes(desk)}
                             class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
@@ -93,28 +82,14 @@
     {/key}
 </div>
 
-<!--<div>-->
-<!--    <button class="btn variant-filled-primary"-->
-<!--            on:click={() => {-->
-<!--                if (selectedUsers.length === selectedDesks.length) {-->
-<!--                    console.log(selectedUsers)-->
-<!--                    console.log(selectedDesks)-->
-<!--                }-->
-<!--			}}-->
-<!--            disabled="{selectedDesks.length !== selectedUsers.length}"-->
-<!--    >Book-->
-<!--    </button>-->
-<!--</div>-->
-
-
 <!--    	Extended Booking Test-->
 <button on:click={() => {
-                if ($selectedUsers.length === $selectedDesks.length) {
+                if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon)) {
                     modalStore.trigger(modal);
                 }
             }}
         class="btn variant-filled-primary"
-        disabled="{$selectedDesks.length !== $selectedUsers.length}"
+        disabled="{$selectedDesks.length !== $selectedUsers.length || !($interval.morning || $interval.afternoon)}"
 >Book
 </button>
 <!--    -->

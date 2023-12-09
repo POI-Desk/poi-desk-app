@@ -21,9 +21,6 @@
     import { refreshDesks } from '$lib/refreshStore';
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
 
-    $interval.morning = false;
-    $interval.afternoon = false;
-
 
     async function finishBooking() {
         console.log("finishing booking")
@@ -40,6 +37,7 @@
             });
             console.log(value)
         }
+        $selectedDesks = [];
         $refreshDesks = !$refreshDesks;
         modalStore.close();
     }
@@ -123,11 +121,6 @@
                 >
                     <X />
                 </button>
-            </div>
-            <div class="grid grid-cols-7 gap-4 text-center basis-full">
-<!--                <BookingDeskState shownInterval="morning" />-->
-<!--                &lt;!&ndash;&ndash;&gt;-->
-<!--                <BookingDeskState shownInterval="afternoon" />-->
             </div>
 
             <b>Desks:</b>
