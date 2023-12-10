@@ -9,10 +9,15 @@
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
     import {interval} from "$lib/bookingStore";
     import type {Desk} from "$lib/types/deskTypes";
+    import {buildingid} from "$lib/buildingStore";
 
     const modalStore = getModalStore();
 
     $selectedDesks = [];
+
+    $: if ($buildingid || $floorid) {
+        $selectedDesks = [];
+    }
 
     // --- test data
     // todo change
@@ -52,6 +57,12 @@
     };
 
     function handleDeskSelection(desk: Desk) {
+        if (desk?.bookings?.find((b) => {
+            return evaluateBookings(b)
+        })) {
+            alert("This desk is already booked!")
+            return;
+        }
         if ($selectedDesks.includes(desk)) {
             $selectedDesks.splice($selectedDesks.indexOf(desk), 1)
         } else if ($selectedDesks.length === $selectedUsers.length) {
@@ -61,7 +72,14 @@
         }
         $selectedDesks = $selectedDesks
     }
+
+    function evaluateBookings(b: any) {
+        if (b?.date !== $dateValue) return false;
+        return ($interval.morning && b?.ismorning) || ($interval.afternoon && b?.isafternoon);
+    }
 </script>
+
+ACHTUNG USER SIND NOCH STATISCH
 
 <div class="grid grid-rows-2">
     {#key $refreshDesks}
@@ -74,7 +92,8 @@
                             on:click={() => handleDeskSelection(desk)}
                             class="btn variant-filled-success"
                             class:variant-ghost={$selectedDesks.includes(desk)}
-                            class:variant-filled-error={desk?.bookings?.find((b) => b?.date === $dateValue)}
+                            class:variant-filled-error={desk?.bookings?.find((b) => { if ($interval || $dateValue) {return evaluateBookings(b)} })}
+                            disabled="{desk?.bookings?.find((b) => { if ($interval || $dateValue) {return evaluateBookings(b)} })}"
                     >{desk?.desknum}</button>
                 {/each}
             {/await}

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { getModalStore } from '@skeletonlabs/skeleton';
-    import { interval, selectedDesk, displayedTime } from '$lib/bookingStore';
-    import { dateValue } from '$lib/dateStore';
-    import { bookDesk } from '$lib/mutations/booking';
-    import { user } from '$lib/userStore';
+    import {getModalStore} from '@skeletonlabs/skeleton';
+    import {interval, selectedDesk, displayedTime} from '$lib/bookingStore';
+    import {dateValue} from '$lib/dateStore';
+    import {bookDesk} from '$lib/mutations/booking';
+    import {user} from '$lib/userStore';
     import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
 
     //icons
@@ -16,9 +16,11 @@
         Cuboid,
         ArrowBigLeft,
         ArrowBigRight,
-        X
+        X,
+        Undo2,
+        User
     } from 'lucide-svelte';
-    import { refreshDesks } from '$lib/refreshStore';
+    import {refreshDesks} from '$lib/refreshStore';
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
 
 
@@ -70,6 +72,8 @@
 
     const cBase = 'card p-4 shadow-xl space-y-4';
 
+    let currentPage = "start";
+
     function whenSelection() {
         // if (!isFullDay) {
         //     if (!$interval.morning && !$interval.afternoon) {
@@ -99,61 +103,32 @@
 
 {#if $modalStore[0]}
     <div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
-
-        <p>worry thou not 'tis but a test</p>
-
-        {#if selectionPage}
-            <div class="flex justify-center items-center">
-                <div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
-                    <!--
-                    <button>
-                        <ArrowBigLeft />
-                    </button>-->
-<!--                    <h1>{$selectedDesk.desknum}</h1>-->
-                    <!--
-                    <button>
-                        <ArrowBigRight />
-                    </button>-->
-                </div>
-                <button
-                        on:click={() => onExitHandler()}
-                        class="absolute right-11 text-black px-4 py-2 rounded-full"
-                >
-                    <X />
-                </button>
+        <div class="grid grid-cols-3 items-center">
+            <div>
+                {#if (currentPage !== "start")}
+                    <button
+                            on:click={() => {currentPage = "start"}}
+                            class="text-black px-4 py-2 rounded-full"
+                    >
+                        <Undo2/>
+                    </button>
+                {/if}
             </div>
+            <h1 class="text-center text-3xl p-3">Booking</h1>
+            <button
+                    on:click={() => onExitHandler()}
+                    class="text-black px-4 py-2 rounded-full flex justify-end"
+            >
+                <X/>
+            </button>
+        </div>
 
-            <b>Desks:</b>
-                {#each $selectedDesks as desk}
-                    {desk.desknum},
-                {/each}
-            <b>Users:</b>
-                ACHTUNG NOCH STATISCH:
-                {#each $selectedUsers as user}
-                    {user.username},
-                {/each}
-
-            <div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
-                <button on:click={subtractDay}>
-                    <ArrowBigLeft />
-                </button>
-                <h1>{$dateValue}</h1>
-                <button on:click={addDay}>
-                    <ArrowBigRight />
-                </button>
-            </div>
-            <div class="bg-white h-24 rounded-full">
-                <button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl"
-                >Buchen</button
-                >
-            </div>
-        {:else}
-            <h1 class="text-center text-3xl p-3">Buchung</h1>
-            <div class="h-full flex items-center justify-center">
-                <div class="grid grid-cols-3 grid-rows-6 gap-7">
+        <div class="h-full flex items-center justify-center">
+            <div class="grid grid-cols-3 grid-rows-6 gap-7">
+                {#if (currentPage === "start")}
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <Calendar />
+                            <Calendar/>
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
@@ -161,46 +136,95 @@
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <Clock />
+                            <Clock/>
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        {$displayedTime}
+                        {#if ($interval.morning)}
+                            <div>07:00-12:00</div>
+                        {:else}
+                            <div>13:00-20:00</div>
+                        {/if}
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <MapPin />
+                            <MapPin/>
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        <!--{$user.location?.locationname}-->
+                        {$user.location?.locationname}
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <Building />
+                            <Building/>
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        <!--{$selectedDesk.floor.building.buildingname}-->
+                        <!-- TODO Desk Type fixen -->
+                        {$selectedDesks[0].floor.building.buildingname}
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <Cuboid />
+                            <Cuboid/>
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        <!--{$selectedDesk.floor.floorname}-->
+                        {$selectedDesks[0].floor.floorname}
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
-                            <Armchair />
+                            <Armchair/>
                         </div>
                     </div>
-                    <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        <!--{$selectedDesk.desknum}-->
+                    <button class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-primary"
+                            on:click={() => {currentPage = "desks"}}
+                    >
+                        Show Desks
+                    </button>
+                    <!-- TODO change icons and text -->
+                    <div class="rounded-3xl flex justify-center bg-white">
+                        <div class="rounded-3xl m-3 mx-5">
+                            <User/>
+                        </div>
                     </div>
-                </div>
+                    <button class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-primary"
+                            on:click={() => {currentPage = "users"}}
+                    >
+                        Show Users
+                    </button>
+                {:else if (currentPage === "desks")}
+                    {#each $selectedDesks as desk}
+                        <div class="rounded-3xl flex justify-center bg-white">
+                            <div class="rounded-3xl m-3 mx-5">
+                                <Armchair/>
+                            </div>
+                        </div>
+                        <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+                            {desk.desknum}
+                        </div>
+                    {/each}
+                {:else if (currentPage === "users")}
+                    {#each $selectedUsers as user}
+                        <!-- TODO change icons and text -->
+                        <div class="rounded-3xl flex justify-center bg-white">
+                            <div class="rounded-3xl m-3 mx-5">
+                                <User/>
+                            </div>
+                        </div>
+                        <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+                            {user.username}
+                        </div>
+                    {/each}
+                {/if}
             </div>
-        {/if}
+        </div>
+
+        <div class="bg-white h-24 rounded-full">
+            <button on:click={() => finishBooking()}
+                    class="btn rounded-full w-full h-full text-xl variant-filled-primary"
+            >Buchen
+            </button
+            >
+        </div>
     </div>
 {/if}
