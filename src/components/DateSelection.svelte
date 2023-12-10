@@ -4,6 +4,7 @@
 	import {dateValue} from "../lib/dateStore";
 	import BuildingSelection from "$components/BuildingSelection.svelte";
 	import {refreshDesks} from "$lib/refreshStore";
+	import {selectedDesks} from "$lib/stores/extendedUserStore";
 	// import type { PageLoad } from './$houdini';
 	//import DateSelection
 
@@ -31,7 +32,7 @@
 	const getBookings = () => {
 		console.log(dateValue);
 		store.fetch({ variables: { date: $dateValue } });
-		// $refreshDesks = !$refreshDesks;
+		$selectedDesks = [];
 	};
 </script>
 

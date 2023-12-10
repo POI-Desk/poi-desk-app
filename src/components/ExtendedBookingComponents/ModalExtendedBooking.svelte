@@ -140,7 +140,9 @@
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        {#if ($interval.morning)}
+                        {#if ($interval.morning && $interval.afternoon)}
+                            <div>07:00-20:00</div>
+                        {:else if ($interval.morning)}
                             <div>07:00-12:00</div>
                         {:else}
                             <div>13:00-20:00</div>
