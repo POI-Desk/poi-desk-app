@@ -22,17 +22,17 @@
     <!---->
     <SearchBar/>
 
-    <DateSelection />
+    <DateSelection/>
 
-    <IntervalSelection />
+    <IntervalSelection/>
 
-    <FloorSelection />
+    <FloorSelection/>
 
     <EBDeskSelection/>
 
     <div class="flex justify-center">
         <div class="absolute bottom-20">
-            <BuildingSelection />
+            <BuildingSelection/>
         </div>
     </div>
 

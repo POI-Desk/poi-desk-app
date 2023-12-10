@@ -1,25 +1,12 @@
 <script lang="ts">
     import {getModalStore} from '@skeletonlabs/skeleton';
-    import {interval, selectedDesk, displayedTime} from '$lib/bookingStore';
+    import {interval} from '$lib/bookingStore';
     import {dateValue} from '$lib/dateStore';
     import {bookDesk} from '$lib/mutations/booking';
     import {user} from '$lib/userStore';
-    import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
 
     //icons
-    import {
-        Calendar,
-        Clock,
-        MapPin,
-        Building,
-        Armchair,
-        Cuboid,
-        ArrowBigLeft,
-        ArrowBigRight,
-        X,
-        Undo2,
-        User
-    } from 'lucide-svelte';
+    import {Armchair, ArrowLeft, Building, Calendar, Clock, Cuboid, MapPin, User, X} from 'lucide-svelte';
     import {refreshDesks} from '$lib/refreshStore';
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
 
@@ -51,50 +38,11 @@
 
     let date: Date = new Date($dateValue);
 
-    let selectionPage: boolean = true;
-
-    // let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
-    //
-    // let hasBookings: boolean = currentBookingsOnDate.length > 0;
-    //
-    // let isBookedMorning: boolean =
-    //     ((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
-    //     false;
-    //
-    // let isBookedAfternoon: boolean =
-    //     ((hasBookings && currentBookingsOnDate[0].isafternoon) ||
-    //         currentBookingsOnDate[1]?.isafternoon) ??
-    //     false;
-    //
-    // let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
-
     const modalStore = getModalStore();
 
     const cBase = 'card p-4 shadow-xl space-y-4';
 
     let currentPage = "start";
-
-    function whenSelection() {
-        // if (!isFullDay) {
-        //     if (!$interval.morning && !$interval.afternoon) {
-        //         return;
-        //     }
-        //     selectionPage = !selectionPage;
-        //     return;
-        // }
-    }
-
-    function addDay() {
-        let date = new Date($dateValue);
-        date.setDate(date.getDate() + 1);
-        $dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
-    }
-
-    function subtractDay() {
-        let date = new Date($dateValue);
-        date.setDate(date.getDate() - 1);
-        $dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
-    }
 
     window.addEventListener('popstate', () => {
         modalStore.close();
@@ -110,7 +58,7 @@
                             on:click={() => {currentPage = "start"}}
                             class="text-black px-4 py-2 rounded-full"
                     >
-                        <Undo2/>
+                        <ArrowLeft/>
                     </button>
                 {/if}
             </div>
@@ -207,7 +155,6 @@
                     {/each}
                 {:else if (currentPage === "users")}
                     {#each $selectedUsers as user}
-                        <!-- TODO change icons and text -->
                         <div class="rounded-3xl flex justify-center bg-white">
                             <div class="rounded-3xl m-3 mx-5">
                                 <User/>
@@ -224,7 +171,7 @@
         <div class="bg-white h-24 rounded-full">
             <button on:click={() => finishBooking()}
                     class="btn rounded-full w-full h-full text-xl variant-filled-primary"
-            >Buchen
+            >Book
             </button
             >
         </div>
