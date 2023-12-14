@@ -166,7 +166,7 @@
 	<div class="dropdown w-full">
 		<div>
 			<input
-				class="input my-3 w-full"
+				class="input my-1 w-full rounded-full"
 				placeholder="Search for user"
 				bind:value={typedUsername}
 				on:click={handleDropDownClick}
@@ -179,15 +179,15 @@
 
 			<ul
 				style="background-color: white;"
-				class="dropdown-content menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
+				class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li class="m-1 flex justify-center">
-						<button class="w-full px-3 border rounded-lg flex flex-col"
-							style="grid-row: 1; background-color: #d4d6d9;"
+						<button class="w-full px-3 border rounded-2xl flex flex-col"
+							style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
 							on:click={() => {
 								$searchedUser = usr;
-								goto("/bookingsOfSearchedUser")
+								goto("/bookings/" + usr.username)
 							}}>
 							<div class="grid grid-cols-1 justify-items-start">
 								<span>{usr.username}</span>
@@ -202,15 +202,15 @@
 							<div style="grid-col: 1">
 								{#if pageNumber > 0}
 									<button on:click={() => {pageNumber --}}
-										class="border rounded-lg py-1 px-2" 
-										style="background-color: #d4d6d9;">show less...</button>
+										class="border rounded-2xl py-1 px-2" 
+										style="background-color: #FFFCF2;">show less...</button>
 								{/if}
 							</div>
 								{#if hasNextPage && typedUsername}
 									<div style="grid-col: 2" class="flex justify-end">
 										<button 
-										class="border rounded-lg py-1 px-2"
-										style="background-color: #d4d6d9;"
+										class="border rounded-2xl py-1 px-2"
+										style="background-color: #FFFCF2;"
 										on:click={
 											() => {
 												//dropdownIsOpen = true;
