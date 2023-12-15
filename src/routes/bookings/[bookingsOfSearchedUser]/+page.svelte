@@ -33,7 +33,7 @@
 			>
 				<X size="35" />
 			</button>
-			<div class="flex-1 flex items-center justify-center mb-3">
+			<div class="flex-1 flex items-center justify-center mb-3" style="color: #1A4775;">
 				<h1 class="text-2xl">{$searchedUser.username}</h1>
 			</div>
 		</div>
