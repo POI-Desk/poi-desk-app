@@ -29,7 +29,7 @@
 <div class="flex items-center">
 	<div class="btn-group btn-group-vertical">
 		{#await getFloors.fetch({ variables: { buildingid: $buildingid } })}
-			<p>loading seats...</p>
+			<p>loading floors...</p>
 		{:then fetched}
 			{#each fetched.data?.getFloorsInBuilding ?? [] as floor}
 				<button

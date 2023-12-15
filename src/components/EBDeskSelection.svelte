@@ -58,9 +58,9 @@
 
     function handleDeskSelection(desk: Desk) {
         if (desk?.bookings?.find((b) => {
-            return evaluateBookings(b)
+            return evaluateBookings(b);
         })) {
-            alert("This desk is already booked!")
+            alert("This desk is already booked!");
             return;
         }
         if ($selectedDesks.includes(desk)) {
@@ -68,9 +68,9 @@
         } else if ($selectedDesks.length === $selectedUsers.length) {
             alert("Too Many Desks Selected!");
         } else {
-            $selectedDesks.push(desk)
+            $selectedDesks.push(desk);
         }
-        $selectedDesks = $selectedDesks
+        $selectedDesks = $selectedDesks;
     }
 
     function evaluateBookings(b: any) {
