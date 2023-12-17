@@ -13,14 +13,7 @@ export const morningSelected = writable<boolean>(false);
 export const afternoonSelected = writable<boolean>(false);
 
 
-export const currentBooking = writable<Booking>({
-	booking_id: '',
-	table_id: '',
-	date: '',
-	interval: {
-		morning: false,
-		afternoon: false
-	}
+export const currentBooking = writable<any>({
 });
 
 export const selectedDesk = writable<any>();
@@ -37,6 +30,21 @@ export const getBookings = graphql(`
 			pk_bookingid
 			bookingnumber
 			date
+			desk {
+				desknum
+				y
+				x
+				floor {
+					pk_floorid
+					floorname
+					building {
+						buildingname
+						location {
+							locationname
+						}
+					}
+				}
+			}
 		}
 	}
 `);

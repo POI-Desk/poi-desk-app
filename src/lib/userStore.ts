@@ -7,3 +7,5 @@ export const user = writable<User> ({
     location: null,
     userInfo: ''
 });
+
+export const currentLocation = writable("");

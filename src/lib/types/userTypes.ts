@@ -4,5 +4,4 @@ export type User = {
 	pk_userid: string;
 	username: string;
 	location: Location | null;
-	userInfo: string;
 };

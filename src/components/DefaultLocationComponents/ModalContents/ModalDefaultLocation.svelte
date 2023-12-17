@@ -21,7 +21,12 @@
 		});
 	}
 
-	const cBase = 'card p-4 w-modal shadow-xl space-y-4'; //C-Bat ???????
+	function closeModal(){
+		
+		modalStore.close();
+	}
+
+	const cBase = 'card p-4 w-modal shadow-xl space-y-4';
 </script>
 
 {#if $modalStore[0]}
@@ -34,12 +39,12 @@
 					href="."
 					on:click={() => {
 						setAsDefault();
-						modalStore.close();
+						closeModal();
 					}}>Yes</a
 				>
 				<a
 					on:click={() => {
-						modalStore.close();
+						closeModal();
 					}}
 					class="btn variant-filled-error px-14"
 					href=".">No</a
