@@ -41,7 +41,7 @@
 	<p>Your location is {$user.location?.locationname ?? 'no location'}</p>
 	<!-- <p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
 	<!---->
-	<SearchBar />
+	<SearchBar/>
 
 	<DateSelection />
 

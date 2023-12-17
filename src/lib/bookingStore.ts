@@ -30,7 +30,21 @@ export const getBookings = graphql(`
 			pk_bookingid
 			bookingnumber
 			date
-			
+			desk {
+				desknum
+				y
+				x
+				floor {
+					pk_floorid
+					floorname
+					building {
+						buildingname
+						location {
+							locationname
+						}
+					}
+				}
+			}
 		}
 	}
 `);
