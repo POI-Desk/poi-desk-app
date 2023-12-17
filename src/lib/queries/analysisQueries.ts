@@ -1,4 +1,4 @@
-// import { graphql } from '$houdini';
+import { graphql } from '$houdini';
 
 export const MonthlyBookings = graphql(`
 	query getMonthlyBooking($year: String!, $month: String!, $location: ID!) {

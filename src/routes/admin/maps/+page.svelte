@@ -42,6 +42,7 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
+	import { user } from '$lib/userStore';
 	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
@@ -88,7 +89,7 @@
 	$: $map.height = mapData?.height ?? defaultMapProps.height;
 	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
-	const locationIdVienna: string = '241ef7e9-0cb8-46fb-a378-2c9614b8f9e4'; //TODO: get from admin user
+	const locationIdVienna: string = $user.location?.pk_locationid!; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
 
 	const fetchBuildings = async (id: string) => {
