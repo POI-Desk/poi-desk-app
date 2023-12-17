@@ -1,23 +1,30 @@
 <script lang="ts">
 	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { interval, selectedDesk } from '$lib/bookingStore';
+	import { interval, selectedDesk, displayedTime } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
 	import { bookDesk } from '$lib/mutations/booking';
 	import { user } from '$lib/userStore';
 	import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
 
 	//icons
-	import { Calendar, Clock, MapPin, Building, Armchair, Cuboid } from 'lucide-svelte';
+	import {
+		Calendar,
+		Clock,
+		MapPin,
+		Building,
+		Armchair,
+		Cuboid,
+		ArrowBigLeft,
+		ArrowBigRight,
+		X,
+		ArrowLeft,
+	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
 
 	$interval.morning = false;
 	$interval.afternoon = false;
 
 	async function finishBooking() {
-		console.log($dateValue);
-		console.log($interval);
-		console.log($user.pk_userid);
-		console.log($selectedDesk.pk_deskid);
 		const value = await bookDesk.mutate({
 			booking: {
 				date: $dateValue,
@@ -27,21 +34,17 @@
 				deskid: $selectedDesk.pk_deskid
 			}
 		});
-		console.log(value);
-
 		$refreshDesks = !$refreshDesks;
 		modalStore.close();
 	}
 
 	function onExitHandler() {
-		modalStore.close();
+		modalStore.close(); 	
 	}
 
 	let date: Date = new Date($dateValue);
 
-	let time: string = 'default';
-
-	let selection: boolean = true;
+	let selectionPage: boolean = true;
 
 	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
 
@@ -63,48 +66,77 @@
 	const cBase = 'card p-4 shadow-xl space-y-4';
 
 	function whenSelection() {
-		console.log('has bookings: ' + hasBookings);
-		console.log('is booked morning: ' + isBookedMorning);
-		console.log('is booked afternoon: ' + isBookedAfternoon);
-		console.log('is full day: ' + isFullDay);
-
 		if (!isFullDay) {
-			selection = !selection;
+			if (!$interval.morning && !$interval.afternoon) {
+				return;
+			}
+			selectionPage = !selectionPage;
+			return;
 		}
 	}
 
-	console.log($selectedDesk);
+	function addDay() {
+		let date = new Date($dateValue);
+		date.setDate(date.getDate() + 1);
+		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
+		console.log($dateValue);
+	}
+
+	function subtractDay() {
+		if ($dateValue === new Date().toISOString().split('T')[0]) {
+			return;
+		}
+		let date = new Date($dateValue);
+		date.setDate(date.getDate() - 1);
+		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
+	}
 
 	window.addEventListener('popstate', () => {
-		console.log('User clicked back button');
 		modalStore.close();
 	});
 </script>
 
 {#if $modalStore[0]}
-	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
-		{#if selection}
-			<div class="grid grid-cols-7 row-auto gap-4 text-center basis-full">
-				<div class="col-span-7 bg-red-500">
-					{$selectedDesk.desknum}
-					<br /> CURRENTLY NOT WORKING
+	<div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
+		{#if selectionPage}
+			<div class=" flex justify-center items-center">
+				<div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
+					<h1>{$selectedDesk.desknum}</h1>
 				</div>
+				<button
+					on:click={() => onExitHandler()}
+					class="absolute right-0 pr-7 text-black px-4 py-2 rounded-full"
+				>
+					<X />
+				</button>
+			</div>
+			<div class="basis-full">
 				<BookingDeskState shownInterval="morning" />
 				<!---->
-				<BookingDeskState shownInterval="afternoon" />
-
-				<div class="col-span-7 row-span-2 bg-red-500">
-					<div class="rounded-3xl w-full h-full bg-white">CURRENTLY NOT WORKING</div>
-				</div>
-				<div class="col-span-7 row-span-1 bg-red-500">
-					<button
-						on:click={() => whenSelection()}
-						class="btn rounded-3xl w-full h-full text-xl bg-white">Buchen</button
-					>
-				</div>
+				<!--<BookingDeskState shownInterval="afternoon" />-->
+			</div>
+			<div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
+				<button on:click={subtractDay}>
+					<ArrowBigLeft />
+				</button>
+				<h1>{$dateValue}</h1>
+				<button on:click={addDay}>
+					<ArrowBigRight />
+				</button>
+			</div>
+			<div class="bg-white h-24 rounded-full">
+				<button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl"
+					>Buchen</button
+				>
 			</div>
 		{:else}
-			<h1 class="text-center text-3xl">Buchung</h1>
+			<button
+				on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
+				class="absolute left-7 top-11 text-black px-4 py-2 rounded-full"
+			>
+				<ArrowLeft />
+			</button>
+			<h1 class="text-center text-3xl p-3">Buchung</h1>
 			<div class="h-full flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-6 gap-7">
 					<div class="rounded-3xl flex justify-center bg-white">
@@ -121,7 +153,7 @@
 						</div>
 					</div>
 					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-						{time}
+						{$displayedTime}
 					</div>
 					<div class="rounded-3xl flex justify-center bg-white">
 						<div class="rounded-3xl m-3 mx-5">
@@ -157,9 +189,11 @@
 					</div>
 				</div>
 			</div>
-			<button on:click={() => finishBooking()} class="btn rounded-3xl text-xl bg-indigo-500"
-				>Buchen</button
-			>
+			<div class="bg-white h-24 rounded-full">
+				<button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl"
+					>Buchen</button
+				>
+			</div>
 		{/if}
 	</div>
 {/if}

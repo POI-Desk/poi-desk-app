@@ -11,7 +11,7 @@
 	import { CachePolicy } from '$houdini';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { getDesks } from '$lib/queries/deskQueries';
-	import {refreshDesks} from "$lib/refreshStore";
+	import { refreshDesks } from '$lib/refreshStore';
 
 	const modalStore = getModalStore();
 
@@ -19,7 +19,6 @@
 		type: 'component',
 		component: 'modalBooking'
 	};
-
 
 	let visible: boolean;
 
