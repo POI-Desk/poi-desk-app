@@ -35,6 +35,7 @@
 	<a class="btn variant-filled-primary" href="./login">Login</a>
 
 	<a class="btn variant-filled-primary" href="./location">Location</a>
+	<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
 	<!--Debugging-->
 	<p>{$user.pk_userid ?? 'no id'}</p>
 	<p>{$user.username ?? 'no username'}</p>
