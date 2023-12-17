@@ -64,7 +64,7 @@
             case  monthDictionary[selectedTimePeriod] <= 12:
             {
                 const result = await MonthlyBookingData.fetch(
-                    { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), location: "8638b090-ee36-46e3-86f0-ec771a007950" } });
+                    { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), location: $user.location?.pk_locationid || ""} });
                 if (result) {
                     let monthlyBookingResult = result.data?.getMonthlyBooking;
                     analysisData = {
@@ -102,7 +102,7 @@
             case monthDictionary[selectedTimePeriod] >= 13 && monthDictionary[selectedTimePeriod] <= 16:
             {
                 const result = await QuarterlyBookingData.fetch(
-                    { variables: { year: year, quarter: selectedTimePeriod.toString(), location: "8638b090-ee36-46e3-86f0-ec771a007950" } });
+                    { variables: { year: year, quarter: selectedTimePeriod.toString(), location: $user.location?.pk_locationid || "" } });
                 if (result) {
                     let quarterlyBookingResult = result.data?.getQuarterlyBooking;
                       analysisData = {
@@ -140,7 +140,7 @@
             case monthDictionary[selectedTimePeriod] === 17:
             {
                 const result = await YearlyBookingData.fetch(
-                    { variables: { year: year, location: "8638b090-ee36-46e3-86f0-ec771a007950" } });
+                    { variables: { year: year, location: $user.location?.pk_locationid || "" } });
                 if (result) {
                     let yearlyBookingResult = result.data?.getYearlyBooking;
                     analysisData = {
