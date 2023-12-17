@@ -50,107 +50,95 @@
 		}
 	}
 	$: {
-  if ($interval.morning && $interval.afternoon) {
-    $displayedTime = '07:00 - 20:00';
-  } else if ($interval.morning) {
-    $displayedTime = '07:00 - 13:00';
-  } else if ($interval.afternoon) {
-    $displayedTime = '13:00 - 20:00';
-  }
-}
+		if ($interval.morning && $interval.afternoon) {
+			$displayedTime = '07:00 - 20:00';
+		} else if ($interval.morning) {
+			$displayedTime = '07:00 - 13:00';
+		} else if ($interval.afternoon) {
+			$displayedTime = '13:00 - 20:00';
+		}
+	}
 
-
-	// TODO: change name to logged in user.
-	// TODO: change name when already taken to user who booked it.
+	const baseStyle = 'h-1/2 w-full flex gap-4';
+	let staticLocation = 'POI/AT';
+	let location = `${$user.location?.locationname}`;
 </script>
 
-<div class="col-span-5 row-span-5">
-	<!--amongus-->
-	{#if shownInterval == 'morning'}
-		{#if morningSelected && !isBookedMorning}
-			<div
-				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
-			>
-				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
-					POI/AT <br /> Vienna
+<div class="h-full flex flex-col gap-4">
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:click={() => (morningSelected = !morningSelected)} class={baseStyle}>
+		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
+			{#if morningSelected && !isBookedMorning}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex w-full h-1/2 gap-2">
+						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+							<p>{staticLocation} <br /> {location}</p>
+						</div>
+						<div class="w-1/2 h-full bg-white rounded-3xl" />
+					</div>
+					<div class="h-1/2 bg-green-500 rounded-3xl flex justify-center items-center">
+						<p>{$user.username}</p>
+					</div>
 				</div>
-				<div class="rounded-3xl bg-white text-black" />
-				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
-					{$user.username}
+			{:else if !isBookedMorning}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex justify-center items-center w-full h-full">FREE</div>
 				</div>
-			</div>
-		{:else if !isBookedMorning}
-			<div
-				in:fade
-				class=" rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
-			>
-				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
-			</div>
-		{:else if isBookedMorning}
-			<div
-				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-orange-500 w-full h-full"
-			>
-				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
-					POI/AT <br /> Vienna
+			{:else if isBookedMorning}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex w-full h-1/2 gap-2">
+						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+							<p>{staticLocation} <br /> {location}</p>
+						</div>
+						<div class="w-1/2 h-full bg-white rounded-3xl" />
+					</div>
+					<div class="h-1/2 bg-red-500 rounded-3xl flex justify-center items-center">
+						<p>{morningAlreadyTakenName}</p>
+					</div>
 				</div>
-				<div class="rounded-3xl bg-white text-black" />
-				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
-					{morningAlreadyTakenName}
+			{/if}
+		</div>
+		<div class="btn w-3/12 h-full bg-yellow-200 rounded-full">
+			07:00 <br /> 13:00 <br />
+		</div>
+	</div>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:click={() => (afternoonSelected = !afternoonSelected)} class={baseStyle}>
+		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
+			{#if afternoonSelected && !isBookedAfternoon}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex w-full h-1/2 gap-2">
+						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+							<p>{staticLocation} <br /> {location}</p>
+						</div>
+						<div class="w-1/2 h-full bg-white rounded-3xl" />
+					</div>
+					<div class="h-1/2 bg-green-500 rounded-3xl flex justify-center items-center">
+						<p>{$user.username}</p>
+					</div>
 				</div>
-			</div>
-		{/if}
-	{:else if shownInterval == 'afternoon'}
-		{#if afternoonSelected && !isBookedAfternoon}
-			<div
-				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 gap-[0.4rem] p-[0.4rem] bg-slate-500 w-full h-full"
-			>
-				<div class="rounded-3xl bg-white text-black flex items-center justify-center">
-					POI/AT <br /> Vienna
+			{:else if !isBookedAfternoon}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex justify-center items-center w-full h-full">FREE</div>
 				</div>
-				<div class="rounded-3xl bg-white text-black" />
-				<div class="col-span-2 rounded-3xl bg-white text-black flex items-center justify-center">
-					{$user.username}
+			{:else if isBookedAfternoon}
+				<div in:fade class="flex flex-col gap-2 w-full h-full">
+					<div class="flex w-full h-1/2 gap-2">
+						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+							<p>{staticLocation} <br /> {location}</p>
+						</div>
+						<div class="w-1/2 h-full bg-white rounded-3xl" />
+					</div>
+					<div class="h-1/2 bg-red-500 rounded-3xl flex justify-center items-center">
+						<p>{afternoonAlreadyTakenName}</p>
+					</div>
 				</div>
-			</div>
-		{:else if !isBookedAfternoon}
-			<div
-				in:fade
-				class="rounded-3xl grid grid-cols-2 row-span-2 variant-filled-primary w-full h-full"
-			>
-				<div class="col-span-2 flex items-center justify-center text-xl">Free</div>
-			</div>
-		{:else if isBookedAfternoon}
-			<div in:fade class="rounded-3xl grid grid-cols-2 row-span-2 bg-orange-500 w-full h-full">
-				<div class="rounded-3xl bg-white text-black m-1 flex items-center justify-center">
-					POI/AT <br /> Vienna
-				</div>
-				<div class="rounded-3xl bg-white text-black m-1" />
-				<div
-					class="col-span-2 rounded-3xl bg-white text-black m-1 flex items-center justify-center"
-				>
-					{afternoonAlreadyTakenName}
-				</div>
-			</div>
-		{/if}
-	{/if}
-</div>
-<div class="col-span-2 row-span-5">
-	{#if shownInterval == 'morning'}
-		<button
-			class="btn rounded-full variant-filled-primary w-full h-full"
-			disabled={isBookedMorning}
-			on:click={() => (morningSelected = !morningSelected)}
-			>07:00 <br /> 13:00 <br />
-		</button>
-	{:else if shownInterval == 'afternoon'}
-		<button
-			class="btn rounded-full variant-filled-primary w-full h-full"
-			disabled={isBookedAfternoon}
-			on:click={() => (afternoonSelected = !afternoonSelected)}
-			>13:00 <br /> 20:00 <br />
-		</button>
-	{/if}
+			{/if}
+		</div>
+		<div class="btn w-3/12 h-full bg-yellow-200 rounded-full">
+			13:00 <br /> 20:00 <br />
+		</div>
+	</div>
 </div>

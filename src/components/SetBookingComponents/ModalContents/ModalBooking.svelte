@@ -16,7 +16,8 @@
 		Cuboid,
 		ArrowBigLeft,
 		ArrowBigRight,
-		X
+		X,
+		ArrowLeft,
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
 
@@ -38,8 +39,7 @@
 	}
 
 	function onExitHandler() {
-		modalStore.close();
-		$dateValue = new Date().toISOString().split('T')[0];
+		modalStore.close(); 	
 	}
 
 	let date: Date = new Date($dateValue);
@@ -79,9 +79,13 @@
 		let date = new Date($dateValue);
 		date.setDate(date.getDate() + 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
+		console.log($dateValue);
 	}
 
 	function subtractDay() {
+		if ($dateValue === new Date().toISOString().split('T')[0]) {
+			return;
+		}
 		let date = new Date($dateValue);
 		date.setDate(date.getDate() - 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
@@ -93,31 +97,23 @@
 </script>
 
 {#if $modalStore[0]}
-	<div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
+	<div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
 		{#if selectionPage}
-			<div class="flex justify-center items-center">
+			<div class=" flex justify-center items-center">
 				<div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
-					<!--
-					<button>
-						<ArrowBigLeft />
-					</button>-->
 					<h1>{$selectedDesk.desknum}</h1>
-					<!--
-					<button>
-						<ArrowBigRight />
-					</button>-->
 				</div>
 				<button
 					on:click={() => onExitHandler()}
-					class="absolute right-11 text-black px-4 py-2 rounded-full"
+					class="absolute right-0 pr-7 text-black px-4 py-2 rounded-full"
 				>
 					<X />
 				</button>
 			</div>
-			<div class="grid grid-cols-7 gap-4 text-center basis-full">
+			<div class="basis-full">
 				<BookingDeskState shownInterval="morning" />
 				<!---->
-				<BookingDeskState shownInterval="afternoon" />
+				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
 			<div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
 				<button on:click={subtractDay}>
@@ -134,6 +130,12 @@
 				>
 			</div>
 		{:else}
+			<button
+				on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
+				class="absolute left-7 top-11 text-black px-4 py-2 rounded-full"
+			>
+				<ArrowLeft />
+			</button>
 			<h1 class="text-center text-3xl p-3">Buchung</h1>
 			<div class="h-full flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-6 gap-7">

@@ -12,8 +12,6 @@
 		return '';
 	};
 
-
-
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
@@ -25,6 +23,7 @@
 			}
 		}
 	`);
+	*/
 
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
@@ -62,9 +61,10 @@
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
-
+*/
 	// let userInfo: string = "";
 	let userLocation: string = '';
+
 
 	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
 
@@ -107,7 +107,7 @@
 		);
 		return user;
 	}
-
+*/
 	async function onUserClicked(user: User) {}
 
 	export const _getDeskOfBookingVariables = () => {
@@ -155,8 +155,21 @@
 			pageNumber = 0;
 		}
 		if (typedUsername) {
-			getSearchUsers(pageNumber);
+			//getSearchUsers(pageNumber);
 		}
+	}
+
+
+	let loadMore: boolean = true;
+
+	function handleLoadMore() {
+		// TODO was passiert, wenn es keine pages mehr gibt?
+		pageNumber++;
+		//getSearchUsers(pageNumber);
+	}
+
+	function handleLoadLess() {
+		pageNumber--;
 	}
 
 </script>
