@@ -40,48 +40,13 @@
 
 </script>
 
-<!-- <div class="overflow-x-auto">
-	<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Number</th>
-				<th>Date</th>
-				<th />
-			</tr>
-		</thead>
-		<tbody>
-			{#await getBookings.fetch({ variables: { userid: usrid } })}
-				{console.log('fetching book')}
-			{:then fetched}
-				{#each bookings ?? [] as booking}
-					<tr>
-						<th>{booking?.pk_bookingid}</th>
-						<td>{booking?.bookingnumber}</td>
-						<td>{booking?.date}</td>
-						<td>
-							<button
-								on:click|stopPropagation={async () => {
-									await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst');
-								}}
-								class="btn variant-filled-error btn-sm btn-outline">Delete</button
-							>
-						</td>
-					</tr>
-				{/each}
-			{/await}	
-		</tbody>
-	</table>
-</div> -->
-
 <div class="flex flex-wrap">
 	{#await getBookings.fetch({ variables: { userid: usrid } })}
 	{:then} 
 		{#each bookings ?? [] as booking}
+			{console.log(booking)}
 			<BookingCard 
-				pk_bookingid = {booking?.pk_bookingid}
-				bookingnumber = {booking?.bookingnumber}
-				date = {booking?.date}
+				thisBooking = {booking}
 				on:deleteBooking={async () => await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst')}
 				/>
 		{/each}

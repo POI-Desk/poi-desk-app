@@ -79,6 +79,7 @@
 		let date = new Date($dateValue);
 		date.setDate(date.getDate() + 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
+		console.log($dateValue);
 	}
 
 	function subtractDay() {
@@ -100,15 +101,7 @@
 		{#if selectionPage}
 			<div class=" flex justify-center items-center">
 				<div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
-					<!--
-					<button>
-						<ArrowBigLeft />
-					</button>-->
 					<h1>{$selectedDesk.desknum}</h1>
-					<!--
-					<button>
-						<ArrowBigRight />
-					</button>-->
 				</div>
 				<button
 					on:click={() => onExitHandler()}
@@ -117,10 +110,10 @@
 					<X />
 				</button>
 			</div>
-			<div class="grid grid-cols-7 gap-4 text-center basis-full">
+			<div class="basis-full">
 				<BookingDeskState shownInterval="morning" />
 				<!---->
-				<BookingDeskState shownInterval="afternoon" />
+				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
 			<div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
 				<button on:click={subtractDay}>

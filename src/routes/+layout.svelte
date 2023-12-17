@@ -13,6 +13,7 @@
 		modalBooking: {
 			ref: ModalBooking,
 			slot: '<p>skeleton</p>'
+			
 		},
 		modalDefaultLocation:{
 			ref: ModalDefaultLocation,

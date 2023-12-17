@@ -10,7 +10,7 @@
 	export const _getAllUsersVariables = () => {
 		return '';
 	};
-
+/*
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
@@ -19,6 +19,7 @@
 			}
 		}
 	`);
+	*/
 
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
@@ -26,9 +27,9 @@
 	const pageSizeConst = 3;
 
 	onMount(() => {
-		getSearchUsers(0);
+		//getSearchUsers(0);
 	});
-
+/*
 	async function getSearchUsers(pageNumber_param: number) {
 		await getUsers
 			.fetch({
@@ -52,16 +53,16 @@
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
-
+*/
 	// let userInfo: string = "";
 	let userLocation: string = '';
 
-	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
+	//$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
 	let bookingsOnDate = [];
 
 	let typedUsername: string;
 	let typedUser: User;
-
+/*
 	async function getUserInfo(user: User) {
 		typedUser = user;
 		await getBookings.fetch({ variables: { userid: user.pk_userid ?? '' } });
@@ -91,7 +92,7 @@
 		);
 		return user;
 	}
-
+*/
 	async function onUserClicked(user: User) {}
 
 	export const _getDeskOfBookingVariables = () => {
@@ -132,7 +133,7 @@
 
 	$: {
 		if (typedUsername) {
-			getSearchUsers(pageNumber);
+			//getSearchUsers(pageNumber);
 		}
 	}
 
@@ -141,7 +142,7 @@
 	function handleLoadMore() {
 		// TODO was passiert, wenn es keine pages mehr gibt?
 		pageNumber++;
-		getSearchUsers(pageNumber);
+		//getSearchUsers(pageNumber);
 	}
 
 	function handleLoadLess() {
