@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	/*import { graphql } from '$houdini';
 	import type { User } from '$lib/types/userTypes';
 	import { getBookings } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
@@ -24,7 +24,7 @@
 		}
 	`);
 	*/
-
+	/*
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
@@ -62,6 +62,7 @@
 		}
 	}
 */
+/*
 	// let userInfo: string = "";
 	let userLocation: string = '';
 
@@ -108,6 +109,7 @@
 		return user;
 	}
 */
+/*
 	async function onUserClicked(user: User) {}
 
 	export const _getDeskOfBookingVariables = () => {
@@ -171,10 +173,10 @@
 	function handleLoadLess() {
 		pageNumber--;
 	}
-
+*/
 </script>
 
-
+<!--
 <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
 	<div class="dropdown w-full">
 		<div>
@@ -239,3 +241,5 @@
 		</div>
 	</div>
 </div>
+
+-->
