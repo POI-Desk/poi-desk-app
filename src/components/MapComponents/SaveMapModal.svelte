@@ -2,6 +2,7 @@
 	import { CachePolicy, graphql, type getLocations$result, getAllLocationsStore } from '$houdini';
 	import type { QueryResult } from 'houdini';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { getLocations } from "$lib/queries/locationQueries";
 
 	export let openModal = false;
 	let result: QueryResult<getLocations$result, null>;
@@ -16,16 +17,7 @@
 		dispatch('closeModal');
 	};
 
-	const getLocations = graphql(`
-		query getLocations {
-			getAllLocations {
-				locationname
-				buildings {
-					buildingname
-				}
-			}
-		}
-	`);
+	
 </script>
 
 <dialog id="my_modal_2" class="modal" class:modal-open={openModal}>

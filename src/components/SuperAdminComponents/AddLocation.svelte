@@ -1,8 +1,21 @@
 <script lang="ts">
 	import { addLocation } from "$lib/mutations/locationMutation";
+	import { getLocations } from "$lib/queries/locationQueries";
+	import { onMount } from "svelte";
 
 	let showAddLocation: boolean = false;
 	let newName: string = '';
+    let locationNames: string[] = [];
+    
+    onMount(async () => {
+        await getLocations.fetch().then(() => {
+            let locations = $getLocations.data?.getAllLocations;
+            for (let loc in locations) {
+                locationNames.push(loc.locationname)
+            }
+        })
+        
+    })
 
 	function onAddLocation() {
 		showAddLocation = true;
