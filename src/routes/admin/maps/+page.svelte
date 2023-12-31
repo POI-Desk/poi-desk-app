@@ -714,11 +714,15 @@
 			if (resolve.errors) return console.error(resolve.errors);
 		});
 
-		await getMapByFloor.fetch({
+		const receivedMap = await getMapByFloor.fetch({
 			variables: { floorID: currentFloorID },
 			policy: CachePolicy.NetworkOnly
 		});
-		// drawMap(false);
+
+    $allMapObjects = $allMapObjects.map((obj) => {
+      obj.dbID = receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
+      return obj;
+    });
 	};
 </script>
 
