@@ -3,15 +3,14 @@
   import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentBooking } from '$lib/bookingStore';
 
+
 	const dispatch = createEventDispatcher();
 
 	function deleteBooking(id: string) {
 		dispatch('deleteBooking', id);
 	}
 
-	export let pk_bookingid: string;
-	export let bookingnumber: string;
-	export let date: string;
+	export let thisBooking: any;
 
 
 	const modalStore = getModalStore();
@@ -22,6 +21,7 @@
 	};
 
   function toggleModal() {
+		$currentBooking = thisBooking;
     modalStore.trigger(modal);
   }
 
@@ -39,18 +39,18 @@
 
 	<div class="w-2/3 rounded-lg ml-3 my-3">
 		<h1 class="text-xl">
-			{pk_bookingid}
+			{thisBooking?.pk_bookingid}
 		</h1>
 		<h1 class="text-xl">
 			<i class="fa fa-id-badge" aria-hidden="true" />
-			{bookingnumber}
+			{thisBooking?.bookingnumber}
 		</h1>
 		<h1 class="text-xl">
 			<i class="fa fa-calendar" aria-hidden="true" />
-			{date}
+			{thisBooking?.date}
 		</h1>
 		<button
-			on:click={() => deleteBooking(pk_bookingid ?? 'lol du stinkst')}
+			on:click={() => deleteBooking(thisBooking?.pk_bookingid ?? 'lol du stinkst')}
 			class="btn variant-filled-error btn-sm btn-outline">Delete</button
 		>
 		<button on:click={toggleModal} class="btn variant-filled-primary btn-sm btn-outline"

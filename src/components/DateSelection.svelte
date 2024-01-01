@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {graphql} from '$houdini';
+	import { getBookingsByDate } from '$lib/queries/booking';
 	import {dateValue, maxBookingValue, today} from "$lib/dateStore";
 
 	$dateValue = new Date().toISOString().split('T')[0];
@@ -11,19 +12,11 @@
 		};
 	};
 
-	const store = graphql(`
-		query getBookingsByDate($date: String!) @load {
-			getBookingsByDate(date: $date) {
-				pk_bookingid
-				bookingnumber
-			}
-		}
-	`);
-
-	$: bookings = $store.data?.getBookingsByDate;
+	let visibility = 'hidden';
+	$dateValue = new Date().toISOString().split('T')[0];
 
 	const getBookings = () => {
-		store.fetch({ variables: { date: $dateValue } });
+		getBookingsByDate.fetch({ variables: { date: $dateValue } });
 	};
 
 </script>

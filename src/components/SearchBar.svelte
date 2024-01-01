@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	/*import { graphql } from '$houdini';
 	import type { User } from '$lib/types/userTypes';
 	import { getBookings } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
@@ -12,8 +12,6 @@
 		return '';
 	};
 
-
-
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
@@ -25,7 +23,8 @@
 			}
 		}
 	`);
-
+	*/
+	/*
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
@@ -62,9 +61,11 @@
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
-
+*/
+/*
 	// let userInfo: string = "";
 	let userLocation: string = '';
+
 
 	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
 
@@ -107,7 +108,8 @@
 		);
 		return user;
 	}
-
+*/
+/*
 	async function onUserClicked(user: User) {}
 
 	export const _getDeskOfBookingVariables = () => {
@@ -155,13 +157,26 @@
 			pageNumber = 0;
 		}
 		if (typedUsername) {
-			getSearchUsers(pageNumber);
+			//getSearchUsers(pageNumber);
 		}
 	}
 
+
+	let loadMore: boolean = true;
+
+	function handleLoadMore() {
+		// TODO was passiert, wenn es keine pages mehr gibt?
+		pageNumber++;
+		//getSearchUsers(pageNumber);
+	}
+
+	function handleLoadLess() {
+		pageNumber--;
+	}
+*/
 </script>
 
-
+<!--
 <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
 	<div class="dropdown w-full">
 		<div>
@@ -226,3 +241,5 @@
 		</div>
 	</div>
 </div>
+
+-->

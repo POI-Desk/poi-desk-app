@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { floorid } from '$lib/floorStore';
 	import { buildingid } from '$lib/buildingStore';
-
-    import {getDesks} from "$lib/queries/deskQueries";
-	import {getFloors} from "$lib/queries/floorQueries";
+	import { getDesks } from '$lib/queries/deskQueries';
+	import { getFloors } from '$lib/queries/floorQueries';
 
 	$: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -18,27 +17,23 @@
 	$: {
 		if ($buildingid) selectFirstFloor();
 	}
-
-	$: {
-		if ($floorid) {
-			getDesks.fetch({ variables: { floorid: $floorid } });
-		}
-	}
 </script>
 
-<div class="flex items-center">
-	<div class="btn-group btn-group-vertical">
-		{#await getFloors.fetch({ variables: { buildingid: $buildingid } })}
-			<p>loading seats...</p>
-		{:then fetched}
-			{#each fetched.data?.getFloorsInBuilding ?? [] as floor}
-				<button
-					class="btn variant-filled-primary"
-					on:click={() => {
-						$floorid = floor?.pk_floorid ?? '';
-					}}>{floor?.floorname}</button
-				>
-			{/each}
-		{/await}
-	</div>
+<div
+	class="absolute w-11 h-1/4 left-4 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50 border-2 border-primary-300 shadow-around-10 grid grid-rows-{floors?.length} divide-y-2 divide-primary-300"
+>
+	{#if $getFloors.fetching}
+		<div class="h-full rounded-full placeholder animate-pulse" />
+	{:else}
+		{#each floors ?? [] as floor}
+			<button
+				on:click={() => {
+					$floorid = floor?.pk_floorid ?? '';
+				}}
+				class="flex items-center justify-center"
+			>
+				<p class="select-none text-primary-500 font-semibold">{floor?.floorname.split(' ')[0]}</p>
+			</button>
+		{/each}
+	{/if}
 </div>
