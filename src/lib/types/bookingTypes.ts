@@ -3,6 +3,7 @@ export type Booking = {
 	table_id: string;
 	date: string;
 	interval: Interval;
+	bookingnumber: string;
 };
 
 export type Interval = {

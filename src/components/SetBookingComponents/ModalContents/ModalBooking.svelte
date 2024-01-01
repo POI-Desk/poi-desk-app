@@ -30,7 +30,8 @@
 				ismorning: $interval.morning,
 				isafternoon: $interval.afternoon,
 				userid: $user.pk_userid,
-				deskid: $selectedDesk.pk_deskid
+				deskid: $selectedDesk.pk_deskid,
+				extendedid: ""
 			}
 		});
 		$refreshDesks = !$refreshDesks;

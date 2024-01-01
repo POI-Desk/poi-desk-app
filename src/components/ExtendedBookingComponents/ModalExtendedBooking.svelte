@@ -13,6 +13,9 @@
 
     async function finishBooking() {
         console.log("finishing booking")
+        const extendedid = "EXT-ID" + Date.now().toString(36) + Math.random().toString(36);
+        console.log(extendedid);
+
         for (const desk of $selectedDesks) {
             const i = $selectedDesks.indexOf(desk);
             const value = await bookDesk.mutate({
@@ -21,7 +24,8 @@
                     ismorning: $interval.morning,
                     isafternoon: $interval.afternoon,
                     userid: $selectedUsers[i].pk_userid,
-                    deskid: desk.pk_deskid
+                    deskid: desk.pk_deskid,
+                    extendedid: extendedid
                 }
             });
             console.log(value)
