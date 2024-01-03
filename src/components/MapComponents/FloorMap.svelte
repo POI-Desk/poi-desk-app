@@ -158,6 +158,7 @@
 				}
 			});
 			deskSvg.$on('click', async () => {
+				// todo: extended user
 				$selectedDesk = (
 					await getDeskById.fetch({
 						variables: { deskId: desk.pk_deskid },

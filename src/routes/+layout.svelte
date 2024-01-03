@@ -34,6 +34,7 @@
       slot: '<p>skeleton</p>'
     }
 	};
+
 </script>
 
 <Modal components={modalComponentRegistry} />
