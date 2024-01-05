@@ -22,7 +22,7 @@
     // --- test data
     // todo change
     $selectedUsers = [{
-        pk_userid: "f362a098-df43-4091-9fd3-91d4baabfcc2",
+        pk_userid: "189c9268-8f89-417e-ae47-ce87c2f4acc3",
         username: "Alina",
         location: {
             pk_locationid: "",
@@ -30,7 +30,7 @@
         },
         userInfo: ""
     }, {
-        pk_userid: "1f73e6d5-179b-4b96-8354-23a6f6172d17",
+        pk_userid: "8ad4479e-5901-4cac-8f28-75e7e28c1ab2",
         username: "Markus",
         location: {
             pk_locationid: "",
@@ -38,7 +38,7 @@
         },
         userInfo: ""
     }, {
-        pk_userid: "9f1608aa-06df-4e8f-ad1f-7ad4cb797a5c",
+        pk_userid: "3bf02676-fb27-4925-b0e6-c80283a903bd",
         username: "Jupp",
         location: {
             pk_locationid: "",

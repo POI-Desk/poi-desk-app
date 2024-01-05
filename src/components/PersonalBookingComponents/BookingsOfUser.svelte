@@ -24,9 +24,12 @@
     const deleteBooking = async (booking: Booking) => {
         const id = booking.booking_id;
 
-        // todo: only team leader can delete group booking
         if (booking.bookingnumber.includes("EXT-ID")) {
-            await getBookingByNumContains.fetch({variables: {string: booking.bookingnumber.split("EXT-ID")[1]}});
+            const extId = booking.bookingnumber.split("EXT-ID")[1];
+
+            if (extId !== $user.pk_userid) return
+
+            await getBookingByNumContains.fetch({variables: {string: extId}});
             for (const b of extendedBookings ?? []) {
                 await delBooking.mutate({id: b.pk_bookingid})
             }

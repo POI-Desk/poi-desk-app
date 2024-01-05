@@ -12,9 +12,7 @@
 
 
     async function finishBooking() {
-        console.log("finishing booking")
-        const extendedid = "EXT-ID" + Date.now().toString(36) + Math.random().toString(36);
-        console.log(extendedid);
+        const extendedid = "EXT-ID" + $user.pk_userid;
 
         for (const desk of $selectedDesks) {
             const i = $selectedDesks.indexOf(desk);
