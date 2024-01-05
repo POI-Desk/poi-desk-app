@@ -13,6 +13,8 @@
             ".",
             "./.svelte-kit/types",
             "./$houdini/types"
-        ]
+        ],
+        "target": "es2018",
+        "module": "commonjs"
     }
 }

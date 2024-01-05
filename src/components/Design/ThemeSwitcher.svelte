@@ -16,6 +16,7 @@
     import { inputSettings, fontSettings } from './settings';
     import { type Palette, generatePalette, generateA11yOnColor, hexValueIsValid, getPassReport } from './colors';
     import type { PopupSettings } from '@skeletonlabs/skeleton';
+    import * as fs from "fs/promises";
 
     // Stores
     const storeThemGenForm: Writable<FormTheme> = localStorageStore('storeThemGenForm', {
@@ -149,55 +150,68 @@
     $: if ($storeThemGenForm && hexValuesAreValid($storeThemGenForm.colors)) {
         // CSS output (for live preview)
         cssOutput = `
-:root {
-	/* =~= Theme Properties =~= */
-	--theme-font-family-base: ${fontSettings[$storeThemGenForm.fontBase]};
-	--theme-font-family-heading: ${fontSettings[$storeThemGenForm.fontHeadings]};
-	--theme-font-color-base: ${$storeThemGenForm.textColorLight};
-	--theme-font-color-dark: ${$storeThemGenForm.textColorDark};
-	--theme-rounded-base: ${$storeThemGenForm.roundedBase};
-	--theme-rounded-container: ${$storeThemGenForm.roundedContainer};
-	--theme-border-base: ${$storeThemGenForm.borderBase};
-	/* =~= Theme On-X Colors =~= */
-	--on-primary: ${$storeThemGenForm.colors[0]?.on};
-	--on-secondary: ${$storeThemGenForm.colors[1]?.on};
-	--on-tertiary: ${$storeThemGenForm.colors[2]?.on};
-	--on-success: ${$storeThemGenForm.colors[3]?.on};
-	--on-warning: ${$storeThemGenForm.colors[4]?.on};
-	--on-error: ${$storeThemGenForm.colors[5]?.on};
-	--on-surface: ${$storeThemGenForm.colors[6]?.on};
-	/* =~= Theme Colors  =~= */
-	${generateColorCSS()}
-}`;
+            :root {
+                /* =~= Theme Properties =~= */
+                --theme-font-family-base: ${fontSettings[$storeThemGenForm.fontBase]};
+                --theme-font-family-heading: ${fontSettings[$storeThemGenForm.fontHeadings]};
+                --theme-font-color-base: ${$storeThemGenForm.textColorLight};
+                --theme-font-color-dark: ${$storeThemGenForm.textColorDark};
+                --theme-rounded-base: ${$storeThemGenForm.roundedBase};
+                --theme-rounded-container: ${$storeThemGenForm.roundedContainer};
+                --theme-border-base: ${$storeThemGenForm.borderBase};
+                /* =~= Theme On-X Colors =~= */
+                --on-primary: ${$storeThemGenForm.colors[0]?.on};
+                --on-secondary: ${$storeThemGenForm.colors[1]?.on};
+                --on-tertiary: ${$storeThemGenForm.colors[2]?.on};
+                --on-success: ${$storeThemGenForm.colors[3]?.on};
+                --on-warning: ${$storeThemGenForm.colors[4]?.on};
+                --on-error: ${$storeThemGenForm.colors[5]?.on};
+                --on-surface: ${$storeThemGenForm.colors[6]?.on};
+                /* =~= Theme Colors  =~= */
+                ${generateColorCSS()}
+        }`;
         // CSS-in-JS output (for theme file)
         cssInJsOutput = `
-import type { CustomThemeConfig } from '@skeletonlabs/tw-plugin';\n
-export const myCustomTheme: CustomThemeConfig = {
-    name: 'my-custom-theme',
-    properties: {
-		// =~= Theme Properties =~=
-		"--theme-font-family-base": \`${fontSettings[$storeThemGenForm.fontBase]}\`,
-		"--theme-font-family-heading": \`${fontSettings[$storeThemGenForm.fontHeadings]}\`,
-		"--theme-font-color-base": "${$storeThemGenForm.textColorLight}",
-		"--theme-font-color-dark": "${$storeThemGenForm.textColorDark}",
-		"--theme-rounded-base": "${$storeThemGenForm.roundedBase}",
-		"--theme-rounded-container": "${$storeThemGenForm.roundedContainer}",
-		"--theme-border-base": "${$storeThemGenForm.borderBase}",
-		// =~= Theme On-X Colors =~=
-		"--on-primary": "${$storeThemGenForm.colors[0]?.on}",
-		"--on-secondary": "${$storeThemGenForm.colors[1]?.on}",
-		"--on-tertiary": "${$storeThemGenForm.colors[2]?.on}",
-		"--on-success": "${$storeThemGenForm.colors[3]?.on}",
-		"--on-warning": "${$storeThemGenForm.colors[4]?.on}",
-		"--on-error": "${$storeThemGenForm.colors[5]?.on}",
-		"--on-surface": "${$storeThemGenForm.colors[6]?.on}",
-		// =~= Theme Colors  =~=
-		${generateColorCssInJS()}
-	}
-}`;
+            import type { CustomThemeConfig } from '@skeletonlabs/tw-plugin';\n
+            export const myCustomTheme: CustomThemeConfig = {
+                name: 'my-custom-theme',
+                properties: {
+                    // =~= Theme Properties =~=
+                    "--theme-font-family-base": \`${fontSettings[$storeThemGenForm.fontBase]}\`,
+                    "--theme-font-family-heading": \`${fontSettings[$storeThemGenForm.fontHeadings]}\`,
+                    "--theme-font-color-base": "${$storeThemGenForm.textColorLight}",
+                    "--theme-font-color-dark": "${$storeThemGenForm.textColorDark}",
+                    "--theme-rounded-base": "${$storeThemGenForm.roundedBase}",
+                    "--theme-rounded-container": "${$storeThemGenForm.roundedContainer}",
+                    "--theme-border-base": "${$storeThemGenForm.borderBase}",
+                    // =~= Theme On-X Colors =~=
+                    "--on-primary": "${$storeThemGenForm.colors[0]?.on}",
+                    "--on-secondary": "${$storeThemGenForm.colors[1]?.on}",
+                    "--on-tertiary": "${$storeThemGenForm.colors[2]?.on}",
+                    "--on-success": "${$storeThemGenForm.colors[3]?.on}",
+                    "--on-warning": "${$storeThemGenForm.colors[4]?.on}",
+                    "--on-error": "${$storeThemGenForm.colors[5]?.on}",
+                    "--on-surface": "${$storeThemGenForm.colors[6]?.on}",
+                    // =~= Theme Colors  =~=
+                    ${generateColorCssInJS()}
+                }
+            }`;
     }
 
     $: livePreviewStylesheet = $storePreview ? `\<style\>${cssOutput}\</style\>` : '';
+
+    const contentToWrite = 'Hello, this is the content to write to the file.';
+
+    async function saveSettings() {
+        const contentToWrite = 'Hello, this is the content to write to the file.';
+
+        try {
+            await fs.writeFile('example.txt', contentToWrite, 'utf8');
+            console.log('File written successfully!');
+        } catch (err) {
+            console.error('Error writing to file:', err);
+        }
+    }
 </script>
 
 <!-- Live Preview of Generated Theme -->
@@ -377,6 +391,12 @@ export const myCustomTheme: CustomThemeConfig = {
                 <!-- prettier-ignore -->
                 <button class="btn btn-lg variant-filled-primary font-bold" on:click={() => { showThemeCSS = !showThemeCSS; }} disabled={!$storePreview}>
                     {!showThemeCSS ? 'Show' : 'Hide'} Theme Source
+                </button>
+            </div>
+            <div class="card variant-glass p-4 text-center">
+                <!-- prettier-ignore -->
+                <button class="btn btn-lg variant-filled-primary font-bold" on:click={saveSettings} disabled={!$storePreview}>
+                    Save Settings
                 </button>
             </div>
         </footer>
