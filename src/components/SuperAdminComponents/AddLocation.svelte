@@ -25,7 +25,7 @@
 
         if (!newName) {
             alert("You have to enter a name before saving the building!");
-        } else if (newName) {
+        } else if (newName in locationNames) {
             alert("A building with this name already exists. Please enter a different name!");
         } else {
             try {
