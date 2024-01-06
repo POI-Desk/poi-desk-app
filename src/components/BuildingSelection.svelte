@@ -3,23 +3,24 @@
 	import { user } from '$lib/userStore';
 	import { onMount } from 'svelte';
 	import { buildingid } from '$lib/buildingStore';
+	import { getBuildings } from "$lib/queries/buildingQueries";
 
 	import {getFloors} from "$lib/queries/floorQueries";
 
 	$: locationid = $user.location?.pk_locationid!;
 
-	export const _getBuildingsInLocationVariables = () => {
-		return { locationid };
-	};
+	// export const _getBuildingsInLocationVariables = () => {
+	// 	return { locationid };
+	// };
 
-	const getBuildings = graphql(`
-		query getBuildingsInLocation($locationid: ID!) @load {
-			getBuildingsInLocation(locationid: $locationid) {
-				pk_buildingid
-				buildingname
-			}
-		}
-	`);
+	// const getBuildings = graphql(`
+	// 	query getBuildingsInLocation($locationid: ID!) @load {
+	// 		getBuildingsInLocation(locationid: $locationid) {
+	// 			pk_buildingid
+	// 			buildingname
+	// 		}
+	// 	}
+	// `);
 
 	$: buildings = $getBuildings.data?.getBuildingsInLocation;
 
