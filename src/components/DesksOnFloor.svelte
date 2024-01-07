@@ -31,7 +31,6 @@
 </script>
 
 <div class="grid grid-rows-2">
-	<FloorSelection />
 
 	{#key $refreshDesks}
 		<div class="grid grid-cols-5 gap-2">

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { interval, selectedDesk, displayedTime } from '$lib/bookingStore';
-	import { dateValue } from '$lib/dateStore';
-	import { bookDesk } from '$lib/mutations/booking';
-	import { user } from '$lib/userStore';
-	import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
+    import {getModalStore} from '@skeletonlabs/skeleton';
+    import {displayedTime, interval, selectedDesk} from '$lib/bookingStore';
+    import {dateValue, maxBookingDate, todaysDate} from '$lib/dateStore';
+    import {bookDesk} from '$lib/mutations/booking';
+    import {user} from '$lib/userStore';
+    import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
 
 	//icons
 	import {
@@ -21,59 +21,63 @@
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
 
-	$interval.morning = false;
-	$interval.afternoon = false;
+    $interval.morning = false;
+    $interval.afternoon = false;
 
-	async function finishBooking() {
-		const value = await bookDesk.mutate({
-			booking: {
-				date: $dateValue,
-				ismorning: $interval.morning,
-				isafternoon: $interval.afternoon,
-				userid: $user.pk_userid,
-				deskid: $selectedDesk.pk_deskid
-			}
-		});
-		$refreshDesks = !$refreshDesks;
-		modalStore.close();
-	}
+    async function finishBooking() {
+        const value = await bookDesk.mutate({
+            booking: {
+                date: $dateValue,
+                ismorning: $interval.morning,
+                isafternoon: $interval.afternoon,
+                userid: $user.pk_userid,
+                deskid: $selectedDesk.pk_deskid
+            }
+        });
+        $refreshDesks = !$refreshDesks;
+        modalStore.close();
+    }
 
-	function onExitHandler() {
-		modalStore.close(); 	
-	}
+    function onExitHandler() {
+        modalStore.close();
+        $dateValue = new Date().toISOString().split('T')[0];
+    }
 
-	let date: Date = new Date($dateValue);
+    let date: Date = new Date($dateValue);
 
-	let selectionPage: boolean = true;
+    let selectionPage: boolean = true;
 
-	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+    let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
 
-	let hasBookings: boolean = currentBookingsOnDate.length > 0;
+    let hasBookings: boolean = currentBookingsOnDate.length > 0;
 
-	let isBookedMorning: boolean =
-		((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
-		false;
+    let isBookedMorning: boolean =
+        ((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
+        false;
 
-	let isBookedAfternoon: boolean =
-		((hasBookings && currentBookingsOnDate[0].isafternoon) ||
-			currentBookingsOnDate[1]?.isafternoon) ??
-		false;
+    let isBookedAfternoon: boolean =
+        ((hasBookings && currentBookingsOnDate[0].isafternoon) ||
+            currentBookingsOnDate[1]?.isafternoon) ??
+        false;
 
-	let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
+    let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
 
-	const modalStore = getModalStore();
+    const modalStore = getModalStore();
 
-	const cBase = 'card p-4 shadow-xl space-y-4';
+    const cBase = 'card p-4 shadow-xl space-y-4';
 
-	function whenSelection() {
-		if (!isFullDay) {
-			if (!$interval.morning && !$interval.afternoon) {
-				return;
-			}
-			selectionPage = !selectionPage;
-			return;
-		}
-	}
+    function whenSelection() {
+        const selectedDate = new Date($dateValue);
+        const isInBookingRange = selectedDate.getDate() >= todaysDate.getDate()
+            && selectedDate.getDate() <= maxBookingDate.getDate();
+        if (!isFullDay && isInBookingRange) {
+            if (!$interval.morning && !$interval.afternoon) {
+                return;
+            }
+            selectionPage = !selectionPage;
+            return;
+        }
+    }
 
 	function addDay() {
 		let date = new Date($dateValue);
@@ -91,9 +95,9 @@
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
 	}
 
-	window.addEventListener('popstate', () => {
-		modalStore.close();
-	});
+    window.addEventListener('popstate', () => {
+        modalStore.close();
+    });
 </script>
 
 {#if $modalStore[0]}
@@ -113,7 +117,7 @@
 			<div class="basis-full">
 				<BookingDeskState />
 			</div>
-			<div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
+			<div class="variant-filled-tertiary h-24 rounded-full flex items-center justify-between px-10">
 				<button on:click={subtractDay}>
 					<ArrowBigLeft />
 				</button>
@@ -122,8 +126,8 @@
 					<ArrowBigRight />
 				</button>
 			</div>
-			<div class="bg-white h-24 rounded-full">
-				<button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl"
+			<div class="variant-filled-tertiary h-24 rounded-full">
+				<button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
 					>Buchen</button
 				>
 			</div>
@@ -137,58 +141,58 @@
 			<h1 class="text-center text-3xl p-3">Buchung</h1>
 			<div class="h-full flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-6 gap-7">
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Calendar />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{date.toLocaleDateString('de-DE')}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Clock />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$displayedTime}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<MapPin />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$user.location?.locationname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Building />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.floor.building.buildingname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Cuboid />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.floor.floorname}
 					</div>
-					<div class="rounded-3xl flex justify-center bg-white">
+					<div class="rounded-3xl flex justify-center variant-filled-tertiary">
 						<div class="rounded-3xl m-3 mx-5">
 							<Armchair />
 						</div>
 					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-tertiary">
 						{$selectedDesk.desknum}
 					</div>
 				</div>
 			</div>
-			<div class="bg-white h-24 rounded-full">
-				<button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl"
+			<div class="variant-filled-tertiary h-24 rounded-full">
+				<button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
 					>Buchen</button
 				>
 			</div>

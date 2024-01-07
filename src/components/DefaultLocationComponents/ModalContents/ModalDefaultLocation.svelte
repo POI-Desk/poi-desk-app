@@ -31,11 +31,11 @@
 
 {#if $modalStore[0]}
 	<div class={cBase}>
-		<div>
+		<div class="flex flex-col items-center">
 			<h1 class="text-2xl">Do you want to set {$user.location?.locationname} as your default</h1>
-			<div class="flex">
+			<div>
 				<a
-					class="btn variant-filled-success px-14 justify-self-start"
+					class="btn variant-filled-success px-14"
 					href="."
 					on:click={() => {
 						setAsDefault();
@@ -46,7 +46,7 @@
 					on:click={() => {
 						closeModal();
 					}}
-					class="btn variant-filled-error px-14 justify-self-end"
+					class="btn variant-filled-error px-14"
 					href=".">No</a
 				>
 			</div>

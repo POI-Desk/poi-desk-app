@@ -2,8 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-
 html,
 body {
-    @apply h-full overflow-hidden;
+	@apply h-full overflow-hidden;
+}
+
+@layer components {
+	.canvasStyle {
+		@apply bg-surface-100;
+	}
+}
+
+@layer utilities {
+  .shadow-around-5 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.05)];
+	}
+	.shadow-around-10 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)];
+	}
+	.shadow-around-20 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.2)];
+	}
+	.shadow-around-30 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.3)];
+	}
+	.shadow-around-40 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.4)];
+	}
+	.shadow-around-50 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.5)];
+	}
+	.shadow-around-60 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.6)];
+	}
+	.shadow-around-70 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.7)];
+	}
+	.shadow-around-80 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.8)];
+	}
+	.shadow-around-90 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.9)];
+	}
+	.shadow-around-100 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,1)];
+	}
 }
