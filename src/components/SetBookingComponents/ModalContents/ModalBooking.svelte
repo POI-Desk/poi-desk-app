@@ -115,9 +115,7 @@
 				</button>
 			</div>
 			<div class="basis-full">
-				<BookingDeskState shownInterval="morning" />
-				<!---->
-				<!--<BookingDeskState shownInterval="afternoon" />-->
+				<BookingDeskState />
 			</div>
 			<div class="variant-filled-tertiary h-24 rounded-full flex items-center justify-between px-10">
 				<button on:click={subtractDay}>

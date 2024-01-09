@@ -8,9 +8,8 @@
 	import { AppShell, Modal } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import ModalEditMapObject from '$components/MapComponents/ModalEditMapObject.svelte';
-
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -19,7 +18,6 @@
 		modalBooking: {
 			ref: ModalBooking,
 			slot: '<p>skeleton</p>'
-			
 		},
 		modalDefaultLocation: {
 			ref: ModalDefaultLocation,

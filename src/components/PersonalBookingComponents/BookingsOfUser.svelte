@@ -2,14 +2,8 @@
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
 	import { delBooking } from '$lib/mutations/booking';
-	import { getBookings } from '$lib/bookingStore';
+	import { getBookings, userBookings } from '$lib/bookingStore';
 	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
-
-	
-	const deleteBooking = async (id: string) => {
-		await delBooking.mutate({ id });
-		await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
-	};
 
 	$: console.log("User:",$user?.pk_userid)
 	$: usrid = $user?.pk_userid;
@@ -31,6 +25,7 @@
 	// `);
 
 	$: bookings = $getBookings.data?.getBookingsByUserid;
+	$: $userBookings = bookings as any;
 
 	$: {
 		if ($user.pk_userid != '') {
@@ -42,12 +37,12 @@
 
 <div class="flex flex-wrap">
 	{#await getBookings.fetch({ variables: { userid: usrid } })}
+		<h1>Fetching data:</h1>
 	{:then} 
-		{#each bookings ?? [] as booking}
-			{console.log(booking)}
+		{#each $userBookings ?? [] as booking}
 			<BookingCard 
 				thisBooking = {booking}
-				on:deleteBooking={async () => await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst')}
+				
 				/>
 		{/each}
 	{/await}
