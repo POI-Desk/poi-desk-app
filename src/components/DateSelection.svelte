@@ -2,6 +2,7 @@
 	import {graphql} from '$houdini';
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import {dateValue, maxBookingValue, today} from "$lib/dateStore";
+	import { floorid } from '$lib/floorStore';
 
 	$dateValue = new Date().toISOString().split('T')[0];
 
@@ -16,7 +17,7 @@
 	$dateValue = new Date().toISOString().split('T')[0];
 
 	const getBookings = () => {
-		getBookingsByDate.fetch({ variables: { date: $dateValue } });
+		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
 	};
 
 </script>

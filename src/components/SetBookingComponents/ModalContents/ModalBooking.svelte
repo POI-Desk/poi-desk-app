@@ -20,6 +20,9 @@
 		ArrowLeft,
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
+	import { getBookingsByDate } from '$lib/queries/booking';
+	import { CachePolicy } from '$houdini';
+	import { floorid } from '$lib/floorStore';
 
     $interval.morning = false;
     $interval.afternoon = false;
@@ -34,7 +37,12 @@
                 deskid: $selectedDesk.pk_deskid
             }
         });
-        $refreshDesks = !$refreshDesks;
+		await getBookingsByDate.fetch({
+			variables: { date: $dateValue, floorId: $floorid }, 
+			policy: CachePolicy.NetworkOnly
+		});
+		
+		$refreshDesks = !$refreshDesks;
         modalStore.close();
     }
 

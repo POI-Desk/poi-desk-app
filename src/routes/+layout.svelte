@@ -26,10 +26,6 @@
 			ref: ModalEditBooking,
 			slot: '<p>skeleton</p>'
 		},
-    modalEditMapObject: {
-      ref: ModalEditMapObject,
-      slot: '<p>skeleton</p>'
-    }
 	};
 </script>
 

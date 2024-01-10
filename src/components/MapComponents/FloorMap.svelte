@@ -42,7 +42,7 @@
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
 
-	$: bookingsData = $getBookingsByDate.data?.getBookingsByDate;
+	$: bookingsData = $getBookingsByDate.data?.getBookingsByDateOnFloor;
 
 	$: {
 		bookingsData;
@@ -80,15 +80,13 @@
 		});
 		drawMap();
 		await getBookingsByDate.fetch({
-			variables: { date: $dateValue },
+			variables: { date: $dateValue, floorId: $floorid },
 			policy: CachePolicy.NetworkOnly
 		});
 		await updateBookings();
 	};
 
 	const updateBookings = async () => {
-		//TODO: make the booking fetch work here
-
 		for (const key of Object.keys(deskObjects)) {
 			const desk: DeskSvg = deskObjects[key];
 			const bookings = bookingsData?.filter((b) => b?.desk.pk_deskid === key);
