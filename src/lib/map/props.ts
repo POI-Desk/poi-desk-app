@@ -38,6 +38,14 @@ export const doorProps: TransformType = {
 	rotation: 0
 };
 
+export const labelProps: TransformType = {
+	x: 0,
+	y: 0,
+	width: 75,
+	height: 25,
+	rotation: 0
+};
+
 export const mapMagnetSteps = 25;
 
 export const getTransformFromType = (type: string) => {
@@ -50,6 +58,8 @@ export const getTransformFromType = (type: string) => {
 			return wallProps;
 		case mapObjectType.Door:
 			return doorProps;
+		case mapObjectType.Label:
+			return labelProps;
 		default:
 			throw new Error(`Invalid type ${type}`);
 	}
@@ -105,7 +115,8 @@ export const mapObjectType: MapObjectType = {
 	Desk: 'Desk',
 	Room: 'Room',
 	Wall: 'Wall',
-	Door: 'Door'
+	Door: 'Door',
+	Label: 'Label',
 };
 
 //values to represent the default values for the map

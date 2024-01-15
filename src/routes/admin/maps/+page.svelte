@@ -192,7 +192,7 @@
 			target: initialTransform == null ? main : grid,
 			props: {
 				mapObject: mapObject,
-				enabled: initialTransform != null,
+				// enabled: initialTransform != null,
 				target: grid,
 				main: main,
 				drawer: container,
@@ -208,13 +208,14 @@
 			resetSelectedMapObjectStyle();
 			selectMapObject($allMapObjects.find((mapObject) => mapObject.transform === event.detail)!);
 		});
-
-		element.$on('release', (event: CustomEvent<{ transform: TransformType; enabled: boolean }>) => {
+		
+		// enabled: boolean 
+		element.$on('release', (event: CustomEvent<{ transform: TransformType;}>) => {
 			panz.resume();
-			if (!event.detail.enabled) {
-				delSelectedMapObject();
-				return;
-			}
+			// if (!event.detail.enabled) {
+			// 	delSelectedMapObject();
+			// 	return;
+			// }
 			resizeGrid(event.detail.transform);
 			normalizeGridSize();
 			rerenderObjects();

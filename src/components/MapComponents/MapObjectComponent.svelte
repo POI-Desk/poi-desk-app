@@ -18,7 +18,6 @@
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
 
 	export let mapObject: MapObject;
-	export let enabled: boolean = false;
 	export let target: HTMLElement;
 	export let main: HTMLElement;
 	export let drawer: HTMLElement;
@@ -53,39 +52,41 @@
 
 	onMount(() => {
 		if (!initialDrag) return;
-		if (enabled) enable();
-		else disable();
+		applySelectedStyle();
+		enable();
 
-		mapObject.transform.x = mapObject.transform.x * $map.scale;
-		mapObject.transform.y = mapObject.transform.y * $map.scale;
 		handleDragStart(new MouseEvent('mousedown', { clientX: initMouseX, clientY: initMouseY }));
 		const offsetX = initMouseX / $map.scale - mapObject.transform.x;
 		const offsetY = initMouseY / $map.scale - mapObject.transform.y;
 		const x = initMouseX / $map.scale - offsetX;
 		const y = initMouseY / $map.scale - offsetY;
 		const wallOffset = mapObject.type == mapObjectType.Room ? wallProps.height / 2 : 0;
-		mapObject.transform.x = enabled ? closestNumber(x, mapMagnetSteps) - wallOffset : x;
-		mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
+		// mapObject.transform.x = enabled ? closestNumber(x, mapMagnetSteps) - wallOffset : x;
+		// mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
+		mapObject.transform.x = closestNumber(x, mapMagnetSteps) - wallOffset;
+		mapObject.transform.y = closestNumber(y, mapMagnetSteps) - wallOffset;
+
 	});
 
 	const enable = () => {
-		enabled = true;
-		drag?.style.setProperty('opacity', '1');
+		// enabled = true;
+		// drag?.style.setProperty('opacity', '1');
 		const transformedPos = transformPosition(
 			drag!.getBoundingClientRect(),
 			target.getBoundingClientRect(),
 			main.getBoundingClientRect()
-		);
-
+			);
+			
 		if (drag?.parentElement) drag?.parentElement.removeChild(drag!);
 		target.appendChild(drag!);
 		offsetX += target.getBoundingClientRect().left / $map.scale;
 		offsetY += target.getBoundingClientRect().top / $map.scale;
-
+		
 		mapObject.transform.x = transformedPos.x / $map.scale - offsetX;
 		mapObject.transform.y = transformedPos.y / $map.scale - offsetY;
 	};
-
+	
+	/* Old for disabling objects out of the canvas
 	const disable = () => {
 		enabled = false;
 		drag?.style.setProperty('opacity', '0.7');
@@ -103,26 +104,21 @@
 		mapObject.transform.x = transformedPos.x / $map.scale - offsetX;
 		mapObject.transform.y = transformedPos.y / $map.scale - offsetY;
 	};
-
+	*/
 	const handleDragStart = (event: MouseEvent) => {
 		if (event.button != 0) return;
 
 		dragging = true;
-		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
-		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
+		offsetX = event.clientX / $map.scale - mapObject.transform.x;
+		offsetY = event.clientY / $map.scale - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
-		// applySelectedStyle();
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging && !resizing) {
-				mapObject.transform.x = e.clientX / (enabled ? $map.scale : 1) - offsetX;
-				mapObject.transform.y = e.clientY / (enabled ? $map.scale : 1) - offsetY;
-				let x: number = enabled
-					? closestNumber(mapObject.transform.x, mapMagnetSteps)
-					: mapObject.transform.x;
-				let y: number = enabled
-					? closestNumber(mapObject.transform.y, mapMagnetSteps)
-					: mapObject.transform.y;
+				mapObject.transform.x = e.clientX / $map.scale - offsetX;
+				mapObject.transform.y = e.clientY / $map.scale - offsetY;
+				let x: number = closestNumber(mapObject.transform.x, mapMagnetSteps)
+				let y: number = closestNumber(mapObject.transform.y, mapMagnetSteps)
 
 				mapObject!.transform.x = x;
 				mapObject!.transform.y = y;
@@ -135,8 +131,7 @@
 			window.removeEventListener('mouseup', handleDragEnd);
 			window.removeEventListener('mousemove', updateInstantiation);
 			dispatch('release', {
-				transform: mapObject.transform,
-				enabled
+				transform: mapObject.transform
 			});
 		};
 
@@ -157,8 +152,8 @@
 			drawer.getBoundingClientRect()
 		);
 
-		if (!inBoundings && enabled) disable();
-		else if (inBoundings && !enabled) enable();
+		// if (!inBoundings && enabled) disable();
+		// else if (inBoundings && !enabled) enable();
 	};
 
 	export const rerenderMapObject = () => {
@@ -455,5 +450,18 @@
 			width={mapObject.transform.width + wallThickness}
 			{selected}
 		/>
+	</div>
+{:else if mapObject.type === mapObjectType.Label}
+	<div
+		class="flex justify-center z-50 duration-0 -translate-y-1/2"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y}px;"
+		role="button"
+		tabindex="0"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+	>
+	    <input type="text" value="Label" class="text-primary-500 font-semibold bg-transparent {selected ? 'border-warning-500' : 'border-transparent'}" style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height + wallThickness}px;" />
 	</div>
 {/if}
