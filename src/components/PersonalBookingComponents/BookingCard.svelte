@@ -37,7 +37,9 @@
 		/>
 	</div>
 
-	<div class="w-2/3 rounded-lg ml-3 my-3">
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:click={toggleModal} class="w-2/3 rounded-lg ml-3 my-3">
 		<h1 class="text-xl">
 			{thisBooking?.pk_bookingid}
 		</h1>
@@ -49,13 +51,6 @@
 			<i class="fa fa-calendar" aria-hidden="true" />
 			{thisBooking?.date}
 		</h1>
-		<button
-			on:click={() => deleteBooking(thisBooking?.pk_bookingid ?? 'lol du stinkst')}
-			class="btn variant-filled-error btn-sm btn-outline">Delete</button
-		>
-		<button on:click={toggleModal} class="btn variant-filled-primary btn-sm btn-outline"
-			>Edit</button
-		>
 	</div>
 </div>
 

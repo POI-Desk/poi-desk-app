@@ -44,7 +44,7 @@
 				class="flex items-center justify-center"
 			>
 				<p class="select-none text-primary-500 font-semibold">
-					{building.buildingname.split(' ')[1]}
+					{building.buildingname}
 				</p>
 			</button>
 		{/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+<<<<<<< HEAD
 	import { CachePolicy, graphql } from "$houdini";
 	import { user } from "$lib/userStore";
 	import { delBooking } from "$lib/mutations/booking";
@@ -19,6 +20,16 @@
     };
 
     $: extendedBookings = $getBookingByNumContains.data?.getBookingsByBookingnumberContains;
+=======
+	import { CachePolicy, graphql } from '$houdini';
+	import { user } from '$lib/userStore';
+	import { delBooking } from '$lib/mutations/booking';
+	import { getBookings, userBookings } from '$lib/bookingStore';
+	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
+
+	$: console.log("User:",$user?.pk_userid)
+	$: usrid = $user?.pk_userid;
+>>>>>>> main
 
     const deleteBooking = async (booking: Booking) => {
         const id = booking.booking_id;
@@ -35,6 +46,8 @@
         } else {
             await delBooking.mutate({id});
         }
+	$: bookings = $getBookings.data?.getBookingsByUserid;
+	$: $userBookings = bookings as any;
 
         await getBookings.fetch({policy: CachePolicy.NetworkOnly}); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
     };
@@ -74,9 +87,9 @@
 	{:then fetched}
 		{#each bookings ?? [] as booking}
 			{console.log(booking)}
-			<BookingCard 
+			<BookingCard
 				thisBooking = {booking}
-				on:deleteBooking={async () => await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst')}
+				
 				/>
 		{/each}
 	{/await}

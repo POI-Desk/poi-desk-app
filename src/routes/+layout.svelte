@@ -10,8 +10,6 @@
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 	import { storePopup } from '@skeletonlabs/skeleton';
-	import ModalEditMapObject from '$components/MapComponents/ModalEditMapObject.svelte';
-
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -20,7 +18,6 @@
 		modalBooking: {
 			ref: ModalBooking,
 			slot: '<p>skeleton</p>'
-			
 		},
 		modalExtendedBooking: {
 			ref: ModalExtendedBooking,
@@ -34,10 +31,6 @@
 			ref: ModalEditBooking,
 			slot: '<p>skeleton</p>'
 		},
-    modalEditMapObject: {
-      ref: ModalEditMapObject,
-      slot: '<p>skeleton</p>'
-    }
 	};
 </script>
 

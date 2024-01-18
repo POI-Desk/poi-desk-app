@@ -20,10 +20,14 @@
 		ArrowLeft,
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
+	import { getBookingsByDate } from '$lib/queries/booking';
+	import { CachePolicy } from '$houdini';
+	import { floorid } from '$lib/floorStore';
 
     $interval.morning = false;
     $interval.afternoon = false;
 
+<<<<<<< HEAD
 	async function finishBooking() {
 		const value = await bookDesk.mutate({
 			booking: {
@@ -38,6 +42,26 @@
 		$refreshDesks = !$refreshDesks;
 		modalStore.close();
 	}
+=======
+    async function finishBooking() {
+        const value = await bookDesk.mutate({
+            booking: {
+                date: $dateValue,
+                ismorning: $interval.morning,
+                isafternoon: $interval.afternoon,
+                userid: $user.pk_userid,
+                deskid: $selectedDesk.pk_deskid
+            }
+        });
+		await getBookingsByDate.fetch({
+			variables: { date: $dateValue, floorId: $floorid }, 
+			policy: CachePolicy.NetworkOnly
+		});
+		
+		$refreshDesks = !$refreshDesks;
+        modalStore.close();
+    }
+>>>>>>> main
 
     function onExitHandler() {
         modalStore.close();

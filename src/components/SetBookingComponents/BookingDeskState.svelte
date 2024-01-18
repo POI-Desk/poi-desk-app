@@ -67,7 +67,14 @@
 <div class="h-full flex flex-col gap-4">
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click={() => (morningSelected = !morningSelected)} class={baseStyle}>
+	<div
+		on:click={() => {
+			if (!isBookedMorning) {
+				morningSelected = !morningSelected;
+			}
+		}}
+		class={baseStyle}
+	>
 		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
 			{#if morningSelected && !isBookedMorning}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
@@ -105,7 +112,14 @@
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click={() => (afternoonSelected = !afternoonSelected)} class={baseStyle}>
+	<div
+		on:click={() => {
+			if (!isBookedAfternoon) {
+				afternoonSelected = !afternoonSelected;
+			}
+		}}
+		class={baseStyle}
+	>
 		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
 			{#if afternoonSelected && !isBookedAfternoon}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">

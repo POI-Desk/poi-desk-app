@@ -34,6 +34,12 @@ export const getMapByFloor = graphql(`
 				rotation
 				width
 			}
+			floor{
+				floorname
+				building{
+					buildingname
+				}
+			}
 		}
 	}
 `);
