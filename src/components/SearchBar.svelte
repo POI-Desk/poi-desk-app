@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	/*import { graphql } from '$houdini';
 	import type { User } from '$lib/types/userTypes';
 	import { getBookings } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
@@ -12,8 +12,6 @@
 		return '';
 	};
 
-
-
 	const getUsers = graphql(`
 		query getAllUsers($input: String, $pageNumber: Int, $pageSize: Int) @load {
 			getAllUsers(input: $input, pageNumber: $pageNumber, pageSize: $pageSize) {
@@ -25,12 +23,14 @@
 			}
 		}
 	`);
-
+	*/
+	/*
 	let pageNumber = 0;
 	let searchUsers: User[] = [];
 	let dropdownIsOpen: boolean = false;
 	const pageSizeConst = 5;
 	let hasNextPage: boolean;
+	
 
 	// onMount(() => {
 	// 	getSearchUsers(0);
@@ -61,14 +61,17 @@
 			searchUsers[index] = await getUserInfo(user);
 		}
 	}
-
+*/
+/*
 	// let userInfo: string = "";
 	let userLocation: string = '';
+
 
 	$: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
 
 	let typedUsername: string;
 	let typedUser: User;
+	let mpUserUserinfo = new Map();
 
 	async function getUserInfo(user: User) {
 		typedUser = user;
@@ -80,27 +83,33 @@
 						let desk = $getDesk.data?.getBookingById?.desk;
 						userLocation = desk?.floor?.building.location?.locationname ?? '';
 						if (booking.ismorning && booking.isafternoon) {
-							user.userInfo = 'today in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'today in ' + userLocation)
+							//user.userInfo = 'today in ' + userLocation;
 						} else if (booking.ismorning) {
-							user.userInfo = 'this morning in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'this morning in ' + userLocation)
+							//user.userInfo = 'this morning in ' + userLocation;
 						} else if (booking.isafternoon) {
-							user.userInfo = 'this afternoon in ' + userLocation;
+							mpUserUserinfo.set(user.pk_userid, 'this afternoon in ' + userLocation)
+							//user.userInfo = 'this afternoon in ' + userLocation;
 						}
 					});
 					break;
 				} else {
-					user.userInfo = 'not in office today';
+					mpUserUserinfo.set(user.pk_userid, 'not in office today')
+					//user.userInfo = 'not in office today';
 				}
 			}
 		} else {
-			user.userInfo = 'not in office today';
+			mpUserUserinfo.set(user.pk_userid, 'not in office today')
+			//user.userInfo = 'not in office today';
 		}
 		console.log(
-			user.username + ' -> userLocation: ' + userLocation + '; userInfo: ' + user.userInfo
+			user.username + ' -> userLocation: ' + userLocation + '; userInfo: ' + mpUserUserinfo.get(user.pk_userid)
 		);
 		return user;
 	}
-
+*/
+/*
 	async function onUserClicked(user: User) {}
 
 	export const _getDeskOfBookingVariables = () => {
@@ -148,43 +157,61 @@
 			pageNumber = 0;
 		}
 		if (typedUsername) {
-			getSearchUsers(pageNumber);
+			//getSearchUsers(pageNumber);
 		}
 	}
 
+
+	let loadMore: boolean = true;
+
+	function handleLoadMore() {
+		// TODO was passiert, wenn es keine pages mehr gibt?
+		pageNumber++;
+		//getSearchUsers(pageNumber);
+	}
+
+	function handleLoadLess() {
+		pageNumber--;
+	}
+*/
 </script>
 
-
-<div class="flex justify-center w-full">
-	<div class="dropdown w-full" on:focusout={handleDropdownFocusLoss}>
+<!--
+<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
+	<div class="dropdown w-full">
 		<div>
 			<input
-				class="input my-3 w-full"
+				class="input my-1 w-full rounded-full"
 				placeholder="Search for user"
 				bind:value={typedUsername}
 				on:click={handleDropDownClick}
 
 			/>
 		</div>
+<<<<<<< HEAD
 
 		<div class="absolute left-0 right-0 w-full px-2">
+=======
+		
+		<div class="absolute left-0 right-0 w-full px-2 z-10">
+>>>>>>> main
 		{#if dropdownIsOpen}
 
 			<ul
 				style="background-color: white;"
-				class="dropdown-content z-[0] menu shadow bg-base-100 rounded-box max-h-90 flex-nowrap overflow-auto"
+				class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
 			>
 				{#each searchUsers as usr}
 					<li class="m-1 flex justify-center">
-						<button class="w-full px-3 border rounded-lg flex flex-col"
-							style="grid-row: 1; background-color: #d4d6d9;"
+						<button class="w-full px-3 border rounded-2xl flex flex-col"
+							style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
 							on:click={() => {
 								$searchedUser = usr;
-								goto("/bookingsOfSearchedUser")
+								goto("/bookings/" + usr.username)
 							}}>
 							<div class="grid grid-cols-1 justify-items-start">
 								<span>{usr.username}</span>
-								<span style="grid-row: 2">{usr.userInfo}</span>
+								<span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
 							</div>
 						</button>
 
@@ -195,18 +222,29 @@
 							<div style="grid-col: 1">
 								{#if pageNumber > 0}
 									<button on:click={() => {pageNumber --}}
+<<<<<<< HEAD
 										class="border rounded-lg py-1 px-2"
 										style="background-color: #d4d6d9;">show less...</button>
+=======
+										class="border rounded-2xl py-1 px-2" 
+										style="background-color: #FFFCF2;">show less...</button>
+>>>>>>> main
 								{/if}
 							</div>
 								{#if hasNextPage && typedUsername}
 									<div style="grid-col: 2" class="flex justify-end">
+<<<<<<< HEAD
 										<button
 										class="border rounded-lg py-1 px-2"
 										style="background-color: #d4d6d9;"
+=======
+										<button 
+										class="border rounded-2xl py-1 px-2"
+										style="background-color: #FFFCF2;"
+>>>>>>> main
 										on:click={
 											() => {
-												dropdownIsOpen = true;
+												//dropdownIsOpen = true;
 												pageNumber ++;
 												getSearchUsers(pageNumber);
 											}}>show more...</button>
@@ -219,3 +257,5 @@
 		</div>
 	</div>
 </div>
+
+-->

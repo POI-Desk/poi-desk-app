@@ -11,9 +11,11 @@
     {:then bookings}
         {#if bookings.data?.getBookingsByUserid?.length ?? 0 > 0}
             {#each bookings.data?.getBookingsByUserid ?? [] as booking}
-            <div>
-                <div class="grid grid-cols-4 grid-rows-4 gap-1 border mt-1 rounded-xl ml-2 mr-2" style="background-color: #d4d6d9;">
-                    <div class="col-span-1 row-span-4 mt-2 ml-1"><img src="/src/images/{booking.desk?.floor?.building?.location?.locationname}.png" alt="wien"> </div>
+            <div class="flex flex-row justify-between border mt-1 rounded-xl ml-2 mr-2 p-2" style="background-color: #d4d6d9;">
+                <div class="self-center w-1/2">
+                    <img src="/src/images/{booking.desk?.floor?.building?.location?.locationname}.png" alt="wien">
+                </div>
+                <div class="grid grid-cols-3 grid-rows-4 gap-1 px-2 w-full" >
                     <div class="col-span-3">{booking.date}</div>
                     <div class="col-span-3">
                         <div class="flex items-center">

@@ -11,16 +11,14 @@
 	import { CachePolicy } from '$houdini';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { getDesks } from '$lib/queries/deskQueries';
-	import {refreshDesks} from "$lib/refreshStore";
+	import { refreshDesks } from '$lib/refreshStore';
 
 	const modalStore = getModalStore();
 
 	const modal: ModalSettings = {
 		type: 'component',
-		component: 'modalBooking',
-		response: () => {$dateValue = new Date().toISOString().split('T')[0];}
+		component: 'modalBooking'
 	};
-
 
 	let visible: boolean;
 
@@ -33,7 +31,6 @@
 </script>
 
 <div class="grid grid-rows-2">
-	<FloorSelection />
 
 	{#key $refreshDesks}
 		<div class="grid grid-cols-5 gap-2">

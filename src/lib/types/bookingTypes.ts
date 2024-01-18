@@ -1,3 +1,4 @@
+/*
 export type Booking = {
 	booking_id: string;
 	table_id: string;
@@ -5,6 +6,7 @@ export type Booking = {
 	interval: Interval;
 	bookingnumber: string;
 };
+*/
 
 export type Interval = {
 	morning: boolean;

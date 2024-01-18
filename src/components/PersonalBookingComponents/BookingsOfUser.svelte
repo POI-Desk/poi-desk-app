@@ -1,13 +1,12 @@
 <script lang="ts">
-    import {CachePolicy, graphql} from '$houdini';
-    import {user} from '$lib/userStore';
-    import {delBooking} from '$lib/mutations/booking';
-    import {getBookings} from '$lib/bookingStore';
-    import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
-    import type {Booking} from "$lib/types/bookingTypes";
-    import {dateValue} from "$lib/dateStore";
+	import { CachePolicy, graphql } from "$houdini";
+	import { user } from "$lib/userStore";
+	import { delBooking } from "$lib/mutations/booking";
+	import { getBookings } from "$lib/bookingStore";
+	import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
+	import type { Booking } from "$lib/types/bookingTypes";
 
-    const getBookingByNumContains = graphql(`
+	const getBookingByNumContains = graphql(`
         query GetBookingsByBookingnumberContains($string: String!) @load {
             getBookingsByBookingnumberContains(string: $string) {
                 pk_bookingid
@@ -69,50 +68,16 @@
 
 </script>
 
-<!-- <div class="overflow-x-auto">
-	<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Number</th>
-				<th>Date</th>
-				<th />
-			</tr>
-		</thead>
-		<tbody>
-			{#await getBookings.fetch({ variables: { userid: usrid } })}
-				{console.log('fetching book')}
-			{:then fetched}
-				{#each bookings ?? [] as booking}
-					<tr>
-						<th>{booking?.pk_bookingid}</th>
-						<td>{booking?.bookingnumber}</td>
-						<td>{booking?.date}</td>
-						<td>
-							<button
-								on:click|stopPropagation={async () => {
-									await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst');
-								}}
-								class="btn variant-filled-error btn-sm btn-outline">Delete</button
-							>
-						</td>
-					</tr>
-				{/each}
-			{/await}	
-		</tbody>
-	</table>
-</div> -->
-
 <div class="flex flex-wrap">
-    {#await getBookings.fetch({variables: {userid: usrid}})}
-    {:then fetched}
-        {#each bookings ?? [] as booking}
-            <BookingCard
-                    pk_bookingid={booking?.pk_bookingid}
-                    bookingnumber={booking?.bookingnumber}
-                    date={booking?.date}
-                    on:deleteBooking={async () => await deleteBooking(booking ?? 'lol du stinkst')}
-            />
-        {/each}
-    {/await}
+	{#await getBookings.fetch({ variables: { userid: usrid } })}
+		<p></p>
+	{:then fetched}
+		{#each bookings ?? [] as booking}
+			{console.log(booking)}
+			<BookingCard 
+				thisBooking = {booking}
+				on:deleteBooking={async () => await deleteBooking(booking?.pk_bookingid ?? 'lol du stinkst')}
+				/>
+		{/each}
+	{/await}
 </div>

@@ -1,16 +1,21 @@
-<!-- TODO: make selected object on top of other object -->
+<!--TODO: make selected object on top of other object -->
 <!-- TODO: look into the is in grid check -->
 <!-- TODO: better border for rooms (svg maby (probably)) -->
 
 <script lang="ts">
+
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
-	import { mapMagnetSteps, mapObjectType, wallProps } from '$lib/map/props';
+	import { mapMagnetSteps, mapObjectType, wallProps, wallThickness } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onMount } from 'svelte';
 	//Look into this so import is not needed
 	import '../../styles/handles.css';
+	import DeskSvg from './MapObjects/DeskSVG.svelte';
+	import RoomSvg from './MapObjects/RoomSVG.svelte';
+	import WallSvg from './MapObjects/WallSVG.svelte';
+	import DoorSvg from './MapObjects/DoorSVG.svelte';
 
 	export let mapObject: MapObject;
 	export let enabled: boolean = false;
@@ -19,6 +24,7 @@
 	export let drawer: HTMLElement;
 	export let initMouseX: number = 0;
 	export let initMouseY: number = 0;
+	export let initialDrag: boolean;
 
 	let drag: HTMLElement;
 	let dragging: boolean = false;
@@ -26,8 +32,7 @@
 	let offsetX: number = 0;
 	let offsetY: number = 0;
 
-  let selected: boolean = false;
-
+	let selected: boolean = false;
 
 	let right: HTMLDivElement | null = null;
 	let bottom: HTMLDivElement | null = null;
@@ -47,6 +52,7 @@
 	let dispatch = createEventDispatcher();
 
 	onMount(() => {
+		if (!initialDrag) return;
 		if (enabled) enable();
 		else disable();
 
@@ -57,7 +63,7 @@
 		const offsetY = initMouseY / $map.scale - mapObject.transform.y;
 		const x = initMouseX / $map.scale - offsetX;
 		const y = initMouseY / $map.scale - offsetY;
-    const wallOffset = mapObject.type == mapObjectType.Room ? wallProps.height / 2 : 0;
+		const wallOffset = mapObject.type == mapObjectType.Room ? wallProps.height / 2 : 0;
 		mapObject.transform.x = enabled ? closestNumber(x, mapMagnetSteps) - wallOffset : x;
 		mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
 	});
@@ -99,18 +105,24 @@
 	};
 
 	const handleDragStart = (event: MouseEvent) => {
+		if (event.button != 0) return;
+
 		dragging = true;
 		offsetX = event.clientX / (enabled ? $map.scale : 1) - mapObject.transform.x;
 		offsetY = event.clientY / (enabled ? $map.scale : 1) - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
-		applySelectedStyle();
+		// applySelectedStyle();
 
 		const handleDragMove = (e: MouseEvent) => {
 			if (dragging && !resizing) {
 				mapObject.transform.x = e.clientX / (enabled ? $map.scale : 1) - offsetX;
 				mapObject.transform.y = e.clientY / (enabled ? $map.scale : 1) - offsetY;
-				let x: number = enabled ? closestNumber(mapObject.transform.x, mapMagnetSteps) : mapObject.transform.x;
-				let y: number = enabled ? closestNumber(mapObject.transform.y, mapMagnetSteps) : mapObject.transform.y;
+				let x: number = enabled
+					? closestNumber(mapObject.transform.x, mapMagnetSteps)
+					: mapObject.transform.x;
+				let y: number = enabled
+					? closestNumber(mapObject.transform.y, mapMagnetSteps)
+					: mapObject.transform.y;
 
 				mapObject!.transform.x = x;
 				mapObject!.transform.y = y;
@@ -133,6 +145,10 @@
 		window.addEventListener('mousemove', updateInstantiation);
 	};
 
+	// const openModal = () => {
+	// 	dispatch('openModal', mapObject);
+	// };
+
 	const updateInstantiation = (event: MouseEvent) => {
 		if (!dragging) return;
 
@@ -145,23 +161,28 @@
 		else if (inBoundings && !enabled) enable();
 	};
 
-	export const rerenderPosition = () => {
+	export const rerenderMapObject = () => {
 		mapObject = mapObject;
 	};
 
 	export const removeSelectedStyle = () => {
-    selected = false;
+		selected = false;
 
 		grabbers.forEach((grabber) => {
-			grabber.classList.remove('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
+			grabber.classList.remove(
+				'handle',
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+			);
 		});
 	};
 
 	export const applySelectedStyle = () => {
-    selected = true;
-
+		selected = true;
 		grabbers.forEach((grabber) => {
-			grabber.classList.add('handle', `handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`);
+			grabber.classList.add(
+				'handle',
+				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+			);
 		});
 	};
 
@@ -170,31 +191,24 @@
 		right = document.createElement('div');
 		right.title = 'east';
 		right.classList.add('handle', 'handle-east');
-
 		left = document.createElement('div');
 		left.title = 'west';
 		left.classList.add('handle', 'handle-west');
-
 		top = document.createElement('div');
 		top.title = 'north';
 		top.classList.add('handle', 'handle-north');
-
 		bottom = document.createElement('div');
 		bottom.title = 'south';
 		bottom.classList.add('handle', 'handle-south');
-
 		topLeft = document.createElement('div');
 		topLeft.title = 'northwest';
 		topLeft.classList.add('handle', 'handle-northwest');
-
 		topRight = document.createElement('div');
 		topRight.title = 'northeast';
 		topRight.classList.add('handle', 'handle-northeast');
-
 		bottomLeft = document.createElement('div');
 		bottomLeft.title = 'southwest';
 		bottomLeft.classList.add('handle', 'handle-southwest');
-
 		bottomRight = document.createElement('div');
 		bottomRight.title = 'southeast';
 		bottomRight.classList.add('handle', 'handle-southeast');
@@ -272,12 +286,11 @@
 		};
 	}
 
-  function resizeWall(element: HTMLElement) {
-    let active: HTMLElement | null = null;
-    right = document.createElement('div');
+	function resizeWall(element: HTMLElement) {
+		let active: HTMLElement | null = null;
+		right = document.createElement('div');
 		right.title = 'east';
 		right.classList.add('handle', 'handle-east-point');
-
 		left = document.createElement('div');
 		left.title = 'west';
 		left.classList.add('handle', 'handle-west-point');
@@ -341,104 +354,106 @@
 			}
 		};
 	}
-
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
 	<div
 		class="z-40 duration-0"
 		style="position: absolute; height: {mapObject.transform.height}px; width: {mapObject.transform
-			.width}px; left: {mapObject.transform.x}px; top: {mapObject.transform
+			.width}px; left: {mapObject.transform.x + wallThickness / 2}px; top: {mapObject.transform
 			.y}px; transform: rotate({mapObject.transform.rotation}deg);"
+		role="button"
+		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
-  role="button"
-  tabindex="0"
-    >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill="#000000"
-      rx="5"
-      ry="5"
-      stroke={selected ? "#8B80F9" : ""}
-      stroke-width="4"
-      />
-    </svg>
-  </div>
+	>
+		<DeskSvg {selected} text={mapObject.id} />
+	</div>
 {:else if mapObject.type === mapObjectType.Room}
-	<button
-		class="flex justify-center z-10 duration-0"
-		style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-			.height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y - wallProps.height / 2}px;"
+	<div
+		class="flex justify-center duration-0"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
+			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
+			? 45
+			: 10};"
+		role="button"
+		tabindex="0"
 		bind:this={drag}
-		on:mousedown={handleDragStart}
+		on:mousedown={(event) => {
+			// INFO: the funny:
+			const extension = 4;
+			if (
+				selected ||
+				(event.clientX >= drag.getBoundingClientRect().left - extension &&
+					event.clientX <=
+						drag.getBoundingClientRect().left + extension + wallThickness * $map.scale) ||
+				(event.clientX >=
+					drag.getBoundingClientRect().left -
+						extension +
+						(mapObject.transform.width + wallThickness) * $map.scale -
+						wallThickness * $map.scale &&
+					event.clientX <=
+						drag.getBoundingClientRect().left +
+							extension +
+							(mapObject.transform.width + wallThickness) * $map.scale) ||
+				(event.clientY >= drag.getBoundingClientRect().top - extension &&
+					event.clientY <=
+						drag.getBoundingClientRect().top + extension + wallThickness * $map.scale) ||
+				(event.clientY >=
+					drag.getBoundingClientRect().top -
+						extension +
+						(mapObject.transform.height + wallThickness) * $map.scale -
+						wallThickness * $map.scale &&
+					event.clientY <=
+						drag.getBoundingClientRect().top +
+							extension +
+							(mapObject.transform.height + wallThickness) * $map.scale)
+			)
+				handleDragStart(event);
+		}}
 		use:resizeRectangle
 	>
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity="0"
-      stroke={ selected ? "#8B80F9" : "#000000"}
-      stroke-width={wallProps.height * 2}
-      />   
-    </svg>
-	</button>
+		<RoomSvg
+			height={mapObject.transform.height + wallThickness}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
+	</div>
 {:else if mapObject.type === mapObjectType.Wall}
-  <button
-  class="flex justify-center z-20 duration-0 -translate-y-1/2"
-  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
-	bind:this={drag}
-	on:mousedown={handleDragStart}
-  use:resizeWall
-  >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity={selected ? 0 : 1}
-      fill={ selected ? "" : "#000000"}
-      stroke={ selected ? "#8B80F9" : ""}
-      stroke-width="4"
-      />
-    </svg>
-  </button>
-  {:else if mapObject.type === mapObjectType.Door}
-  <button
-  class="flex justify-center z-30 duration-0 -translate-y-1/2"
-  style="position: absolute; width: {mapObject.transform.width}px; height: {mapObject.transform
-  .height}px; left: {mapObject.transform.x}px; top: {mapObject.transform.y}px;"
-  bind:this={drag}
-  on:mousedown={handleDragStart}
-  use:resizeWall
-  >
-    <svg width={mapObject.transform.width} height={mapObject.transform.height}>
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill="#D9D9D9"
-      />
-      <rect
-      x={mapObject.transform.width - wallProps.height}
-      width={wallProps.height}
-      height={mapObject.transform.height}
-      />
-      <rect
-      width={wallProps.height}
-      height={mapObject.transform.height}
-      />
-      {#if selected}
-      <rect 
-      width={mapObject.transform.width}
-      height={mapObject.transform.height}
-      fill-opacity="0"
-      stroke="#8B80F9"
-      stroke-width="4"
-      />
-      {/if}
-    </svg>
-  </button>
+	<div
+		class="flex justify-center z-20 duration-0 -translate-y-1/2"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y}px;"
+		role="button"
+		tabindex="0"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+		use:resizeWall
+	>
+		<WallSvg
+			height={mapObject.transform.height}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
+	</div>
+{:else if mapObject.type === mapObjectType.Door}
+	<div
+		class="flex justify-center z-30 duration-0 -translate-y-1/2"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
+			.x}px; top: {mapObject.transform.y}px;"
+		role="button"
+		tabindex="0"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+		use:resizeWall
+	>
+		<DoorSvg
+			height={mapObject.transform.height}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
+		/>
+	</div>
 {/if}

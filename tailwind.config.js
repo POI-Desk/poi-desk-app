@@ -5,6 +5,7 @@ import { join } from 'path';
 import { skeleton } from '@skeletonlabs/tw-plugin';
 
 import forms from '@tailwindcss/forms';
+import { lightTheme } from './light-theme';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -21,10 +22,10 @@ export default {
 	plugins: [
 		forms,
 		// 4. Append the Skeleton plugin (after other plugins)
-		skeleton(
-			{
-				themes: {preset: [{name: "gold-nouveau"}]}
+		skeleton({
+			themes: {
+				custom: [lightTheme]
 			}
-		)
+		})
 	]
 };

@@ -19,10 +19,13 @@
         $selectedDesks = [];
     }
 
+
+
+
     // --- test data
     // todo change
     $selectedUsers = [{
-        pk_userid: "189c9268-8f89-417e-ae47-ce87c2f4acc3",
+        pk_userid: "85d4c824-5599-40ad-834d-575355d7f0b3",
         username: "Alina",
         location: {
             pk_locationid: "",
@@ -30,7 +33,7 @@
         },
         userInfo: ""
     }, {
-        pk_userid: "8ad4479e-5901-4cac-8f28-75e7e28c1ab2",
+        pk_userid: "19073632-9d70-4f07-8b23-9d1b9500d1aa",
         username: "Markus",
         location: {
             pk_locationid: "",
@@ -38,7 +41,7 @@
         },
         userInfo: ""
     }, {
-        pk_userid: "3bf02676-fb27-4925-b0e6-c80283a903bd",
+        pk_userid: "8085696c-fd06-47d7-9cca-84a309d22547",
         username: "Jupp",
         location: {
             pk_locationid: "",
