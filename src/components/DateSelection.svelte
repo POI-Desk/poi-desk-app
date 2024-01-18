@@ -1,7 +1,6 @@
 <script lang="ts">
 	// import type { PageLoad } from './$houdini';
 	//import DateSelection
-	import { dateValue } from "../lib/dateStore";
 	import { selectedDesks } from "$lib/stores/extendedUserStore";
 	import { getBookingsByDate } from "$lib/queries/booking";
 	import { dateValue, maxBookingValue, today } from "$lib/dateStore";

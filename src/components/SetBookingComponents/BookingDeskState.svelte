@@ -6,7 +6,7 @@
 
 	let morningSelected: boolean = false;
 	let afternoonSelected: boolean = false;
-	export let shownInterval: String = 'default';
+	// export let shownInterval: String = 'default';
 	// just for now
 	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
 	let isBookedMorning: boolean = currentBookingsOnDate.some((booking: any) => booking.ismorning);

@@ -116,7 +116,7 @@
 				</button>
 			</div>
 			<div class="basis-full">
-				<BookingDeskState shownInterval="morning" />
+				<BookingDeskState  />
 				<!---->
 				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
