@@ -3,7 +3,6 @@
     import {floorid} from '$lib/floorStore';
 
     import {CachePolicy} from '$houdini';
-    import {getModalStore, type ModalSettings} from '@skeletonlabs/skeleton';
     import {getDesks} from '$lib/queries/deskQueries';
     import {refreshDesks} from "$lib/refreshStore";
     import {selectedDesks, selectedUsers} from "$lib/stores/extendedUserStore";
@@ -11,7 +10,6 @@
     import type {Desk} from "$lib/types/deskTypes";
     import {buildingid} from "$lib/buildingStore";
 
-    const modalStore = getModalStore();
 
     $selectedDesks = [];
 
@@ -19,45 +17,6 @@
         $selectedDesks = [];
     }
 
-
-
-
-    // --- test data
-    // todo change
-    $selectedUsers = [{
-        pk_userid: "85d4c824-5599-40ad-834d-575355d7f0b3",
-        username: "Alina",
-        location: {
-            pk_locationid: "",
-            locationname: ""
-        },
-        userInfo: ""
-    }, {
-        pk_userid: "19073632-9d70-4f07-8b23-9d1b9500d1aa",
-        username: "Markus",
-        location: {
-            pk_locationid: "",
-            locationname: ""
-        },
-        userInfo: ""
-    }, {
-        pk_userid: "8085696c-fd06-47d7-9cca-84a309d22547",
-        username: "Jupp",
-        location: {
-            pk_locationid: "",
-            locationname: ""
-        },
-        userInfo: ""
-    }]
-    // -----
-
-    const modal: ModalSettings = {
-        type: 'component',
-        component: 'modalExtendedBooking',
-        response: () => {
-            $dateValue = new Date().toISOString().split('T')[0];
-        }
-    };
 
     function handleDeskSelection(desk: Desk) {
         if (desk?.bookings?.find((b) => {
@@ -103,17 +62,3 @@ ACHTUNG USER SIND NOCH STATISCH
         </div>
     {/key}
 </div>
-
-<!--    	Extended Booking Test-->
-<button on:click={() => {
-                if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon)) {
-                    modalStore.trigger(modal);
-                }
-            }}
-        class="btn variant-filled-primary"
-        disabled="{$selectedDesks.length !== $selectedUsers.length || !($interval.morning || $interval.afternoon)}"
->Book
-</button>
-<!--    -->
-
-

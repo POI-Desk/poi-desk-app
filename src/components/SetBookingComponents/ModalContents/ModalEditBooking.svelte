@@ -1,18 +1,11 @@
 <script lang="ts">
-	import { currentBooking, displayedTime, userBookings } from '$lib/bookingStore';
-	import { delBooking } from '$lib/mutations/booking';
-	import { getModalStore, ListBox, ListBoxItem, popup, type PopupSettings } from '@skeletonlabs/skeleton';
-	import {
-		Armchair,
-		ArrowLeft,
-		Building,
-		Calendar,
-		Check,
-		Clock,
-		Cuboid,
-		MapPin,
-		X
-	} from 'lucide-svelte';
+	import { currentBooking, displayedTime, getBookings } from "$lib/bookingStore";
+	import { delBooking } from "$lib/mutations/booking";
+	import { getModalStore, popup, type PopupSettings } from "@skeletonlabs/skeleton";
+	import { Armchair, ArrowLeft, Building, Calendar, Check, Clock, Cuboid, MapPin, X } from "lucide-svelte";
+	import type { Booking } from "$lib/types/bookingTypes";
+	import { user } from "$lib/userStore";
+	import { CachePolicy, graphql } from "$houdini";
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -40,9 +33,47 @@
 		closeQuery: '.listbox-item'
 	};
 
-	const deleteBooking = async (id: string) => {
-		$userBookings = $userBookings.filter((booking) => booking.pk_bookingid != id);
-		await delBooking.mutate({ id });
+	// const deleteBooking = async (id: string) => {
+	// 	$userBookings = $userBookings.filter((booking) => booking.pk_bookingid != id);
+	// 	await delBooking.mutate({ id });
+	// 	modalStore.close();
+	// };
+
+	const getBookingsByNumContains = graphql(`
+        query GetBookingsByBookingnumberContains($string: String!) @load {
+            getBookingsByBookingnumberContains(string: $string) {
+                pk_bookingid
+                bookingnumber
+           }
+        }
+    `);
+
+	export const _GetBookingsByBookingnumberContainsVariables = () => {
+		return {};
+	};
+
+	$: extendedBookings = $getBookingsByNumContains.data?.getBookingsByBookingnumberContains;
+
+	const deleteBooking = async (booking: Booking) => {
+		const id = booking.pk_bookingid;
+
+		if (booking.bookingnumber.includes("EXT-ID")) {
+			const extId = booking.bookingnumber.split("EXT-ID")[1];
+
+			if (extId !== $user.pk_userid) return;
+
+			await getBookingsByNumContains.fetch({ variables: { string: extId } });
+			console.log(extendedBookings);
+			for (const b of extendedBookings ?? []) {
+				console.log(b);
+				await delBooking.mutate({ id: b.pk_bookingid });
+			}
+		} else {
+			await delBooking.mutate({ id });
+		}
+
+		await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
+
 		modalStore.close();
 	};
 </script>
@@ -56,7 +87,7 @@
 				<div class="flex gap-5">
 					<button
 						on:click={async () => {
-							await deleteBooking($currentBooking.pk_bookingid);
+							await deleteBooking($currentBooking);
 						}}
 						class="btn bg-green-400 rounded-full"
 					>

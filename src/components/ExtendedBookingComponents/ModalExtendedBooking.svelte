@@ -1,7 +1,7 @@
 <script lang="ts">
     import {getModalStore} from '@skeletonlabs/skeleton';
     import {interval} from '$lib/bookingStore';
-    import {dateValue} from '$lib/dateStore';
+    import { dateValue, todaysDate } from "$lib/dateStore";
     import {bookDesk} from '$lib/mutations/booking';
     import {user} from '$lib/userStore';
 
@@ -12,7 +12,7 @@
 
 
     async function finishBooking() {
-        const extendedid = "EXT-ID" + $user.pk_userid;
+        const extendedid = "EXTID" + todaysDate.getTime() + "+" + $user.pk_userid;
 
         for (const desk of $selectedDesks) {
             const i = $selectedDesks.indexOf(desk);
@@ -113,7 +113,7 @@
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
                         <!-- TODO Desk Type fixen -->
-                        {$selectedDesks[0].floor.building.buildingname}
+                        <!--{$selectedDesks[0].floor.building.buildingname}-->
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
@@ -121,7 +121,7 @@
                         </div>
                     </div>
                     <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-                        {$selectedDesks[0].floor.floorname}
+                        <!--{$selectedDesks[0].floor.floorname}-->
                     </div>
                     <div class="rounded-3xl flex justify-center bg-white">
                         <div class="rounded-3xl m-3 mx-5">
