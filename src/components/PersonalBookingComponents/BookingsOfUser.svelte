@@ -1,17 +1,7 @@
 <script lang="ts">
-  import { CachePolicy, graphql } from "$houdini";
   import { user } from "$lib/userStore";
-  import { delBooking } from "$lib/mutations/booking";
   import { getBookings, userBookings } from "$lib/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
-  import type { Booking } from "$lib/types/bookingTypes";
-
-
-
-
-  $: console.log("User:", $user?.pk_userid);
-  $: usrid = $user?.pk_userid;
-
 
 
   $: $userBookings = bookings as any;

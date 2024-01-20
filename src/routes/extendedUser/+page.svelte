@@ -1,15 +1,15 @@
 <script lang="ts">
   import SearchBar from "$components/SearchBar.svelte";
-  import { user } from "$lib/userStore.ts";
+  import { user } from "$lib/userStore";
   import DateSelection from "$components/DateSelection.svelte";
   import BuildingSelection from "$components/BuildingSelection.svelte";
   import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
   import FloorSelection from "$components/FloorSelection.svelte";
   import FloorMap from "$components/MapComponents/FloorMap.svelte";
   import { isExtended, selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
-  import { interval } from "$lib/bookingStore.js";
+  import { interval } from "$lib/bookingStore";
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-  import { dateValue } from "$lib/dateStore.js";
+  import { dateValue } from "$lib/dateStore";
 
   $isExtended = true;
 
@@ -79,9 +79,8 @@
 
   <BuildingSelection />
 
-  <!--    	Extended Booking Test-->
   <div
-    class="absolute h-11 bottom-24 left-1/2 z-[100] -translate-x-1/2 shadow-around-10"
+    class="absolute h-11 bottom-24 left-1/2 z-[100] -translate-x-1/2"
   >
     <button on:click={() => {
                 if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon)) {
@@ -93,5 +92,4 @@
     >Book
     </button>
   </div>
-  <!--    -->
 </div>

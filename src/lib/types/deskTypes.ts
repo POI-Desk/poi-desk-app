@@ -6,5 +6,11 @@ export type Desk = {
         date: string;
         ismorning: boolean;
         isafternoon: boolean;
-    }]
+    }];
+    floor: {
+        floorname: string;
+        building: {
+            buildingname: string;
+        }
+    };
 };
