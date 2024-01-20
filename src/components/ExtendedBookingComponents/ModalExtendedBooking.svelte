@@ -26,7 +26,6 @@
           extendedid: extendedid
         }
       });
-      console.log(value);
     }
     $selectedDesks = [];
     $refreshDesks = !$refreshDesks;

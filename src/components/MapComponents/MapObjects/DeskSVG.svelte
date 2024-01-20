@@ -1,6 +1,8 @@
 <script lang="ts">
   import { deskProps, wallThickness } from "$lib/map/props";
   import { createEventDispatcher } from "svelte";
+  import { isExtended } from "$lib/stores/extendedUserStore";
+  import { interval } from "$lib/bookingStore.js";
 
   let width: number = deskProps.width;
   let height: number = deskProps.height;
@@ -18,11 +20,11 @@
 
   export const getBookedMorning = () => {
     return bookedMorning;
-  }
+  };
 
   export const getBookedAfternoon = () => {
     return bookedAfternoon;
-  }
+  };
 
   export const setBookedMorning = (isBookedMorning: boolean) => {
     bookedMorning = isBookedMorning;
@@ -70,20 +72,22 @@
       ry="2"
       stroke={selected ? '#8B80F9' : '#1A4775'}
       stroke-width={borderThickness}
-      fill={bookedMorning || bookedAfternoon ? bookedColor : freeColor}
+      fill={($interval.morning && bookedMorning) || ($interval.afternoon && bookedAfternoon) ? bookedColor : freeColor}
     />
-    <polygon
-      points="{borderThickness},{borderThickness} {width -
+    {#if !$isExtended}
+      <polygon
+        points="{borderThickness},{borderThickness} {width -
 				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-      fill={bookedMorning ? bookedColor : freeColor}
-      stroke="none"
-    />
-    <polygon
-      points="{width - borderThickness},{height - borderThickness} {width -
+        fill={bookedMorning ? bookedColor : freeColor}
+        stroke="none"
+      />
+      <polygon
+        points="{width - borderThickness},{height - borderThickness} {width -
 				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-      fill={bookedAfternoon ? bookedColor : freeColor}
-      stroke="none"
-    />
+        fill={bookedAfternoon ? bookedColor : freeColor}
+        stroke="none"
+      />
+    {/if}
     <text
       x="50%"
       y="50%"
