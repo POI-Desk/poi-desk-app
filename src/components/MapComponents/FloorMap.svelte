@@ -18,6 +18,7 @@
   import WallSvg from "./MapObjects/WallSVG.svelte";
   import { isExtended, selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
   import { refreshDesks } from "$lib/refreshStore";
+  import { buildingid } from "$lib/buildingStore";
 
   let container: HTMLDivElement;
   let grid: HTMLDivElement;
@@ -48,6 +49,7 @@
 
   $: {
     bookingsData;
+    $interval;
     updateBookings();
   }
 
@@ -103,6 +105,7 @@
       });
       desk.setBookedAfternoon(afternoon);
       desk.setBookedMorning(morning);
+      desk.setSelected(false);
     }
   };
 
