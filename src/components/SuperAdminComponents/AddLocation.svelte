@@ -4,14 +4,17 @@
 	import { onMount } from 'svelte';
 	import { locationid } from '$lib/locationStore';
 	import { saveChangesClickable, saveChangesClicked } from '$lib/saveChangesStore';
+	import { showAddLocation } from '$lib/locationStore';
 	import { Key } from 'lucide-svelte';
 
-	let showAddLocation: boolean = false;
+
 	let newName: string = '';
 	let locationNames: string[] = [];
 
 	onMount(() => {
 		getLocationsFunction();
+		showAddLocation.set(false);
+		
 
 		const unsubscribe = saveChangesClicked.subscribe((value) => {
 			handleSaveChanges(value);
@@ -37,25 +40,16 @@
 	}
 
 	function onAddLocation() {
-		showAddLocation = true;
+		showAddLocation.set(true);
 	}
 
 	function saveLocationChanges() {
-		console.log(
-			'new name would be: ' +
-				newName +
-				', newName in locations: ' +
-				(locationNames.includes(newName.toLocaleLowerCase()))
-		);
-		console.log('locationnames: ' + locationNames);
 
 		if (!newName) {
 			alert('You have to enter a name before saving the location!');
 		} else if (locationNames.includes(newName.toLowerCase())) {
 			alert('A location with this name already exists. Please enter a different name!');
 		} else {
-			console.log('in else... whyever');
-
 			try {
 				const result = addLocation.mutate({
 					name: newName
@@ -78,11 +72,9 @@
 	}
 </script>
 
-{#if !showAddLocation}
+{#if !$showAddLocation}
 	<button on:click={onAddLocation}> + Add location</button>
 {:else}
-	<button disabled on:click={onAddLocation}> + Add location</button>
-	{showAddLocation}
 	<div>
 		<div class="input">
 			<input
