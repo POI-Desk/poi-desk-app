@@ -16,6 +16,7 @@
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
+	import Label from './MapObjects/Label.svelte';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
@@ -39,6 +40,7 @@
 	let roomObjects: { [key: string]: RoomSvg } = {};
 	let doorObjects: { [key: string]: DoorSvg } = {};
 	let wallObjects: { [key: string]: WallSvg } = {};
+	let labelObjects: { [key: string]: Label } = {};
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
 
@@ -221,6 +223,22 @@
 				}
 			});
 			wallObjects[wall.pk_wallId] = wallSvg;
+		});
+
+		mapData.labels?.map((label) => {
+			const labelSvg = new Label({
+				target: grid,
+				props: {
+					text: label.text,
+					z: 60,
+					transform: {
+						x: label.x,
+						y: label.y,
+						rotation: 0
+					}
+				}
+			});
+			labelObjects[label.pk_labelId] = labelSvg;
 		});
 		recenterMap();
 	};

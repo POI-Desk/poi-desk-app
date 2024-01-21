@@ -3,7 +3,6 @@
 <!-- TODO: better border for rooms (svg maby (probably)) -->
 
 <script lang="ts">
-
 	import { closestNumber, inBoundingbox, transformPosition } from '$lib/map/helper';
 	import { mapMagnetSteps, mapObjectType, wallProps, wallThickness } from '$lib/map/props';
 	import { map } from '$lib/stores/mapCreationStore';
@@ -65,7 +64,6 @@
 		// mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
 		mapObject.transform.x = closestNumber(x, mapMagnetSteps) - wallOffset;
 		mapObject.transform.y = closestNumber(y, mapMagnetSteps) - wallOffset;
-
 	});
 
 	const enable = () => {
@@ -75,17 +73,17 @@
 			drag!.getBoundingClientRect(),
 			target.getBoundingClientRect(),
 			main.getBoundingClientRect()
-			);
-			
+		);
+
 		if (drag?.parentElement) drag?.parentElement.removeChild(drag!);
 		target.appendChild(drag!);
 		offsetX += target.getBoundingClientRect().left / $map.scale;
 		offsetY += target.getBoundingClientRect().top / $map.scale;
-		
+
 		mapObject.transform.x = transformedPos.x / $map.scale - offsetX;
 		mapObject.transform.y = transformedPos.y / $map.scale - offsetY;
 	};
-	
+
 	/* Old for disabling objects out of the canvas
 	const disable = () => {
 		enabled = false;
@@ -117,8 +115,8 @@
 			if (dragging && !resizing) {
 				mapObject.transform.x = e.clientX / $map.scale - offsetX;
 				mapObject.transform.y = e.clientY / $map.scale - offsetY;
-				let x: number = closestNumber(mapObject.transform.x, mapMagnetSteps)
-				let y: number = closestNumber(mapObject.transform.y, mapMagnetSteps)
+				let x: number = closestNumber(mapObject.transform.x, mapMagnetSteps);
+				let y: number = closestNumber(mapObject.transform.y, mapMagnetSteps);
 
 				mapObject!.transform.x = x;
 				mapObject!.transform.y = y;
@@ -370,7 +368,7 @@
 		style="position: absolute; width: {mapObject.transform.width +
 			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
 			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
-			? 45
+			? 10
 			: 10};"
 		role="button"
 		tabindex="0"
@@ -406,6 +404,9 @@
 							(mapObject.transform.height + wallThickness) * $map.scale)
 			)
 				handleDragStart(event);
+			else if (!selected) {
+				dispatch('resetSelection');
+			}
 		}}
 		use:resizeRectangle
 	>
@@ -455,13 +456,22 @@
 	<div
 		class="flex justify-center z-50 duration-0 -translate-y-1/2"
 		style="position: absolute; width: {mapObject.transform.width +
-			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform
-			.x}px; top: {mapObject.transform.y}px;"
+			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform.x -
+			wallThickness / 2}px; top: {mapObject.transform.y + wallThickness}px;"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
 	>
-	    <input type="text" value="Label" class="text-primary-500 font-semibold bg-transparent {selected ? 'border-warning-500' : 'border-transparent'}" style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height + wallThickness}px;" />
+		<input
+			type="text"
+			placeholder="Label"
+			bind:value={mapObject.text}
+			class="text-primary-500 bg-transparent
+				border-transparent
+				text-center"
+			style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height +
+				wallThickness}px;"
+		/>
 	</div>
 {/if}

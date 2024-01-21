@@ -98,6 +98,14 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
           x: mapObject.transform.x,
           y: mapObject.transform.y,
         } as UpdateDoorInput;
+		case mapObjectType.Label:
+			return {
+				pk_labelId: mapObject.dbID,
+				rotation: mapObject.transform.rotation,
+				text: mapObject.text,
+				x: mapObject.transform.x,
+				y: mapObject.transform.y,
+			};
   		default:
   			throw new Error(`Invalid type ${mapObject.type}`);
   	}

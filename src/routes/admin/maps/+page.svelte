@@ -10,6 +10,7 @@
 		graphql,
 		type UpdateDeskInput,
 		type UpdateDoorInput,
+		type UpdateLabelInput,
 		type UpdateRoomInput,
 		type UpdateWallInput
 	} from '$houdini';
@@ -21,6 +22,7 @@
 		doorProps,
 		getInputTypeFromMapObject,
 		getTransformFromType,
+		labelProps,
 		mapObjectType,
 		panzoomProps,
 		roomProps,
@@ -28,6 +30,7 @@
 	} from '$lib/map/props';
 	import { deleteDesks, updateDesksOnMap } from '$lib/mutations/desks';
 	import { deleteDoors, updateDoorsOnMap } from '$lib/mutations/door';
+	import { deleteLabels, updateLabelsOnMap } from '$lib/mutations/label';
 	import { createMap, updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
@@ -43,7 +46,7 @@
 		type TransformType
 	} from '$lib/types/transformType';
 	import { user } from '$lib/userStore';
-	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, ProgressBar, type ModalSettings, filter } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -173,14 +176,16 @@
 		type: string,
 		initialTransform: TransformType | null,
 		id: string = '',
-		dbID: string | null = null
+		dbID: string | null = null,
+		text: string = ''
 	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
 			dbID: dbID,
 			id: id === '' ? genRandomId(type) : id,
 			type: type,
-			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
+			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) },
+			text: text
 		};
 
 		if (initialTransform == null) {
@@ -208,9 +213,14 @@
 			resetSelectedMapObjectStyle();
 			selectMapObject($allMapObjects.find((mapObject) => mapObject.transform === event.detail)!);
 		});
-		
-		// enabled: boolean 
-		element.$on('release', (event: CustomEvent<{ transform: TransformType;}>) => {
+
+		element.$on('resetSelection', (event: CustomEvent<void>) => {
+			resetSelectedMapObjectStyle();
+			$selectedMapObject = null;
+		});
+
+		// enabled: boolean
+		element.$on('release', (event: CustomEvent<{ transform: TransformType }>) => {
 			panz.resume();
 			// if (!event.detail.enabled) {
 			// 	delSelectedMapObject();
@@ -237,7 +247,7 @@
 	const genRandomId = (type: string) => {
 		let result: string = '';
 		if (type !== mapObjectType.Desk) {
-			while ($allMapObjects.find((obj) => obj.id === result)){
+			while ($allMapObjects.find((obj) => obj.id === result)) {
 				result = type + Math.random() * 100000;
 			}
 			return result;
@@ -250,7 +260,7 @@
 		while ($allMapObjects.find((obj) => obj.id === result + num)) {
 			num++;
 		}
-		
+
 		result += num;
 
 		return result;
@@ -506,15 +516,32 @@
 				wall.pk_wallId
 			);
 		});
+		mapData.labels!.map((label) => {
+			createMapObject(
+				{ clientX: label.x, clientY: label.y } as MouseEvent,
+				mapObjectType.Label,
+				{
+					x: label.x,
+					y: label.y,
+					width: labelProps.width,
+					height: labelProps.height,
+					rotation: label.rotation
+				} as TransformType,
+				'',
+				label.pk_labelId,
+				label.text
+			);
+		});
 		if (recenter) recenterMap();
 		$allMapObjects = $allMapObjects;
 		mapObjects = mapObjects;
 	};
 
 	const saveMap = async () => {
-		//TODO: Ignore objetcs with no changes
-
 		if (mapData == null) return;
+		
+		resetSelectedMapObjectStyle();
+		$selectedMapObject = null;
 
 		const desks: UpdateDeskInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Desk)
@@ -612,6 +639,33 @@
 			})
 			.filter((door) => Object.keys(door).length !== 0);
 
+		const labels: UpdateLabelInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Label)
+			.map((obj) => {
+				const label = mapData!.labels?.find((d) => d.pk_labelId === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{
+							dbID: obj.dbID,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							rotation: obj.transform.rotation,
+							text: obj.text
+						},
+						{
+							dbID: label?.pk_labelId,
+							x: label?.x,
+							y: label?.y,
+							rotation: label?.rotation,
+							text: label?.text
+						}
+					)
+				)
+					return {} as UpdateLabelInput;
+				return getInputTypeFromMapObject(obj) as UpdateLabelInput;
+			})
+			.filter((label) => Object.keys(label).length !== 0);
+
 		const deskIdsToDelete: string[] =
 			mapData.desks
 				?.filter(
@@ -640,6 +694,15 @@
 						!$allMapObjects?.find((d) => d.dbID === wall.pk_wallId && d.type === mapObjectType.Wall)
 				)
 				?.map((wall) => wall.pk_wallId) ?? [];
+		const labelsToDelete: string[] =
+			mapData.labels
+				?.filter(
+					(label) =>
+						!$allMapObjects?.find(
+							(d) => d.dbID === label.pk_labelId && d.type === mapObjectType.Label
+						)
+				)
+				?.map((label) => label.pk_labelId) ?? [];
 
 		let updateDesks;
 		if (desks.length > 0) {
@@ -670,6 +733,14 @@
 			updateDoors = updateDoorsOnMap.mutate({
 				mapId: mapData.pk_mapId,
 				doorInputs: doors
+			});
+		}
+
+		let updateLabels;
+		if (labels.length > 0) {
+			updateLabels = updateLabelsOnMap.mutate({
+				mapId: mapData.pk_mapId,
+				labelInputs: labels
 			});
 		}
 
@@ -709,16 +780,25 @@
 			});
 		}
 
+		let delLabels;
+		if (labelsToDelete?.length > 0) {
+			delLabels = deleteLabels.mutate({
+				labelIds: labelsToDelete
+			});
+		}
+
 		const resolves = await Promise.all([
 			updateDesks,
 			updateRooms,
 			updateWalls,
 			updateDoors,
+			updateLabels,
 			mapUpdate,
 			delDesks,
 			delRooms,
 			delDoors,
-			delWalls
+			delWalls,
+			delLabels
 		]);
 
 		resolves.map((resolve) => {
@@ -731,10 +811,12 @@
 			policy: CachePolicy.NetworkOnly
 		});
 
-    $allMapObjects = $allMapObjects.map((obj) => {
-      obj.dbID = receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
-      return obj;
-    });
+		$allMapObjects = $allMapObjects.map((obj) => {
+			obj.dbID =
+				receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
+				obj.dbID;
+			return obj;
+		});
 	};
 </script>
 
@@ -763,7 +845,7 @@
 		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors ?? []}
 	/>
 	<AdminSerachbar
-		names={$allMapObjects.map((o) => o.id)}
+		names={$allMapObjects.filter(o => o.type === mapObjectType.Desk).map((o) => o.id)}
 		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
 	<div bind:this={container} class="overflow-hidden h-full">
