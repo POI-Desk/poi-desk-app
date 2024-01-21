@@ -57,15 +57,13 @@
 	const deleteBooking = async (booking: Booking) => {
 		const id = booking.pk_bookingid;
 
-		if (booking.bookingnumber.includes("EXT-ID")) {
-			const extId = booking.bookingnumber.split("EXT-ID")[1];
+		if (booking.bookingnumber.includes("EXTID")) {
+			const extId = booking.bookingnumber.split("EXTID")[1];
 
-			if (extId !== $user.pk_userid) return;
+			if (extId.split("+")[1] !== $user.pk_userid) modalStore.close();
 
 			await getBookingsByNumContains.fetch({ variables: { string: extId } });
-			console.log(extendedBookings);
 			for (const b of extendedBookings ?? []) {
-				console.log(b);
 				await delBooking.mutate({ id: b.pk_bookingid });
 			}
 		} else {
