@@ -6,12 +6,17 @@
     import { showAddLocation } from "$lib/locationStore";
 	import Login from "$components/Login.svelte";
 	import { saveChangesClickable } from "$lib/saveChangesStore";
+    import { addBuilding } from '$lib/mutations/buildings';
+    import { BuildingInput } from './BuildingInput.svelte'
 
     $: locid = $locationid;
 
     let buildingNames: String[] = [];
     let showAddBuilding: boolean = false;
     let newName: String = "";
+    let newBuildings: String[] = [];
+    let newBuildingNames: String[] = [];
+    let inputFields: { id: number; value: string }[] = [];
 
     onMount(async () => {
         await getBuildings.fetch({ variables: { locationid: locid } });
@@ -23,6 +28,14 @@
 
     function handleAddBuilding() {
         showAddBuilding = true;
+        const newId: number = inputFields.length;
+        newBuildingNames = [...newBuildingNames, {id: newId, value: ''}];
+    }
+
+    function updateNewNames(id: number, newValue: string) {
+        inputFields = inputFields.map((field) =>
+            field.id === id ? { ...field, value: newValue } : field
+        );
     }
 
     function handleNameInput() {
@@ -33,6 +46,26 @@
 		}
 	}
 
+    function handleSaveChanges(value: boolean) {
+        let newNameTaken: boolean = false;
+        if (value) {
+            for (const name of buildingNames) {
+                if (name in buildingNames) {
+                    newNameTaken = true;
+                }
+            }
+            if ("" in newBuildingNames) {
+                alert("Missing building name");
+            } else if (newNameTaken) {
+                alert("Duplicate building name");
+            // } else {
+            //     try {
+                    
+            //     }
+            }
+        }
+    }
+
 </script>
 
 <div>
@@ -40,15 +73,16 @@
         <button on:click={handleAddBuilding}>Add Building</button>
 
         {#if showAddBuilding}
-        <div class="input">
-			<input
-				type="text"
-				placeholder="Building name"
-				bind:value={newName}
-				on:input={handleNameInput}
-			/>
-			{newName}
-		</div>
+            {#each newBuildingNames as { id, value } (id)}
+                <div class="input">
+                    <BuildingInput
+                        id={id}
+                        value={value}
+                        onInput={(newId, newVal) => updateNewNames(newId, newVal)}
+                    />
+                    {newName}
+                </div>
+            {/each}
         {/if}
     {/if}
 
