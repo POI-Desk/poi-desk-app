@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { mapObjectType } from '$lib/map/props';
+	import { getMapByFloor } from '$lib/queries/map';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher } from 'svelte';
 
@@ -7,6 +8,7 @@
 
 	//TODO: use type script
 	function onCreate(e: MouseEvent, type: string) {
+		if (!$getMapByFloor.data?.getMapByFloor) return;
 		dispatch('create', { e, type });
 	}
 
