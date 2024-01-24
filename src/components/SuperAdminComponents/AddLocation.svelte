@@ -4,15 +4,19 @@
 	import { onMount } from 'svelte';
 	import { locationid } from '$lib/locationStore';
 	import { showAddLocation } from '$lib/locationStore';
+	import { isSaveDisabled, saveChangesClicked } from '$lib/saveChangesStore';
 
 	let newName: string = '';
 	let locationNames: string[] = [];
-	let isSaveDisabled = true;
 
 	onMount(() => {
 		getLocationsFunction();
 		showAddLocation.set(false);
 	});
+
+	$: if ($saveChangesClicked) {
+		saveLocationChanges();
+	}
 
 	async function getLocationsFunction() {
 		await getLocations.fetch().then(() => {
@@ -38,21 +42,22 @@
 				name: newName
 			});
 			$locationid = result.data?.addLocation?.pk_locationid ?? '';
-			isSaveDisabled = true;
+			$isSaveDisabled = true;
 		}
 	}
 
 	function handleNameInput() {
 		if (newName === '' || locationNames.includes(newName)) {
-			isSaveDisabled = true;
+			$isSaveDisabled = true;
 		} else {
-			isSaveDisabled = false;
+			$isSaveDisabled = false;
 		}
 	}
 </script>
 
 {#if !$showAddLocation}
-	<button on:click={onAddLocation}> + Add location</button>
+	<button class="btn variant-filled-primary"
+	on:click={onAddLocation}> + Add location</button>
 {:else}
 	<div>
 		<div class="input">
@@ -67,6 +72,3 @@
 	</div>
 {/if}
 
-<button disabled={isSaveDisabled} class="btn variant-filled-primary" on:click={saveLocationChanges}
-	>Save Changes disabled</button
->

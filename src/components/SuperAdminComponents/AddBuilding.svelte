@@ -5,7 +5,7 @@
     import { locationid } from "$lib/locationStore";
     import { showAddLocation } from "$lib/locationStore";
 	import Login from "$components/Login.svelte";
-	import { saveChangesClickable } from "$lib/saveChangesStore";
+	import { isSaveDisabled } from "$lib/saveChangesStore";
     import { addBuilding } from '$lib/mutations/buildings';
     import BuildingInput from "./BuildingInput.svelte";
 
@@ -32,7 +32,6 @@
         console.log(newBuildingNames)
         newBuildingNames.push({id: newId, value: ''})
         newBuildingNames = newBuildingNames
-        //newBuildingNames = [...newBuildingNames, {id: newId, value: ''}];
     }
 
     function updateNewNames(id: number, newValue: string) {
@@ -42,10 +41,10 @@
     }
 
     function handleNameInput() {
-		if (newName === '' || newName in buildingNames) {
-			saveChangesClickable.set(false);
-		} else {
-			saveChangesClickable.set(true);
+		if (newName === '' || buildingNames.includes(newName)) {
+			$isSaveDisabled = true;
+		}else {
+			$isSaveDisabled = false;
 		}
 	}
 
@@ -53,11 +52,11 @@
         let newNameTaken: boolean = false;
         if (value) {
             for (const name of newBuildingNames) {
-                if (name in buildingNames) {
+                if (buildingNames.includes(name)) {
                     newNameTaken = true;
                 }
             }
-            if ("" in newBuildingNames) {
+            if (newBuildingNames.includes("")) {
                 alert("Missing building name");
             } else if (newNameTaken) {
                 alert("Duplicate building name");
@@ -73,7 +72,8 @@
 
 <div>
     {#if $showAddLocation}
-        <button on:click={handleAddBuilding}>Add Building</button>
+        <button class="btn variant-filled-primary"
+         on:click={handleAddBuilding}>Add Building</button>
 
         {#if showAddBuilding}
             {#each newBuildingNames as { id, value }}
