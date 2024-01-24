@@ -1,29 +1,20 @@
 <script lang="ts">
-	import { addLocation } from '$lib/mutations/locationMutations';
 	import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
-	import { locationid } from '$lib/locationStore';
 	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, saveChangesClicked } from '$lib/saveChangesStore';
-
-	let newName: string = '';
-	let locationNames: string[] = [];
+	import { isSaveDisabled, newLocationName, locationNames } from '$lib/superAdminStore';
 
 	onMount(() => {
 		getLocationsFunction();
 		showAddLocation.set(false);
 	});
 
-	$: if ($saveChangesClicked) {
-		saveLocationChanges();
-	}
-
 	async function getLocationsFunction() {
 		await getLocations.fetch().then(() => {
 			let locations = $getLocations.data?.getAllLocations;
 
 			for (let i = 0; i < locations?.length; i++) {
-				locationNames.push(locations?.at(i)?.locationname.toLowerCase() ?? '');
+				$locationNames.push(locations?.at(i)?.locationname.toLowerCase() ?? '');
 			}
 		});
 	}
@@ -32,22 +23,9 @@
 		showAddLocation.set(true);
 	}
 
-	async function saveLocationChanges() {
-		if (!newName) {
-			alert('You have to enter a name before saving the location!');
-		} else if (locationNames.includes(newName.toLowerCase())) {
-			alert('A location with this name already exists. Please enter a different name!');
-		} else {
-			const result = await addLocation.mutate({
-				name: newName
-			});
-			$locationid = result.data?.addLocation?.pk_locationid ?? '';
-			$isSaveDisabled = true;
-		}
-	}
 
 	function handleNameInput() {
-		if (newName === '' || locationNames.includes(newName)) {
+		if ($newLocationName === '' || $locationNames.includes($newLocationName)) {
 			$isSaveDisabled = true;
 		} else {
 			$isSaveDisabled = false;
@@ -55,6 +33,7 @@
 	}
 </script>
 
+<h1>Location</h1>
 {#if !$showAddLocation}
 	<button class="btn variant-filled-primary"
 	on:click={onAddLocation}> + Add location</button>
@@ -64,10 +43,10 @@
 			<input
 				type="text"
 				placeholder="Enter a name"
-				bind:value={newName}
+				bind:value={$newLocationName}
 				on:input={handleNameInput}
 			/>
-			{newName}
+			{$newLocationName}
 		</div>
 	</div>
 {/if}

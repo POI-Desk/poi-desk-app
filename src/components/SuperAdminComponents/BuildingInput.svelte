@@ -1,9 +1,9 @@
 <!-- InputField.svelte -->
 <script lang="ts">
-    export let id: number;
-    export let value: string;
-    export let onInput: (id: number, value: string) => void;
+    export let id: Number;
+    export let name: string;
+    export let onInput: (id: number, name: string) => void;
   </script>
   
-  <input bind:value={value} on:input={() => onInput(id, value)} />
+  <input bind:value={name} on:input={() => onInput(id, name)} />
   

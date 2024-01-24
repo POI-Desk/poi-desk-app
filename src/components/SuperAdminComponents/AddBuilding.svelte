@@ -1,92 +1,60 @@
 <script lang="ts">
-    //import { addBuilding } from "$lib/mutations/buildings";
-    import { getBuildings } from "$lib/queries/buildingQueries";
-	import { onMount } from "svelte";
-    import { locationid } from "$lib/locationStore";
-    import { showAddLocation } from "$lib/locationStore";
-	import Login from "$components/Login.svelte";
-	import { isSaveDisabled } from "$lib/saveChangesStore";
-    import { addBuilding } from '$lib/mutations/buildings';
-    import BuildingInput from "./BuildingInput.svelte";
+	//import { addBuilding } from "$lib/mutations/buildings";
+	import { getBuildings } from '$lib/queries/buildingQueries';
+	import { onMount } from 'svelte';
+	import { locationid } from '$lib/locationStore';
+	import { showAddLocation } from '$lib/locationStore';
+	import { isSaveDisabled, newBuildingNames } from '$lib/superAdminStore';
+	import BuildingInput from './BuildingInput.svelte';
 
-    $: locid = $locationid;
+	$: locid = $locationid;
 
-    let buildingNames: String[] = [];
-    let showAddBuilding: boolean = false;
-    let newName: String = "";
-    let newBuildings: String[] = [];
-    let newBuildingNames: String[] = [];
-    let inputFields: { id: number; value: string }[] = [];
+	let buildingNames: String[] = [];
+	let showAddBuilding: boolean = false;
+	let newName: String = '';
+	let newBuildings: [{id: number, name: string}] = [];
+    $newBuildingNames = []
 
-    onMount(async () => {
-        await getBuildings.fetch({ variables: { locationid: locid } });
-        let buildings = $getBuildings.data?.getBuildingsInLocation;
-        for (let building in buildings) {
-            buildingNames.push(building.buildingname);
-        }
-    })
-
-    function handleAddBuilding() {
-        showAddBuilding = true;
-        const newId: number = inputFields.length;
-        console.log(newBuildingNames)
-        newBuildingNames.push({id: newId, value: ''})
-        newBuildingNames = newBuildingNames
-    }
-
-    function updateNewNames(id: number, newValue: string) {
-        inputFields = inputFields.map((field) =>
-            field.id === id ? { ...field, value: newValue } : field
-        );
-    }
-
-    function handleNameInput() {
-		if (newName === '' || buildingNames.includes(newName)) {
-			$isSaveDisabled = true;
-		}else {
-			$isSaveDisabled = false;
+	onMount(async () => {
+		await getBuildings.fetch({ variables: { locationid: locid } });
+		let buildings = $getBuildings.data?.getBuildingsInLocation;
+		for (let building in buildings) {
+			buildingNames.push(building.buildingname);
 		}
+	});
+
+
+	function handleAddBuilding() {
+		showAddBuilding = true;
+		const newId: number = newBuildings.length;
+		newBuildings.push({ id: newId, name: '' });
+		newBuildings = newBuildings;
 	}
 
-    function handleSaveChanges(value: boolean) {
-        let newNameTaken: boolean = false;
-        if (value) {
-            for (const name of newBuildingNames) {
-                if (buildingNames.includes(name)) {
-                    newNameTaken = true;
-                }
-            }
-            if (newBuildingNames.includes("")) {
-                alert("Missing building name");
-            } else if (newNameTaken) {
-                alert("Duplicate building name");
-            // } else {
-            //     try {
-                    
-            //     }
-            }
-        }
-    }
+	function updateNewNames(id: number, newName: string) {
+		newBuildings = newBuildings.map((field) =>
+			field.id === id ? { ...field, name: newName } : field
+		);
+        $newBuildingNames = newBuildings.map((building) => 
+            building.name
+        ) 
+	}
 
+	
 </script>
 
 <div>
-    {#if $showAddLocation}
-        <button class="btn variant-filled-primary"
-         on:click={handleAddBuilding}>Add Building</button>
+	{#if $showAddLocation}
+        <h1>Buildings</h1>
+		{#if showAddBuilding}
+			{#each newBuildings as { id, name }}
+				<div class="input">
+					<BuildingInput {id} {name} onInput={(newId, newName) => updateNewNames(newId, newName)} />
+					{newName}
+				</div>
+			{/each}
+		{/if}
 
-        {#if showAddBuilding}
-            {#each newBuildingNames as { id, value }}
-                <div class="input">
-                    <BuildingInput
-                        id={id}
-                        value={value}
-                        onInput={(newId, newVal) => updateNewNames(newId, newVal)}
-                    />
-                    {newName}
-                </div>
-            {/each}
-        {/if}
-    {/if}
-
+		<button class="btn variant-filled-primary" on:click={handleAddBuilding}>Add Building</button>
+	{/if}
 </div>
