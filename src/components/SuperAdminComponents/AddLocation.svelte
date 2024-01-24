@@ -3,23 +3,15 @@
 	import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
 	import { locationid } from '$lib/locationStore';
-	import { saveChangesClickable, saveChangesClicked } from '$lib/saveChangesStore';
 	import { showAddLocation } from '$lib/locationStore';
-	import { Key } from 'lucide-svelte';
-
 
 	let newName: string = '';
 	let locationNames: string[] = [];
+	let isSaveDisabled = true;
 
 	onMount(() => {
 		getLocationsFunction();
 		showAddLocation.set(false);
-		
-
-		const unsubscribe = saveChangesClicked.subscribe((value) => {
-			handleSaveChanges(value);
-		});
-		return unsubscribe;
 	});
 
 	async function getLocationsFunction() {
@@ -27,47 +19,34 @@
 			let locations = $getLocations.data?.getAllLocations;
 
 			for (let i = 0; i < locations?.length; i++) {
-				locationNames.push(locations?.at(i)?.locationname.toLowerCase ?? '');
+				locationNames.push(locations?.at(i)?.locationname.toLowerCase() ?? '');
 			}
 		});
-	}
-
-	function handleSaveChanges(value: boolean) {
-		if (value) {
-			saveLocationChanges();
-		}
-		saveChangesClicked.set(false);
 	}
 
 	function onAddLocation() {
 		showAddLocation.set(true);
 	}
 
-	function saveLocationChanges() {
-
+	async function saveLocationChanges() {
 		if (!newName) {
 			alert('You have to enter a name before saving the location!');
 		} else if (locationNames.includes(newName.toLowerCase())) {
 			alert('A location with this name already exists. Please enter a different name!');
 		} else {
-			try {
-				const result = addLocation.mutate({
-					name: newName
-				});
-				locationid.set(result.data?.addLocation?.pk_locationid ?? '');
-				saveChangesClickable.set(false);
-				saveChangesClicked.set(true);
-			} catch (error) {
-				console.error('Error:', error);
-			}
+			const result = await addLocation.mutate({
+				name: newName
+			});
+			$locationid = result.data?.addLocation?.pk_locationid ?? '';
+			isSaveDisabled = true;
 		}
 	}
 
 	function handleNameInput() {
-		if (newName === '' || newName in locationNames) {
-			saveChangesClickable.set(false);
+		if (newName === '' || locationNames.includes(newName)) {
+			isSaveDisabled = true;
 		} else {
-			saveChangesClickable.set(true);
+			isSaveDisabled = false;
 		}
 	}
 </script>
@@ -87,3 +66,7 @@
 		</div>
 	</div>
 {/if}
+
+<button disabled={isSaveDisabled} class="btn variant-filled-primary" on:click={saveLocationChanges}
+	>Save Changes disabled</button
+>

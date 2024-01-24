@@ -7,7 +7,7 @@
 	import Login from "$components/Login.svelte";
 	import { saveChangesClickable } from "$lib/saveChangesStore";
     import { addBuilding } from '$lib/mutations/buildings';
-    import { BuildingInput } from './BuildingInput.svelte'
+    import BuildingInput from "./BuildingInput.svelte";
 
     $: locid = $locationid;
 
@@ -29,7 +29,10 @@
     function handleAddBuilding() {
         showAddBuilding = true;
         const newId: number = inputFields.length;
-        newBuildingNames = [...newBuildingNames, {id: newId, value: ''}];
+        console.log(newBuildingNames)
+        newBuildingNames.push({id: newId, value: ''})
+        newBuildingNames = newBuildingNames
+        //newBuildingNames = [...newBuildingNames, {id: newId, value: ''}];
     }
 
     function updateNewNames(id: number, newValue: string) {
@@ -49,7 +52,7 @@
     function handleSaveChanges(value: boolean) {
         let newNameTaken: boolean = false;
         if (value) {
-            for (const name of buildingNames) {
+            for (const name of newBuildingNames) {
                 if (name in buildingNames) {
                     newNameTaken = true;
                 }
@@ -73,7 +76,7 @@
         <button on:click={handleAddBuilding}>Add Building</button>
 
         {#if showAddBuilding}
-            {#each newBuildingNames as { id, value } (id)}
+            {#each newBuildingNames as { id, value }}
                 <div class="input">
                     <BuildingInput
                         id={id}
