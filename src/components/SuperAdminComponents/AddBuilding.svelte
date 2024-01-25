@@ -9,11 +9,15 @@
 
 	$: locid = $locationid;
 
+	$: {
+		$newBuildingNames = newBuildings.map((building) => building.name);
+	}
+
 	let buildingNames: String[] = [];
 	let showAddBuilding: boolean = false;
 	let newName: String = '';
-	let newBuildings: [{id: number, name: string}] = [];
-    $newBuildingNames = []
+	let newBuildings: [{ id: number; name: string }] = [];
+	$newBuildingNames = [];
 
 	onMount(async () => {
 		await getBuildings.fetch({ variables: { locationid: locid } });
@@ -22,7 +26,6 @@
 			buildingNames.push(building.buildingname);
 		}
 	});
-
 
 	function handleAddBuilding() {
 		showAddBuilding = true;
@@ -35,22 +38,29 @@
 		newBuildings = newBuildings.map((field) =>
 			field.id === id ? { ...field, name: newName } : field
 		);
-        $newBuildingNames = newBuildings.map((building) => 
-            building.name
-        ) 
 	}
 
-	
+	function removeBuildingInput(id: number, name: string) {
+		//const index = newBuildings.indexOf({ id, name });
+		const index = newBuildings.findIndex((b) => b.id === id)
+		console.log(id + " " + name);
+		
+		console.log(index);
+		
+		newBuildings.splice(index, 1);
+		newBuildings = newBuildings;
+	}
 </script>
 
 <div>
 	{#if $showAddLocation}
-        <h1>Buildings</h1>
+		<h1>Buildings</h1>
 		{#if showAddBuilding}
 			{#each newBuildings as { id, name }}
 				<div class="input">
 					<BuildingInput {id} {name} onInput={(newId, newName) => updateNewNames(newId, newName)} />
-					{newName}
+					<button on:click={() => removeBuildingInput(id, name)}>x</button>
+					{id + "" + name}
 				</div>
 			{/each}
 		{/if}
