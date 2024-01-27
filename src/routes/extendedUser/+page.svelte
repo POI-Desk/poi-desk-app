@@ -13,10 +13,12 @@
 
   $isExtended = true;
 
+
+
   // --- test data
   // todo change
   $selectedUsers = [{
-    pk_userid: "c31ff41b-9f3b-4c47-8ce2-8deaab290ae3",
+    pk_userid: "fef81e89-fda4-4136-befd-797bb64f3ffb",
     username: "Alina",
     location: {
       pk_locationid: "",
@@ -24,7 +26,7 @@
     },
     userInfo: ""
   }, {
-    pk_userid: "c7294b3a-d2a5-4f96-a187-aba2d1e7e66d",
+    pk_userid: "2fdcb187-60f7-4dda-82ab-b7bb2c23820a",
     username: "Markus",
     location: {
       pk_locationid: "",
@@ -32,7 +34,7 @@
     },
     userInfo: ""
   }, {
-    pk_userid: "c4ceb1ed-8fdb-4035-ab0d-5d38c2009d73",
+    pk_userid: "37f60f13-f4b5-4518-b9aa-4d5a8a0a3434",
     username: "Jupp",
     location: {
       pk_locationid: "",
