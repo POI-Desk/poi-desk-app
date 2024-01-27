@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AddBuilding from "$components/SuperAdminComponents/AddBuilding.svelte";
 	import AddLocation from "$components/SuperAdminComponents/AddLocation.svelte";
+	import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
 	import { addBuilding } from '$lib/mutations/buildings';
 	import { addLocation } from '$lib/mutations/locationMutations';
 	import { isSaveDisabled, newBuildingNames, locationNames, newLocationName } from "$lib/superAdminStore"
@@ -51,4 +52,4 @@
 	>Save Changes disabled</button
 >
 
-<!-- <LocationList /> -->
+<LocationList />

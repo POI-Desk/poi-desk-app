@@ -8,3 +8,12 @@ export const addLocation = graphql(`
 		}
 	}
 `);
+
+export const deleteLocation = graphql(`
+	mutation deleteLocation($id: ID!) {
+		deleteLocation(id: $id) {
+			pk_locationid,
+			locationname
+		}
+	}
+`)
