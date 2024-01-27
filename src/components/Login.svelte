@@ -26,7 +26,7 @@
 			const result = await createOrLoginAsUser.mutate({
 				username: username
 		});
-		$user = {...result.data?.createOrLoginAsUser!, userInfo: '' };
+		$user = {...result.data?.createOrLoginAsUser! };
 		path = $user.location == null ? '/location' : '/';
 		goto(path);
 		} catch (error) {

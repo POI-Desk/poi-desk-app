@@ -16,7 +16,7 @@ export const afternoonSelected = writable<boolean>(false);
 export const currentBooking = writable<any>({
 });
 
-export const userBookings = writable<any[]>([]);
+export const userBookings = writable<any>();
 
 export const selectedDesk = writable<any>();
 
@@ -25,7 +25,7 @@ export const _getBookingsByUseridVariables = () => {
 };
 
 export const getBookings = graphql(`
-	query getBookingsByUserid($userid: ID!) @load {
+	query getBookingsByUserid($userid: ID!) {
 		getBookingsByUserid(userid: $userid) {
 			isafternoon
 			ismorning

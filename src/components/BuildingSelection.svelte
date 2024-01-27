@@ -21,7 +21,6 @@
 	}
 
 	$: if (locationid) selectFirstBuilding();
-
 	$: {
 		if ($buildingid) {
 			getFloors.fetch({ variables: { buildingid: $buildingid } });

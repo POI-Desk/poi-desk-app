@@ -14,3 +14,20 @@ export const getBookingsByDate = graphql(`
 		}
 	}
 `);
+
+export const getBookingsByDateBetween = graphql(`
+	query GetBookingsByDateBetween($startDate: String!, $endDate: String!) {
+		getBookingsByDateBetween(startDate: $startDate, endDate: $endDate) {
+			pk_bookingid
+			bookingnumber
+			isafternoon
+			ismorning
+			date
+			desk {
+				pk_deskid
+				desknum
+			}
+		}
+	}
+`);
+

@@ -13,3 +13,11 @@ export const bookDesk = graphql(`
 		}
 	}
 `);
+
+export const editBooking = graphql(`
+	mutation EditBooking($bookingInput:EditBookingInput!) {
+		editBooking(bookingInput: $bookingInput) {
+			bookingnumber
+		}
+	}
+`);
