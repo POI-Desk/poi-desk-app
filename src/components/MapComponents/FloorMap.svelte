@@ -131,10 +131,15 @@
 		for (const [key, value] of Object.entries(doorObjects)) {
 			value.$destroy();
 		}
+		for (const [key, value] of Object.entries(labelObjects)) {
+			value.$destroy();
+		}
+
 		deskObjects = {};
 		roomObjects = {};
 		wallObjects = {};
 		doorObjects = {};
+		labelObjects = {};
 	};
 
 	const drawMap = () => {
@@ -240,6 +245,7 @@
 			});
 			labelObjects[label.pk_labelId] = labelSvg;
 		});
+
 		recenterMap();
 	};
 </script>
