@@ -25,9 +25,9 @@
 		Moon
 	} from 'lucide-svelte';
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-	import type { Booking } from "$lib/types/bookingTypes";
-	import { user } from "$lib/userStore";
-	import { CachePolicy, graphql } from "$houdini";
+	import type { Booking } from '$lib/types/bookingTypes';
+	import { user } from '$lib/userStore';
+	import { CachePolicy, graphql } from '$houdini';
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -65,20 +65,15 @@
 		placement: 'bottom',
 		closeQuery: '.fortniteDates'
 	};
-	const deleteBooking = async (id: string) => {
-		$userBookings = $userBookings.filter(
-			(booking: { pk_bookingid: string }) => booking.pk_bookingid != id
-		);
-		await delBooking.mutate({ id });
 
 	const getBookingsByNumContains = graphql(`
-        query GetBookingsByBookingnumberContains($string: String!) @load {
-            getBookingsByBookingnumberContains(string: $string) {
-                pk_bookingid
-                bookingnumber
-           }
-        }
-    `);
+		query GetBookingsByBookingnumberContains($string: String!) @load {
+			getBookingsByBookingnumberContains(string: $string) {
+				pk_bookingid
+				bookingnumber
+			}
+		}
+	`);
 
 	export const _GetBookingsByBookingnumberContainsVariables = () => {
 		return {};
@@ -89,10 +84,10 @@
 	const deleteBooking = async (booking: Booking) => {
 		const id = booking.pk_bookingid;
 
-		if (booking.bookingnumber.includes("EXTID")) {
-			const extId = booking.bookingnumber.split("EXTID")[1];
+		if (booking.bookingnumber.includes('EXTID')) {
+			const extId = booking.bookingnumber.split('EXTID')[1];
 
-			if (extId.split("+")[1] !== $user.pk_userid) modalStore.close();
+			if (extId.split('+')[1] !== $user.pk_userid) modalStore.close();
 
 			await getBookingsByNumContains.fetch({ variables: { string: extId } });
 			for (const b of extendedBookings ?? []) {
