@@ -5,9 +5,10 @@
 	import '../app.css';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import BottomNav from '$components/BottomNav.svelte';
-	import { AppShell, Modal } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal, Toast } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
+	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -16,6 +17,10 @@
 	const modalComponentRegistry: Record<string, ModalComponent> = {
 		modalBooking: {
 			ref: ModalBooking,
+			slot: '<p>skeleton</p>'
+		},
+		modalExtendedBooking: {
+			ref: ModalExtendedBooking,
 			slot: '<p>skeleton</p>'
 		},
 		modalDefaultLocation: {
@@ -30,9 +35,10 @@
 </script>
 
 <Modal components={modalComponentRegistry} />
+<Toast zIndex="z-[1000]"/>
 <AppShell>
 	<slot />
 	<svelte:fragment slot="footer">
-		<!-- <BottomNav /> -->
+<!--		 <BottomNav />-->
 	</svelte:fragment>
 </AppShell>

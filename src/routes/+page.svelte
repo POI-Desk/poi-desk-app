@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
+	import { isExtended } from "$lib/stores/extendedUserStore";
 
 	onMount(() => {
 		if (!$user.pk_userid) {
@@ -32,6 +33,7 @@
 	// 		visible = false;
 	// 	}, 5000);
 	// }
+	$isExtended = false; // TODO idk if this is a good idea.. but it works
 </script>
 
 <!--{#if visible}-->
@@ -46,10 +48,13 @@
 	<div class="absolute m-3">
 		<a class="btn variant-filled-primary" href="./login">Login</a>
 		<a class="btn variant-filled-primary" href="./location">Location</a>
+		<a class="btn variant-filled-primary" href="./bookings">Bookings</a>
 		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
 		<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
+		<a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
 		<DateSelection />
 	</div>
+
 	<FloorSelection />
 
 	<BuildingSelection />

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import {graphql} from '$houdini';
+	import { selectedDesks } from "$lib/stores/extendedUserStore";
+	import { dateValue, maxBookingValue, today } from "$lib/dateStore";
 	import { getBookingsByDate } from '$lib/queries/booking';
-	import {dateValue, maxBookingValue, today} from "$lib/dateStore";
 	import { floorid } from '$lib/floorStore';
 
 	$dateValue = new Date().toISOString().split('T')[0];
@@ -17,6 +17,7 @@
 	$dateValue = new Date().toISOString().split('T')[0];
 
 	const getBookings = () => {
+		$selectedDesks = [];
 		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
 	};
 
