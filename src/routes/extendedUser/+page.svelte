@@ -1,6 +1,5 @@
 <script lang="ts">
   import SearchBar from "$components/SearchBar.svelte";
-  import { user } from "$lib/userStore";
   import DateSelection from "$components/DateSelection.svelte";
   import BuildingSelection from "$components/BuildingSelection.svelte";
   import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
@@ -10,9 +9,10 @@
   import { interval } from "$lib/bookingStore";
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
   import { dateValue } from "$lib/dateStore";
+  import { fade } from "svelte/transition";
+
 
   $isExtended = true;
-
 
 
   // --- test data
@@ -54,44 +54,52 @@
     }
   };
 </script>
+<div class="overflow-hidden h-screen">
 
-<div class="m-3">
+  <div class="m-3">
+    <FloorMap />
 
-  <h1>Extended User</h1>
+    <div class="absolute m-3">
+      <a class="btn variant-filled-primary" href="/">Back</a>
+      <a class="btn variant-filled-primary" href="/login">Login</a>
+      <a class="btn variant-filled-primary" href="/location">Location</a>
+      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
+      <SearchBar />
 
-  <a class="btn variant-filled-primary" href="/">Back</a>
-  <a class="btn variant-filled-primary" href="/login">Login</a>
+      <div class="flex justify-center">
+        <DateSelection />
+      </div>
+      <div class="flex justify-center">
+        <IntervalSelection />
+      </div>
 
-  <!--Debugging-->
-  <!-- <p>{$user.pk_userid ?? 'no id'}</p> -->
-  <p>You are logged in as {$user.username ?? 'no username'}</p>
-  <p>Your location is {$user.location?.locationname ?? 'no location'}</p>
-  <!-- <p>{$user.location?.pk_locationid ?? 'no location'}</p> -->
-  <!---->
-  <SearchBar />
+    </div>
 
-  <DateSelection />
+    <FloorSelection />
 
-  <IntervalSelection />
+    <BuildingSelection />
 
-  <FloorSelection />
-
-  <FloorMap />
-  <!--    <EBDeskSelection/>-->
-
-  <BuildingSelection />
-
-  <div
-    class="absolute h-11 bottom-24 left-1/2 z-[100] -translate-x-1/2"
-  >
-    <button on:click={() => {
+    <div class="absolute bottom-24 left-1/2 z-[100] -translate-x-1/2">
+      <div class="in:fade flex justify-center">
+        {#if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon))}
+          <button in:fade on:click={() => {
                 if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon)) {
                     modalStore.trigger(modal);
                 }
             }}
-            class="btn variant-filled-primary"
-            disabled="{$selectedDesks.length !== $selectedUsers.length || !($interval.morning || $interval.afternoon)}"
-    >Book
-    </button>
+                  class="btn pl-7 pr-7 variant-filled-primary"
+                  disabled="{$selectedDesks.length !== $selectedUsers.length || !($interval.morning || $interval.afternoon)}"
+          >Book
+          </button>
+        {:else}
+          <div in:fade class="p-2 pl-3 pr-3 rounded-full variant-filled-secondary">{$selectedDesks.length}
+            /{$selectedUsers.length}
+            Selected
+          </div>
+        {/if}
+      </div>
+    </div>
+
   </div>
 </div>
+

@@ -38,6 +38,6 @@
 <AppShell>
 	<slot />
 	<svelte:fragment slot="footer">
-		<!-- <BottomNav /> -->
+<!--		 <BottomNav />-->
 	</svelte:fragment>
 </AppShell>
