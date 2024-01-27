@@ -15,11 +15,14 @@
 
 	let visibility = 'hidden';
 	$dateValue = new Date().toISOString().split('T')[0];
+	console.log($dateValue);
 
 	const getBookings = () => {
 		$selectedDesks = [];
 		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
 	};
+
+	
 
 </script>
 

@@ -5,6 +5,10 @@
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { floorid } from '$lib/floorStore';
 	import { buildingid } from '$lib/buildingStore';
+	import { getAllLocations } from '$lib/queries/floorQueries';
+
+
+	$: getAllLocations.fetch();
 
 	const modalStore = getModalStore();
 
@@ -15,7 +19,7 @@
 	};
 
 	export let data: PageData;
-	$: ({ getAllLocations } = data);
+	//$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
 </script>
 

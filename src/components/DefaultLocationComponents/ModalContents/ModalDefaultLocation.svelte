@@ -1,18 +1,13 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { defaultLocation } from '$lib/mutations/location'
 	//export let parent: any;
 
 	$: currentUser = $user;
 	const modalStore = getModalStore();
 
-	const defaultLocation = graphql(`
-		mutation DefaultLocation($uid: ID!, $lid: ID!) {
-			setdefaultLocation(userid: $uid, locationid: $lid)
-		}
-	`);
+
 
 	async function setAsDefault() {
 		await defaultLocation.mutate({

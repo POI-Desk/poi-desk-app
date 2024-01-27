@@ -2,6 +2,7 @@
 	import ModalDefaultLocation from '../components/DefaultLocationComponents/ModalContents/ModalDefaultLocation.svelte';
 	import ModalBooking from '$components/SetBookingComponents/ModalContents/ModalBooking.svelte';
 	import ModalEditBooking from '$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte';
+	import ModalChangeDefaultLocation from '$components/UserPageComponents/ModalChangeDefaultLocation.svelte';
 	import '../app.css';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import BottomNav from '$components/BottomNav.svelte';
@@ -31,11 +32,21 @@
 			ref: ModalEditBooking,
 			slot: '<p>skeleton</p>'
 		},
+		modalChangeDefaultLocation: {
+			ref: ModalChangeDefaultLocation,
+			slot: '<p>skeleton</p>'
+		}
+		/*
+    modalEditMapObject: {
+      ref: ModalEditMapObject,
+      slot: '<p>skeleton</p>'
+    }
+		*/
 	};
 </script>
 
-<Modal components={modalComponentRegistry} />
-<Toast zIndex="z-[1000]"/>
+<Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />
+<Toast 	zIndex="z-[1000]"/> 
 <AppShell>
 	<slot />
 	<svelte:fragment slot="footer">

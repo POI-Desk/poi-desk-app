@@ -51,6 +51,8 @@
 		<a class="btn variant-filled-primary" href="./bookings">Bookings</a>
 		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
 		<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
+		<a class="btn variant-filled-primary" href="./bookings">Bookings</a>
+		<a class="btn variant-filled-primary" href="./user">User-Page</a>
 		<a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
 		<DateSelection />
 	</div>
