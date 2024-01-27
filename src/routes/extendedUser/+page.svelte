@@ -10,39 +10,42 @@
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
   import { dateValue } from "$lib/dateStore";
   import { fade } from "svelte/transition";
+  import ExtendedUserSelection from "$components/ExtendedBookingComponents/ExtendedUserSelection.svelte";
 
 
   $isExtended = true;
 
+  $selectedUsers = []
 
-  // --- test data
-  // todo change
-  $selectedUsers = [{
-    pk_userid: "fef81e89-fda4-4136-befd-797bb64f3ffb",
-    username: "Alina",
-    location: {
-      pk_locationid: "",
-      locationname: ""
-    },
-    userInfo: ""
-  }, {
-    pk_userid: "2fdcb187-60f7-4dda-82ab-b7bb2c23820a",
-    username: "Markus",
-    location: {
-      pk_locationid: "",
-      locationname: ""
-    },
-    userInfo: ""
-  }, {
-    pk_userid: "37f60f13-f4b5-4518-b9aa-4d5a8a0a3434",
-    username: "Jupp",
-    location: {
-      pk_locationid: "",
-      locationname: ""
-    },
-    userInfo: ""
-  }];
-  // -----
+  //
+  // // --- test data
+  // // todo change
+  // $selectedUsers = [{
+  //   pk_userid: "fef81e89-fda4-4136-befd-797bb64f3ffb",
+  //   username: "Alina",
+  //   location: {
+  //     pk_locationid: "",
+  //     locationname: ""
+  //   },
+  //   userInfo: ""
+  // }, {
+  //   pk_userid: "2fdcb187-60f7-4dda-82ab-b7bb2c23820a",
+  //   username: "Markus",
+  //   location: {
+  //     pk_locationid: "",
+  //     locationname: ""
+  //   },
+  //   userInfo: ""
+  // }, {
+  //   pk_userid: "37f60f13-f4b5-4518-b9aa-4d5a8a0a3434",
+  //   username: "Jupp",
+  //   location: {
+  //     pk_locationid: "",
+  //     locationname: ""
+  //   },
+  //   userInfo: ""
+  // }];
+  // // -----
 
   const modalStore = getModalStore();
 
@@ -54,7 +57,11 @@
     }
   };
 </script>
-<div class="overflow-hidden h-screen">
+
+{#if ($selectedUsers.length === 0)}
+  <ExtendedUserSelection />
+{:else }
+  <div class="overflow-hidden h-screen">
     <FloorMap />
 
     <div class="absolute p-8" style="width: 100%">
@@ -86,12 +93,11 @@
           >Book
           </button>
         {:else}
-          <div in:fade class="p-1 pl-3 pr-3 rounded-full variant-filled-secondary">{$selectedDesks.length}
-            /{$selectedUsers.length}
-            Selected
+          <div in:fade class="p-1 pl-3 pr-3 rounded-full variant-filled-secondary"
+          >{$selectedDesks.length}/{$selectedUsers.length} Selected
           </div>
         {/if}
       </div>
     </div>
-</div>
-
+  </div>
+{/if}
