@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentBooking, displayedTime, userBookings } from '$lib/bookingStore';
+	import { currentBooking, displayedTime, getBookings, userBookings } from '$lib/bookingStore';
 	import { delBooking, editBooking } from '$lib/mutations/booking';
 	import { getBookingsByDateBetween } from '$lib/queries/booking';
 	import {
