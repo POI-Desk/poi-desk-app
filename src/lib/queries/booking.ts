@@ -1,8 +1,8 @@
 import { graphql } from '$houdini';
 
 export const getBookingsByDate = graphql(`
-	query GetBookingsByDate($date: String!) {
-		getBookingsByDate(date: $date) {
+	query GetBookingsByDateOnFloor($date: String!, $floorId: ID!) {
+		getBookingsByDateOnFloor(date: $date, floorId: $floorId) {
 			pk_bookingid
 			bookingnumber
 			isafternoon

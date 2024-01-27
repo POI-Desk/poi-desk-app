@@ -1,11 +1,10 @@
-/*
 export type Booking = {
-	booking_id: string;
-	table_id: string;
+	pk_bookingid: string;
+	deskid: string;
 	date: string;
 	interval: Interval;
+	bookingnumber: string;
 };
-*/
 
 export type Interval = {
 	morning: boolean;

@@ -25,6 +25,9 @@
 		Moon
 	} from 'lucide-svelte';
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import type { Booking } from "$lib/types/bookingTypes";
+	import { user } from "$lib/userStore";
+	import { CachePolicy, graphql } from "$houdini";
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -67,6 +70,40 @@
 			(booking: { pk_bookingid: string }) => booking.pk_bookingid != id
 		);
 		await delBooking.mutate({ id });
+
+	const getBookingsByNumContains = graphql(`
+        query GetBookingsByBookingnumberContains($string: String!) @load {
+            getBookingsByBookingnumberContains(string: $string) {
+                pk_bookingid
+                bookingnumber
+           }
+        }
+    `);
+
+	export const _GetBookingsByBookingnumberContainsVariables = () => {
+		return {};
+	};
+
+	$: extendedBookings = $getBookingsByNumContains.data?.getBookingsByBookingnumberContains;
+
+	const deleteBooking = async (booking: Booking) => {
+		const id = booking.pk_bookingid;
+
+		if (booking.bookingnumber.includes("EXTID")) {
+			const extId = booking.bookingnumber.split("EXTID")[1];
+
+			if (extId.split("+")[1] !== $user.pk_userid) modalStore.close();
+
+			await getBookingsByNumContains.fetch({ variables: { string: extId } });
+			for (const b of extendedBookings ?? []) {
+				await delBooking.mutate({ id: b.pk_bookingid });
+			}
+		} else {
+			await delBooking.mutate({ id });
+		}
+
+		await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
+
 		modalStore.close();
 	};
 
@@ -213,7 +250,7 @@
 				<div class="flex gap-5">
 					<button
 						on:click={async () => {
-							await deleteBooking($currentBooking.pk_bookingid);
+							await deleteBooking($currentBooking);
 						}}
 						class="btn bg-green-400 rounded-full"
 					>
