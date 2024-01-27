@@ -7,3 +7,5 @@ export const newBuildingNames = writable([""]);
 
 export const locationNames = writable([""]);
 export const newLocationName = writable("");
+
+export const refreshLocations = writable(true);

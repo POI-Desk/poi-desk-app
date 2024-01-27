@@ -4,7 +4,7 @@
 	import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
 	import { addBuilding } from '$lib/mutations/buildings';
 	import { addLocation } from '$lib/mutations/locationMutations';
-	import { isSaveDisabled, newBuildingNames, locationNames, newLocationName } from "$lib/superAdminStore"
+	import { isSaveDisabled, newBuildingNames, locationNames, newLocationName, refreshLocations } from "$lib/superAdminStore"
 
 
 	async function saveLocationChanges() {
@@ -20,6 +20,7 @@
 			});
 			saveBuildingChanges(result.data?.addLocation?.pk_locationid ?? '');
 			$isSaveDisabled = true;
+			$refreshLocations = !$refreshLocations;
 		}
 	}
 
@@ -49,7 +50,7 @@
 <AddBuilding />	
 
 <button disabled={$isSaveDisabled} class="btn variant-filled-primary" on:click={saveLocationChanges}
-	>Save Changes disabled</button
+	>Save Changes</button
 >
 
 <LocationList />

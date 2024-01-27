@@ -3,7 +3,8 @@ import { graphql } from '$houdini';
 export const getLocations = graphql(`
 	query getLocations {
 		getAllLocations {
-			locationname
+			locationname,
+			pk_locationid
 			buildings {
 				buildingname
 			}
