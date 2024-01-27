@@ -8,7 +8,13 @@
   import { getDeskById } from "$lib/queries/deskQueries";
   import { getMapByFloor } from "$lib/queries/map";
   import type { MapTransform } from "$lib/types/mapTypes";
-  import { ProgressBar, getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
+  import {
+    ProgressBar,
+    getModalStore,
+    type ModalSettings,
+    getToastStore,
+    type ToastSettings
+  } from "@skeletonlabs/skeleton";
   import type { PanZoom } from "panzoom";
   import panzoom from "panzoom";
   import { onDestroy, onMount } from "svelte";
@@ -37,6 +43,16 @@
     type: "component",
     component: "modalBooking"
   };
+
+  const toastStore = getToastStore();
+
+  const tooManyDesks: ToastSettings = {
+    message: 'Too many desks selected!',
+    timeout: 3000,
+    background: 'variant-filled-error'
+  };
+
+
 
   let deskObjects: { [key: string]: DeskSvg } = {};
   let roomObjects: { [key: string]: RoomSvg } = {};
@@ -167,7 +183,7 @@
             $selectedDesks.splice($selectedDesks.indexOf(desk), 1);
             deskSvg.setSelected(false);
             } else if ($selectedDesks.length >= $selectedUsers.length) {
-              alert("Too Many Desks Selected!");
+              toastStore.trigger(tooManyDesks);
           } else {
             if (($interval.morning && !deskSvg.getBookedMorning())
               || ($interval.afternoon && !deskSvg.getBookedAfternoon())) {

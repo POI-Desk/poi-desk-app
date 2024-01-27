@@ -55,21 +55,15 @@
   };
 </script>
 <div class="overflow-hidden h-screen">
-
-  <div class="m-3">
     <FloorMap />
 
-    <div class="absolute m-3">
-      <a class="btn variant-filled-primary" href="/">Back</a>
-      <a class="btn variant-filled-primary" href="/login">Login</a>
-      <a class="btn variant-filled-primary" href="/location">Location</a>
-      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
+    <div class="absolute p-8" style="width: 100%">
       <SearchBar />
 
-      <div class="flex justify-center">
+      <div class="flex justify-center p-1">
         <DateSelection />
       </div>
-      <div class="flex justify-center">
+      <div class="flex justify-center p-1">
         <IntervalSelection />
       </div>
 
@@ -92,14 +86,12 @@
           >Book
           </button>
         {:else}
-          <div in:fade class="p-2 pl-3 pr-3 rounded-full variant-filled-secondary">{$selectedDesks.length}
+          <div in:fade class="p-1 pl-3 pr-3 rounded-full variant-filled-secondary">{$selectedDesks.length}
             /{$selectedUsers.length}
             Selected
           </div>
         {/if}
       </div>
     </div>
-
-  </div>
 </div>
 
