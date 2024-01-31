@@ -2,9 +2,10 @@
 	//import { addBuilding } from "$lib/mutations/buildings";
 	import { getBuildings } from '$lib/queries/buildingQueries';
 	import { onMount } from 'svelte';
+	import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 	import { locationid } from '$lib/locationStore';
 	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, newBuildingNames } from '$lib/superAdminStore';
+	import { isSaveDisabled, newBuildingNames, editBuildingclicked } from '$lib/superAdminStore';
 	import BuildingInput from './BuildingInput.svelte';
 
 	$: locid = $locationid;
@@ -45,7 +46,6 @@
 		const index = newBuildings.findIndex((b) => b.id === id)
 		console.log(id + " " + name);
 		
-		console.log(index);
 		
 		newBuildings.splice(index, 1);
 		newBuildings = newBuildings;
@@ -61,10 +61,17 @@
 					<BuildingInput {id} {name} onInput={(newId, newName) => updateNewNames(newId, newName)} />
 					<button on:click={() => removeBuildingInput(id, name)}>x</button>
 					{id + "" + name}
+					<button on:click={() => {$editBuildingclicked = true;}}>edit</button>
 				</div>
 			{/each}
+			{#if $editBuildingclicked}
+				<AddFloor />
+			{/if}
 		{/if}
 
-		<button class="btn variant-filled-primary" on:click={handleAddBuilding}>Add Building</button>
+		<div>
+			<button class="btn variant-filled-primary" on:click={handleAddBuilding}>Add Building</button>
+			
+		</div>
 	{/if}
 </div>
