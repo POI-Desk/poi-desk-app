@@ -2,6 +2,7 @@
   import { user } from "$lib/userStore";
   import { getBookings, userBookings } from "$lib/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
+  import { CachePolicy } from "$houdini";
 
 
   $: $userBookings = bookings as any;
@@ -34,11 +35,11 @@
 
 </script>
 
-<div class="flex flex-wrap">
-  {#await getBookings.fetch({ variables: { userid: usrid } })}
+<div class="flex flex-wrap justify-center">
+  {#await getBookings.fetch({ variables: { userid: usrid }, policy: CachePolicy.NetworkOnly })}
     <p></p>
   {:then fetched}
-    {#each bookings ?? [] as booking}
+    {#each bookings?.reverse() ?? [] as booking}
       <BookingCard
         thisBooking={booking}
       />
