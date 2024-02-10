@@ -114,7 +114,7 @@
   <div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
     {#if selectionPage}
       <div class=" flex justify-center items-center">
-        <div class="flex items-center gap-x-5 variant-filled-tertiary rounded-full p-4 px-10">
+        <div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
           <h1>{$selectedDesk.desknum}</h1>
         </div>
         <button

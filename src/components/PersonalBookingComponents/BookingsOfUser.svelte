@@ -5,44 +5,34 @@
   import { CachePolicy } from "$houdini";
 
 
+  export let isCurrentBookings = true;
   $: $userBookings = bookings as any;
   $: console.log("User:", $user?.pk_userid);
   $: usrid = $user?.pk_userid;
 
-  // export const _getBookingsByUseridVariables = () => {
-  // 	return {userid: usrid};
-  // };
-
-  getBookings.fetch({ variables: { userid: usrid ?? "" } });
-
-  // const getBookings = graphql(`
-  // 	query getBookingsByUserid($userid: ID!) @load {
-  // 		getBookingsByUserid(userid: $userid) {
-  // 			pk_bookingid
-  // 			bookingnumber
-  // 			date
-  // 		}
-  // 	}
-  // `);
+  getBookings.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
 
   $: bookings = $getBookings.data?.getBookingsByUserid;
 
   $: {
     if ($user.pk_userid != "") {
-      getBookings.fetch({ variables: { userid: $user.pk_userid ?? "" } });
+      getBookings.fetch({ variables: { userid: $user.pk_userid ?? "", isCurrent: isCurrentBookings } });
     }
   }
 
 </script>
 
-<div class="flex flex-wrap justify-center">
-  {#await getBookings.fetch({ variables: { userid: usrid }, policy: CachePolicy.NetworkOnly })}
-    <p></p>
-  {:then fetched}
-    {#each bookings?.reverse() ?? [] as booking}
-      <BookingCard
-        thisBooking={booking}
-      />
-    {/each}
-  {/await}
-</div>
+{isCurrentBookings}
+
+{#await getBookings.fetch({
+  variables: { userid: usrid, isCurrent: isCurrentBookings },
+  policy: CachePolicy.NetworkOnly
+})}
+  <p></p>
+{:then fetched}
+  {#each bookings?.reverse() ?? [] as booking}
+    <BookingCard
+      thisBooking={booking}
+    />
+  {/each}
+{/await}
