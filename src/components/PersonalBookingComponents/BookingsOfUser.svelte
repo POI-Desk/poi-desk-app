@@ -22,15 +22,13 @@
 
 </script>
 
-{isCurrentBookings}
-
 {#await getBookings.fetch({
   variables: { userid: usrid, isCurrent: isCurrentBookings },
   policy: CachePolicy.NetworkOnly
 })}
   <p></p>
 {:then fetched}
-  {#each bookings?.reverse() ?? [] as booking}
+  {#each bookings ?? [] as booking}
     <BookingCard
       thisBooking={booking}
     />
