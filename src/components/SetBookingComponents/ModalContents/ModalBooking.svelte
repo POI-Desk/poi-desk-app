@@ -114,12 +114,12 @@
   <div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
     {#if selectionPage}
       <div class=" flex justify-center items-center">
-        <div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
+        <div class="flex items-center gap-x-5 variant-filled-tertiary rounded-full p-4 px-10">
           <h1>{$selectedDesk.desknum}</h1>
         </div>
         <button
           on:click={() => onExitHandler()}
-          class="absolute right-0 pr-7 text-black px-4 py-2 rounded-full"
+          class="absolute right-0 pr-7 px-4 py-2 rounded-full"
         >
           <X />
         </button>
@@ -147,7 +147,7 @@
     {:else}
       <button
         on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
-        class="absolute left-7 top-11 text-black px-4 py-2 rounded-full"
+        class="absolute left-7 top-11 px-4 py-2 rounded-full"
       >
         <ArrowLeft />
       </button>

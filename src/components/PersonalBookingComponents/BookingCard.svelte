@@ -3,6 +3,7 @@
   import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentBooking } from '$lib/bookingStore';
 	import { todaysDate } from "$lib/dateStore";
+	import { MapPin, Clock, Building, Building2, MonitorSmartphone } from 'lucide-svelte';
 
 
 	const dispatch = createEventDispatcher();
@@ -26,9 +27,8 @@
     modalStore.trigger(modal);
   }
 
-	const bookingPropertyClasses: string = "text-xl variant-filled-tertiary rounded-full text-center p-1"
-	const isBookingToday = thisBooking?.date === todaysDate.toISOString().split("T")[0];
-
+	const bookingPropertyClasses: string = "text-xl grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center p-2 pl-4"
+	const isBookingToday = thisBooking?.date === new Date().toISOString().split("T")[0];
 </script>
 
 <div
@@ -54,25 +54,25 @@
 				{thisBooking?.date}
 			{/if}
 		</div>
-		<div class="text-xl col-span-2 variant-filled-tertiary rounded-full text-center p-1">
-			<i class="fa fa-id-badge" aria-hidden="true" />
+		<div class="col-span-2 {bookingPropertyClasses}">
+			<MapPin />
 			{thisBooking?.desk?.floor?.building?.location?.locationname}
 		</div>
 		<div class="{bookingPropertyClasses}">
-			<i class="fa fa-id-badge" aria-hidden="true" />
+			<Building2 />
 			{thisBooking?.desk?.floor?.building?.buildingname}
 		</div>
 		<div class="{bookingPropertyClasses}">
-			<i class="fa fa-id-badge" aria-hidden="true" />
-			{thisBooking?.desk?.floor?.building?.location?.locationname}
-		</div>
-		<div class="{bookingPropertyClasses}">
-			<i class="fa fa-id-badge" aria-hidden="true" />
+			<Building />
 			{thisBooking?.desk?.floor?.floorname}
 		</div>
 		<div class="{bookingPropertyClasses}">
-			<i class="fa fa-id-badge" aria-hidden="true" />
+			<MonitorSmartphone />
 			{thisBooking?.desk?.desknum}
+		</div>
+		<div class="{bookingPropertyClasses}">
+			<Clock />
+			{(thisBooking?.ismorning ? "07-" : "13-") + (thisBooking?.isafternoon ? "20" : "13")}
 		</div>
 	</div>
 </div>

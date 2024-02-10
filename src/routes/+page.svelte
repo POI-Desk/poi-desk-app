@@ -8,6 +8,7 @@
 	import { user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
 	import { isExtended } from "$lib/stores/extendedUserStore";
+	import { LightSwitch } from "@skeletonlabs/skeleton";
 
 	onMount(() => {
 		if (!$user.pk_userid) {
@@ -52,6 +53,7 @@
 		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
 		<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
 		<a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
+		<LightSwitch />
 		<DateSelection />
 	</div>
 
