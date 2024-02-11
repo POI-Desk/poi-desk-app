@@ -12,6 +12,12 @@ export const getMapByFloor = graphql(`
 				x
 				y
 				rotation
+				floor {
+					floorname,
+					building {
+						buildingname
+					}
+				}
 			}
 			rooms {
 				pk_roomId
@@ -33,6 +39,12 @@ export const getMapByFloor = graphql(`
 				y
 				rotation
 				width
+			}
+			floor{
+				floorname
+				building{
+					buildingname
+				}
 			}
 		}
 	}

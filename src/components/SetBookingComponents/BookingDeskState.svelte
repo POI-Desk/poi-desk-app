@@ -6,7 +6,7 @@
 
 	let morningSelected: boolean = false;
 	let afternoonSelected: boolean = false;
-	export let shownInterval: String = 'default';
+	// export let shownInterval: String = 'default';
 	// just for now
 	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
 	let isBookedMorning: boolean = currentBookingsOnDate.some((booking: any) => booking.ismorning);
@@ -67,17 +67,28 @@
 <div class="h-full flex flex-col gap-4">
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click={() => (morningSelected = !morningSelected)} class={baseStyle}>
-		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
+	<div
+		on:click={() => {
+			if (!isBookedMorning) {
+				morningSelected = !morningSelected;
+			}
+		}}
+		class={baseStyle}
+	>
+		<div
+			class="w-9/12 h-full p-2 rounded-3xl"
+			class:bg-white={!morningSelected && !isBookedMorning}
+			class:variant-filled-secondary={morningSelected || isBookedMorning}
+		>
 			{#if morningSelected && !isBookedMorning}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
 					</div>
-					<div class="h-1/2 bg-green-500 rounded-3xl flex justify-center items-center">
+					<div class="h-1/2 bg-white text-black rounded-3xl flex justify-center items-center">
 						<p>{$user.username}</p>
 					</div>
 				</div>
@@ -88,34 +99,49 @@
 			{:else if isBookedMorning}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
 					</div>
-					<div class="h-1/2 bg-red-500 rounded-3xl flex justify-center items-center">
+					<div class="h-1/2 bg-white text-black rounded-3xl flex justify-center items-center">
 						<p>{morningAlreadyTakenName}</p>
 					</div>
 				</div>
 			{/if}
 		</div>
-		<div class="btn w-3/12 h-full bg-yellow-200 rounded-full">
+		<div
+			class="btn w-3/12 h-full variant-filled-primary rounded-full"
+			class:variant-filled-primary={!isBookedMorning}
+			class:variant-filled-secondary={isBookedMorning}
+		>
 			07:00 <br /> 13:00 <br />
 		</div>
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click={() => (afternoonSelected = !afternoonSelected)} class={baseStyle}>
-		<div class="w-9/12 h-full p-2 bg-green-200 rounded-3xl">
+	<div
+		on:click={() => {
+			if (!isBookedAfternoon) {
+				afternoonSelected = !afternoonSelected;
+			}
+		}}
+		class={baseStyle}
+	>
+		<div
+			class="w-9/12 h-full p-2 rounded-3xl"
+			class:bg-white={!afternoonSelected && !isBookedAfternoon}
+			class:variant-filled-secondary={afternoonSelected || isBookedAfternoon}
+		>
 			{#if afternoonSelected && !isBookedAfternoon}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
 					</div>
-					<div class="h-1/2 bg-green-500 rounded-3xl flex justify-center items-center">
+					<div class="h-1/2 bg-white text-black rounded-3xl flex justify-center items-center">
 						<p>{$user.username}</p>
 					</div>
 				</div>
@@ -126,18 +152,22 @@
 			{:else if isBookedAfternoon}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
+						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
 					</div>
-					<div class="h-1/2 bg-red-500 rounded-3xl flex justify-center items-center">
+					<div class="h-1/2 bg-white text-black rounded-3xl flex justify-center items-center">
 						<p>{afternoonAlreadyTakenName}</p>
 					</div>
 				</div>
 			{/if}
 		</div>
-		<div class="btn w-3/12 h-full bg-yellow-200 rounded-full">
+		<div
+			class="btn w-3/12 h-full variant-filled-primary rounded-full"
+			class:variant-filled-primary={!isBookedAfternoon}
+			class:variant-filled-secondary={isBookedAfternoon}
+		>
 			13:00 <br /> 20:00 <br />
 		</div>
 	</div>

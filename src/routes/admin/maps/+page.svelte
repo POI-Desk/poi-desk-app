@@ -89,6 +89,8 @@
 	$: $map.height = mapData?.height ?? defaultMapProps.height;
 	$: $map.width = mapData?.width ?? defaultMapProps.width;
 
+	$: currentFloor = $getMapByFloor.data?.getMapByFloor?.floor;
+
 	const locationIdVienna: string = $user.location?.pk_locationid!; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
 
@@ -176,7 +178,7 @@
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
 			dbID: dbID,
-			id: id === '' ? genRandomId(5) : id,
+			id: id === '' ? genRandomId(type) : id,
 			type: type,
 			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
 		};
@@ -231,16 +233,25 @@
 		mapObjects[mapObject.id] = element;
 	};
 
-	const genRandomId = (length: number) => {
-		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-		const charactersLength = characters.length;
-		let result;
-		do {
-			result = '';
-			for (let i = 0; i < length; i++) {
-				result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	const genRandomId = (type: string) => {
+		let result: string = '';
+		if (type !== mapObjectType.Desk) {
+			while ($allMapObjects.find((obj) => obj.id === result)){
+				result = type + Math.random() * 100000;
 			}
-		} while (mapObjects[result] != null);
+			return result;
+		}
+
+		result += currentFloor?.building?.buildingname[0].toUpperCase();
+		result += currentFloor?.floorname[0].toUpperCase();
+		let num: number = $allMapObjects.filter((obj) => obj.type === mapObjectType.Desk).length + 1;
+
+		while ($allMapObjects.find((obj) => obj.id === result + num)) {
+			num++;
+		}
+		
+		result += num;
+
 		return result;
 	};
 
@@ -714,11 +725,15 @@
 			if (resolve.errors) return console.error(resolve.errors);
 		});
 
-		await getMapByFloor.fetch({
+		const receivedMap = await getMapByFloor.fetch({
 			variables: { floorID: currentFloorID },
 			policy: CachePolicy.NetworkOnly
 		});
-		// drawMap(false);
+
+    $allMapObjects = $allMapObjects.map((obj) => {
+      obj.dbID = receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
+      return obj;
+    });
 	};
 </script>
 
