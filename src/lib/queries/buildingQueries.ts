@@ -9,3 +9,16 @@ export const getBuildings = graphql(`
 	}
 `);
 
+
+export const getBuildingsWithFloors = graphql(`
+	query GetBuildingsinLocationWithFloors($locationid: ID!) {
+		getBuildingsInLocation(locationid: $locationid) {
+			pk_buildingid
+			buildingname
+			floors {
+				pk_floorid
+				floorname
+			}
+		}
+	}
+`);
