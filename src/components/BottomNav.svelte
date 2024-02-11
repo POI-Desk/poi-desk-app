@@ -2,9 +2,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<!--<div class="flex justify-around my-5 z-[1001]">-->
-<!---->
-<div 	class="absolute flex justify-around bottom-0 w-full z-[100] bg-surface-50 border-t-2 border-primary-300 shadow-around-10 p-5">
+<div 	class="absolute flex justify-around bottom-0 w-full z-[100] bg-primary-50-900-token border-t-2 border-primary-500 shadow-around-10 p-5">
 	<a href="/" class={$page.url.pathname === '/' ? 'active' : ''}>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
