@@ -78,6 +78,8 @@
 		<div
 			class="w-9/12 h-full p-2 rounded-3xl"
 			class:bg-white={!morningSelected && !isBookedMorning}
+			class:border-4={!morningSelected && !isBookedMorning}
+			class:border-primary-500={!morningSelected && !isBookedMorning}
 			class:variant-filled-secondary={morningSelected || isBookedMorning}
 		>
 			{#if morningSelected && !isBookedMorning}
@@ -131,6 +133,8 @@
 		<div
 			class="w-9/12 h-full p-2 rounded-3xl"
 			class:bg-white={!afternoonSelected && !isBookedAfternoon}
+			class:border-4={!afternoonSelected && !isBookedAfternoon}
+			class:border-primary-500={!afternoonSelected && !isBookedAfternoon}
 			class:variant-filled-secondary={afternoonSelected || isBookedAfternoon}
 		>
 			{#if afternoonSelected && !isBookedAfternoon}
