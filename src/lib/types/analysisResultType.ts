@@ -1,3 +1,6 @@
+import type { Building } from '$lib/types/buildingType';
+import type { Floor } from '$lib/types/floorType';
+
 export type Day = {
 	day: number;
 	morning: number;
@@ -42,7 +45,7 @@ export type AnalysisData = {
 		morning: number;
 		afternoon: number;
 	};
-	afternoonAverageBooking: number
+	afternoonAverageBooking: number;
 	afternoon_lowestBooking: {
 		days: string;
 		morning: number;
@@ -60,10 +63,14 @@ export type AnalysisResult = {
 };
 
 export type AnalysisComparisonInfo = {
-	firstYear: string | null;
-	firstMonth: string | null;
-	secondYear: string | null;
-	secondMonth: string | null;
-	showType: 'Days' | 'Data';
+	Year: string | null;
+	Month: string | null;
+	Building: Building | null;
+	Floor: Floor | null;
 };
 
+export type AnalysisComparisonInfoBoth = {
+	first: AnalysisComparisonInfo;
+	second: AnalysisComparisonInfo;
+	showType: 'Days' | 'Data';
+};

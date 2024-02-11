@@ -47,7 +47,8 @@
 		<a class="btn variant-filled-primary" href="./login">Login</a>
 		<a class="btn variant-filled-primary" href="./location">Location</a>
 		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
-		<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
+		<a class="btn variant-filled-primary" href="./admin/predictions">Predictions</a>
+		<a class="btn variant-filled-primary" href="./admin/analysis">Analysis</a>
 		<DateSelection />
 	</div>
 	<FloorSelection />
