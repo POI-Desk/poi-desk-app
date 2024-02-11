@@ -58,6 +58,7 @@
 	let panz: PanZoom;
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
+	let deletedMapObjectDBIds: string[] = [];
 
 	let currentBuildingID: string = '';
 	let currentFloorID: string = '';
@@ -67,11 +68,7 @@
 
 	const modal: ModalSettings = {
 		type: 'component',
-		component: 'modalEditMapObject',
-		response: (r: { newId: string; oldId: string }) => {
-			if (!r) return;
-			changeMapObjectId(r.oldId, r.newId);
-		}
+		component: 'modalEditDesk',
 	};
 
 	const getBuildings = graphql(`
@@ -124,6 +121,7 @@
 		window.removeEventListener('mousedown', handleMouseDown);
 	});
 
+	// Still in use? (retoric question)
 	const changeMapObjectId = (oldId: string, newId: string) => {
 		if (!oldId || !newId) return;
 		const mapObject: MapObject = $allMapObjects.find((obj) => obj.id === oldId)!;
@@ -135,7 +133,7 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
-			removeMapObject();
+			delSelectedMapObject();
 		}
 	};
 
@@ -164,12 +162,7 @@
 			);
 	};
 
-	const removeMapObject = () => {
-		if (!$selectedMapObject) {
-			return;
-		}
-		delSelectedMapObject();
-	};
+	const discardUnsavedChanges = () => drawMapFromLocalDbData();
 
 	const createMapObject = (
 		event: MouseEvent,
@@ -231,7 +224,7 @@
 			rerenderObjects();
 		});
 
-		element.$on('openModal', (event: CustomEvent<MapObject>) => {
+		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
 			selectMapObject(event.detail);
 			modalStore.trigger(modal);
 		});
@@ -376,10 +369,15 @@
 	};
 
 	const delSelectedMapObject = () => {
-		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== $selectedMapObject!.id);
-		mapObjects[$selectedMapObject!.id].$destroy();
-		delete mapObjects[$selectedMapObject!.id];
+		if (!$selectedMapObject) return;
+		delMapObject($selectedMapObject!);
 		$selectedMapObject = null;
+	};
+
+	const delMapObject = (obj: MapObject) => {
+		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== obj.id);
+		mapObjects[obj.id].$destroy();
+		delete mapObjects[obj.id];
 		normalizeGridSize();
 		rerenderObjects();
 	};
@@ -417,7 +415,7 @@
 		if (floorID === currentFloorID) return;
 		emptyMap();
 		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		drawMap();
+		drawMapFromLocalDbData();
 		currentFloorID = floorID;
 	};
 
@@ -446,7 +444,7 @@
 		mapObjects = {};
 	};
 
-	const drawMap = (recenter: boolean = true) => {
+	const drawMapFromLocalDbData = (recenter: boolean = true) => {
 		emptyMap();
 		if (!mapData) {
 			return;
@@ -542,6 +540,7 @@
 		
 		resetSelectedMapObjectStyle();
 		$selectedMapObject = null;
+		deletedMapObjectDBIds = [];
 
 		const desks: UpdateDeskInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Desk)
@@ -848,6 +847,11 @@
 		names={$allMapObjects.filter(o => o.type === mapObjectType.Desk).map((o) => o.id)}
 		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
+	<button 
+		class="btn bg-primary-500 absolute left-20"
+		on:click={discardUnsavedChanges}>
+		Discrad
+	</button>
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}

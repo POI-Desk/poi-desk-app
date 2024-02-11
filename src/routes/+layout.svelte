@@ -9,6 +9,7 @@
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import ModalEditDesk from '$components/MapComponents/ModalEditDesk.svelte';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -26,6 +27,10 @@
 			ref: ModalEditBooking,
 			slot: '<p>skeleton</p>'
 		},
+		modalEditDesk: {
+			ref: ModalEditDesk,
+			slot: '<p>skeleton</p>'
+		}
 	};
 </script>
 

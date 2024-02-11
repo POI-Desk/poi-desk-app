@@ -359,6 +359,7 @@
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
+		on:dblclick={() => dispatch('dblcDesk', mapObject)}
 	>
 		<DeskSvg {selected} text={mapObject.id} />
 	</div>
