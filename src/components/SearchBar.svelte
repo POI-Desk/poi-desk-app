@@ -31,9 +31,9 @@
   let hasNextPage: boolean;
 
 
-  // onMount(() => {
-  // 	getSearchUsers(0);
-  // });
+  onMount(() => {
+  	getSearchUsers(0);
+  });
 
   async function getSearchUsers(pageNumber_param: number) {
     console.log("geSearchUsers");
@@ -155,7 +155,7 @@
       pageNumber = 0;
     }
     if (typedUsername) {
-      //getSearchUsers(pageNumber);
+      getSearchUsers(pageNumber);
     }
   }
 
@@ -165,7 +165,7 @@
   function handleLoadMore() {
     // TODO was passiert, wenn es keine pages mehr gibt?
     pageNumber++;
-    //getSearchUsers(pageNumber);
+    getSearchUsers(pageNumber);
   }
 
   function handleLoadLess() {
@@ -178,7 +178,7 @@
   <div class="dropdown w-full">
     <div>
       <input
-        class="input my-1 w-full rounded-full"
+        class="input my-1 w-full rounded-full pl-20 py-3 border-none variant-filled-tertiary"
         placeholder="Search..."
         bind:value={typedUsername}
         on:click={handleDropDownClick}
