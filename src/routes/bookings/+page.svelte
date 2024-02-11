@@ -10,7 +10,6 @@
     <RadioGroup
       border="none"
       padding="px-5 py-2"
-      spacing="space-x-96"
       active="variant-filled-primary"
       hover="hover:variant-soft-primary"
     >
