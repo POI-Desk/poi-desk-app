@@ -10,14 +10,14 @@
 
 <RadioGroup
   border="none"
-  padding="px-5 py-2"
+  padding="px-5 py-1"
   active="variant-filled-primary"
   hover="hover:variant-soft-primary"
 >
 <!--  TODO radio group macht weirde sachen :(-->
   <div
     class="absolute flex justify-around bottom-0 w-full z-[100] translate-x-1
-    bg-primary-50-900-token text-lg text-primary-500 border-t-2 border-primary-500 shadow-around-10">
+    bg-primary-50-900-token text-lg text-primary-500 border-t-2 border-primary-500 shadow-around-10 py-2">
     <div class="flex flex-col  justify-center items-center">
       <!-- TODO CHANGE -->
       <RadioItem bind:group={page}
@@ -49,7 +49,7 @@
       <RadioItem bind:group={page}
                  name="page"
                  value={"/bookings"}
-                 class="flex flex-col items-center justify-center">
+                 class="flex flex-col items-center justify-center p-0">
         <List strokeWidth="2.5" size="30" />
       </RadioItem>
 
