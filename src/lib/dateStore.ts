@@ -8,6 +8,8 @@ export const todaysDate = new Date();
 
 export const today = todaysDate.toISOString().split("T")[0];
 
+
+
 export const maxBookingDate = new Date(new Date().setDate(new Date().getDate() + bookingPeriod));
 
 export const maxBookingValue = maxBookingDate.toISOString().split("T")[0];

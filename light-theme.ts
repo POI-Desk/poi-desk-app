@@ -13,11 +13,11 @@ export const lightTheme: CustomThemeConfig = {
 		"--theme-border-base": "1px",
 		// =~= Theme On-X Colors =~=
 		"--on-primary": "255 255 255",
-		"--on-secondary": "255 255 255",
+		"--on-secondary": "0 0 0",
 		"--on-tertiary": "0 0 0",
-		"--on-success": "255 255 255",
-		"--on-warning": "255 255 255",
-		"--on-error": "255 255 255",
+		"--on-success": "0 0 0",
+		"--on-warning": "0 0 0",
+		"--on-error": "0 0 0",
 		"--on-surface": "255 255 255",
 		// =~= Theme Colors  =~=
 		// primary | #1A4775

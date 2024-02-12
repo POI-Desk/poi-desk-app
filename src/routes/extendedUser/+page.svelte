@@ -50,7 +50,7 @@
 
     <BuildingSelection />
 
-    <div class="absolute bottom-24 left-1/2 z-[100] -translate-x-1/2">
+    <div class="absolute bottom-36 left-1/2 z-[100] -translate-x-1/2">
       <div class="in:fade flex justify-center">
         {#if ($selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon))}
           <button in:fade on:click={() => {

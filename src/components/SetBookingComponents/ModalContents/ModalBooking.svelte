@@ -114,22 +114,22 @@
   <div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
     {#if selectionPage}
       <div class=" flex justify-center items-center">
-        <div class="flex items-center gap-x-5 bg-white rounded-full p-4 px-10">
+        <div class="flex items-center gap-x-5 bg-white text-primary-500 rounded-full p-4 px-10">
           <h1>{$selectedDesk.desknum}</h1>
         </div>
         <button
           on:click={() => onExitHandler()}
-          class="absolute right-0 pr-7 text-black px-4 py-2 rounded-full"
+          class="absolute right-0 pr-7 px-4 py-2 rounded-full"
         >
           <X />
         </button>
       </div>
-      <div class="basis-full">
+      <div class="basis-full text-primary-500 font-bold">
         <BookingDeskState />
         <!---->
         <!--<BookingDeskState shownInterval="afternoon" />-->
       </div>
-      <div class="bg-white h-24 rounded-full flex items-center justify-between px-10">
+      <div class="bg-white text-primary-500 h-24 rounded-full flex items-center justify-between px-10">
         <button on:click={subtractDay}>
           <ArrowBigLeft />
         </button>
@@ -147,14 +147,14 @@
     {:else}
       <button
         on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
-        class="absolute left-7 top-11 text-black px-4 py-2 rounded-full"
+        class="absolute left-7 top-11 px-4 py-2 rounded-full"
       >
         <ArrowLeft />
       </button>
       <h1 class="text-center text-3xl p-3">Buchung</h1>
-      <div class="h-full flex items-center justify-center">
+      <div class="h-full flex items-center justify-center text-primary-500">
         <div class="grid grid-cols-3 grid-rows-6 gap-7">
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <Calendar />
             </div>
@@ -162,7 +162,7 @@
           <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
             {date.toLocaleDateString('de-DE')}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <Clock />
             </div>
@@ -170,7 +170,7 @@
           <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
             {$displayedTime}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <MapPin />
             </div>
@@ -178,7 +178,7 @@
           <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
             {$user.location?.locationname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <Building />
             </div>
@@ -186,7 +186,7 @@
           <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
             {$selectedDesk.floor.building.buildingname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <Cuboid />
             </div>
@@ -194,7 +194,7 @@
           <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
             {$selectedDesk.floor.floorname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-secondary">
+          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
             <div class="rounded-3xl m-3 mx-5">
               <Armchair />
             </div>

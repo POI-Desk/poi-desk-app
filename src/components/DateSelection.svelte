@@ -29,7 +29,7 @@
 <div class="group w-fit">
 	<div class="dropdown">
 		<input
-			class="timeselect input input-bordered"
+			class="input border-none"
 			type="date"
 			id="calendar"
 			min="{today}"

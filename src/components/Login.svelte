@@ -45,7 +45,7 @@
     </div>
     <div class="p-3">
         <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-            <a href="../" class="pl-5 pr-5"> Login</a>
+            <a href="../" class="pl-5 pr-5">Login</a>
         </button>
     </div>
 </div>
