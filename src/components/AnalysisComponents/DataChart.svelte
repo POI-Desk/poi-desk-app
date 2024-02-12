@@ -2,10 +2,13 @@
     import { onMount } from 'svelte';
     import type { AnalysisData } from '$lib/types/analysisResultType';
     import { user } from '$lib/userStore.js';
-    import { MonthlyBookingData, QuarterlyBookingData, YearlyBookingData } from '$lib/queries/analysisQueries';
-
+    import { MonthlyBookingDataByLocation, MonthlyBookingDataByBuilding, MonthlyBookingDataByFloor, QuarterlyBookingDataByLocation, QuarterlyBookingDataByBuilding, QuarterlyBookingDataByFloor, YearlyBookingDataByLocation, YearlyBookingDataByBuilding, YearlyBookingDataByFloor } from '$lib/queries/analysisQueries';
+    import type { Building } from '$lib/types/buildingType';    
+    import type {Floor} from '$lib/types/floorType'
     export let year: string;
     export let selectedTimePeriod: string;
+    export let building: Building | null;
+    export let floor :Floor | null;
 
     interface MonthDictionary {
         [key: string]: number;
@@ -63,13 +66,27 @@
         switch (true) {
             case  monthDictionary[selectedTimePeriod] <= 12:
             {
-                const result = await MonthlyBookingData.fetch(
-                    { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), location: $user.location?.pk_locationid || ""} });
+              let result;
+              let monthlyBookingResult;
+              if(!building && !floor){
+                  result = await MonthlyBookingDataByLocation.fetch(
+                      { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), location: $user.location?.pk_locationid || ""} });
+                  monthlyBookingResult = result.data?.getMonthlyBookingByLocation;
+              }
+              else if(building && !floor){
+                  result = await MonthlyBookingDataByBuilding.fetch(
+                      { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), building: building.buildingid} });
+                  monthlyBookingResult = result.data?.getMonthlyBookingByBuilding;
+              }
+              else if(building && floor){
+                  result = await MonthlyBookingDataByFloor.fetch(
+                      { variables: { year: year, month: monthDictionary[selectedTimePeriod].toString(), floor: floor.floorid} });
+                  monthlyBookingResult = result.data?.getMonthlyBookingByFloor;
+              }
                 if (result) {
-                    let monthlyBookingResult = result.data?.getMonthlyBooking;
                     analysisData = {
-                        time: "",
-                        //time: monthlyBookingResult?.month!,
+                        //time: "",
+                        time: monthlyBookingResult?.month!,
                         totalBookings: monthlyBookingResult?.totalBookings!,
                         days: monthlyBookingResult?.days!,
                         amountOfDesks: monthlyBookingResult?.amountOfDesks!,
@@ -101,13 +118,12 @@
             }
             case monthDictionary[selectedTimePeriod] >= 13 && monthDictionary[selectedTimePeriod] <= 16:
             {
-                const result = await QuarterlyBookingData.fetch(
-                    { variables: { year: year, quarter: selectedTimePeriod.toString(), location: $user.location?.pk_locationid || "" } });
+                const result = await QuarterlyBookingDataByLocation.fetch(
+                    { variables: { year: year, quarter: monthDictionary[selectedTimePeriod]-12, location: $user.location?.pk_locationid || "" } });
                 if (result) {
-                    let quarterlyBookingResult = result.data?.getQuarterlyBooking;
+                    let quarterlyBookingResult = result.data?.getQuarterlyBookingByLocation;
                       analysisData = {
-                        time: "",
-                        //time: quarterlyBookingResult?.quarter!,
+                        time: quarterlyBookingResult?.year! + "-Q" + quarterlyBookingResult?.quarter!.toString,
                         totalBookings: quarterlyBookingResult?.totalBookings!,
                         days: quarterlyBookingResult?.days!,
                         amountOfDesks: quarterlyBookingResult?.amountOfDesks!,
@@ -139,13 +155,13 @@
             }
             case monthDictionary[selectedTimePeriod] === 17:
             {
-                const result = await YearlyBookingData.fetch(
+                const result = await YearlyBookingDataByLocation.fetch(
                     { variables: { year: year, location: $user.location?.pk_locationid || "" } });
                 if (result) {
-                    let yearlyBookingResult = result.data?.getYearlyBooking;
+                    let yearlyBookingResult = result.data?.getYearlyBookingByLocation;
                     analysisData = {
-                        time: "",
-                        //time: yearlyBookingResult?.year!,
+                        //time: "",
+                        time: yearlyBookingResult?.year!,
                         totalBookings: yearlyBookingResult?.totalBookings!,
                         days: yearlyBookingResult?.days!,
                         amountOfDesks: yearlyBookingResult?.amountOfDesks!,
@@ -192,15 +208,15 @@
   <p>loading...</p>
 {:then d}
   <ol>
-    <li>Time: {analysisData2.time}</li>
-    <li>TotalBookings: {analysisData2.totalBookings}</li>
-    <li>days: {analysisData2.days}</li>
-    <li>Desks: {analysisData2.amountOfDesks}</li>
-    <li>Morning highestBooking:  {analysisData2.morning_highestBooking.days}: {analysisData2.morning_highestBooking.morning}</li>
-    <li>Morning Average: {analysisData2.morningAverageBooking}</li>
-    <li>Morning lowestBooking: {analysisData2.morning_lowestBooking.days}: {analysisData2.morning_lowestBooking.morning}</li>
-    <li>Afternoon highestBooking: {analysisData2.afternoon_highestBooking.days}: {analysisData2.afternoon_highestBooking.afternoon}</li>
-    <li>Afternoon Average: {analysisData2.afternoonAverageBooking}</li>
-    <li>Afternoon lowestBooking: {analysisData2.afternoon_lowestBooking.days}: {analysisData2.afternoon_lowestBooking.afternoon}</li>
+    <li>Time: {analysisData.time}</li>
+    <li>TotalBookings: {analysisData.totalBookings}</li>
+    <li>days: {analysisData.days}</li>
+    <li>Desks: {analysisData.amountOfDesks}</li>
+    <li>Morning highestBooking:  {analysisData.morning_highestBooking.days}: {analysisData.morning_highestBooking.morning}</li>
+    <li>Morning Average: {analysisData.morningAverageBooking}</li>
+    <li>Morning lowestBooking: {analysisData.morning_lowestBooking.days}: {analysisData.morning_lowestBooking.morning}</li>
+    <li>Afternoon highestBooking: {analysisData.afternoon_highestBooking.days}: {analysisData.afternoon_highestBooking.afternoon}</li>
+    <li>Afternoon Average: {analysisData.afternoonAverageBooking}</li>
+    <li>Afternoon lowestBooking: {analysisData.afternoon_lowestBooking.days}: {analysisData.afternoon_lowestBooking.afternoon}</li>
     </ol>
 {/await}

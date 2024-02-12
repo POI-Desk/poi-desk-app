@@ -16,7 +16,7 @@ export const afternoonSelected = writable<boolean>(false);
 export const currentBooking = writable<Booking>({
 });
 
-export const userBookings = writable<any[]>([]);
+export const userBookings = writable<any>();
 
 export const selectedDesk = writable<any>();
 

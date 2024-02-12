@@ -1,11 +1,33 @@
 <script lang="ts">
-	import { currentBooking, displayedTime, getBookings } from "$lib/bookingStore";
-	import { delBooking } from "$lib/mutations/booking";
-	import { getModalStore, popup, type PopupSettings } from "@skeletonlabs/skeleton";
-	import { Armchair, ArrowLeft, Building, Calendar, Check, Clock, Cuboid, MapPin, X } from "lucide-svelte";
-	import type { Booking } from "$lib/types/bookingTypes";
-	import { user } from "$lib/userStore";
-	import { CachePolicy, graphql } from "$houdini";
+	import { currentBooking, displayedTime, getBookings, userBookings } from '$lib/bookingStore';
+	import { delBooking, editBooking } from '$lib/mutations/booking';
+	import { getBookingsByDateBetween } from '$lib/queries/booking';
+	import {
+		getModalStore,
+		getToastStore,
+		ListBox,
+		ListBoxItem,
+		popup,
+		type PopupSettings,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
+	import {
+		Armchair,
+		ArrowLeft,
+		Building,
+		Calendar,
+		Check,
+		Clock,
+		Cuboid,
+		MapPin,
+		X,
+		Sun,
+		Moon
+	} from 'lucide-svelte';
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import type { Booking } from '$lib/types/bookingTypes';
+	import { user } from '$lib/userStore';
+	import { CachePolicy, graphql } from '$houdini';
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -15,38 +37,43 @@
 		} else if ($currentBooking.isafternoon) {
 			$displayedTime = '13:00 - 20:00';
 		}
+		firstDate = $currentBooking.date;
+		firstTime = $displayedTime;
 	}
-
-	console.log($currentBooking);
 
 	const modalStore = getModalStore();
 
 	let desk = $currentBooking.desk;
 	let deleteBookingState: boolean = false;
 	let editBookingState: boolean = false;
-	let comboboxValue: string = $currentBooking.date;
+	let editDate: string = $currentBooking.date;
+	let startDate: Date = new Date();
+	let endDate: Date = new Date(new Date().getTime() + 12096e5);
+	let value: string = '';
+	let firstDate: string;
+	let firstTime: string;
 
-	const popupCombobox: PopupSettings = {
+	$: value = $displayedTime;
+
+	let tempMorning: boolean = $currentBooking.ismorning;
+	let tempAfternoon: boolean = $currentBooking.isafternoon;
+	let tempDesk: string = desk.pk_deskid;
+
+	const popupDates: PopupSettings = {
 		event: 'focus-click',
-		target: 'popupCombobox',
+		target: 'popupDates',
 		placement: 'bottom',
-		closeQuery: '.listbox-item'
+		closeQuery: '.fortniteDates'
 	};
 
-	// const deleteBooking = async (id: string) => {
-	// 	$userBookings = $userBookings.filter((booking) => booking.pk_bookingid != id);
-	// 	await delBooking.mutate({ id });
-	// 	modalStore.close();
-	// };
-
 	const getBookingsByNumContains = graphql(`
-        query GetBookingsByBookingnumberContains($string: String!) @load {
-            getBookingsByBookingnumberContains(string: $string) {
-                pk_bookingid
-                bookingnumber
-           }
-        }
-    `);
+		query GetBookingsByBookingnumberContains($string: String!) @load {
+			getBookingsByBookingnumberContains(string: $string) {
+				pk_bookingid
+				bookingnumber
+			}
+		}
+	`);
 
 	export const _GetBookingsByBookingnumberContainsVariables = () => {
 		return {};
@@ -57,10 +84,10 @@
 	const deleteBooking = async (booking: Booking) => {
 		const id = booking.pk_bookingid;
 
-		if (booking.bookingnumber.includes("EXTID")) {
-			const extId = booking.bookingnumber.split("EXTID")[1];
+		if (booking.bookingnumber.includes('EXTID')) {
+			const extId = booking.bookingnumber.split('EXTID')[1];
 
-			if (extId.split("+")[1] !== $user.pk_userid) modalStore.close();
+			if (extId.split('+')[1] !== $user.pk_userid) modalStore.close();
 
 			await getBookingsByNumContains.fetch({ variables: { string: extId } });
 			for (const b of extendedBookings ?? []) {
@@ -74,10 +101,143 @@
 
 		modalStore.close();
 	};
+
+	// get all dates between startDate and endDate and write them in an array
+	function getDates(startDate: Date, endDate: Date) {
+		const dateArray = [];
+		let currentDate = new Date(startDate);
+
+		while (currentDate <= endDate) {
+			dateArray.push(new Date(currentDate));
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		return dateArray;
+	}
+	let dates = getDates(startDate, endDate);
+	// rewrite all values in the array to the format yyyy-mm-dd and save them in a new array (toISOString)
+	let stringDates: string[] = [];
+	for (let i = 0; i < dates.length; i++) {
+		stringDates.push(dates[i].toISOString().split('T')[0]);
+	}
+
+	$: getBookingsByDateBetween.fetch({
+		variables: {
+			startDate: stringDates[0],
+			endDate: stringDates[stringDates.length - 1]
+		}
+	});
+	$: bookings = $getBookingsByDateBetween.data?.getBookingsByDateBetween;
+	$: if (bookings) {
+		for (let i = 0; i < bookings.length; i++) {
+			for (let j = 0; j < stringDates.length; j++) {
+				if (bookings[i].date == stringDates[j]) {
+					if (bookings[i].ismorning && bookings[i].isafternoon) {
+						console.log(bookings[i].date, stringDates[j], 'deleted');
+						stringDates.splice(j, 1);
+					}
+					if ($currentBooking.ismorning && !$currentBooking.isafternoon) {
+						if (bookings[i].ismorning && !bookings[i].isafternoon) {
+							console.log(bookings[i].date, stringDates[j], 'deleted');
+							stringDates.splice(j, 1);
+						}
+					}
+					if ($currentBooking.isafternoon && !$currentBooking.ismorning) {
+						if (!bookings[i].ismorning && bookings[i].isafternoon) {
+							console.log(bookings[i].date, stringDates[j], 'deleted');
+							stringDates.splice(j, 1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	const addFirstValues = (time: string) => {
+		console.log('firstTime:', firstTime);
+		console.log('time:', time);
+		if (firstTime == time) {
+			let displayFirstDate = firstDate + ' (current)';
+			stringDates.push(displayFirstDate);
+			return;
+		}
+	};
+	function recalcDates(time: string) {
+		editDate = 'click to select a date';
+		stringDates = [];
+		if (time == '07:00 - 13:00') {
+			tempMorning = true;
+			tempAfternoon = false;
+		} else if (time == '13:00 - 20:00') {
+			tempMorning = false;
+			tempAfternoon = true;
+		} else if (time == '07:00 - 20:00') {
+			tempMorning = true;
+			tempAfternoon = true;
+		}
+		for (let i = 0; i < dates.length; i++) {
+			stringDates.push(dates[i].toISOString().split('T')[0]);
+		}
+		if (bookings) {
+			for (let i = 0; i < bookings.length; i++) {
+				for (let j = 0; j < stringDates.length; j++) {
+					if (bookings[i].date == stringDates[j]) {
+						if (bookings[i].ismorning && bookings[i].isafternoon) {
+							console.log(bookings[i].date, stringDates[j], 'deleted');
+							stringDates.splice(j, 1);
+						}
+						if (tempMorning && !tempAfternoon) {
+							if (bookings[i].ismorning && !bookings[i].isafternoon) {
+								console.log(bookings[i].date, stringDates[j], 'deleted');
+								stringDates.splice(j, 1);
+							}
+						}
+						if (tempAfternoon && !tempMorning) {
+							if (!bookings[i].ismorning && bookings[i].isafternoon) {
+								console.log(bookings[i].date, stringDates[j], 'deleted');
+								stringDates.splice(j, 1);
+							}
+						}
+					}
+				}
+			}
+		}
+		addFirstValues(time);
+	}
+
+	const finishEditBooking = async (
+		bookingid: any,
+		date: any,
+		morning: boolean,
+		afternoon: boolean,
+		deskid: any
+	) => {
+		if (date == 'click to select a date') {
+			toastStore.trigger(t);
+			return;
+		}
+		await editBooking.mutate({
+			bookingInput: {
+				pk_bookingid: bookingid,
+				date: date,
+				ismorning: morning,
+				isafternoon: afternoon,
+				deskid: deskid
+			}
+		});
+		modalStore.close();
+	};
+
+	const toastStore = getToastStore();
+	const t: ToastSettings = {
+		message: 'Please select a date before saving.',
+		timeout: 3000,
+		background: 'variant-filled-error'
+	};
 </script>
 
 {#if $modalStore[0]}
-	<div class="card p-4 w-modal shadow-xl">
+	<div class="card p-4 w-modal h-screen shadow-xl">
 		{#if deleteBookingState}
 			<div class="flex flex-col justify-center items-center gap-5">
 				<h1 class="text-center text-3xl p-3">Buchung</h1>
@@ -120,7 +280,7 @@
 							</div>
 						</div>
 						<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-							{comboboxValue}
+							{editDate}
 						</div>
 						<div class="rounded-3xl flex justify-center bg-white">
 							<div class="rounded-3xl m-3 mx-5">
@@ -199,18 +359,23 @@
 						</div>
 						<button
 							class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white"
-							use:popup={popupCombobox}
+							use:popup={popupDates}
 						>
-							{comboboxValue}
+							{editDate}
 						</button>
-						<div class="card w-48 shadow-xl py-2" data-popup="popupCombobox">
-							<div>
-								{#each ['2024-1-04', '2024-1-05', '2024-1-06'] as item}
-									<button on:click={() => {comboboxValue = item}} class="btn bg-green-400">
+						<div class="card w-48 shadow-xl py-2 z-10" data-popup="popupDates">
+							<ListBox>
+								{#each stringDates as item}
+									<ListBoxItem
+										bind:group={editDate}
+										name="medium"
+										value={item}
+										class="fortniteDates"
+									>
 										{item}
-									</button>
+									</ListBoxItem>
 								{/each}
-							</div>
+							</ListBox>
 							<div class="arrow bg-surface-100-800-token" />
 						</div>
 						<div class="rounded-3xl flex justify-center bg-white">
@@ -218,9 +383,37 @@
 								<Clock />
 							</div>
 						</div>
-						<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
-							{$displayedTime}
-						</div>
+						<RadioGroup
+							class="col-span-2 btn-group rounded-3xl flex flex-row justify-center items-center bg-white"
+						>
+							<RadioItem
+								on:change={(e) => {
+									recalcDates(value);
+								}}
+								bind:group={value}
+								name="justify"
+								value={'07:00 - 13:00'}
+							>
+								<Sun />
+							</RadioItem>
+							<RadioItem
+								on:change={(e) => {
+									recalcDates(value);
+								}}
+								bind:group={value}
+								name="justify"
+								value={'13:00 - 20:00'}><Moon /></RadioItem
+							>
+							<RadioItem
+								on:change={(e) => {
+									recalcDates(value);
+								}}
+								bind:group={value}
+								name="justify"
+								class="flex flex-row"
+								value={'07:00 - 20:00'}><Sun /><Moon /></RadioItem
+							>
+						</RadioGroup>
 						<div class="rounded-3xl flex justify-center bg-white">
 							<div class="rounded-3xl m-3 mx-5">
 								<MapPin />
@@ -264,15 +457,33 @@
 					</div>
 				</div>
 				<div class=" mt-10 flex flex-col gap-5">
-					<button on:click={() => {}} class="btn bg-blue-400 rounded-full w-full h-full text-xl"
-						>Change Desk</button
-					>
 					<button
 						on:click={() => {
-							editBookingState = !editBookingState;
+							if (editDate.includes('(current)')) {
+								editDate = editDate.split(' ')[0];
+								editBookingState = !editBookingState;
+								return;
+							}
+							finishEditBooking(
+								$currentBooking.pk_bookingid,
+								editDate,
+								tempMorning,
+								tempAfternoon,
+								tempDesk
+							);
+							//editBookingState = !editBookingState;
 						}}
 						class="btn bg-blue-400 rounded-full w-full h-full text-xl">Save Changes</button
 					>
+					<button
+						on:click={() => {
+							editDate = firstDate;
+							editBookingState = !editBookingState;
+						}}
+						class="btn bg-red-400 rounded-full w-full h-full text-xl"
+					>
+						Go Back
+					</button>
 				</div>
 			</div>
 		{/if}
