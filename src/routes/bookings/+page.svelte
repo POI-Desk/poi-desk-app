@@ -5,7 +5,7 @@
   let isCurrentBookings = true;
 </script>
 
-<div class="flex flex-col items-center justify-center pb-16">
+<div class="flex flex-col items-center justify-center">
   <div class="flex flex-row w-full justify-center p-5">
     <RadioGroup
       border="none"
