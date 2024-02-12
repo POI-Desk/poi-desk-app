@@ -15,7 +15,7 @@
   const style: string = `position: absolute; left: ${transform.x}px; top: ${transform.y - wallThickness / 2}px;`;
 </script>
 
-<div class="z-{z}" style="{useAsMain ? style : ""}">
+<div class="z-{z}" style="{useAsMain ? style : ''}">
 	<svg {width} {height}>
 		<rect
 			{width}

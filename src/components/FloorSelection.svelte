@@ -28,7 +28,7 @@
   background="none"
 >
   <div
-    class="absolute w-11 left-4 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50
+    class="absolute w-11 left-4 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50-900-token
     border-2 border-primary-300 shadow-around-10 grid grid-rows-{floors?.length} divide-y-2 divide-primary-300"
   >
     {#if $getFloors.fetching}

@@ -60,22 +60,8 @@
   <!--		<DateSelection />-->
   <!--	</div>-->
 
-
   <div class="absolute p-8" style="width: 100%">
-    <div class="flex items-center relative">
-      <SearchBar />
-
-      <button
-        class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
-        on:click={() => {goto("/location")}}
-      >
-        <MapPin />
-      </button>
-
-      <div class="absolute right-1 w-10 text-secondary-900 pointer-events-none">
-        <Search />
-      </div>
-    </div>
+    <SearchBar />
 
 
     <div class="flex justify-center p-1">
@@ -83,7 +69,9 @@
     </div>
   </div>
 
+
   <FloorSelection />
 
   <BuildingSelection />
+
 </div>

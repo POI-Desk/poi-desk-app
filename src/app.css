@@ -9,7 +9,7 @@ body {
 
 @layer components {
 	.canvasStyle {
-		@apply bg-surface-100;
+		@apply bg-surface-100-800-token;
 	}
 }
 

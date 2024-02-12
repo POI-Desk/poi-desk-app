@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
   import { searchedUser } from "$lib/searchStore";
   import { goto } from "$app/navigation";
-  import { MapPin } from "lucide-svelte";
+  import { MapPin, Search } from "lucide-svelte";
 
   export const _getAllUsersVariables = () => {
     return "";
@@ -174,66 +174,79 @@
 </script>
 
 
-<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
-  <div class="dropdown w-full">
-    <input
-      class="input my-1 w-full rounded-full pl-20 py-3 border-none variant-filled-tertiary"
-      placeholder="Search..."
-      bind:value={typedUsername}
-      on:click={handleDropDownClick}
+  <div class="flex items-center relative">
+    <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
+      <div class="dropdown w-full">
+        <input
+          class="input my-1 w-full rounded-full pl-20 py-3 border-none"
+          placeholder="Search..."
+          bind:value={typedUsername}
+          on:click={handleDropDownClick}
 
-    />
-    <div class="absolute left-0 right-0 w-full px-2 z-10">
-      {#if dropdownIsOpen}
+        />
+        <div class="absolute left-0 right-0 w-full px-2 z-10">
+          {#if dropdownIsOpen}
 
-        <ul
-          style="background-color: white;"
-          class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
-        >
-          {#each searchUsers as usr}
-            <li class="m-1 flex justify-center">
-              <button class="w-full px-3 border rounded-2xl flex flex-col"
-                      style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
-                      on:click={() => {
+            <ul
+              style="background-color: white;"
+              class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
+            >
+              {#each searchUsers as usr}
+                <li class="m-1 flex justify-center">
+                  <button class="w-full px-3 border rounded-2xl flex flex-col"
+                          style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
+                          on:click={() => {
 								$searchedUser = usr;
 								goto("/bookings/" + usr.username)
 							}}>
-                <div class="grid grid-cols-1 justify-items-start">
-                  <span>{usr.username}</span>
-                  <span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
-                </div>
-              </button>
-
-            </li>
-          {/each}
-          <li class="m-1">
-            <div class="grid grid-cols-2 grid-rows-1">
-              <div style="grid-col: 1">
-                {#if pageNumber > 0}
-                  <button on:click={() => {pageNumber --}}
-                          class="border rounded-2xl py-1 px-2"
-                          style="background-color: #FFFCF2;">show less...
+                    <div class="grid grid-cols-1 justify-items-start">
+                      <span>{usr.username}</span>
+                      <span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
+                    </div>
                   </button>
-                {/if}
-              </div>
-              {#if hasNextPage && typedUsername}
-                <div style="grid-col: 2" class="flex justify-end">
-                  <button
-                    class="border rounded-2xl py-1 px-2"
-                    style="background-color: #FFFCF2;"
-                    on:click={
+
+                </li>
+              {/each}
+              <li class="m-1">
+                <div class="grid grid-cols-2 grid-rows-1">
+                  <div style="grid-col: 1">
+                    {#if pageNumber > 0}
+                      <button on:click={() => {pageNumber --}}
+                              class="border rounded-2xl py-1 px-2"
+                              style="background-color: #FFFCF2;">show less...
+                      </button>
+                    {/if}
+                  </div>
+                  {#if hasNextPage && typedUsername}
+                    <div style="grid-col: 2" class="flex justify-end">
+                      <button
+                        class="border rounded-2xl py-1 px-2"
+                        style="background-color: #FFFCF2;"
+                        on:click={
 											() => {
 												//dropdownIsOpen = true;
 												pageNumber ++;
 												getSearchUsers(pageNumber);
 											}}>show more...
-                  </button>
+                      </button>
+                    </div>
+                  {/if}
                 </div>
-              {/if}
-            </div>
-          </li>
-        </ul>
-      {/if}
+              </li>
+            </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
+      on:click={() => {goto("/location")}}
+    >
+      <MapPin />
+    </button>
+
+    <div class="absolute right-1 w-10 text-secondary-900 pointer-events-none">
+      <Search />
     </div>
   </div>
-</div>

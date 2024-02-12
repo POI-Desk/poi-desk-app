@@ -27,7 +27,7 @@
     modalStore.trigger(modal);
   }
 
-	const bookingPropertyClasses: string = "text-xl grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center p-2 pl-4"
+	const bookingPropertyClasses: string = "text-lg grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center py-1 pl-4"
 	const isBookingToday = thisBooking?.date === new Date().toISOString().split("T")[0];
 </script>
 
@@ -35,7 +35,8 @@
 	class="flex variant-filled-primary rounded-3xl border-box m-3 p-3 shadow-lg"
 	class:selected={isBookingToday}
 >
-	<div class="w-1/3 rounded-lg">
+<!--	TODO dynamisch bild auswaehlen-->
+	<div class="w-1/4 rounded-lg">
 		<img
 			class="rounded-3xl w-full h-full"
 			src="/locationImages/Wien.png"
@@ -46,8 +47,8 @@
 
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click={toggleModal} class="grid grid-cols-2 gap-2.5 w-2/3 bg-white rounded-3xl ml-3 p-3 text-gray-700">
-		<div class="text-2xl col-span-2 font-bold text-center">
+	<div on:click={toggleModal} class="grid grid-cols-2 gap-2.5 w-3/4 bg-white rounded-3xl ml-3 p-3 text-gray-700">
+		<div class="text-xl col-span-2 font-bold text-center">
 			{#if (isBookingToday)}
 				Today
 			{:else }
