@@ -38,7 +38,7 @@
 <!--	TODO dynamisch bild auswaehlen-->
 	<div class="w-1/4 rounded-lg">
 		<img
-			class="rounded-3xl w-full h-full"
+			class="rounded-3xl w-full h-full object-cover"
 			src="/locationImages/Wien.png"
 			alt=""
 			srcset=""
