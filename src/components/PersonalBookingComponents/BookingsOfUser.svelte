@@ -20,24 +20,24 @@
     }
   }
   
-//   let bookings: any;
-
-// 	const hey = async () => {
-// 		await getBookings.fetch({
-// 			variables: { userid: $user?.pk_userid },
-// 			policy: CachePolicy.NetworkOnly
-// 		});
-// 		console.log($getBookings.data?.getBookingsByUserid);
-// 	};
-
-// 	$: {
-// 		hey();
-// 	}
-
-// 	$: {
-// 		bookings = $getBookings.data?.getBookingsByUserid;
-// 		$userBookings = bookings;
-// 	}
+  // let bookings: any;
+	//
+	// const hey = async () => {
+	// 	await getBookings.fetch({
+	// 		variables: { userid: $user?.pk_userid, isCurrent: isCurrentBookings },
+	// 		policy: CachePolicy.NetworkOnly
+	// 	});
+	// 	console.log($getBookings.data?.getBookingsByUserid);
+	// };
+	//
+	// $: {
+	// 	hey();
+	// }
+	//
+	// $: {
+	// 	bookings = $getBookings.data?.getBookingsByUserid;
+	// 	$userBookings = bookings;
+	// }
 
 </script>
 
@@ -54,10 +54,10 @@
   {/each}
 {/await}
 
-<div class="flex flex-wrap">
-	{#if bookings}
-		{#each $userBookings ?? [] as booking}
-			<BookingCard thisBooking={booking} />
-		{/each}
-	{/if}
-</div>
+<!--<div class="flex flex-wrap">-->
+<!--	{#if bookings}-->
+<!--		{#each $userBookings ?? [] as booking}-->
+<!--			<BookingCard thisBooking={booking} />-->
+<!--		{/each}-->
+<!--	{/if}-->
+<!--</div>-->
