@@ -34,6 +34,7 @@
   padding="px-5 py-2"
   active="variant-filled-primary"
   hover="hover:variant-soft-primary"
+  background="none"
 >
   <div
     class="absolute md:w-2/5 xl:w-1/5 w-3/5 h-11 bottom-24 left-1/2 z-[100]

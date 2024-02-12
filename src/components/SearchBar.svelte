@@ -32,7 +32,7 @@
 
 
   onMount(() => {
-  	getSearchUsers(0);
+    getSearchUsers(0);
   });
 
   async function getSearchUsers(pageNumber_param: number) {
@@ -176,15 +176,13 @@
 
 <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
   <div class="dropdown w-full">
-    <div>
-      <input
-        class="input my-1 w-full rounded-full pl-20 py-3 border-none variant-filled-tertiary"
-        placeholder="Search..."
-        bind:value={typedUsername}
-        on:click={handleDropDownClick}
+    <input
+      class="input my-1 w-full rounded-full pl-20 py-3 border-none variant-filled-tertiary"
+      placeholder="Search..."
+      bind:value={typedUsername}
+      on:click={handleDropDownClick}
 
-      />
-    </div>
+    />
     <div class="absolute left-0 right-0 w-full px-2 z-10">
       {#if dropdownIsOpen}
 

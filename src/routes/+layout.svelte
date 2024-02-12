@@ -10,6 +10,11 @@
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import { goto } from "$app/navigation";
+	import { MapPin, Search } from "lucide-svelte";
+	import SearchBar from "$components/SearchBar.svelte";
+	import DateSelection from "$components/DateSelection.svelte";
+	
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -38,6 +43,7 @@
 <Toast zIndex="z-[1000]"/>
 <AppShell>
 	<slot />
+
 	<svelte:fragment slot="footer">
 		 <BottomNav />
 	</svelte:fragment>

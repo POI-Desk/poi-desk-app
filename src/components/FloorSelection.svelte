@@ -25,6 +25,7 @@
   padding="px-2 py-10"
   active="variant-filled-primary"
   hover="hover:variant-soft-primary"
+  background="none"
 >
   <div
     class="absolute w-11 left-4 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50
