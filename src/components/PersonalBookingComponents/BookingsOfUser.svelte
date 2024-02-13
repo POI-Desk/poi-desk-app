@@ -54,6 +54,10 @@
   {/each}
 {/await}
 
+{#if (bookings?.length === 0)}
+  No future bookings
+{/if}
+
 <!--<div class="flex flex-wrap">-->
 <!--	{#if bookings}-->
 <!--		{#each $userBookings ?? [] as booking}-->

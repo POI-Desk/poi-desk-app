@@ -8,19 +8,18 @@
   let page = "";
 </script>
 
-<!--  TODO ist es zentriert?-->
 <div
   class="w-full z-[100] translate-x-0
     bg-primary-50-900-token text-lg text-primary-500-400-token border-t-[3px] border-primary-500 shadow-around-10 py-2">
   <RadioGroup
-    display="flex"
+    display="grid"
     border="none"
     padding="px-5 py-1"
     active="variant-filled-primary"
     hover="hover:variant-soft-primary"
     background="none"
   >
-    <div class="flex items-center justify-around w-full">
+    <div class="grid grid-cols-3 w-full">
       <div class="flex flex-col justify-center items-center">
         <!-- TODO CHANGE -->
         <RadioItem bind:group={page}
