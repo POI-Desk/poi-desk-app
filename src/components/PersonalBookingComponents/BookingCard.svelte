@@ -2,8 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
   import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentBooking } from '$lib/bookingStore';
-	import { todaysDate } from "$lib/dateStore";
-	import { MapPin, Clock, Building, Building2, MonitorSmartphone } from 'lucide-svelte';
+	import { MapPin, Clock, Building, MonitorSmartphone, Cuboid } from "lucide-svelte";
 
 
 	const dispatch = createEventDispatcher();
@@ -60,11 +59,11 @@
 			{thisBooking?.desk?.floor?.building?.location?.locationname}
 		</div>
 		<div class="{bookingPropertyClasses}">
-			<Building2 />
+			<Building />
 			{thisBooking?.desk?.floor?.building?.buildingname}
 		</div>
 		<div class="{bookingPropertyClasses}">
-			<Building />
+			<Cuboid />
 			{thisBooking?.desk?.floor?.floorname}
 		</div>
 		<div class="{bookingPropertyClasses}">

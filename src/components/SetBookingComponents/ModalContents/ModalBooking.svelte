@@ -108,6 +108,9 @@
   window.addEventListener("popstate", () => {
     modalStore.close();
   });
+
+  const iconContainerClasses = "rounded-3xl flex justify-center variant-filled-tertiary";
+  const textClasses = "col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white";
 </script>
 
 {#if $modalStore[0]}
@@ -154,52 +157,52 @@
       <h1 class="text-center text-3xl p-3">Buchung</h1>
       <div class="h-full flex items-center justify-center text-primary-500">
         <div class="grid grid-cols-3 grid-rows-6 gap-7">
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Calendar />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {date.toLocaleDateString('de-DE')}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Clock />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$displayedTime}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <MapPin />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$user.location?.locationname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Building />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.floor.building.buildingname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Cuboid />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.floor.floorname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Armchair />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.desknum}
           </div>
         </div>

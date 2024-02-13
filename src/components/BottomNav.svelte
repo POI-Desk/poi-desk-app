@@ -2,6 +2,7 @@
   import { List, Map, User } from "lucide-svelte";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { goto } from "$app/navigation";
+  import { isExtended } from "$lib/stores/extendedUserStore";
 
   $: if (page !== "") goto(page);
 
@@ -33,11 +34,10 @@
           Profiles
         </button>
       </div>
-
       <div class="flex flex-col justify-center items-center">
         <RadioItem bind:group={page}
                    name="page"
-                   value={"/"}
+                   value={$isExtended ? "/extendedUser" : "/"}
                    class="flex flex-col items-center justify-center">
           <Map strokeWidth="2" size="30" />
         </RadioItem>
