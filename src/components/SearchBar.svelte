@@ -186,7 +186,7 @@
           {#if dropdownIsOpen}
 
             <ul
-              class="dropdown-content menu shadow variant-filled-tertiary rounded-xl max-h-90 flex-nowrap overflow-auto"
+              class="dropdown-content menu shadow variant-filled-tertiary dark:bg-surface-600 rounded-xl max-h-90 flex-nowrap overflow-auto"
             >
               {#each searchUsers as usr}
                 <li class="m-1 flex justify-center">
