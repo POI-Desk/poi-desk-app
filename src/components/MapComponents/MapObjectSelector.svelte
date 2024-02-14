@@ -8,7 +8,7 @@
 
 	//TODO: use type script
 	function onCreate(e: MouseEvent, type: string) {
-		if (!$getMapByFloor.data?.getMapByFloor) return;
+		if (!$getMapByFloor.data?.getMapByFloor || $getMapByFloor.fetching) return;
 		dispatch('create', { e, type });
 	}
 
@@ -109,7 +109,7 @@
 				>
 					<p class="select-none text-primary-500 font-semibold">Wall</p>
 				</div>
-				<div 					
+				<div
 					class="flex items-center justify-center"
 					on:mousedown={(e) => onCreate(e, mapObjectType.Label)}
 					tabindex="0"

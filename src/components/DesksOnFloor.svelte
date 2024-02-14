@@ -3,15 +3,14 @@
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	import Check from '$components/Check.svelte';
 	import CrazyAnimation from '$components/CrazyAnimation.svelte';
-	import FloorSelection from '$components/FloorSelection.svelte';
 	import { selectedDesk } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
 	import { floorid } from '$lib/floorStore';
 
 	import { CachePolicy } from '$houdini';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { getDesks } from '$lib/queries/deskQueries';
 	import { refreshDesks } from '$lib/refreshStore';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	const modalStore = getModalStore();
 

@@ -66,57 +66,58 @@ export const getTransformFromType = (type: string) => {
 };
 
 export const getInputTypeFromMapObject = (mapObject: MapObject) => {
-    switch (mapObject.type) {
-  		case mapObjectType.Desk:
-  			return {
-          pk_deskid: mapObject.dbID,
-          desknum: mapObject.id,
-          x: mapObject.transform.x,
-          y: mapObject.transform.y,
-        } as UpdateDeskInput;
-  		case mapObjectType.Room:
-  			return {
-          pk_roomId: mapObject.dbID,
-          x: mapObject.transform.x,
-          y: mapObject.transform.y,
-          width: mapObject.transform.width,
-          height: mapObject.transform.height,
-        } as UpdateRoomInput;
-  		case mapObjectType.Wall:
-  			return {
-          pk_wallId: mapObject.dbID,
-          rotation: mapObject.transform.rotation,
-          width: mapObject.transform.width,
-          x: mapObject.transform.x,
-          y: mapObject.transform.y,
-        } as UpdateWallInput;
-  		case mapObjectType.Door:
-  			return {
-          pk_doorId: mapObject.dbID,
-          rotation: mapObject.transform.rotation,
-          width: mapObject.transform.width,
-          x: mapObject.transform.x,
-          y: mapObject.transform.y,
-        } as UpdateDoorInput;
+	switch (mapObject.type) {
+		case mapObjectType.Desk:
+			return {
+				pk_deskid: mapObject.dbID,
+				desknum: mapObject.id,
+				x: mapObject.transform.x,
+				y: mapObject.transform.y,
+				userId: mapObject.userId
+			} as UpdateDeskInput;
+		case mapObjectType.Room:
+			return {
+				pk_roomId: mapObject.dbID,
+				x: mapObject.transform.x,
+				y: mapObject.transform.y,
+				width: mapObject.transform.width,
+				height: mapObject.transform.height
+			} as UpdateRoomInput;
+		case mapObjectType.Wall:
+			return {
+				pk_wallId: mapObject.dbID,
+				rotation: mapObject.transform.rotation,
+				width: mapObject.transform.width,
+				x: mapObject.transform.x,
+				y: mapObject.transform.y
+			} as UpdateWallInput;
+		case mapObjectType.Door:
+			return {
+				pk_doorId: mapObject.dbID,
+				rotation: mapObject.transform.rotation,
+				width: mapObject.transform.width,
+				x: mapObject.transform.x,
+				y: mapObject.transform.y
+			} as UpdateDoorInput;
 		case mapObjectType.Label:
 			return {
 				pk_labelId: mapObject.dbID,
 				rotation: mapObject.transform.rotation,
 				text: mapObject.text,
 				x: mapObject.transform.x,
-				y: mapObject.transform.y,
+				y: mapObject.transform.y
 			};
-  		default:
-  			throw new Error(`Invalid type ${mapObject.type}`);
-  	}
-  };
+		default:
+			throw new Error(`Invalid type ${mapObject.type}`);
+	}
+};
 
 export const panzoomProps: PanZoomOptions = {
 	smoothScroll: false,
 	maxZoom: 3,
 	minZoom: 0.25,
 	initialZoom: 1,
-  autocenter: false,
+	autocenter: false
 };
 
 export const mapObjectType: MapObjectType = {
@@ -124,7 +125,7 @@ export const mapObjectType: MapObjectType = {
 	Room: 'Room',
 	Wall: 'Wall',
 	Door: 'Door',
-	Label: 'Label',
+	Label: 'Label'
 };
 
 //values to represent the default values for the map

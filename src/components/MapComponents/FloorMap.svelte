@@ -3,7 +3,7 @@
 	import { selectedDesk } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
 	import { floorid } from '$lib/floorStore';
-	import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
+	import { doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import { getDeskById } from '$lib/queries/deskQueries';
 	import { getMapByFloor } from '$lib/queries/map';
@@ -14,9 +14,9 @@
 	import { onDestroy, onMount } from 'svelte';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
+	import Label from './MapObjects/Label.svelte';
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
-	import Label from './MapObjects/Label.svelte';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
@@ -159,7 +159,9 @@
 						x: desk.x,
 						y: desk.y,
 						rotation: 0
-					}
+					},
+
+					assigned: desk.user ? true : false,
 				}
 			});
 			deskSvg.$on('click', async () => {

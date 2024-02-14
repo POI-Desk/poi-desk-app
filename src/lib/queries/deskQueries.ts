@@ -36,12 +36,16 @@ export const getDesks = graphql(`
 `);
 
 export const getDeskById = graphql(`
-  query getDeskById($deskId: ID!){
-  getDeskById(deskId: $deskId){
-    pk_deskid
+	query getDeskById($deskId: ID!) {
+		getDeskById(deskId: $deskId) {
+			pk_deskid
 			desknum
 			x
 			y
+			user {
+				pk_userid
+				username
+			}
 			bookings {
 				user {
 					pk_userid
@@ -63,5 +67,5 @@ export const getDeskById = graphql(`
 				}
 			}
 		}
-  }
+	}
 `);

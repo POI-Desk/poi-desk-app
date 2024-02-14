@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import { user } from '$lib/userStore';
-	import { onMount } from 'svelte';
 	import { buildingid } from '$lib/buildingStore';
 	import { getBuildings } from '$lib/queries/buildingQueries';
+	import { user } from '$lib/userStore';
 
 	import { getFloors } from '$lib/queries/floorQueries';
 

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import {graphql} from '$houdini';
-	import { getBookingsByDate } from '$lib/queries/booking';
-	import {dateValue, maxBookingValue, today} from "$lib/dateStore";
+	import { dateValue, maxBookingValue, today } from "$lib/dateStore";
 	import { floorid } from '$lib/floorStore';
+	import { getBookingsByDate } from '$lib/queries/booking';
 
 	$dateValue = new Date().toISOString().split('T')[0];
 

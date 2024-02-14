@@ -7,10 +7,6 @@ body {
 	@apply h-full overflow-hidden;
 }
 
-h1{
-	@apply text-4xl font-semibold;
-}
-
 @layer components {
 	.canvasStyle {
 		@apply bg-surface-100;
@@ -18,7 +14,7 @@ h1{
 }
 
 @layer utilities {
-  .shadow-around-5 {
+	.shadow-around-5 {
 		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.05)];
 	}
 	.shadow-around-10 {

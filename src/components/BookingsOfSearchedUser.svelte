@@ -1,7 +1,7 @@
 <script>
     import { getBookings } from "$lib/bookingStore";
     import { searchedUser } from "$lib/searchStore";
-    import { MapPin,Clock10,Building,Building2,MonitorSmartphone } from 'lucide-svelte';
+    import { Building, Building2, Clock10, MapPin, MonitorSmartphone } from 'lucide-svelte';
 </script>
 
 

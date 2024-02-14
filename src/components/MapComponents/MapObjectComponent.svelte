@@ -9,12 +9,12 @@
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onMount } from 'svelte';
-	//Look into this so import is not needed
+//Look into this so import is not needed
 	import '../../styles/handles.css';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
+	import DoorSvg from './MapObjects/DoorSVG.svelte';
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
-	import DoorSvg from './MapObjects/DoorSVG.svelte';
 
 	export let mapObject: MapObject;
 	export let target: HTMLElement;
@@ -129,7 +129,7 @@
 			window.removeEventListener('mouseup', handleDragEnd);
 			window.removeEventListener('mousemove', updateInstantiation);
 			dispatch('release', {
-				transform: mapObject.transform
+				obj: mapObject,
 			});
 		};
 
@@ -361,7 +361,7 @@
 		on:mousedown={handleDragStart}
 		on:dblclick={() => dispatch('dblcDesk', mapObject)}
 	>
-		<DeskSvg {selected} text={mapObject.id} />
+		<DeskSvg {selected} assigned={mapObject.userId !== null} text={mapObject.id} />
 	</div>
 {:else if mapObject.type === mapObjectType.Room}
 	<div

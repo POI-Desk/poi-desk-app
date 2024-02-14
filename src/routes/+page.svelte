@@ -1,12 +1,12 @@
 <script lang="ts">
 	import DateSelection from '$components/DateSelection.svelte';
 
+	import { goto } from '$app/navigation';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
 	import FloorMap from '$components/MapComponents/FloorMap.svelte';
-	import { onMount } from 'svelte';
 	import { user } from '$lib/userStore';
-	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	onMount(() => {
 		if (!$user.pk_userid) {

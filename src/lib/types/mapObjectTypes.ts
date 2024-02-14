@@ -14,5 +14,6 @@ export type MapObject = {
 	id: string;
 	type: string;
 	transform: TransformType;
-	text?: string;
+	text: string | null;
+	userId: string | null;
 };

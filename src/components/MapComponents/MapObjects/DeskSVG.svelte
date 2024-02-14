@@ -5,6 +5,7 @@
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;
 	export let selected: boolean = false;
+	export let assigned = false;
 	export let bookedMorning: boolean = false;
 	export let bookedAfternoon: boolean = false;
 	export let text: string;
@@ -34,6 +35,7 @@
 
 	const freeColor: string = '#D1F3FF';
 	const bookedColor: string = '#9EBBD9';
+	const assignedColor: string = '#FF4538';
 	//E680BA
 	//red: FF4538
 
@@ -58,18 +60,18 @@
 			ry="2"
 			stroke={selected ? '#8B80F9' : '#1A4775'}
 			stroke-width={borderThickness}
-			fill={bookedMorning || bookedAfternoon ? bookedColor : freeColor}
+			fill={bookedMorning || bookedAfternoon ? bookedColor : assigned ? assignedColor : freeColor}
 		/>
 		<polygon
 			points="{borderThickness},{borderThickness} {width -
 				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-			fill={bookedMorning ? bookedColor : freeColor}
+			fill={bookedMorning ? bookedColor : assigned ? assignedColor : freeColor}
 			stroke="none"
 		/>
 		<polygon
 			points="{width - borderThickness},{height - borderThickness} {width -
 				borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-			fill={bookedAfternoon ? bookedColor : freeColor}
+			fill={bookedAfternoon ? bookedColor : assigned ? assignedColor : freeColor}
 			stroke="none"
 		/>
 		<text

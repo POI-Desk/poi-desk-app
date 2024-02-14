@@ -46,7 +46,7 @@
 		type TransformType
 	} from '$lib/types/transformType';
 	import { user } from '$lib/userStore';
-	import { getModalStore, ProgressBar, type ModalSettings, filter } from '@skeletonlabs/skeleton';
+	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -58,22 +58,28 @@
 	let panz: PanZoom;
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
-	let deletedMapObjectDBIds: string[] = [];
 
 	let currentBuildingID: string = '';
 	let currentFloorID: string = '';
-	let loadingMap: boolean = false;
+
+	let showMapLoader: boolean = true;
 
 	const modalStore = getModalStore();
 
 	const modal: ModalSettings = {
 		type: 'component',
 		component: 'modalEditDesk',
+		response: (response: { userId: string } | null) => {
+			if (!response?.userId) return;
+
+			$selectedMapObject!.userId = response.userId;
+			mapObjects[$selectedMapObject!.id].rerenderMapObject();
+		}
 	};
 
 	const getBuildings = graphql(`
-		query GetBuildings($floorId: ID!) {
-			getBuildingsInLocation(locationid: $floorId) {
+		query GetBuildings($locationId: ID!) {
+			getBuildingsInLocation(locationid: $locationId) {
 				pk_buildingid
 				buildingname
 				floors {
@@ -86,16 +92,20 @@
 
 	$: mapData = $getMapByFloor.data?.getMapByFloor;
 
-	$: $map.height = mapData?.height ?? defaultMapProps.height;
-	$: $map.width = mapData?.width ?? defaultMapProps.width;
+	$: () => {
+		if (mapData) $map.height = mapData?.height;
+	};
+	$: () => {
+		if (mapData) $map.width = mapData?.width;
+	};
 
 	$: currentFloor = $getMapByFloor.data?.getMapByFloor?.floor;
 
-	const locationIdVienna: string = $user.location?.pk_locationid!; //TODO: get from admin user
+	$: locationId = $user.location?.pk_locationid!; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
 
-	const fetchBuildings = async (id: string) => {
-		await getBuildings.fetch({ variables: { floorId: id } });
+	const fetchBuildings = async (locationId: string) => {
+		await getBuildings.fetch({ variables: { locationId: locationId } });
 	};
 
 	onMount(() => {
@@ -145,7 +155,7 @@
 	};
 
 	const initializeMap = async () => {
-		await fetchBuildings(locationIdVienna);
+		await fetchBuildings(locationId);
 		await changeBuilding(buildings[0].pk_buildingid, buildings[0].floors![0].pk_floorid);
 	};
 
@@ -162,7 +172,7 @@
 			);
 	};
 
-	const discardUnsavedChanges = () => drawMapFromLocalDbData();
+	const discardUnsavedChanges = () => drawMapFromLocalDbData(false);
 
 	const createMapObject = (
 		event: MouseEvent,
@@ -170,7 +180,8 @@
 		initialTransform: TransformType | null,
 		id: string = '',
 		dbID: string | null = null,
-		text: string = ''
+		text: string = '',
+		userId: string | null = null
 	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
@@ -178,7 +189,8 @@
 			id: id === '' ? genRandomId(type) : id,
 			type: type,
 			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) },
-			text: text
+			text: text,
+			userId: userId
 		};
 
 		if (initialTransform == null) {
@@ -190,7 +202,6 @@
 			target: initialTransform == null ? main : grid,
 			props: {
 				mapObject: mapObject,
-				// enabled: initialTransform != null,
 				target: grid,
 				main: main,
 				drawer: container,
@@ -213,15 +224,16 @@
 		});
 
 		// enabled: boolean
-		element.$on('release', (event: CustomEvent<{ transform: TransformType }>) => {
+		element.$on('release', (event: CustomEvent<{ obj: MapObject }>) => {
 			panz.resume();
 			// if (!event.detail.enabled) {
 			// 	delSelectedMapObject();
 			// 	return;
 			// }
-			resizeGrid(event.detail.transform);
+			resizeGrid(event.detail.obj.transform);
 			normalizeGridSize();
 			rerenderObjects();
+			saveMapObject(event.detail.obj);
 		});
 
 		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
@@ -370,7 +382,7 @@
 
 	const delSelectedMapObject = () => {
 		if (!$selectedMapObject) return;
-		delMapObject($selectedMapObject!);
+		delMapObject($selectedMapObject);
 		$selectedMapObject = null;
 	};
 
@@ -445,14 +457,13 @@
 	};
 
 	const drawMapFromLocalDbData = (recenter: boolean = true) => {
-		emptyMap();
 		if (!mapData) {
 			return;
 		}
+		emptyMap();
 
 		$map.height = mapData.height;
 		$map.width = mapData.width;
-		panz.zoomAbs(0, 0, 1);
 
 		mapData.desks!.map((desk) => {
 			createMapObject(
@@ -466,7 +477,9 @@
 					rotation: desk.rotation
 				} as TransformType,
 				desk.desknum,
-				desk.pk_deskid
+				desk.pk_deskid,
+				'',
+				desk.user?.pk_userid
 			);
 		});
 		mapData.doors!.map((door) => {
@@ -530,32 +543,109 @@
 				label.text
 			);
 		});
-		if (recenter) recenterMap();
+		if (recenter) {
+			panz.zoomAbs(0, 0, 1);
+			recenterMap();
+		}
 		$allMapObjects = $allMapObjects;
 		mapObjects = mapObjects;
 	};
 
+	const saveMapObject = async (mapObj: MapObject) => {
+		if (mapData == null) return;
+		switch (mapObj.type) {
+			case mapObjectType.Desk:
+				const desk = await updateDesksOnMap.mutate({
+					mapId: mapData?.pk_mapId,
+					deskInputs: [getInputTypeFromMapObject(mapObj) as UpdateDeskInput]
+				});
+				if (desk.errors) return console.error(desk.errors);
+
+				const dObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+				dObj!.dbID = desk.data?.updateDesksOnMap![0].pk_deskid! ?? dObj?.dbID;
+				break;
+			case mapObjectType.Room:
+				const room = await updateRoomsOnMap.mutate({
+					mapId: mapData?.pk_mapId,
+					roomInputs: [getInputTypeFromMapObject(mapObj) as UpdateRoomInput]
+				});
+				if (room.errors) return console.error(room.errors);
+
+				const rObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+				rObj!.dbID = room.data?.updateRoomsOnMap![0].pk_roomId! ?? rObj?.dbID;
+				break;
+			case mapObjectType.Wall:
+				const wall = await updateWallsOnMap.mutate({
+					mapId: mapData?.pk_mapId,
+					wallInputs: [getInputTypeFromMapObject(mapObj) as UpdateWallInput]
+				});
+				if (wall.errors) return console.error(wall.errors);
+
+				const wObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+				wObj!.dbID = wall.data?.updateWallsOnMap![0].pk_wallId! ?? wObj?.dbID;
+				break;
+			case mapObjectType.Door:
+				const door = await updateDoorsOnMap.mutate({
+					mapId: mapData?.pk_mapId,
+					doorInputs: [getInputTypeFromMapObject(mapObj) as UpdateDoorInput]
+				});
+				if (door.errors) return console.error(door.errors);
+
+				const doObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+				doObj!.dbID = door.data?.updateDoorsOnMap![0].pk_doorId! ?? doObj?.dbID;
+				break;
+			case mapObjectType.Label:
+				const label = await updateLabelsOnMap.mutate({
+					mapId: mapData?.pk_mapId,
+					labelInputs: [getInputTypeFromMapObject(mapObj) as UpdateLabelInput]
+				});
+				if (label.errors) return console.error(label.errors);
+
+				const lObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+				lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
+				break;
+		}
+	};
+
 	const saveMap = async () => {
 		if (mapData == null) return;
-		
+
 		resetSelectedMapObjectStyle();
 		$selectedMapObject = null;
-		deletedMapObjectDBIds = [];
+		showMapLoader = false;
 
 		const desks: UpdateDeskInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Desk)
 			.map((obj) => {
 				const desk = mapData!.desks?.find((d) => d.pk_deskid === obj.dbID);
+				if (obj.id === 'A31') {
+					console.log(desk);
+					console.log(obj);
+				}
 				if (
 					compareObjectsByValues(
-						{ dbID: obj.dbID, id: obj.id, x: obj.transform.x, y: obj.transform.y },
-						{ dbID: desk?.pk_deskid, id: desk?.desknum, x: desk?.x, y: desk?.y }
+						{
+							dbID: obj.dbID,
+							id: obj.id,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							userId: obj.userId
+						},
+						{
+							dbID: desk?.pk_deskid,
+							id: desk?.desknum,
+							x: desk?.x,
+							y: desk?.y,
+							userId: desk?.user?.pk_userid
+						}
 					)
 				)
 					return {} as UpdateDeskInput;
 				return getInputTypeFromMapObject(obj) as UpdateDeskInput;
 			})
 			.filter((desk) => Object.keys(desk).length !== 0);
+
+		console.log(desks);
 
 		const rooms: UpdateRoomInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Room)
@@ -816,11 +906,12 @@
 				obj.dbID;
 			return obj;
 		});
+		showMapLoader = true;
 	};
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<!--temporarily-->
+	<!--temporary-->
 	<a href="/" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
 	<!---->
 	<button
@@ -844,12 +935,24 @@
 		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors ?? []}
 	/>
 	<AdminSerachbar
-		names={$allMapObjects.filter(o => o.type === mapObjectType.Desk).map((o) => o.id)}
+		values={mapData?.desks
+			?.map((desk) => ({
+				label: desk.desknum,
+				value: desk.desknum
+			}))
+			.concat(
+				mapData?.desks
+					?.filter((d) => d.user !== null)
+					.map((des) => ({ label: des.user?.username ?? des.desknum, value: des.desknum })) // des.user CAN NOT BE NULL!!!!!!!!
+			)
+			?.sort(
+				(a, b) =>
+					parseFloat(a.label.substring(2, a.label.length)) -
+					parseFloat(b.label.substring(2, b.label.length))
+			) ?? []}
 		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
-	<button 
-		class="btn bg-primary-500 absolute left-20"
-		on:click={discardUnsavedChanges}>
+	<button class="btn bg-primary-500 absolute left-20" on:click={discardUnsavedChanges}>
 		Discrad
 	</button>
 	<div bind:this={container} class="overflow-hidden h-full">
@@ -860,7 +963,7 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if $getMapByFloor.fetching}
+			{#if $getMapByFloor.fetching && showMapLoader}
 				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
 					<ProgressBar value={undefined} />
 				</div>

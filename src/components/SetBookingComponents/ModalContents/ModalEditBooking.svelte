@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { currentBooking, displayedTime, userBookings } from '$lib/bookingStore';
 	import { delBooking } from '$lib/mutations/booking';
-	import { getModalStore, ListBox, ListBoxItem, popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import {
 		Armchair,
 		ArrowLeft,
