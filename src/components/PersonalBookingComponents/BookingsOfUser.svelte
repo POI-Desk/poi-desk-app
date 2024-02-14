@@ -55,7 +55,7 @@
 {/await}
 
 {#if (bookings?.length === 0)}
-  No future bookings
+  <p class="text-xl">No future bookings</p>
 {/if}
 
 <!--<div class="flex flex-wrap">-->

@@ -241,11 +241,11 @@
   const iconContainerClasses = "rounded-3xl flex justify-center variant-filled-tertiary";
   const iconClasses = "rounded-3xl m-3 mx-5";
   const textClasses = "col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white";
+  const cBase = "card p-4 shadow-xl space-y-4";
 </script>
 
 {#if $modalStore[0]}
-  <!--	<div class="card p-4 w-modal h-screen shadow-xl bg-slate-200 lg:w-[470px]">-->
-  <div class="rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200 p-4">
+  <div class="{cBase} rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200 p-4">
     {#if deleteBookingState}
       <div class="h-full flex flex-col justify-center items-center text-center px-4 pt-5">
         <div class="grid grid-cols-3 align-middle">
@@ -299,7 +299,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {editDate}
+            {$currentBooking.date}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
