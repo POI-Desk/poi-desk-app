@@ -36,7 +36,6 @@
   });
 
   async function getSearchUsers(pageNumber_param: number) {
-    console.log("geSearchUsers");
     if (typedUsername === "") {
       pageNumber = 1;
     }
@@ -140,14 +139,11 @@
 
   function handleDropDownClick() {
     dropdownIsOpen = true;
-    console.log(dropdownIsOpen + " dropDown wurde geklickt");
   }
 
   const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
-
     if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return;
     dropdownIsOpen = false;
-    console.log(dropdownIsOpen + " dropDown sollte wieder zu sein");
   };
 
   $: {
@@ -156,6 +152,9 @@
     }
     if (typedUsername) {
       getSearchUsers(pageNumber);
+    }
+    if (typedUsername === "") {
+      dropdownIsOpen = false;
     }
   }
 
@@ -181,19 +180,17 @@
           class="input my-1 w-full rounded-full pl-20 py-3 border-none"
           placeholder="Search..."
           bind:value={typedUsername}
-          on:click={handleDropDownClick}
-
+          on:input={handleDropDownClick}
         />
         <div class="absolute left-0 right-0 w-full px-2 z-10">
           {#if dropdownIsOpen}
 
             <ul
-              style="background-color: white;"
-              class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
+              class="dropdown-content menu shadow variant-filled-tertiary dark:bg-surface-600 rounded-xl max-h-90 flex-nowrap overflow-auto"
             >
               {#each searchUsers as usr}
                 <li class="m-1 flex justify-center">
-                  <button class="w-full px-3 border rounded-2xl flex flex-col"
+                  <button class="w-full px-3 py-2 border rounded-2xl flex flex-col"
                           style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
                           on:click={() => {
 								$searchedUser = usr;

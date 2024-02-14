@@ -48,10 +48,13 @@
   window.addEventListener("popstate", () => {
     modalStore.close();
   });
+
+  const iconContainerClasses = "rounded-3xl flex justify-center variant-filled-tertiary";
+  const textClasses = "col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white";
 </script>
 
 {#if $modalStore[0]}
-  <div class="{cBase} rounded-xl w-screen h-screen flex flex-col bg-slate-200">
+  <div class="{cBase} rounded-xl w-screen h-screen lg:w-[470px] flex flex-col bg-slate-200">
     <div class="grid grid-cols-3 items-center">
       <div>
         {#if (currentPage !== "start")}
@@ -72,23 +75,23 @@
       </button>
     </div>
 
-    <div class="h-full flex items-center justify-center">
+    <div class="h-full flex items-center justify-center text-primary-500">
       <div class="grid grid-cols-3 grid-rows-6 gap-7">
         {#if (currentPage === "start")}
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Calendar />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {date.toLocaleDateString('de-DE')}
           </div>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Clock />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {#if ($interval.morning && $interval.afternoon)}
               <div>07:00-20:00</div>
             {:else if ($interval.morning)}
@@ -97,31 +100,31 @@
               <div>13:00-20:00</div>
             {/if}
           </div>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <MapPin />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$user.location?.locationname}
           </div>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Building />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesks[0].floor.building.buildingname}
           </div>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Cuboid />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesks[0].floor.floorname}
           </div>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Armchair />
             </div>
@@ -131,7 +134,7 @@
           >
             Show Desks
           </button>
-          <div class="rounded-3xl flex justify-center bg-white">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <User />
             </div>
@@ -143,23 +146,23 @@
           </button>
         {:else if (currentPage === "desks")}
           {#each $selectedDesks as desk}
-            <div class="rounded-3xl flex justify-center bg-white">
+            <div class="{iconContainerClasses}">
               <div class="rounded-3xl m-3 mx-5">
                 <Armchair />
               </div>
             </div>
-            <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+            <div class="{textClasses}">
               {desk.desknum}
             </div>
           {/each}
         {:else if (currentPage === "users")}
           {#each $selectedUsers as user}
-            <div class="rounded-3xl flex justify-center bg-white">
+            <div class="{iconContainerClasses}">
               <div class="rounded-3xl m-3 mx-5">
                 <User />
               </div>
             </div>
-            <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+            <div class="{textClasses}">
               {user.username}
             </div>
           {/each}

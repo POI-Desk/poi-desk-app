@@ -36,7 +36,7 @@
 </script>
 
 
-<h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500">POI-Desk</h1>
+<h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token">POI-Desk</h1>
 
 <div class="h-screen flex flex-col items-center justify-center">
         <div class="p-3">

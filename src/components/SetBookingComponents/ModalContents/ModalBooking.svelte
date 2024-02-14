@@ -108,10 +108,13 @@
   window.addEventListener("popstate", () => {
     modalStore.close();
   });
+
+  const iconContainerClasses = "rounded-3xl flex justify-center variant-filled-tertiary";
+  const textClasses = "col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white";
 </script>
 
 {#if $modalStore[0]}
-  <div class="{cBase} relative rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
+  <div class="{cBase} rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
     {#if selectionPage}
       <div class=" flex justify-center items-center">
         <div class="flex items-center gap-x-5 bg-white text-primary-500 rounded-full p-4 px-10">
@@ -140,73 +143,74 @@
       </div>
       <div class="variant-filled-tertiary h-24 rounded-full">
         <button on:click={() => whenSelection()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
-        >Buchen
+        >Book
         </button
         >
       </div>
     {:else}
-      <button
-        on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
-        class="absolute left-7 top-11 px-4 py-2 rounded-full"
-      >
-        <ArrowLeft />
-      </button>
-      <h1 class="text-center text-3xl p-3">Buchung</h1>
+      <div class="grid grid-cols-3 text-center align-middle px-4 pt-5">
+        <button
+          on:click={() => {selectionPage = !selectionPage; $interval.morning = false; $interval.afternoon = false;}}
+        >
+          <ArrowLeft />
+        </button>
+        <h1 class="text-center text-3xl p-3">Booking</h1>
+      </div>
       <div class="h-full flex items-center justify-center text-primary-500">
         <div class="grid grid-cols-3 grid-rows-6 gap-7">
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Calendar />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {date.toLocaleDateString('de-DE')}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Clock />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$displayedTime}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <MapPin />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$user.location?.locationname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Building />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.floor.building.buildingname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Cuboid />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.floor.floorname}
           </div>
-          <div class="rounded-3xl flex justify-center variant-filled-tertiary">
+          <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
               <Armchair />
             </div>
           </div>
-          <div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white">
+          <div class="{textClasses}">
             {$selectedDesk.desknum}
           </div>
         </div>
       </div>
       <div class="variant-filled-tertiary h-24 rounded-full">
         <button on:click={() => finishBooking()} class="btn rounded-full w-full h-full text-xl variant-filled-primary"
-        >Buchen
+        >Book
         </button
         >
       </div>
