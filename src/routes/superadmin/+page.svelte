@@ -47,27 +47,29 @@
 					console.log(value);
 					
 					$isSaveDisabled = true;
+					saveFloorChanges(building.id, value.data?.addBuilding?.pk_buildingid);
+
 				});
 			}
-			//saveFloorChanges();
 			
         }
 	}
 
-	// async function saveFloorChanges() {
-	// 	if ($newFloors.some(floor => floor.name === "")) {
-	// 		alert('Missing floor name');
-	// 	} else {
-	// 		for (const floor of $newFloors) {
-	// 			const result = await addFloor.mutate({
-	// 				buildingid: floor.buildingid,
-	// 				name: floor.name
-	// 			});
-	// 			console.log("FLOOR")
-	// 			console.log(result)
-	// 		}
-	// 	}
-	// }
+	async function saveFloorChanges(mgmtId: any, buildingid:any) {
+		if ($newFloors.some(floor => floor.name === "")) {
+			alert('Missing floor name');
+		} else {
+			const currentFloors = $newFloors.filter((f) => f.buildingid === mgmtId);
+			for (const floor of currentFloors) {
+				const result = await addFloor.mutate({
+					buildingid,
+					name: floor.name
+				});
+				console.log("FLOOR")
+				console.log(result)
+			}
+		}
+	}
 </script>
 
 <AddLocation />
