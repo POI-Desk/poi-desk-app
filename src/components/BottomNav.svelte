@@ -23,15 +23,14 @@
   >
     <div class="grid grid-cols-3 w-full">
       <div class="flex flex-col justify-center items-center">
-        <!-- TODO CHANGE -->
         <RadioItem bind:group={page}
                    name="page"
-                   value={"/profile"}
+                   value={"/user"}
                    class="flex flex-col items-center justify-center">
           <User strokeWidth="2.5" size="30" />
         </RadioItem>
 
-        <button on:click={() => page = "/profile"} class="select-none font-semibold">
+        <button on:click={() => page = "/user"} class="select-none font-semibold">
           Profiles
         </button>
       </div>

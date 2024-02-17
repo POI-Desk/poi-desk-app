@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getModalStore } from "@skeletonlabs/skeleton";
+  import { getModalStore, getToastStore, type ToastSettings } from "@skeletonlabs/skeleton";
   import { displayedTime, interval, selectedDesk } from "$lib/bookingStore";
   import { dateValue, maxBookingDate, todaysDate } from "$lib/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
@@ -27,6 +27,14 @@
   $interval.morning = false;
   $interval.afternoon = false;
 
+  const toastStore = getToastStore();
+
+  const cantBook: ToastSettings = {
+    message: 'You already have a booking at that time!',
+    timeout: 3000,
+    background: 'variant-filled-error'
+  };
+
   async function finishBooking() {
     const value = await bookDesk.mutate({
       booking: {
@@ -38,6 +46,10 @@
         extendedid: ""
       }
     });
+
+    if (value.data?.bookDesk == null) {
+      toastStore.trigger(cantBook);
+    }
 
     await getBookingsByDate.fetch({
       variables: { date: $dateValue, floorId: $floorid },
