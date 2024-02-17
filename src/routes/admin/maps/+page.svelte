@@ -64,16 +64,19 @@
 
 	let showMapLoader: boolean = true;
 
+	let saving: boolean = false;
+
 	const modalStore = getModalStore();
 
 	const modal: ModalSettings = {
 		type: 'component',
 		component: 'modalEditDesk',
 		response: (response: { userId: string } | null) => {
-			if (!response?.userId) return;
+			if (!response?.userId || !$selectedMapObject) return;
 
 			$selectedMapObject!.userId = response.userId;
 			mapObjects[$selectedMapObject!.id].rerenderMapObject();
+			saveMapObject($selectedMapObject!);
 		}
 	};
 
@@ -224,17 +227,22 @@
 		});
 
 		// enabled: boolean
-		element.$on('release', (event: CustomEvent<{ obj: MapObject }>) => {
-			panz.resume();
-			// if (!event.detail.enabled) {
-			// 	delSelectedMapObject();
-			// 	return;
-			// }
-			resizeGrid(event.detail.obj.transform);
-			normalizeGridSize();
-			rerenderObjects();
-			saveMapObject(event.detail.obj);
-		});
+		element.$on(
+			'release',
+			(event: CustomEvent<{ obj: MapObject; start: TransformType; destroyed: boolean }>) => {
+				panz.resume();
+
+				if (event.detail.destroyed) return;
+
+				//check if the object was actually altered
+				if (compareObjectsByValues(event.detail.obj.transform, event.detail.start)) return;
+
+				resizeGrid(event.detail.obj.transform);
+				normalizeGridSize();
+				rerenderObjects();
+				saveMapObject(event.detail.obj);
+			}
+		);
 
 		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
 			selectMapObject(event.detail);
@@ -383,15 +391,52 @@
 	const delSelectedMapObject = () => {
 		if (!$selectedMapObject) return;
 		delMapObject($selectedMapObject);
-		$selectedMapObject = null;
 	};
 
-	const delMapObject = (obj: MapObject) => {
+	const delMapObject = async (obj: MapObject) => {
+		if ($getMapByFloor.fetching || saving) {
+			console.log(saving, $getMapByFloor.fetching);
+			return;
+		}
+
+		let deletePromis;
+		if (obj.dbID) {
+			showMapLoader = false;
+
+			switch (obj.type) {
+				case mapObjectType.Desk:
+					deletePromis = deleteDesks.mutate({ deskIds: [obj.dbID] });
+					break;
+				case mapObjectType.Room:
+					deletePromis = deleteRooms.mutate({ roomIds: [obj.dbID] });
+					break;
+				case mapObjectType.Wall:
+					deletePromis = deleteWalls.mutate({ wallIds: [obj.dbID] });
+					break;
+				case mapObjectType.Door:
+					deletePromis = deleteDoors.mutate({ doorIds: [obj.dbID] });
+					break;
+				case mapObjectType.Label:
+					deletePromis = deleteLabels.mutate({ labelIds: [obj.dbID] });
+					break;
+			}
+		}
+
 		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== obj.id);
 		mapObjects[obj.id].$destroy();
 		delete mapObjects[obj.id];
 		normalizeGridSize();
 		rerenderObjects();
+		if (obj === $selectedMapObject) $selectedMapObject = null;
+
+		if (obj.dbID) {
+			await deletePromis;
+			await getMapByFloor.fetch({
+				variables: { floorID: currentFloorID },
+				policy: CachePolicy.NetworkOnly
+			});
+			showMapLoader = true;
+		}
 	};
 
 	const resetSelectedMapObjectStyle = () => {
@@ -553,6 +598,9 @@
 
 	const saveMapObject = async (mapObj: MapObject) => {
 		if (mapData == null) return;
+		saving = true;
+		showMapLoader = false;
+
 		switch (mapObj.type) {
 			case mapObjectType.Desk:
 				const desk = await updateDesksOnMap.mutate({
@@ -605,11 +653,28 @@
 				lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
 				break;
 		}
+
+		await updateMap.mutate({
+			mapId: mapData.pk_mapId,
+			mapInput: {
+				height: $map.height,
+				width: $map.width
+			}
+		});
+
+		await getMapByFloor.fetch({
+			variables: { floorID: currentFloorID },
+			policy: CachePolicy.NetworkOnly
+		});
+
+		showMapLoader = true;
+		saving = false;
 	};
 
 	const saveMap = async () => {
 		if (mapData == null) return;
 
+		saving = true;
 		resetSelectedMapObjectStyle();
 		$selectedMapObject = null;
 		showMapLoader = false;
@@ -618,10 +683,6 @@
 			.filter((obj) => obj.type === mapObjectType.Desk)
 			.map((obj) => {
 				const desk = mapData!.desks?.find((d) => d.pk_deskid === obj.dbID);
-				if (obj.id === 'A31') {
-					console.log(desk);
-					console.log(obj);
-				}
 				if (
 					compareObjectsByValues(
 						{
@@ -636,7 +697,7 @@
 							id: desk?.desknum,
 							x: desk?.x,
 							y: desk?.y,
-							userId: desk?.user?.pk_userid
+							userId: desk?.user?.pk_userid ?? null
 						}
 					)
 				)
@@ -644,8 +705,6 @@
 				return getInputTypeFromMapObject(obj) as UpdateDeskInput;
 			})
 			.filter((desk) => Object.keys(desk).length !== 0);
-
-		console.log(desks);
 
 		const rooms: UpdateRoomInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Room)
@@ -907,6 +966,7 @@
 			return obj;
 		});
 		showMapLoader = true;
+		saving = false;
 	};
 </script>
 
@@ -964,9 +1024,12 @@
 			class="z-0"
 		>
 			{#if $getMapByFloor.fetching && showMapLoader}
-				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
-					<ProgressBar value={undefined} />
-				</div>
+				<canvas
+					width={defaultMapProps.width}
+					height={defaultMapProps.width}
+					draggable="false"
+					class="canvasStyle"
+				/>
 			{:else if mapData}
 				<canvas
 					bind:this={canvas}

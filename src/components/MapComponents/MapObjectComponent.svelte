@@ -8,8 +8,8 @@
 	import { map } from '$lib/stores/mapCreationStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
-	import { createEventDispatcher, onMount } from 'svelte';
-//Look into this so import is not needed
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	//Look into this so import is not needed
 	import '../../styles/handles.css';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
@@ -31,6 +31,7 @@
 	let offsetY: number = 0;
 
 	let selected: boolean = false;
+	let destroyed: boolean = false;
 
 	let right: HTMLDivElement | null = null;
 	let bottom: HTMLDivElement | null = null;
@@ -64,6 +65,10 @@
 		// mapObject.transform.y = enabled ? closestNumber(y, mapMagnetSteps) - wallOffset : y;
 		mapObject.transform.x = closestNumber(x, mapMagnetSteps) - wallOffset;
 		mapObject.transform.y = closestNumber(y, mapMagnetSteps) - wallOffset;
+	});
+
+	onDestroy(() => {
+		destroyed = true;
 	});
 
 	const enable = () => {
@@ -110,9 +115,10 @@
 		offsetX = event.clientX / $map.scale - mapObject.transform.x;
 		offsetY = event.clientY / $map.scale - mapObject.transform.y;
 		dispatch('select', mapObject.transform);
+		let start: TransformType = { ...mapObject.transform };
 
 		const handleDragMove = (e: MouseEvent) => {
-			if (dragging && !resizing) {
+			if (dragging && !resizing && drag && !destroyed) {
 				mapObject.transform.x = e.clientX / $map.scale - offsetX;
 				mapObject.transform.y = e.clientY / $map.scale - offsetY;
 				let x: number = closestNumber(mapObject.transform.x, mapMagnetSteps);
@@ -127,21 +133,25 @@
 			dragging = false;
 			window.removeEventListener('mousemove', handleDragMove);
 			window.removeEventListener('mouseup', handleDragEnd);
-			window.removeEventListener('mousemove', updateInstantiation);
+			// window.removeEventListener('mousemove', updateInstantiation);
+
 			dispatch('release', {
 				obj: mapObject,
+				start: start,
+				destroyed: destroyed
 			});
 		};
 
 		window.addEventListener('mousemove', handleDragMove);
 		window.addEventListener('mouseup', handleDragEnd);
-		window.addEventListener('mousemove', updateInstantiation);
+		// window.addEventListener('mousemove', updateInstantiation);
 	};
 
 	// const openModal = () => {
 	// 	dispatch('openModal', mapObject);
 	// };
 
+	// not used
 	const updateInstantiation = (event: MouseEvent) => {
 		if (!dragging) return;
 
@@ -178,6 +188,8 @@
 			);
 		});
 	};
+
+	export const isDragging = () => dragging;
 
 	function resizeRectangle(element: HTMLElement) {
 		let active: HTMLElement | null = null;
