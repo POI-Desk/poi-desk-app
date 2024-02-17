@@ -8,3 +8,12 @@ export const addBuilding = graphql(`
 		}
 	}
 `);
+
+export const deleteBuilding = graphql(`
+	mutation deleteBuilding($id: ID!) {
+		deleteBuilding(id: $id) {
+			pk_buildingid,
+			buildingname
+		}
+	}
+`);

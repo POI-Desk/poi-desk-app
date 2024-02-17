@@ -1,3 +1,4 @@
+import type { Writable } from '$houdini';
 import { writable } from 'svelte/store';
 
 export const saveChangesClicked = writable(false);
@@ -12,3 +13,6 @@ export const refreshLocations = writable(true);
 
 export const editBuildingclicked = writable(false);
 export const newFloors = writable([]);
+
+export const locationidToEdit = writable("");
+export const buildingidToEdit = writable("");

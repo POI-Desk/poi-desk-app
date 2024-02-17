@@ -8,3 +8,12 @@ export const addFloor = graphql(`
 		}
 	}
 `);
+
+export const deleteFloor = graphql(`
+	mutation deleteFloor($id: ID!) {
+		deleteFloor(id: $id) {
+			pk_floorid,
+			floorname
+		}
+	}
+`);

@@ -3,7 +3,7 @@
 	import { deleteLocation } from "$lib/mutations/locationMutations";
 	import { getLocations } from "$lib/queries/locationQueries";
 	import { onMount } from "svelte";
-	import { refreshLocations } from "$lib/superAdminStore";
+	import { refreshLocations, locationidToEdit } from "$lib/superAdminStore";
 
 	$: locations = $getLocations?.data?.getAllLocations;
 
@@ -37,7 +37,7 @@
 			<div>
 				<div class="variant-outline-primary">
 					{location.locationname}
-					<button>Edit</button>
+					<button on:click={() => $locationidToEdit = location.pklocationid}>Edit</button>
 					<button on:click={() => onDeleteLocation(location.pklocationid)}>Delete</button>
 				</div>
 				<br>

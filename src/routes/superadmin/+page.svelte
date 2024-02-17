@@ -1,11 +1,13 @@
 <script lang="ts">
 	import AddBuilding from "$components/SuperAdminComponents/AddBuilding.svelte";
 	import AddLocation from "$components/SuperAdminComponents/AddLocation.svelte";
+	import EditBuilding from "$components/SuperAdminComponents/EditBuilding.svelte";
+	import EditLocation from "$components/SuperAdminComponents/EditLocation.svelte";
 	import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
 	import { addBuilding } from '$lib/mutations/buildings';
 	import { addFloor } from "$lib/mutations/floors";
 	import { addLocation } from '$lib/mutations/locationMutations';
-	import { isSaveDisabled, newBuildings, newFloors, locationNames, newLocation, refreshLocations } from "$lib/superAdminStore"
+	import { buildingidToEdit, locationidToEdit, isSaveDisabled, newBuildings, newFloors, locationNames, newLocation, refreshLocations } from "$lib/superAdminStore"
 
 
 	async function saveLocationChanges() {
@@ -75,6 +77,14 @@
 <AddLocation />
 <AddBuilding />	
 
+{#if $locationidToEdit !== ""} 
+{$locationidToEdit}
+	
+	<EditLocation />
+	{#if $buildingidToEdit !== ""}
+		<EditBuilding />
+	{/if}
+{/if}
 
 <br>
 
