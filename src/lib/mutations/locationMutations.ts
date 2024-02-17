@@ -1,9 +1,9 @@
 import { graphql } from '$houdini';
 
 export const addLocation = graphql(`
-	mutation addLocation($name: String!, $id: ID) {
-		addLocation(name: $name, id: $id) {
-			pk_locationid,
+	mutation addLocation($name: String!) {
+		addLocation(name: $name) {
+			pklocationid,
             locationname
 		}
 	}
@@ -12,7 +12,7 @@ export const addLocation = graphql(`
 export const deleteLocation = graphql(`
 	mutation deleteLocation($id: ID!) {
 		deleteLocation(id: $id) {
-			pk_locationid,
+			pklocationid,
 			locationname
 		}
 	}

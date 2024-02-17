@@ -24,7 +24,6 @@
 		const result = await deleteLocation.mutate({
 			id: id
 		});
-			
 		$refreshLocations = !$refreshLocations;
 	}
 </script>
@@ -39,7 +38,7 @@
 				<div class="variant-outline-primary">
 					{location.locationname}
 					<button>Edit</button>
-					<button on:click={() => onDeleteLocation(location.pk_locationid)}>Delete</button>
+					<button on:click={() => onDeleteLocation(location.pklocationid)}>Delete</button>
 				</div>
 				<br>
 			</div>

@@ -1,6 +1,6 @@
 query getAllLocations @load {
 	getAllLocations {
-		pk_locationid
+		pklocationid
 		locationname
 	}
 }

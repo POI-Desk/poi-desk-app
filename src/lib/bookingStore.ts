@@ -42,7 +42,7 @@ export const getBookings = graphql(`
 						pk_buildingid
 						buildingname
 						location {
-							pk_locationid
+							pklocationid
 							locationname
 						}
 					}

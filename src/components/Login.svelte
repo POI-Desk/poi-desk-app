@@ -11,7 +11,7 @@
 				pk_userid
 				username
 				location {
-					pk_locationid
+					pklocationid
 					locationname
 				}
 			}

@@ -27,7 +27,7 @@
 	function onAddLocation() {
 		showAddLocation.set(true);
 		const newId = uuidv4();
-		$newLocation.id = newId;		
+		$newLocation.id = newId;
 	}
 
 
