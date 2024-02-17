@@ -6,7 +6,7 @@
 	import { doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import { getDeskById } from '$lib/queries/deskQueries';
-	import { getMapByFloor } from '$lib/queries/map';
+	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import type { MapTransform } from '$lib/types/mapTypes';
 	import { ProgressBar, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import type { PanZoom } from 'panzoom';
@@ -42,7 +42,7 @@
 	let wallObjects: { [key: string]: WallSvg } = {};
 	let labelObjects: { [key: string]: Label } = {};
 
-	$: mapData = $getMapByFloor.data?.getMapByFloor;
+	$: mapData = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor;
 
 	$: bookingsData = $getBookingsByDate.data?.getBookingsByDateOnFloor;
 
@@ -76,7 +76,7 @@
 	const updateMap = async () => {
 		if (!$floorid) return;
 		emptyMap();
-		await getMapByFloor.fetch({
+		await getPublishedMapOnFloor.fetch({
 			variables: { floorID: $floorid },
 			policy: CachePolicy.NetworkOnly
 		});
@@ -260,7 +260,7 @@
 		style="width: {map.width}px; height: {map.height}px;"
 		class="z-0"
 	>
-		{#if $getMapByFloor.fetching}
+		{#if $getPublishedMapOnFloor.fetching}
 			<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
 				<ProgressBar value={undefined} />
 			</div>
@@ -275,7 +275,7 @@
 		{/if}
 	</div>
 </div>
-{#if !$getMapByFloor.fetching && !mapData}
+{#if !$getPublishedMapOnFloor.fetching && !mapData}
 	<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
 		<p class="text-2xl">No map found for this floor</p>
 	</div>

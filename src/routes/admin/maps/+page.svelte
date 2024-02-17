@@ -34,7 +34,7 @@
 	import { createMap, updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
-	import { getMapByFloor } from '$lib/queries/map';
+	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -93,7 +93,7 @@
 		}
 	`);
 
-	$: mapData = $getMapByFloor.data?.getMapByFloor;
+	$: mapData = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor;
 
 	$: () => {
 		if (mapData) $map.height = mapData?.height;
@@ -102,7 +102,7 @@
 		if (mapData) $map.width = mapData?.width;
 	};
 
-	$: currentFloor = $getMapByFloor.data?.getMapByFloor?.floor;
+	$: currentFloor = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor?.floor;
 
 	$: locationId = $user.location?.pk_locationid!; //TODO: get from admin user
 	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
@@ -394,8 +394,8 @@
 	};
 
 	const delMapObject = async (obj: MapObject) => {
-		if ($getMapByFloor.fetching || saving) {
-			console.log(saving, $getMapByFloor.fetching);
+		if ($getPublishedMapOnFloor.fetching || saving) {
+			console.log(saving, $getPublishedMapOnFloor.fetching);
 			return;
 		}
 
@@ -431,7 +431,7 @@
 
 		if (obj.dbID) {
 			await deletePromis;
-			await getMapByFloor.fetch({
+			await getPublishedMapOnFloor.fetch({
 				variables: { floorID: currentFloorID },
 				policy: CachePolicy.NetworkOnly
 			});
@@ -471,7 +471,7 @@
 	const changeFloor = async (floorID: string) => {
 		if (floorID === currentFloorID) return;
 		emptyMap();
-		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
+		await getPublishedMapOnFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
 		drawMapFromLocalDbData();
 		currentFloorID = floorID;
 	};
@@ -479,14 +479,14 @@
 	const createNewMap = async (floorID: string) => {
 		const newMap = await createMap.mutate({
 			floorId: floorID,
-			mapInput: { height: defaultMapProps.height, width: defaultMapProps.height }
+			mapInput: { height: defaultMapProps.height, width: defaultMapProps.height, published: true } // TODO: puzblishing syste,
 		});
 
 		if (newMap.errors) return console.error(newMap.errors);
 		if (!newMap.data?.createMap) return;
 
 		panz.zoomAbs(0, 0, 1);
-		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
+		await getPublishedMapOnFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
 		recenterMap();
 	};
 
@@ -658,11 +658,12 @@
 			mapId: mapData.pk_mapId,
 			mapInput: {
 				height: $map.height,
-				width: $map.width
+				width: $map.width,
+				published: mapData.published
 			}
 		});
 
-		await getMapByFloor.fetch({
+		await getPublishedMapOnFloor.fetch({
 			variables: { floorID: currentFloorID },
 			policy: CachePolicy.NetworkOnly
 		});
@@ -896,7 +897,8 @@
 			mapId: mapData.pk_mapId,
 			mapInput: {
 				height: $map.height,
-				width: $map.width
+				width: $map.width,
+				published: mapData.published
 			}
 		});
 
@@ -954,14 +956,14 @@
 			if (resolve.errors) return console.error(resolve.errors);
 		});
 
-		const receivedMap = await getMapByFloor.fetch({
+		const receivedMap = await getPublishedMapOnFloor.fetch({
 			variables: { floorID: currentFloorID },
 			policy: CachePolicy.NetworkOnly
 		});
 
 		$allMapObjects = $allMapObjects.map((obj) => {
 			obj.dbID =
-				receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
+				receivedMap.data?.getPublishedMapOnFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
 				obj.dbID;
 			return obj;
 		});
@@ -977,7 +979,7 @@
 	<button
 		on:click={saveMap}
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$getMapByFloor.fetching ? 'loading' : 'SAVE'}</button
+		>{$getPublishedMapOnFloor.fetching ? 'loading' : 'SAVE'}</button
 	>
 	<MapObjectSelector
 		on:create={(event) => {
@@ -1023,7 +1025,7 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if $getMapByFloor.fetching && showMapLoader}
+			{#if $getPublishedMapOnFloor.fetching && showMapLoader}
 				<canvas
 					width={defaultMapProps.width}
 					height={defaultMapProps.width}
@@ -1041,7 +1043,7 @@
 			{/if}
 		</div>
 	</div>
-	{#if !$getMapByFloor.fetching && !mapData}
+	{#if !$getPublishedMapOnFloor.fetching && !mapData}
 		<button
 			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
 			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button

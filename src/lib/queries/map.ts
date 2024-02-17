@@ -1,11 +1,12 @@
 import { fragment, graphql } from '$houdini';
 
-export const getMapByFloor = graphql(`
+export const getPublishedMapOnFloor = graphql(`
 	query GetMapByFloor($floorID: ID!) {
-		getMapByFloor(floorId: $floorID) {
+		getPublishedMapOnFloor(floorId: $floorID) {
 			pk_mapId
 			height
 			width
+			published
 			desks {
 				pk_deskid
 				desknum
