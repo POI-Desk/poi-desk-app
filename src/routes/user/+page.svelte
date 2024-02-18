@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CachePolicy } from '$houdini';
 	import { user } from '$lib/userStore';
-	import { SlideToggle, type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
+	import { SlideToggle, type ModalSettings, getModalStore, LightSwitch } from "@skeletonlabs/skeleton";
 	import { Pen } from 'lucide-svelte';
 	import { getUserById } from '$lib/queries/userQuerries';
 
@@ -71,9 +71,7 @@
 		>
 		<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-around items-center">
 			<div>Light Mode</div>
-			<div class="flex items-center">
-				<SlideToggle name="themeChanger" bind:checked={lightModeTrue} />
-			</div>
+			<LightSwitch />
 		</div>
 		<!--
 		<div class="rounded-3xl bg-green-500 h-1/6 flex items-center justify-around">
