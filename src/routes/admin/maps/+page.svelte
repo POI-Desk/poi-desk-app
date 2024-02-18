@@ -5,6 +5,7 @@
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
+	import SnapshotSelector from '$components/MapComponents/SnapshotSelector.svelte';
 	import {
 		CachePolicy,
 		graphql,
@@ -59,8 +60,6 @@
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
-	let currentBuildingID: string = '';
-	let currentFloorID: string = '';
 
 	let showMapLoader: boolean = true;
 
@@ -80,20 +79,64 @@
 		}
 	};
 
-	const getBuildings = graphql(`
-		query GetBuildings($locationId: ID!) {
-			getBuildingsInLocation(locationid: $locationId) {
-				pk_buildingid
-				buildingname
-				floors {
-					pk_floorid
-					floorname
+	// INFO: VERY long
+	const mapSnapshot = graphql(`
+		query getMapSnapshotById($mapId: ID!){
+			getMapSnapshotById(mapId: $mapId){
+				pk_mapId
+			height
+			width
+			published
+			desks {
+				pk_deskid
+				desknum
+				x
+				y
+				rotation
+				user {
+					pk_userid
+					username
 				}
+			}
+			rooms {
+				pk_roomId
+				x
+				y
+				width
+				height
+			}
+			walls {
+				pk_wallId
+				x
+				y
+				rotation
+				width
+			}
+			doors {
+				pk_doorId
+				x
+				y
+				rotation
+				width
+			}
+			labels {
+				pk_labelId
+				text
+				x
+				y
+				rotation
+			}
+			floor {
+				floorname
+				building {
+					buildingname
+				}
+			}
 			}
 		}
 	`);
 
-	$: mapData = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor;
+	$: mapData = $mapSnapshot.data?.getMapSnapshotById;
 
 	$: () => {
 		if (mapData) $map.height = mapData?.height;
@@ -102,17 +145,9 @@
 		if (mapData) $map.width = mapData?.width;
 	};
 
-	$: currentFloor = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor?.floor;
-
-	$: locationId = $user.location?.pk_locationid!; //TODO: get from admin user
-	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
-
-	const fetchBuildings = async (locationId: string) => {
-		await getBuildings.fetch({ variables: { locationId: locationId } });
-	};
+	$: currentFloor = $mapSnapshot.data?.getMapSnapshotById?.floor;
 
 	onMount(() => {
-		initializeMap();
 		panz = panzoom(grid, {
 			...panzoomProps
 		});
@@ -134,15 +169,23 @@
 		window.removeEventListener('mousedown', handleMouseDown);
 	});
 
-	// Still in use? (retoric question)
-	const changeMapObjectId = (oldId: string, newId: string) => {
-		if (!oldId || !newId) return;
-		const mapObject: MapObject = $allMapObjects.find((obj) => obj.id === oldId)!;
-		mapObjects[newId] = mapObjects[oldId];
-		delete mapObjects[oldId];
-		mapObject.id = newId;
-		mapObjects[newId].rerenderMapObject();
-	};
+	const getMapById = async (mapId: string) => {
+		return await mapSnapshot.fetch({ variables: {mapId: mapId}, policy: CachePolicy.NetworkOnly })
+	}
+
+	const changeMap = async (mapId: string) => {
+		if (mapId === mapData?.pk_mapId){
+			return;
+		}
+
+		await getMapById(mapId);
+
+		if (mapData == null){
+			return
+		}
+
+		drawMapFromLocalDbData();
+	}
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
@@ -155,11 +198,6 @@
 			resetSelectedMapObjectStyle();
 			$selectedMapObject = null;
 		}
-	};
-
-	const initializeMap = async () => {
-		await fetchBuildings(locationId);
-		await changeBuilding(buildings[0].pk_buildingid, buildings[0].floors![0].pk_floorid);
 	};
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
@@ -431,10 +469,19 @@
 
 		if (obj.dbID) {
 			await deletePromis;
-			await getPublishedMapOnFloor.fetch({
-				variables: { floorID: currentFloorID },
-				policy: CachePolicy.NetworkOnly
-			});
+
+			if ($map.height !== mapData?.height || $map.width !== mapData?.width){
+				await updateMap.mutate({
+					mapId: mapData?.pk_mapId!,
+					mapInput: {
+						height: $map.height,
+						width: $map.width,
+						published: mapData?.published!
+					}
+				});
+			}
+
+			await getMapById(mapData?.pk_mapId!);
 			showMapLoader = true;
 		}
 	};
@@ -456,24 +503,6 @@
 			-($map.width / 2) + transform.x + transform.width / 2,
 			-($map.height / 2) + transform.y + transform.height / 2
 		);
-	};
-
-	const changeBuilding = async (buildingID: string, customFloorID: string | null) => {
-		if (buildingID === currentBuildingID) return;
-		currentBuildingID = buildingID;
-		let floorID: string =
-			customFloorID ??
-			buildings.filter((b) => b.pk_buildingid === buildingID)[0]?.floors![0].pk_floorid;
-		await changeFloor(floorID);
-		buildings = buildings;
-	};
-
-	const changeFloor = async (floorID: string) => {
-		if (floorID === currentFloorID) return;
-		emptyMap();
-		await getPublishedMapOnFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		drawMapFromLocalDbData();
-		currentFloorID = floorID;
 	};
 
 	const createNewMap = async (floorID: string) => {
@@ -654,19 +683,19 @@
 				break;
 		}
 
-		await updateMap.mutate({
-			mapId: mapData.pk_mapId,
-			mapInput: {
-				height: $map.height,
-				width: $map.width,
-				published: mapData.published
-			}
-		});
+		if ($map.height !== mapData.height || $map.width !== mapData.width){
+			await updateMap.mutate({
+				mapId: mapData.pk_mapId,
+				mapInput: {
+					height: $map.height,
+					width: $map.width,
+					published: mapData.published
+				}
+			});
+		}
 
-		await getPublishedMapOnFloor.fetch({
-			variables: { floorID: currentFloorID },
-			policy: CachePolicy.NetworkOnly
-		});
+
+		await getMapById(mapData?.pk_mapId!);
 
 		showMapLoader = true;
 		saving = false;
@@ -956,14 +985,11 @@
 			if (resolve.errors) return console.error(resolve.errors);
 		});
 
-		const receivedMap = await getPublishedMapOnFloor.fetch({
-			variables: { floorID: currentFloorID },
-			policy: CachePolicy.NetworkOnly
-		});
+		await getMapById(mapData?.pk_mapId!);
 
 		$allMapObjects = $allMapObjects.map((obj) => {
 			obj.dbID =
-				receivedMap.data?.getPublishedMapOnFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
+				mapData?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
 				obj.dbID;
 			return obj;
 		});
@@ -981,6 +1007,7 @@
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
 		>{$getPublishedMapOnFloor.fetching ? 'loading' : 'SAVE'}</button
 	>
+
 	<MapObjectSelector
 		on:create={(event) => {
 			createMapObject(event.detail.e, event.detail.type, null);
@@ -988,14 +1015,7 @@
 			mapObjects = mapObjects;
 		}}
 	/>
-	<AdminBuildingSelector
-		on:changeBuilding={(event) => changeBuilding(event.detail, null)}
-		{buildings}
-	/>
-	<AdminFloorSelector
-		on:changeFloor={(event) => changeFloor(event.detail)}
-		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors ?? []}
-	/>
+
 	<AdminSerachbar
 		values={mapData?.desks
 			?.map((desk) => ({
@@ -1017,6 +1037,7 @@
 	<button class="btn bg-primary-500 absolute left-20" on:click={discardUnsavedChanges}>
 		Discrad
 	</button>
+	<SnapshotSelector on:select={(event) => changeMap(event.detail)} />
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
@@ -1043,12 +1064,6 @@
 			{/if}
 		</div>
 	</div>
-	{#if !$getPublishedMapOnFloor.fetching && !mapData}
-		<button
-			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
-			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button
-		>
-	{/if}
 </main>
 
 <style>
