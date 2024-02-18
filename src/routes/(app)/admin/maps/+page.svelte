@@ -739,7 +739,7 @@
 
 <main bind:this={main} class="overflow-hidden h-full">
 	<!--temporarily-->
-	<a href="/" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
+	<a href="/static" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
 	<!---->
 	<button
 		on:click={saveMap}
@@ -797,7 +797,7 @@
 </main>
 
 <style>
-	@import 'tailwindcss/base';
-	@import 'tailwindcss/components';
-	@import 'tailwindcss/utilities';
+	@import 'base.css';
+	@import 'components.css';
+	@import 'utilities.css';
 </style>

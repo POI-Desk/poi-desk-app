@@ -44,7 +44,7 @@
 	const modalStore = getModalStore();
 </script>
 
-<a class="btn variant-filled-primary" href="./">Go the fuck back</a>
+<a class="btn variant-filled-primary" href="">Go the fuck back</a>
 {#if thisUser}
 	<div class="rounded-3xl bg-red-500 h-1/2 mt-5 p-2 m-2 flex flex-col gap-2">
 		<div class="rounded-3xl flex flex-row bg-green-500 h-1/2 p-2">

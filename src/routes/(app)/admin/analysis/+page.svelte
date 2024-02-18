@@ -240,7 +240,7 @@
 	<div class="Title">
 		<div class="flex align-item-center justify-items-cente">
 			<p style="font-size: 40px;">Analysis</p>
-			<a class="btn variant-filled-primary" href="./../">Map</a>
+			<a class="btn variant-filled-primary" href="../../../admin">Map</a>
 		</div>
 	</div>
 	<div class="first-Dia">

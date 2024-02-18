@@ -3,7 +3,7 @@
 
 	import BookingsOfSearchedUser from '$components/BookingsOfSearchedUser.svelte';
 	import BookingsOfUser from '$components/PersonalBookingComponents/BookingsOfUser.svelte';
-	import { searchedUser } from '$lib/searchStore';
+	import { searchedUser } from '$lib/searchStore.js';
 	import { X } from 'lucide-svelte';
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IdentifierType } from './../../../../$houdini/graphql/enums.js';
+	import { IdentifierType } from '$houdini/graphql/enums.js';
 	import { getMonthlyBookingPrediction } from '$lib/queries/predictionQueries';
   import Chart from 'chart.js/auto';
   import type { MonthlyPrediction } from '$lib/types/predictionType';

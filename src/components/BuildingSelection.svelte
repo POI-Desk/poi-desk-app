@@ -44,11 +44,12 @@
     {#if $getBuildings.fetching}
       <div class="h-full rounded-full placeholder animate-pulse" />
     {:else}
-      {#each buildings ?? [] as building}
+      {#each buildings ?? [] as building, index}
         <RadioItem bind:group={$buildingid}
                    name="buildings"
                    value={building?.pk_buildingid}
-                   class="flex items-center justify-center">
+                   class="flex items-center justify-center"
+        >
           <p class="select-none font-semibold">
             {building.buildingname}
           </p>
