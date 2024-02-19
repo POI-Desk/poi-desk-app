@@ -24,15 +24,12 @@
 	import { CachePolicy } from '$houdini';
 
 
-	let buildings = $getBuildings.data?.getBuildingsInLocation;
-
-
 	/**
 	 * updates the locationNames-list, which is used for checking whether a location name is already in use
-	*/
+	 */
 	async function getLocationsFunction() {
 		await getLocations.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
-			$locationNames = [""];
+			$locationNames = [''];
 			let locations = $getLocations.data?.getAllLocations;
 
 			for (let i = 0; i < locations?.length; i++) {
@@ -57,8 +54,11 @@
 		}
 	}
 
+	/**
+	 * determines whether a new location has been added or an existing one has been edited
+	 * calls saveBuildingChanges
+	 */
 	async function saveLocationChanges() {
-
 		if ($locationToEdit.id !== '') {
 			saveEditChanges();
 		} else {
@@ -86,6 +86,10 @@
 		getLocationsFunction();
 	}
 
+	/**
+	 * saves the buildings added
+	 * @param locationid id of the location in which the building was added
+	 */
 	async function saveBuildingChanges(locationid: any) {
 		if ($newBuildings.some((building) => building.name === '')) {
 			alert('Missing building name');
@@ -107,6 +111,11 @@
 		}
 	}
 
+	/**
+	 * saves the floors added
+	 * @param mgmtId id to determine to which building the floor belongs
+	 * @param buildingid id of the already created building; buildingid as it is saved in the database
+	 */
 	async function saveFloorChanges(mgmtId: any, buildingid: any) {
 		if ($newFloors.some((floor) => floor.name === '')) {
 			alert('Missing floor name');
@@ -123,10 +132,13 @@
 		}
 	}
 
+	/**
+	 * saves the changes made to an edited location
+	 */
 	async function saveEditLocationChanges() {
 		console.log($locationNames);
-		console.log("new name: " + $locationToEdit.name);
-		
+		console.log('new name: ' + $locationToEdit.name);
+
 		if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
 			alert('EDIT A location with this name already exists. Please enter a different name!');
 		} else {
@@ -140,47 +152,43 @@
 		}
 	}
 
+	/**
+	 * saves the changes made to an edited building
+	 */
 	async function saveEditBuildingChanges() {
-		//console.log($locationNames);
-
-		// if ($locationNames.includes($newLocation.name.toLowerCase())) {
-		// 	alert('EDIT A location with this name already exists. Please enter a different name!');
-		// } else {
-
 		$changedBuidings.forEach(async (building, id) => {
 			const result = await changeNameOfBuilding.mutate({
 				id,
 				newName: building
 			});
 			console.log(result);
-		})
+		});
 
 		$changedBuidings = new Map();
 		$isSaveDisabled = true;
 	}
 
+	/**
+	 * saves the changes made to an edited floor
+	 */
 	async function saveEditFloorChanges() {
-		console.log("floorsToEdit:" + $floorsToEdit);
+		console.log('floorsToEdit:' + $floorsToEdit);
 
 		$floorsToEdit.forEach(async (floor, id) => {
-			console.log("FLOOOOOOOR");
-			console.log(id + " name: " + floor);
-			
-			const result = await changeNameOfFloor.mutate({
-			id: id,
-			newName: floor
-		})
-		
-		console.log(result);
-	
-	})
-		
-		$floorsToEdit = new Map();	
-		$isSaveDisabled = true;
-		//$refreshLocations = !$refreshLocations;
-		//}
-	}
+			console.log('FLOOOOOOOR');
+			console.log(id + ' name: ' + floor);
 
+			const result = await changeNameOfFloor.mutate({
+				id: id,
+				newName: floor
+			});
+
+			console.log(result);
+		});
+
+		$floorsToEdit = new Map();
+		$isSaveDisabled = true;
+	}
 </script>
 
 <AddLocation />
