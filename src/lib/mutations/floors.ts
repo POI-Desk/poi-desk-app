@@ -17,3 +17,12 @@ export const deleteFloor = graphql(`
 		}
 	}
 `);
+
+export const changeNameOfFloor = graphql(`
+	mutation changeNameOfFloor($id: ID!, $newName: String!) {
+		changeNameOfFloor(id: $id, newName: $newName) {
+			pk_floorid,
+			floorname
+		}
+	}
+`);

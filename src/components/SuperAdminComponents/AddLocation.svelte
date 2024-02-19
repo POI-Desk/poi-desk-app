@@ -3,7 +3,7 @@
 	import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
 	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, newLocation, locationNames, refreshLocations } from '$lib/superAdminStore';
+	import { isSaveDisabled, newLocation, locationNames, refreshLocations, locationToEdit } from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
 
 
@@ -13,6 +13,7 @@
 	});
 
 	async function getLocationsFunction() {
+		$locationNames = [""];
 		await getLocations.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
 			let locations = $getLocations.data?.getAllLocations;
 
@@ -25,6 +26,7 @@
 
 
 	function onAddLocation() {
+		$locationToEdit.id = "";
 		showAddLocation.set(true);
 		const newId = uuidv4();
 		$newLocation.id = newId;

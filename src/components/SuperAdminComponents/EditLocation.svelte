@@ -2,14 +2,19 @@
 	import { CachePolicy } from '$houdini';
 	import { deleteBuilding } from '$lib/mutations/buildings';
 	import { getBuildings } from '$lib/queries/buildingQueries';
+    import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
-	import { refreshLocations, locationidToEdit, buildingidToEdit } from '$lib/superAdminStore';
+	import { isSaveDisabled, locationNames, refreshLocations, locationToEdit, buildingToEdit } from '$lib/superAdminStore';
 
 	$: buildings = $getBuildings.data?.getBuildingsInLocation;
+
+    $: locationIdToEdit = $locationToEdit.id;
 
 	// async function getLocationsFunction() {
 	// 	await getLocations.fetch({ policy: CachePolicy.NetworkOnly });
 	// }
+
+
 
 	async function onDeleteBuilding(id: string) {
 		console.log(id);
@@ -19,18 +24,34 @@
 		});
 		$refreshLocations = !$refreshLocations;
 	}
+
+    function handleNameInput() {
+		if ($locationToEdit.name === '' || $locationNames.includes($locationToEdit.name)) {
+			$isSaveDisabled = true;
+		} else {
+			$isSaveDisabled = false;
+		}
+	}
+
+    
 </script>
 
 <div>
 	{#key $refreshLocations}
-		{#await getBuildings.fetch({variables: {locationid: $locationidToEdit}, policy: CachePolicy.NetworkOnly })}
+		{#await getBuildings.fetch({variables: {locationid: locationIdToEdit}, policy: CachePolicy.NetworkOnly })}
 			<p>fetching buildings...</p>
 		{:then fetched}
+
+            {$locationToEdit.name}
+            <input type="text" class="input" bind:value={$locationToEdit.name} on:input={handleNameInput}>
 			{#each buildings as building}
 				<div>
 					<div class="variant-outline-primary">
+                        
 						{building.buildingname}
-						<button on:click={() => ($buildingidToEdit = building.pk_buildingid)}>Edit</button> 
+						<button on:click={() => {
+                            $buildingToEdit = {id: building.pk_buildingid, name: building.buildingname};
+                        }}>Edit</button> 
 						<button on:click={() => onDeleteBuilding(building.pk_buildingid)}>Delete</button>
 					</div>
 					<br />

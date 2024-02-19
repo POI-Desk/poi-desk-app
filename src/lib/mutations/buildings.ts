@@ -17,3 +17,12 @@ export const deleteBuilding = graphql(`
 		}
 	}
 `);
+
+export const changeNameOfBuilding = graphql(`
+	mutation changeNameOfBuilding($id: ID!, $newName: String!) {
+		changeNameOfBuilding(id: $id, newName: $newName) {
+			pk_buildingid,
+			buildingname
+		}
+	}
+`)

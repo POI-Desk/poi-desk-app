@@ -16,4 +16,13 @@ export const deleteLocation = graphql(`
 			locationname
 		}
 	}
+`);
+
+export const changeNameOfLocation = graphql(`
+	mutation changeNameOfLocation($id: ID!, $newName: String!) {
+		changeNameOfLocation(id: $id, newName: $newName) {
+			pklocationid,
+			locationname
+		}
+	}
 `)
