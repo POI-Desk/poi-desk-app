@@ -1,7 +1,5 @@
 <script lang="ts">
 	// import { getBuildings } from '$lib/queries/buildingQueries';
-	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
-	import AdminFloorSelector from '$components/MapComponents/AdminFloorSelector.svelte';
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
@@ -32,7 +30,7 @@
 	import { deleteDesks, updateDesksOnMap } from '$lib/mutations/desks';
 	import { deleteDoors, updateDoorsOnMap } from '$lib/mutations/door';
 	import { deleteLabels, updateLabelsOnMap } from '$lib/mutations/label';
-	import { createMap, updateMap } from '$lib/mutations/map';
+	import { updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
 	import { map } from '$lib/stores/mapCreationStore';
@@ -45,8 +43,7 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import { user } from '$lib/userStore';
-	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
