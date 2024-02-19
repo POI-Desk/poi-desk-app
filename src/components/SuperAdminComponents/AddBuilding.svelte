@@ -5,7 +5,7 @@
 	import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 	import { locationid } from '$lib/locationStore';
 	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, newBuildings, editBuildingclicked } from '$lib/superAdminStore';
+	import { isSaveDisabled, newBuildings, editBuildingclicked, saveChangesClicked } from '$lib/superAdminStore';
 	import BuildingInput from './BuildingInput.svelte';
 	import {v4 as uuidv4} from 'uuid';
 
@@ -34,27 +34,34 @@
 		const newId = uuidv4();
 		$newBuildings.push({ id: newId, name: '' });
 		$newBuildings = $newBuildings;
+		
 	}
 
 	function updateNewNames(id: uuidv4, newName: string) {
+		
 		$newBuildings = $newBuildings.map((field) =>
 			field.id === id ? { ...field, name: newName } : field
 		);
+
+		$isSaveDisabled = false;
+		$newBuildings.forEach((building) => {
+			if (building.name === "") {$isSaveDisabled = true;}
+		})
+		console.log($newBuildings);
 	}
 
 	function removeBuildingInput(id: uuidv4, name: string) {
 		//const index = newBuildings.indexOf({ id, name });
 		const index = $newBuildings.findIndex((b) => b.id === id)
+		console.log("building anlegen hä");
 		console.log(id + " " + name);
-		
-		
 		$newBuildings.splice(index, 1);
 		$newBuildings = $newBuildings;
 	}
 </script>
 
 <div>
-	{#if $showAddLocation}
+	<!-- {#if $showAddLocation} -->
 		<h1>Buildings</h1>
 		{#if showAddBuilding}
 			{#each $newBuildings as { id, name }}
@@ -77,5 +84,5 @@
 			<button class="btn variant-filled-primary" on:click={handleAddBuilding}>Add Building</button>
 			
 		</div>
-	{/if}
+	<!-- {/if} -->
 </div>

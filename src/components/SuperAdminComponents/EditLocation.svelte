@@ -5,6 +5,7 @@
     import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
 	import { isSaveDisabled, locationNames, refreshLocations, locationToEdit, buildingToEdit } from '$lib/superAdminStore';
+	import AddBuilding from './AddBuilding.svelte';
 
 	$: buildings = $getBuildings.data?.getBuildingsInLocation;
 
@@ -38,13 +39,16 @@
 
 <div>
 	{#key $refreshLocations}
+
+		<AddBuilding />
+
 		{#await getBuildings.fetch({variables: {locationid: locationIdToEdit}, policy: CachePolicy.NetworkOnly })}
 			<p>fetching buildings...</p>
 		{:then fetched}
 
             {$locationToEdit.name}
             <input type="text" class="input" bind:value={$locationToEdit.name} on:input={handleNameInput}>
-			{#each buildings as building}
+			{#each buildings ?? [] as building}
 				<div>
 					<div class="variant-outline-primary">
                         

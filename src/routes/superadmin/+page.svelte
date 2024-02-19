@@ -22,6 +22,7 @@
 		refreshLocations
 	} from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
+	import { showAddLocation } from '$lib/locationStore';
 
 
 	/**
@@ -44,6 +45,7 @@
 	 */
 	function saveEditChanges() {
 		saveEditLocationChanges();
+		saveBuildingChanges($locationToEdit.id);
 
 		if ($changedBuidings.size > 0) {
 			saveEditBuildingChanges();
@@ -52,6 +54,8 @@
 		if ($floorsToEdit.size > 0) {
 			saveEditFloorChanges();
 		}
+
+		
 	}
 
 	/**
@@ -79,6 +83,7 @@
 						saveBuildingChanges(value.data?.addLocation?.pklocationid);
 
 						$isSaveDisabled = true;
+						getLocationsFunction();
 						$refreshLocations = !$refreshLocations;
 					});
 			}
@@ -104,6 +109,7 @@
 						console.log('BUILDING');
 						console.log(value);
 
+						$refreshLocations = !$refreshLocations;
 						$isSaveDisabled = true;
 						saveFloorChanges(building.id, value.data?.addBuilding?.pk_buildingid);
 					});
@@ -139,9 +145,9 @@
 		console.log($locationNames);
 		console.log('new name: ' + $locationToEdit.name);
 
-		if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
-			alert('EDIT A location with this name already exists. Please enter a different name!');
-		} else {
+		// if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
+		// 	alert('EDIT A location with this name already exists. Please enter a different name!');
+		// } else {
 			const result = await changeNameOfLocation.mutate({
 				id: $locationToEdit.id,
 				newName: $locationToEdit.name
@@ -149,7 +155,7 @@
 			console.log(result);
 			$isSaveDisabled = true;
 			$refreshLocations = !$refreshLocations;
-		}
+		// }
 	}
 
 	/**
@@ -192,10 +198,11 @@
 </script>
 
 <AddLocation />
-<AddBuilding />
+{#if $showAddLocation}
+	<AddBuilding />
+{/if}
 
 {#if $locationToEdit.id !== ''}
-	{$locationToEdit.id}
 
 	<EditLocation />
 	{#if $buildingToEdit.id !== ''}

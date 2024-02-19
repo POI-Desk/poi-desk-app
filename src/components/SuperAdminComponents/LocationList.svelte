@@ -4,6 +4,7 @@
 	import { getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
 	import { refreshLocations, locationToEdit, buildingToEdit, locationNames } from '$lib/superAdminStore';
+	import { showAddLocation } from '$lib/locationStore';
 
 	$: locations = $getLocations?.data?.getAllLocations;
 
@@ -58,6 +59,7 @@
 						{location.locationname}
 						<button
 							on:click={() => {
+								$showAddLocation = false;
 								$locationToEdit.id = location.pklocationid;
 								$locationToEdit.name = location.locationname;
 								$buildingToEdit.id = "";
