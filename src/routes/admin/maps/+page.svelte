@@ -35,7 +35,6 @@
 	import { createMap, updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
-	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import { map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
@@ -60,7 +59,6 @@
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
-
 	let showMapLoader: boolean = true;
 
 	let saving: boolean = false;
@@ -81,57 +79,57 @@
 
 	// INFO: VERY long
 	const mapSnapshot = graphql(`
-		query getMapSnapshotById($mapId: ID!){
-			getMapSnapshotById(mapId: $mapId){
+		query getMapSnapshotById($mapId: ID!) {
+			getMapSnapshotById(mapId: $mapId) {
 				pk_mapId
-			height
-			width
-			published
-			desks {
-				pk_deskid
-				desknum
-				x
-				y
-				rotation
-				user {
-					pk_userid
-					username
-				}
-			}
-			rooms {
-				pk_roomId
-				x
-				y
-				width
 				height
-			}
-			walls {
-				pk_wallId
-				x
-				y
-				rotation
 				width
-			}
-			doors {
-				pk_doorId
-				x
-				y
-				rotation
-				width
-			}
-			labels {
-				pk_labelId
-				text
-				x
-				y
-				rotation
-			}
-			floor {
-				floorname
-				building {
-					buildingname
+				published
+				desks {
+					pk_deskid
+					desknum
+					x
+					y
+					rotation
+					user {
+						pk_userid
+						username
+					}
 				}
-			}
+				rooms {
+					pk_roomId
+					x
+					y
+					width
+					height
+				}
+				walls {
+					pk_wallId
+					x
+					y
+					rotation
+					width
+				}
+				doors {
+					pk_doorId
+					x
+					y
+					rotation
+					width
+				}
+				labels {
+					pk_labelId
+					text
+					x
+					y
+					rotation
+				}
+				floor {
+					floorname
+					building {
+						buildingname
+					}
+				}
 			}
 		}
 	`);
@@ -170,22 +168,20 @@
 	});
 
 	const getMapById = async (mapId: string) => {
-		return await mapSnapshot.fetch({ variables: {mapId: mapId}, policy: CachePolicy.NetworkOnly })
-	}
+		return await mapSnapshot.fetch({
+			variables: { mapId: mapId },
+			policy: CachePolicy.NetworkOnly
+		});
+	};
 
 	const changeMap = async (mapId: string) => {
-		if (mapId === mapData?.pk_mapId){
+		if (mapId === mapData?.pk_mapId) {
 			return;
 		}
 
 		await getMapById(mapId);
-
-		if (mapData == null){
-			return
-		}
-
 		drawMapFromLocalDbData();
-	}
+	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
@@ -432,8 +428,8 @@
 	};
 
 	const delMapObject = async (obj: MapObject) => {
-		if ($getPublishedMapOnFloor.fetching || saving) {
-			console.log(saving, $getPublishedMapOnFloor.fetching);
+		if ($mapSnapshot.fetching || saving) {
+			console.log(saving, $mapSnapshot.fetching);
 			return;
 		}
 
@@ -470,7 +466,7 @@
 		if (obj.dbID) {
 			await deletePromis;
 
-			if ($map.height !== mapData?.height || $map.width !== mapData?.width){
+			if ($map.height !== mapData?.height || $map.width !== mapData?.width) {
 				await updateMap.mutate({
 					mapId: mapData?.pk_mapId!,
 					mapInput: {
@@ -505,19 +501,22 @@
 		);
 	};
 
-	const createNewMap = async (floorID: string) => {
-		const newMap = await createMap.mutate({
-			floorId: floorID,
-			mapInput: { height: defaultMapProps.height, width: defaultMapProps.height, published: true } // TODO: puzblishing syste,
-		});
+	// const createNewMap = async (floorID: string) => {
+	// 	const newMap = await createMap.mutate({
+	// 		floorId: floorID,
+	// 		mapInput: { height: defaultMapProps.height, width: defaultMapProps.height, published: true } // TODO: puzblishing syste,
+	// 	});
 
-		if (newMap.errors) return console.error(newMap.errors);
-		if (!newMap.data?.createMap) return;
+	// 	if (newMap.errors) return console.error(newMap.errors);
+	// 	if (!newMap.data?.createMap) return;
 
-		panz.zoomAbs(0, 0, 1);
-		await getPublishedMapOnFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		recenterMap();
-	};
+	// 	panz.zoomAbs(0, 0, 1);
+	// 	await getPublishedMapOnFloor.fetch({
+	// 		variables: { floorID: floorID },
+	// 		policy: CachePolicy.NetworkOnly
+	// 	});
+	// 	recenterMap();
+	// };
 
 	const emptyMap = () => {
 		$allMapObjects = [];
@@ -531,10 +530,12 @@
 	};
 
 	const drawMapFromLocalDbData = (recenter: boolean = true) => {
+		emptyMap();
 		if (!mapData) {
+			// DEBUG
+			console.warn('no local map data to draw!');
 			return;
 		}
-		emptyMap();
 
 		$map.height = mapData.height;
 		$map.width = mapData.width;
@@ -683,7 +684,7 @@
 				break;
 		}
 
-		if ($map.height !== mapData.height || $map.width !== mapData.width){
+		if ($map.height !== mapData.height || $map.width !== mapData.width) {
 			await updateMap.mutate({
 				mapId: mapData.pk_mapId,
 				mapInput: {
@@ -693,7 +694,6 @@
 				}
 			});
 		}
-
 
 		await getMapById(mapData?.pk_mapId!);
 
@@ -988,9 +988,7 @@
 		await getMapById(mapData?.pk_mapId!);
 
 		$allMapObjects = $allMapObjects.map((obj) => {
-			obj.dbID =
-				mapData?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ??
-				obj.dbID;
+			obj.dbID = mapData?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
 			return obj;
 		});
 		showMapLoader = true;
@@ -1005,14 +1003,16 @@
 	<button
 		on:click={saveMap}
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$getPublishedMapOnFloor.fetching ? 'loading' : 'SAVE'}</button
+		>{$mapSnapshot.fetching ? 'loading' : 'SAVE'}</button
 	>
 
 	<MapObjectSelector
 		on:create={(event) => {
+			if ($mapSnapshot.fetching || !mapData) {
+				return;
+			}
+
 			createMapObject(event.detail.e, event.detail.type, null);
-			$allMapObjects = $allMapObjects;
-			mapObjects = mapObjects;
 		}}
 	/>
 
@@ -1046,7 +1046,7 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if $getPublishedMapOnFloor.fetching && showMapLoader}
+			{#if $mapSnapshot.fetching && showMapLoader}
 				<canvas
 					width={defaultMapProps.width}
 					height={defaultMapProps.width}

@@ -8,7 +8,6 @@
 
 	//TODO: use type script
 	function onCreate(e: MouseEvent, type: string) {
-		if (!$getPublishedMapOnFloor.data?.getPublishedMapOnFloor || $getPublishedMapOnFloor.fetching) return;
 		dispatch('create', { e, type });
 	}
 
