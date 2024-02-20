@@ -94,6 +94,7 @@
 	};
 
 	// INFO: VERY long
+	//#region snapshot query
 	const mapSnapshot = graphql(`
 		query getMapSnapshotById($mapId: ID!) {
 			getMapSnapshotById(mapId: $mapId) {
@@ -149,6 +150,7 @@
 			}
 		}
 	`);
+	//#endregion
 
 	$: mapData = $mapSnapshot.data?.getMapSnapshotById;
 
@@ -1078,6 +1080,7 @@
 	</button>
 	<button class="btn bg-primary-500 absolute left-44" on:click={handleOffline}> Offline </button>
 	<button class="btn bg-primary-500 absolute left-64" on:click={handleOnline}> Online </button>
+	
 	<SnapshotSelector on:select={(event) => changeMap(event.detail)} />
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div

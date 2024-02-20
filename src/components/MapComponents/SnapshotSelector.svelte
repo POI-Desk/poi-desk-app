@@ -3,6 +3,10 @@
 	import { user } from '$lib/userStore';
 	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import {
+		Building, Building2, AlignJustify, AlignHorizontalDistributeCenter, ChevronRight, ChevronsRight, MoveRight
+
+	} from 'lucide-svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -44,7 +48,6 @@
 		if (buildingsAndFloors[buildingGroup]) {
 			if (buildingsAndFloors[buildingGroup].floors) {
 				if (buildingsAndFloors[buildingGroup].floors![floorGroup]) {
-					console.log('FETCH BRO');
 					fetchSnapshots(buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid);
 				}
 			}
@@ -61,38 +64,63 @@
 	const snapshotSelected = (mapId: string) => {
 		dispatch('select', mapId);
 	};
+
+	const headStyle: string = 'flex flex-row pl-2 mb-1 text-surface-900 text-lg py-1 border-b-[1px] border-surface-900';
 </script>
 
 <div
 	class="absolute p-5 flex z-[900] w-2/3 max-w-screen-xl left-1/2 top-[20%] -translate-x-1/2 bg-surface-50 rounded-lg shadow-2xl"
 >
-	<div class="border-r-[1px] border-primary-400 -m-5 mr-5 flex flex-col p-2 gap-1">
-		<p class="flex align-top justify-center text-2xl text-primary-500">
+	<div class="border-r-[1px] border-primary-400 -m-5 mr-5 flex flex-col p-4 gap-1 max-w-[17rem]">
+		<p class="flex align-top justify-center mb-2 text-3xl text-primary-500">
 			{currentUser.location?.locationname}
 		</p>
-		<ListBox>
-			{#each buildingsAndFloors ?? [] as building, i (i)}
-				<ListBoxItem
-					on:change={() => (floorGroup = 0)}
-					class="py-2 pr-52 pl-4 rounded-lg max-w-[14rem]"
-					bind:group={buildingGroup}
-					name="medium"
-					value={i}>{building.buildingname}</ListBoxItem
-				>
-			{/each}
-		</ListBox>
-		<ListBox>
-			{#if buildingsAndFloors != null}
-				{#each buildingsAndFloors[buildingGroup].floors ?? [] as floor, i (i)}
+		<div class="{headStyle}">
+			<Building2 class="text-surface-400 mr-2" /> 
+			Buildings
+		</div> <!-- maby -mr-2 -->
+		<div class="max-h-56 overflow-x-hidden">
+			<ListBox>
+				{#each buildingsAndFloors ?? [] as building, i (i)}
 					<ListBoxItem
-						class="py-2 pr-52 pl-4 rounded-lg max-w-[14rem]"
-						bind:group={floorGroup}
+						on:change={() => (floorGroup = 0)}
+						class="py-2 pr-48 pl-4"
+						bind:group={buildingGroup}
 						name="medium"
-						value={i}>{floor.floorname}</ListBoxItem
+						value={i}
 					>
+					<div class="flex flex-row">
+						<ChevronsRight class="mr-2 w-[22px]" />
+						{building.buildingname}
+					</div>
+					</ListBoxItem>
 				{/each}
-			{/if}
-		</ListBox>
+			</ListBox>
+		</div>
+		<div class="{headStyle} mt-4">
+			<AlignHorizontalDistributeCenter class="mr-2 text-surface-400" />
+			Floors
+		</div> <!-- maby -mr-2 -->
+		<div class="max-h-56 overflow-x-hidden">
+			<ListBox>
+				{#if buildingsAndFloors != null}
+					{#each buildingsAndFloors[buildingGroup].floors ?? [] as floor, i (i)}
+						<ListBoxItem
+							class="py-2 pr-48 pl-4"
+							bind:group={floorGroup}
+							name="medium"
+							value={i}
+						>
+							<div class="flex flex-row">
+								<!-- <MoveRight class="mr-2 w-[22px]" /> -->
+								<ChevronRight class="mr-2 w-[22px]" />
+								{floor.floorname}
+							</div>
+						</ListBoxItem>
+					{/each}
+				{/if}
+			</ListBox>
+		</div>
 		<!-- <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Buildings</button>
         <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Floors</button> -->
 	</div>
@@ -101,7 +129,7 @@
 			{#each snapshotsOfFloor ?? [] as snapshot}
 				<button
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
-					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary p-24"
+					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
 				>
 					{snapshot.pk_mapId}
 				</button>
@@ -109,7 +137,7 @@
 		{/if}
 
 		<button
-			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary p-24"
+			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
 		>
 			+
 		</button>
