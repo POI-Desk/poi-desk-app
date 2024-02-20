@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
-	import { getUsersWithNoDesk } from '$lib/queries/user';
+	import { editedMapId } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher } from 'svelte';
@@ -14,6 +14,15 @@
 	const getUser = graphql(`
 		query getUser($id: ID!) {
 			getUserById(id: $id) {
+				username
+			}
+		}
+	`);
+
+	const usersWithNoDeskOnMap = graphql(`
+		query getUsersWithNoDeskOnMap($mapId: ID!) {
+			getUsersWithNoDeskOnMap(mapId: $mapId) {
+				pk_userid
 				username
 			}
 		}
@@ -48,10 +57,10 @@
 			{/if}
 			<!-- <input type="text" class="input w-full xl:w-3/4" placeholder="search employee..." > -->
 
-			{#await getUsersWithNoDesk.fetch({ policy: CachePolicy.NetworkOnly })}
+			{#await usersWithNoDeskOnMap.fetch( { variables: { mapId: $editedMapId }, policy: CachePolicy.NetworkOnly } )}
 				<p>Loading...</p>
 			{:then users}
-				{#each users.data?.getUsersWithNoDesk ?? [] as user}
+				{#each users.data?.getUsersWithNoDeskOnMap ?? [] as user}
 					<button
 						class="btn bg-primary-400"
 						on:click={() => {

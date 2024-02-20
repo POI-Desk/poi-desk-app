@@ -5,7 +5,7 @@
 	import '../app.css';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import BottomNav from '$components/BottomNav.svelte';
-	import { AppShell, Modal } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal, Toast } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -33,6 +33,8 @@
 		}
 	};
 </script>
+
+<Toast />
 
 <Modal components={modalComponentRegistry} />
 <AppShell>

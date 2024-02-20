@@ -33,7 +33,7 @@
 	import { updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
-	import { map } from '$lib/stores/mapCreationStore';
+	import { editedMapId, map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import {
@@ -43,7 +43,12 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import {
+		getModalStore,
+		getToastStore,
+		type ModalSettings,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -62,6 +67,8 @@
 
 	const modalStore = getModalStore();
 
+	const toastStore = getToastStore();
+
 	const modal: ModalSettings = {
 		type: 'component',
 		component: 'modalEditDesk',
@@ -72,6 +79,18 @@
 			mapObjects[$selectedMapObject!.id].rerenderMapObject();
 			saveMapObject($selectedMapObject!);
 		}
+	};
+
+	const toastOffline: ToastSettings = {
+		message: 'You are offline, changes may not be saved',
+		hideDismiss: true,
+		background: 'variant-filled-error'
+	};
+
+	const toastOnline: ToastSettings = {
+		message: 'You are online, changes are beeing saved',
+		hideDismiss: true,
+		background: 'variant-filled-success'
 	};
 
 	// INFO: VERY long
@@ -140,6 +159,10 @@
 		if (mapData) $map.width = mapData?.width;
 	};
 
+	$: {
+		$editedMapId = mapData?.pk_mapId ?? '';
+	}
+
 	$: currentFloor = $mapSnapshot.data?.getMapSnapshotById?.floor;
 
 	onMount(() => {
@@ -154,6 +177,9 @@
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
+
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
 	});
 
 	onDestroy(() => {
@@ -162,6 +188,9 @@
 		panz.dispose();
 		window.removeEventListener('keydown', handleKeyDown);
 		window.removeEventListener('mousedown', handleMouseDown);
+
+		window.removeEventListener('online', handleOnline);
+		window.removeEventListener('offline', handleOffline);
 	});
 
 	const getMapById = async (mapId: string) => {
@@ -187,10 +216,23 @@
 	};
 
 	const handleMouseDown = (event: MouseEvent) => {
-		if (event.target === canvas) {
-			resetSelectedMapObjectStyle();
-			$selectedMapObject = null;
-		}
+		if (!$selectedMapObject) return;
+
+		if (event.target !== container && event.target !== canvas) return;
+
+		resetSelectedMapObjectStyle();
+		$selectedMapObject = null;
+	};
+
+	const handleOffline = () => {
+		toastStore.clear();
+		toastStore.trigger(toastOffline);
+	};
+
+	const handleOnline = () => {
+		saveMap();
+		toastStore.clear();
+		toastStore.trigger(toastOnline);
 	};
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
@@ -1034,6 +1076,8 @@
 	<button class="btn bg-primary-500 absolute left-20" on:click={discardUnsavedChanges}>
 		Discrad
 	</button>
+	<button class="btn bg-primary-500 absolute left-44" on:click={handleOffline}> Offline </button>
+	<button class="btn bg-primary-500 absolute left-64" on:click={handleOnline}> Online </button>
 	<SnapshotSelector on:select={(event) => changeMap(event.detail)} />
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div

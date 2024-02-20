@@ -64,7 +64,7 @@
 </script>
 
 <div
-	class="absolute p-5 flex z-[999] w-2/3 max-w-screen-xl left-1/2 top-[20%] -translate-x-1/2 bg-surface-50 rounded-lg shadow-2xl"
+	class="absolute p-5 flex z-[900] w-2/3 max-w-screen-xl left-1/2 top-[20%] -translate-x-1/2 bg-surface-50 rounded-lg shadow-2xl"
 >
 	<div class="border-r-[1px] border-primary-400 -m-5 mr-5 flex flex-col p-2 gap-1">
 		<p class="flex align-top justify-center text-2xl text-primary-500">
