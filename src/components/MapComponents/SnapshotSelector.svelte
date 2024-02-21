@@ -1,14 +1,28 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
+	import { ListBox, ListBoxItem, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import {
-		Building, Building2, AlignJustify, AlignHorizontalDistributeCenter, ChevronRight, ChevronsRight, MoveRight
-
+		Building,
+		Building2,
+		AlignJustify,
+		AlignHorizontalDistributeCenter,
+		ChevronRight,
+		ChevronsRight,
+		MoveRight
 	} from 'lucide-svelte';
+	import { defaultMapProps } from '$lib/map/props';
 
 	const dispatch = createEventDispatcher();
+	const toastStore = getToastStore();
+
+	const toastMapNotCreated: ToastSettings = {
+		message: 'Map could not be created!',
+		hideDismiss: true,
+		timeout: 7500,
+		background: 'variant-filled-error'
+	};
 
 	let buildingGroup = 0;
 	let floorGroup = 0;
@@ -18,6 +32,14 @@
 	const snapshots = graphql(`
 		query getMapSnapshotsOfFloor($floorId: ID!) {
 			getMapSnapshotsOfFloor(floorId: $floorId) {
+				pk_mapId
+			}
+		}
+	`);
+
+	const createMap = graphql(`
+		mutation createMapSimple($floorId: ID!, $mapInput: MapInput!) {
+			createMap(floorId: $floorId, mapInput: $mapInput) {
 				pk_mapId
 			}
 		}
@@ -65,7 +87,42 @@
 		dispatch('select', mapId);
 	};
 
-	const headStyle: string = 'flex flex-row pl-2 mb-1 text-surface-900 text-lg py-1 border-b-[1px] border-surface-900';
+	const createNewSnapshot = async (floorId: string) => {
+		if (!floorId) {
+			toastStore.trigger(toastMapNotCreated);
+			return;
+		}
+
+		const newMap = await createMap.mutate({
+			floorId: floorId,
+			mapInput: {
+				height: defaultMapProps.height,
+				width: defaultMapProps.width,
+				published: false
+			}
+		});
+
+		if (!newMap.data?.createMap?.pk_mapId) {
+			toastStore.trigger(toastMapNotCreated);
+			return;
+		}
+
+		dispatch('create', newMap.data?.createMap?.pk_mapId);
+
+		await fetchSnapshots(floorId);
+	};
+
+	const newButtonClicked = () => {
+		if (!buildingsAndFloors) return;
+
+		const id: string = buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid;
+		if (!id) return;
+
+		createNewSnapshot(id);
+	};
+
+	const headStyle: string =
+		'flex flex-row pl-2 mb-1 text-surface-900 text-lg py-1 border-b-[1px] border-surface-900';
 </script>
 
 <div
@@ -75,10 +132,11 @@
 		<p class="flex align-top justify-center mb-2 text-3xl text-primary-500">
 			{currentUser.location?.locationname}
 		</p>
-		<div class="{headStyle}">
-			<Building2 class="text-surface-400 mr-2" /> 
+		<div class={headStyle}>
+			<Building2 class="text-surface-400 mr-2" />
 			Buildings
-		</div> <!-- maby -mr-2 -->
+		</div>
+		<!-- maby -mr-2 -->
 		<div class="max-h-56 overflow-x-hidden">
 			<ListBox>
 				{#each buildingsAndFloors ?? [] as building, i (i)}
@@ -89,10 +147,10 @@
 						name="medium"
 						value={i}
 					>
-					<div class="flex flex-row">
-						<ChevronsRight class="mr-2 w-[22px]" />
-						{building.buildingname}
-					</div>
+						<div class="flex flex-row">
+							<ChevronsRight class="mr-2 w-[22px]" />
+							{building.buildingname}
+						</div>
 					</ListBoxItem>
 				{/each}
 			</ListBox>
@@ -100,17 +158,13 @@
 		<div class="{headStyle} mt-4">
 			<AlignHorizontalDistributeCenter class="mr-2 text-surface-400" />
 			Floors
-		</div> <!-- maby -mr-2 -->
+		</div>
+		<!-- maby -mr-2 -->
 		<div class="max-h-56 overflow-x-hidden">
 			<ListBox>
 				{#if buildingsAndFloors != null}
 					{#each buildingsAndFloors[buildingGroup].floors ?? [] as floor, i (i)}
-						<ListBoxItem
-							class="py-2 pr-48 pl-4"
-							bind:group={floorGroup}
-							name="medium"
-							value={i}
-						>
+						<ListBoxItem class="py-2 pr-48 pl-4" bind:group={floorGroup} name="medium" value={i}>
 							<div class="flex flex-row">
 								<!-- <MoveRight class="mr-2 w-[22px]" /> -->
 								<ChevronRight class="mr-2 w-[22px]" />
@@ -138,6 +192,7 @@
 
 		<button
 			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
+			on:click={newButtonClicked}
 		>
 			+
 		</button>

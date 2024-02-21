@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+
 	// import { getBuildings } from '$lib/queries/buildingQueries';
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
@@ -94,7 +97,6 @@
 	};
 
 	// INFO: VERY long
-	//#region snapshot query
 	const mapSnapshot = graphql(`
 		query getMapSnapshotById($mapId: ID!) {
 			getMapSnapshotById(mapId: $mapId) {
@@ -150,9 +152,12 @@
 			}
 		}
 	`);
-	//#endregion
 
-	$: mapData = $mapSnapshot.data?.getMapSnapshotById;
+	export let data;
+
+	$: ({ getMapSnapshotById } = data);
+
+	$: mapData = $getMapSnapshotById.data?.getMapSnapshotById;
 
 	$: () => {
 		if (mapData) $map.height = mapData?.height;
@@ -175,7 +180,7 @@
 			$map.scale = e.getTransform().scale;
 		});
 
-		recenterMap();
+		drawMapFromLocalDbData();
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
@@ -206,6 +211,10 @@
 		if (mapId === mapData?.pk_mapId) {
 			return;
 		}
+
+		let query = new URLSearchParams($page.url.searchParams.toString());
+		query.set('map', mapId);
+		goto(`?${query.toString()}`);
 
 		await getMapById(mapId);
 		drawMapFromLocalDbData();
@@ -1080,8 +1089,19 @@
 	</button>
 	<button class="btn bg-primary-500 absolute left-44" on:click={handleOffline}> Offline </button>
 	<button class="btn bg-primary-500 absolute left-64" on:click={handleOnline}> Online </button>
-	
-	<SnapshotSelector on:select={(event) => changeMap(event.detail)} />
+	<button
+		class="btn bg-primary-500 absolute left-80"
+		on:click={() => {
+			console.log($page.url);
+		}}
+	>
+		Params
+	</button>
+
+	<SnapshotSelector
+		on:select={(event) => changeMap(event.detail)}
+		on:create={(event) => changeMap(event.detail)}
+	/>
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}

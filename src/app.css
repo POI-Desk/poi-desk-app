@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	/* Reference name */
+	font-family: 'Lexend';
+	/* For multiple files use commas, ex: url(), url(), ... */
+	src: url('/fonts/Lexend-VariableFont_wght.ttf');
+}
+
 html,
 body {
 	@apply h-full overflow-hidden;
