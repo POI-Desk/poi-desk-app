@@ -104,6 +104,7 @@
 				height
 				width
 				published
+				name
 				desks {
 					pk_deskid
 					desknum
@@ -172,6 +173,8 @@
 
 	$: currentFloor = $mapSnapshot.data?.getMapSnapshotById?.floor;
 
+	let showSnapshotScreen = true;
+
 	onMount(() => {
 		panz = panzoom(grid, {
 			...panzoomProps
@@ -179,6 +182,13 @@
 		panz.on('zoom', (e: PanZoom) => {
 			$map.scale = e.getTransform().scale;
 		});
+
+		recenterMap();
+
+		if (!mapData){
+			goto(`?`);
+			return;
+		}
 
 		drawMapFromLocalDbData();
 
@@ -214,10 +224,8 @@
 
 		let query = new URLSearchParams($page.url.searchParams.toString());
 		query.set('map', mapId);
+		console.log(query.toString());
 		goto(`?${query.toString()}`);
-
-		await getMapById(mapId);
-		drawMapFromLocalDbData();
 	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -369,6 +377,7 @@
 		mapObjects[obj.id].applySelectedStyle();
 	};
 
+	//#region humongous
 	//x and y are in local space of the parent element
 	const resizeGrid = (transform: TransformType) => {
 		let panzOffsetX: number = 0;
@@ -522,7 +531,8 @@
 					mapInput: {
 						height: $map.height,
 						width: $map.width,
-						published: mapData?.published!
+						published: mapData?.published!,
+						name: mapData?.name!
 					}
 				});
 			}
@@ -550,23 +560,6 @@
 			-($map.height / 2) + transform.y + transform.height / 2
 		);
 	};
-
-	// const createNewMap = async (floorID: string) => {
-	// 	const newMap = await createMap.mutate({
-	// 		floorId: floorID,
-	// 		mapInput: { height: defaultMapProps.height, width: defaultMapProps.height, published: true } // TODO: puzblishing syste,
-	// 	});
-
-	// 	if (newMap.errors) return console.error(newMap.errors);
-	// 	if (!newMap.data?.createMap) return;
-
-	// 	panz.zoomAbs(0, 0, 1);
-	// 	await getPublishedMapOnFloor.fetch({
-	// 		variables: { floorID: floorID },
-	// 		policy: CachePolicy.NetworkOnly
-	// 	});
-	// 	recenterMap();
-	// };
 
 	const emptyMap = () => {
 		$allMapObjects = [];
@@ -740,7 +733,8 @@
 				mapInput: {
 					height: $map.height,
 					width: $map.width,
-					published: mapData.published
+					published: mapData.published,
+					name: mapData.name
 				}
 			});
 		}
@@ -977,7 +971,8 @@
 			mapInput: {
 				height: $map.height,
 				width: $map.width,
-				published: mapData.published
+				published: mapData.published,
+				name: mapData.name
 			}
 		});
 
@@ -1044,6 +1039,7 @@
 		showMapLoader = true;
 		saving = false;
 	};
+	//#endregion
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
@@ -1092,16 +1088,20 @@
 	<button
 		class="btn bg-primary-500 absolute left-80"
 		on:click={() => {
-			console.log($page.url);
+			goto(`?`);
 		}}
 	>
-		Params
+		Change Snapshot
 	</button>
 
-	<SnapshotSelector
-		on:select={(event) => changeMap(event.detail)}
-		on:create={(event) => changeMap(event.detail)}
-	/>
+	{#if showSnapshotScreen}
+		<SnapshotSelector
+			bind:show={showSnapshotScreen}
+			on:select={(event) => changeMap(event.detail)}
+			on:create={(event) => changeMap(event.detail)}
+		/>
+	{/if}
+
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
@@ -1110,22 +1110,13 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if $mapSnapshot.fetching && showMapLoader}
-				<canvas
-					width={defaultMapProps.width}
-					height={defaultMapProps.width}
-					draggable="false"
-					class="canvasStyle"
-				/>
-			{:else if mapData}
-				<canvas
-					bind:this={canvas}
-					width={$map.width}
-					height={$map.height}
-					draggable="false"
-					class="canvasStyle"
-				/>
-			{/if}
+			<canvas
+				bind:this={canvas}
+				width={$map.width}
+				height={$map.height}
+				draggable="false"
+				class="canvasStyle"
+			/>
 		</div>
 	</div>
 </main>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-	import { ListBox, ListBoxItem, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { ListBox, ListBoxItem, getToastStore, type ToastSettings, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import {
 		Building,
@@ -14,14 +14,36 @@
 	} from 'lucide-svelte';
 	import { defaultMapProps } from '$lib/map/props';
 
+	export let show;
+
 	const dispatch = createEventDispatcher();
 	const toastStore = getToastStore();
+	const modalStore = getModalStore();
 
 	const toastMapNotCreated: ToastSettings = {
 		message: 'Map could not be created!',
 		hideDismiss: true,
 		timeout: 7500,
 		background: 'variant-filled-error'
+	};
+
+	const namePromptModal: ModalSettings = {
+		type: 'prompt',
+		// Data
+		title: 'Enter Name',
+		body: 'Provide a name for the map',
+		// Populates the input value and attributes
+		value: '',
+		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
+		// Returns the updated response value
+		response: (r: string) => {
+			if (!r) return;
+
+			const id: string = buildingsAndFloors![buildingGroup].floors![floorGroup].pk_floorid;
+			if (!id) return;
+
+			createNewSnapshot(id, r);
+		},
 	};
 
 	let buildingGroup = 0;
@@ -33,6 +55,7 @@
 		query getMapSnapshotsOfFloor($floorId: ID!) {
 			getMapSnapshotsOfFloor(floorId: $floorId) {
 				pk_mapId
+				name
 			}
 		}
 	`);
@@ -84,10 +107,11 @@
 	};
 
 	const snapshotSelected = (mapId: string) => {
+		show = false;
 		dispatch('select', mapId);
 	};
 
-	const createNewSnapshot = async (floorId: string) => {
+	const createNewSnapshot = async (floorId: string, name: string) => {
 		if (!floorId) {
 			toastStore.trigger(toastMapNotCreated);
 			return;
@@ -98,7 +122,8 @@
 			mapInput: {
 				height: defaultMapProps.height,
 				width: defaultMapProps.width,
-				published: false
+				published: false,
+				name: name
 			}
 		});
 
@@ -108,17 +133,14 @@
 		}
 
 		dispatch('create', newMap.data?.createMap?.pk_mapId);
-
+		show = false;
 		await fetchSnapshots(floorId);
 	};
 
 	const newButtonClicked = () => {
 		if (!buildingsAndFloors) return;
 
-		const id: string = buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid;
-		if (!id) return;
-
-		createNewSnapshot(id);
+		modalStore.trigger(namePromptModal);
 	};
 
 	const headStyle: string =
@@ -185,7 +207,7 @@
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
 					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
 				>
-					{snapshot.pk_mapId}
+					{snapshot.name}
 				</button>
 			{/each}
 		{/if}
