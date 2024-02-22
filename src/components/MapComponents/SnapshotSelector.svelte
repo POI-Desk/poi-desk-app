@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
 	import { user } from '$lib/userStore';
-	import { ListBox, ListBoxItem, getToastStore, type ToastSettings, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import {
+		ListBox,
+		ListBoxItem,
+		getToastStore,
+		type ToastSettings,
+		getModalStore,
+		type ModalSettings
+	} from '@skeletonlabs/skeleton';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import {
 		Building,
@@ -13,8 +20,6 @@
 		MoveRight
 	} from 'lucide-svelte';
 	import { defaultMapProps } from '$lib/map/props';
-
-	export let show;
 
 	const dispatch = createEventDispatcher();
 	const toastStore = getToastStore();
@@ -43,7 +48,7 @@
 			if (!id) return;
 
 			createNewSnapshot(id, r);
-		},
+		}
 	};
 
 	let buildingGroup = 0;
@@ -107,7 +112,6 @@
 	};
 
 	const snapshotSelected = (mapId: string) => {
-		show = false;
 		dispatch('select', mapId);
 	};
 
@@ -133,8 +137,7 @@
 		}
 
 		dispatch('create', newMap.data?.createMap?.pk_mapId);
-		show = false;
-		await fetchSnapshots(floorId);
+		// await fetchSnapshots(floorId);
 	};
 
 	const newButtonClicked = () => {
@@ -145,10 +148,12 @@
 
 	const headStyle: string =
 		'flex flex-row pl-2 mb-1 text-surface-900 text-lg py-1 border-b-[1px] border-surface-900';
+
+	const cardStyle: string = "w-48 h-48"
 </script>
 
 <div
-	class="absolute p-5 flex z-[900] w-2/3 max-w-screen-xl left-1/2 top-[20%] -translate-x-1/2 bg-surface-50 rounded-lg shadow-2xl"
+	class="absolute p-5 flex z-[900] w-2/3 max-w-screen-lg left-1/2 top-[20%] -translate-x-1/2 bg-surface-50 rounded-lg shadow-2xl"
 >
 	<div class="border-r-[1px] border-primary-400 -m-5 mr-5 flex flex-col p-4 gap-1 max-w-[17rem]">
 		<p class="flex align-top justify-center mb-2 text-3xl text-primary-500">
@@ -200,12 +205,12 @@
 		<!-- <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Buildings</button>
         <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Floors</button> -->
 	</div>
-	<div class="flex flex-wrap gap-2 w-full">
+	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
 			{#each snapshotsOfFloor ?? [] as snapshot}
 				<button
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
-					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
+					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary {cardStyle}"
 				>
 					{snapshot.name}
 				</button>
@@ -213,7 +218,7 @@
 		{/if}
 
 		<button
-			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary w-52 h-52"
+			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary {cardStyle}"
 			on:click={newButtonClicked}
 		>
 			+

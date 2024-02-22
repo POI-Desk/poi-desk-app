@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 
 	// import { getBuildings } from '$lib/queries/buildingQueries';
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import SnapshotSelector from '$components/MapComponents/SnapshotSelector.svelte';
+	import type { PageData } from '../[[mapId]]/$houdini';
 	import {
 		CachePolicy,
-		graphql,
 		type UpdateDeskInput,
 		type UpdateDoorInput,
 		type UpdateLabelInput,
@@ -64,9 +62,11 @@
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
-	let showMapLoader: boolean = true;
-
 	let saving: boolean = false;
+
+	let showMapLoader = true;
+
+	let finishedLoading = false;
 
 	const modalStore = getModalStore();
 
@@ -96,65 +96,7 @@
 		background: 'variant-filled-success'
 	};
 
-	// INFO: VERY long
-	const mapSnapshot = graphql(`
-		query getMapSnapshotById($mapId: ID!) {
-			getMapSnapshotById(mapId: $mapId) {
-				pk_mapId
-				height
-				width
-				published
-				name
-				desks {
-					pk_deskid
-					desknum
-					x
-					y
-					rotation
-					user {
-						pk_userid
-						username
-					}
-				}
-				rooms {
-					pk_roomId
-					x
-					y
-					width
-					height
-				}
-				walls {
-					pk_wallId
-					x
-					y
-					rotation
-					width
-				}
-				doors {
-					pk_doorId
-					x
-					y
-					rotation
-					width
-				}
-				labels {
-					pk_labelId
-					text
-					x
-					y
-					rotation
-				}
-				floor {
-					floorname
-					building {
-						buildingname
-					}
-				}
-			}
-		}
-	`);
-
-	export let data;
+	export let data: PageData;
 
 	$: ({ getMapSnapshotById } = data);
 
@@ -163,6 +105,7 @@
 	$: () => {
 		if (mapData) $map.height = mapData?.height;
 	};
+
 	$: () => {
 		if (mapData) $map.width = mapData?.width;
 	};
@@ -171,9 +114,7 @@
 		$editedMapId = mapData?.pk_mapId ?? '';
 	}
 
-	$: currentFloor = $mapSnapshot.data?.getMapSnapshotById?.floor;
-
-	let showSnapshotScreen = true;
+	$: currentFloor = mapData?.floor;
 
 	onMount(() => {
 		panz = panzoom(grid, {
@@ -184,12 +125,6 @@
 		});
 
 		recenterMap();
-
-		if (!mapData){
-			goto(`?`);
-			return;
-		}
-
 		drawMapFromLocalDbData();
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -197,6 +132,8 @@
 
 		window.addEventListener('online', handleOnline);
 		window.addEventListener('offline', handleOffline);
+
+		finishedLoading = true;
 	});
 
 	onDestroy(() => {
@@ -211,21 +148,10 @@
 	});
 
 	const getMapById = async (mapId: string) => {
-		return await mapSnapshot.fetch({
+		return await getMapSnapshotById.fetch({
 			variables: { mapId: mapId },
 			policy: CachePolicy.NetworkOnly
 		});
-	};
-
-	const changeMap = async (mapId: string) => {
-		if (mapId === mapData?.pk_mapId) {
-			return;
-		}
-
-		let query = new URLSearchParams($page.url.searchParams.toString());
-		query.set('map', mapId);
-		console.log(query.toString());
-		goto(`?${query.toString()}`);
 	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -267,7 +193,7 @@
 			);
 	};
 
-	const discardUnsavedChanges = () => drawMapFromLocalDbData(false);
+	const discardUnsavedChanges = () => alert('THIS IS DEPRICATED');
 
 	const createMapObject = (
 		event: MouseEvent,
@@ -487,8 +413,8 @@
 	};
 
 	const delMapObject = async (obj: MapObject) => {
-		if ($mapSnapshot.fetching || saving) {
-			console.log(saving, $mapSnapshot.fetching);
+		if ($getMapSnapshotById.fetching || saving) {
+			console.log(saving, $getMapSnapshotById.fetching);
 			return;
 		}
 
@@ -1049,12 +975,12 @@
 	<button
 		on:click={saveMap}
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$mapSnapshot.fetching ? 'loading' : 'SAVE'}</button
+		>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
 	>
 
 	<MapObjectSelector
 		on:create={(event) => {
-			if ($mapSnapshot.fetching || !mapData) {
+			if ($getMapSnapshotById.fetching || !mapData) {
 				return;
 			}
 
@@ -1088,19 +1014,11 @@
 	<button
 		class="btn bg-primary-500 absolute left-80"
 		on:click={() => {
-			goto(`?`);
+			goto(`/admin`);
 		}}
 	>
 		Change Snapshot
 	</button>
-
-	{#if showSnapshotScreen}
-		<SnapshotSelector
-			bind:show={showSnapshotScreen}
-			on:select={(event) => changeMap(event.detail)}
-			on:create={(event) => changeMap(event.detail)}
-		/>
-	{/if}
 
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
