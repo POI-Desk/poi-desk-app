@@ -27,6 +27,9 @@ body {
 	.shadow-around-10 {
 		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.1)];
 	}
+	.shadow-around-15 {
+		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.15)];
+	}
 	.shadow-around-20 {
 		@apply shadow-[0px_0px_75px_1px_rgba(0,0,0,0.2)];
 	}
