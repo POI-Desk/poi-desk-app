@@ -1,11 +1,11 @@
 <script lang="ts">
   import { getBuildings } from "$lib/queries/buildingQueries";
   import { onMount } from "svelte";
-  import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
   import { locationid } from "$lib/locationStore";
   import { buildingToEdit, editBuildingclicked, isSaveDisabled, newBuildings } from "$lib/superAdminStore";
   import BuildingInput from "./BuildingInput.svelte";
   import { v4 as uuidv4 } from "uuid";
+  import { PenLine, Trash2 } from "lucide-svelte";
 
   $: locid = $locationid;
 
@@ -53,27 +53,36 @@
   }
 </script>
 
-<div>
-  <h1>Buildings</h1>
+<div class="flex flex-col gap-5">
+  <h1 class="h2 text-primary-500-400-token m-1">Buildings</h1>
+
   {#if showAddBuilding}
     {#each $newBuildings as { id, name }}
-      <div class="input">
+      <div class="input grid grid-cols-4 p-1 gap-1">
         <BuildingInput {id} {name} onInput={(newId, newName) => updateNewNames(newId, newName)} />
-        <button on:click={() => removeBuildingInput(id, name)}>x</button>
-        {id + "" + name}
-        <button on:click={() => {
+
+        <button
+          class="btn flex justify-center items-center variant-filled-primary"
+          on:click={() => {
 						$buildingToEdit = {id, name};
 						$editBuildingclicked = true;
-						}}>edit
+						}}>
+          <PenLine />
+        </button>
+
+        <button
+          class="btn flex justify-center items-center variant-filled-error text-white"
+          on:click={() => removeBuildingInput(id, name)}>
+          <Trash2 />
         </button>
       </div>
     {/each}
-    {#if $editBuildingclicked}
-      <AddFloor buildingId={editedBuildingId} />
-    {/if}
   {/if}
 
-  <div>
-    <button class="btn variant-filled-primary" on:click={handleAddBuilding}>Add Building</button>
+  <div class="input grid grid-cols-4 justify-between items-center p-1 gap-1">
+    <div class="flex justify-center col-span-3 text-center bg-white rounded-full p-3">New building</div>
+    <button class="btn variant-filled-primary text-xl inline-flex items-center justify-center align-middle"
+            on:click={handleAddBuilding}>+
+    </button>
   </div>
 </div>

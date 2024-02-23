@@ -2,6 +2,7 @@
   import { CachePolicy } from "$houdini";
   import { deleteBuilding } from "$lib/mutations/buildings";
   import { getBuildings } from "$lib/queries/buildingQueries";
+  import AddBuilding from "./AddBuilding.svelte";
   import {
     buildingToEdit,
     isSaveDisabled,
@@ -9,15 +10,14 @@
     locationToEdit,
     refreshLocations
   } from "$lib/superAdminStore";
-  import AddBuilding from "./AddBuilding.svelte";
+  import { showAddLocation } from "$lib/locationStore";
+  import { PenLine, Trash2 } from "lucide-svelte";
 
   $: buildings = $getBuildings.data?.getBuildingsInLocation;
 
   $: locationIdToEdit = $locationToEdit.id;
 
   async function onDeleteBuilding(id: string) {
-    console.log(id);
-
     const result = await deleteBuilding.mutate({
       id: id
     });
@@ -31,11 +31,9 @@
       $isSaveDisabled = false;
     }
   }
-
-
 </script>
 
-<div>
+<div class="flex flex-col gap-5">
   {#key $refreshLocations}
 
     <AddBuilding />
@@ -43,21 +41,31 @@
     {#await getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })}
       <p>fetching buildings...</p>
     {:then fetched}
+      <div class="input p-1">
+        <input
+          type="text"
+          class="input bg-white col-span-4 p-3"
+          bind:value={$locationToEdit.name}
+          on:input={handleNameInput}>
+      </div>
 
-      {$locationToEdit.name}
-      <input type="text" class="input" bind:value={$locationToEdit.name} on:input={handleNameInput}>
       {#each buildings ?? [] as building}
-        <div>
-          <div class="variant-outline-primary">
+        <div class="input p-1 grid grid-cols-4 gap-1">
+          <div class="col-span-2 text-center bg-white rounded-full p-2 bold">{building.buildingname}</div>
 
-            {building.buildingname}
-            <button on:click={() => {
-                            $buildingToEdit = {id: building.pk_buildingid, name: building.buildingname};
-                        }}>Edit
-            </button>
-            <button on:click={() => onDeleteBuilding(building.pk_buildingid)}>Delete</button>
-          </div>
-          <br />
+          <button
+            class="btn flex justify-center items-center variant-filled-primary"
+            on:click={() => {
+                $buildingToEdit = {id: building.pk_buildingid, name: building.buildingname};
+							}}>
+            <PenLine />
+          </button>
+
+          <button
+            class="btn flex justify-center items-center variant-filled-error text-white"
+            on:click={() => onDeleteBuilding(building.pk_buildingid)}>
+            <Trash2 />
+          </button>
         </div>
       {/each}
     {/await}

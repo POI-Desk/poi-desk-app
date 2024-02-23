@@ -10,7 +10,7 @@
   import { addLocation, changeNameOfLocation } from "$lib/mutations/locationMutations";
   import {
     buildingToEdit,
-    changedBuildings,
+    changedBuildings, editBuildingclicked,
     floorsToEdit,
     isSaveDisabled,
     locationNames,
@@ -174,37 +174,43 @@
   }
 </script>
 
-<div class="grid grid-cols-3 gap-5">
+<div class="grid grid-cols-3 gap-5 divide-x-2 divide-black dark:divide-white h-full">
 
-  <div>
+  <div class="p-5 flex flex-col gap-5">
     <AddLocation />
     <LocationList />
   </div>
 
-  <div>
+  <div class="p-5 flex flex-col gap-5">
     {#if $showAddLocation}
       <AddBuilding />
-      <button disabled={$isSaveDisabled} class="btn variant-filled-primary" on:click={saveLocationChanges}
-      >Save Changes
+      <button disabled={$isSaveDisabled}
+              class="btn variant-filled-primary"
+              on:click={saveLocationChanges}>
+        Save Changes
       </button
       >
     {/if}
 
     {#if $locationToEdit.id !== ''}
       <EditLocation />
-      <button disabled={$isSaveDisabled} class="btn variant-filled-primary" on:click={saveLocationChanges}
-      >Save Changes
+      <button disabled={$isSaveDisabled}
+              class="btn variant-filled-primary bottom-2"
+              on:click={saveLocationChanges}>
+        Save Changes
       </button
       >
     {/if}
   </div>
 
-  <div>
-    {#if $locationToEdit.id !== ''}
-      {#if $buildingToEdit.id !== ''}
-        <EditBuilding />
-        <AddFloor />
-      {/if}
+  <div class="p-5 flex flex-col gap-5">
+    {#if $locationToEdit.id !== '' && $buildingToEdit.id !== ''}
+      <AddFloor />
+      <EditBuilding />
+    {/if}
+
+    {#if $showAddLocation && $editBuildingclicked}
+      <AddFloor />
     {/if}
   </div>
 </div>
