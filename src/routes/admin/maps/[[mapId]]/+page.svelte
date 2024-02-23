@@ -96,7 +96,7 @@
 		hideDismiss: true,
 		background: 'variant-filled-success'
 	};
-	
+
 	const toastPublishFailed: ToastSettings = {
 		message: 'Map could not be published',
 		hideDismiss: true,
@@ -110,7 +110,7 @@
 	};
 
 	const publishMap = graphql(`
-		mutation publishMap($mapId: ID!, $force: Boolean!){
+		mutation publishMap($mapId: ID!, $force: Boolean!) {
 			publishMap(mapId: $mapId, force: $force)
 		}
 	`);
@@ -172,27 +172,25 @@
 			policy: CachePolicy.NetworkOnly
 		});
 	};
-	
+
 	const publishCurrentMap = async () => {
 		if (!mapData) return;
-		const response = await publishMap.mutate({mapId: mapData?.pk_mapId, force: false});
-		
-		if (response.errors){
+		const response = await publishMap.mutate({ mapId: mapData?.pk_mapId, force: false });
+
+		if (response.errors) {
 			console.error(response.errors);
 			toastStore.trigger(toastPublishFailed);
 			return;
 		}
 
-		if (response.data?.publishMap){
+		if (response.data?.publishMap) {
 			toastStore.trigger(toastPublishSuccess);
-		}
-		else{
+		} else {
 			toastStore.trigger(toastPublishFailed);
 		}
+	};
 
-	}
-
-//#region handles
+	//#region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
 			delSelectedMapObject();
@@ -218,7 +216,7 @@
 		toastStore.clear();
 		toastStore.trigger(toastOnline);
 	};
-//#endregion
+	//#endregion
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
 		if (!smooth)
@@ -342,7 +340,6 @@
 		$selectedMapObject = obj;
 		mapObjects[obj.id].applySelectedStyle();
 	};
-
 
 	//#region humongous
 	//x and y are in local space of the parent element
@@ -1006,17 +1003,32 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<!--temporary-->
-	<a href="/" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
-	<!---->
-	<button
-		on:click={saveMap}
-		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
-	>
+	<div class="absolute p-2 flex gap-1 w-full bg-red-500">
+		<!--temporary-->
+		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
+		<!---->
+		<!-- <button
+			on:click={saveMap}
+			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
+			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
+		> -->
+		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
+			Discrad
+		</button>
+		<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
+		<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
+		<button
+			class="btn variant-filled-primary z-[100]"
+			on:click={() => {
+				goto(`/admin`);
+			}}
+		>
+			Change Snapshot
+		</button>
+	</div>
 
-	<button 
-		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary" 
+	<button
+		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary z-[100]"
 		on:click={publishCurrentMap}
 	>
 		Publish
@@ -1050,19 +1062,6 @@
 			) ?? []}
 		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
-	<button class="btn bg-primary-500 absolute left-20" on:click={discardUnsavedChanges}>
-		Discrad
-	</button>
-	<button class="btn bg-primary-500 absolute left-44" on:click={handleOffline}> Offline </button>
-	<button class="btn bg-primary-500 absolute left-64" on:click={handleOnline}> Online </button>
-	<button
-		class="btn bg-primary-500 absolute left-80"
-		on:click={() => {
-			goto(`/admin`);
-		}}
-	>
-		Change Snapshot
-	</button>
 
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
