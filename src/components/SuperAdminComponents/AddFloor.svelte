@@ -1,17 +1,10 @@
 <script lang="ts">
-	//import { addBuilding } from "$lib/mutations/buildings";
-	import { getBuildings } from '$lib/queries/buildingQueries';
-	import { onMount } from 'svelte';
-	import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
-	import { locationid } from '$lib/locationStore';
-	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, editBuildingclicked, newFloors } from '$lib/superAdminStore';
-	import BuildingInput from './BuildingInput.svelte';
-	import type { UUID } from 'crypto';
-    import {v4 as uuidv4} from 'uuid';
+	import { buildingToEdit, editBuildingclicked, newFloors } from "$lib/superAdminStore";
+	import BuildingInput from "./BuildingInput.svelte";
+	import { v4 as uuidv4 } from "uuid";
 
 
-    export let buildingId = "";
+	export let buildingId = "";
 	let floorNames: String[] = [];
 	let showAddFloor: boolean = false;
 	let newName: String = '';
@@ -20,8 +13,8 @@
 
 	function handleAddFloor() {
 		showAddFloor = true;
-        const newId = uuidv4();
-		$newFloors.push({buildingid: buildingId, id: newId, name: '' });
+		const newId = uuidv4();
+		$newFloors.push({buildingid: $buildingToEdit.id, id: newId, name: '' });
 		$newFloors = $newFloors;
 	}
 
@@ -32,11 +25,8 @@
 	}
 
 	function removeBuildingInput(id: uuidv4, name: string) {
-		//const index = newBuildings.indexOf({ id, name });
 		const index = $newFloors.findIndex((b) => b.id === id)
-		console.log(id + " " + name);
-		
-		
+
 		$newFloors.splice(index, 1);
 		$newFloors = $newFloors;
 	}
@@ -51,7 +41,6 @@
 					<button on:click={() => removeBuildingInput(id, name)}>x</button>
 					{id + "" + name}
 					<button on:click={() => {
-						// editedBuildingId = id;
 						$editBuildingclicked = true;
 						}}>edit</button>
 				</div>

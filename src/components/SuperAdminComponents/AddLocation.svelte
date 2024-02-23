@@ -23,15 +23,12 @@
 		});
 	}
 
-
-
 	function onAddLocation() {
 		$locationToEdit.id = "";
 		showAddLocation.set(true);
 		const newId = uuidv4();
 		$newLocation.id = newId;
 	}
-
 
 	function handleNameInput() {
 		if ($newLocation.name === '' || $locationNames.includes($newLocation.name)) {
@@ -40,7 +37,6 @@
 			$isSaveDisabled = false;
 		}
 	}
-
 </script>
 
 <h1>Location</h1>

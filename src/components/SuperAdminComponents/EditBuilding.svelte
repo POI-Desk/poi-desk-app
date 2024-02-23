@@ -3,7 +3,7 @@
 	import { deleteFloor } from '$lib/mutations/floors';
 	import { getFloors } from '$lib/queries/floorQueries';
 	import { onMount } from 'svelte';
-	import { refreshLocations, locationToEdit, buildingToEdit, floorsToEdit, changedBuidings } from '$lib/superAdminStore';
+	import { refreshLocations, locationToEdit, buildingToEdit, floorsToEdit, changedBuildings } from '$lib/superAdminStore';
 
 	$: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -22,9 +22,9 @@
 
     function handleNameInput(id: string, name: string) {
         
-        $changedBuidings.set(id, name);
-        $changedBuidings = $changedBuidings;
-        console.log("Changed Buildings: " + $changedBuidings.size);
+        $changedBuildings.set(id, name);
+        $changedBuildings = $changedBuildings;
+        console.log("Changed Buildings: " + $changedBuildings.size);
 
 
         
