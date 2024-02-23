@@ -16,6 +16,7 @@
 	import SearchBar from "$components/SearchBar.svelte";
 	import DateSelection from "$components/DateSelection.svelte";
 	
+	import ModalEditDesk from '$components/MapComponents/ModalEditDesk.svelte';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -39,6 +40,10 @@
 		},
 		modalChangeDefaultLocation: {
 			ref: ModalChangeDefaultLocation,
+			slot: '<p>skeleton</p>'
+		},
+		modalEditDesk: {
+			ref: ModalEditDesk,
 			slot: '<p>skeleton</p>'
 		}
 		/*

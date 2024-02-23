@@ -4,13 +4,13 @@ export const lightTheme: CustomThemeConfig = {
 	name: 'light-theme',
 	properties: {
 		// =~= Theme Properties =~=
-		"--theme-font-family-base": `system-ui`,
-		"--theme-font-family-heading": `system-ui`,
-		"--theme-font-color-base": "0 0 0",
-		"--theme-font-color-dark": "255 255 255",
-		"--theme-rounded-base": "9999px",
-		"--theme-rounded-container": "8px",
-		"--theme-border-base": "1px",
+		'--theme-font-family-base': `Lexend`,
+		'--theme-font-family-heading': `Lexend`,
+		'--theme-font-color-base': '0 0 0',
+		'--theme-font-color-dark': '255 255 255',
+		'--theme-rounded-base': '9999px',
+		'--theme-rounded-container': '8px',
+		'--theme-border-base': '1px',
 		// =~= Theme On-X Colors =~=
 		"--on-primary": "255 255 255",
 		"--on-secondary": "0 0 0",

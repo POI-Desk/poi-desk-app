@@ -1,7 +1,6 @@
 <script lang="ts">
   import { floorid } from "$lib/floorStore";
   import { buildingid } from "$lib/buildingStore";
-  import { getDesks } from "$lib/queries/deskQueries";
   import { getFloors } from "$lib/queries/floorQueries";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
 

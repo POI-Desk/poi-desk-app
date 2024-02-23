@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { mapObjectType } from '$lib/map/props';
+	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher } from 'svelte';
 
@@ -107,7 +108,14 @@
 				>
 					<p class="select-none text-primary-500 font-semibold">Wall</p>
 				</div>
-				<div class="flex items-center justify-center" />
+				<div
+					class="flex items-center justify-center"
+					on:mousedown={(e) => onCreate(e, mapObjectType.Label)}
+					tabindex="0"
+					role="button"
+				>
+					<p class="select-none text-primary-500 font-semibold">Label</p>
+				</div>
 			</div>
 			<div class="grid grid-cols-2 divide-x-2 divide-primary-300">
 				<div class="flex items-center justify-center" />
