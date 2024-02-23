@@ -8,6 +8,7 @@
 	import type { PageData } from '../[[mapId]]/$houdini';
 	import {
 		CachePolicy,
+		graphql,
 		type UpdateDeskInput,
 		type UpdateDoorInput,
 		type UpdateLabelInput,
@@ -95,6 +96,24 @@
 		hideDismiss: true,
 		background: 'variant-filled-success'
 	};
+	
+	const toastPublishFailed: ToastSettings = {
+		message: 'Map could not be published',
+		hideDismiss: true,
+		background: 'variant-filled-error'
+	};
+
+	const toastPublishSuccess: ToastSettings = {
+		message: 'Map successfully published',
+		hideDismiss: true,
+		background: 'variant-filled-success'
+	};
+
+	const publishMap = graphql(`
+		mutation publishMap($mapId: ID!, $force: Boolean!){
+			publishMap(mapId: $mapId, force: $force)
+		}
+	`);
 
 	export let data: PageData;
 
@@ -153,7 +172,27 @@
 			policy: CachePolicy.NetworkOnly
 		});
 	};
+	
+	const publishCurrentMap = async () => {
+		if (!mapData) return;
+		const response = await publishMap.mutate({mapId: mapData?.pk_mapId, force: false});
+		
+		if (response.errors){
+			console.error(response.errors);
+			toastStore.trigger(toastPublishFailed);
+			return;
+		}
 
+		if (response.data?.publishMap){
+			toastStore.trigger(toastPublishSuccess);
+		}
+		else{
+			toastStore.trigger(toastPublishFailed);
+		}
+
+	}
+
+//#region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
 			delSelectedMapObject();
@@ -179,6 +218,7 @@
 		toastStore.clear();
 		toastStore.trigger(toastOnline);
 	};
+//#endregion
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
 		if (!smooth)
@@ -303,6 +343,7 @@
 		mapObjects[obj.id].applySelectedStyle();
 	};
 
+
 	//#region humongous
 	//x and y are in local space of the parent element
 	const resizeGrid = (transform: TransformType) => {
@@ -414,7 +455,6 @@
 
 	const delMapObject = async (obj: MapObject) => {
 		if ($getMapSnapshotById.fetching || saving) {
-			console.log(saving, $getMapSnapshotById.fetching);
 			return;
 		}
 
@@ -457,7 +497,6 @@
 					mapInput: {
 						height: $map.height,
 						width: $map.width,
-						published: mapData?.published!,
 						name: mapData?.name!
 					}
 				});
@@ -659,7 +698,6 @@
 				mapInput: {
 					height: $map.height,
 					width: $map.width,
-					published: mapData.published,
 					name: mapData.name
 				}
 			});
@@ -897,7 +935,6 @@
 			mapInput: {
 				height: $map.height,
 				width: $map.width,
-				published: mapData.published,
 				name: mapData.name
 			}
 		});
@@ -977,6 +1014,13 @@
 		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
 		>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
 	>
+
+	<button 
+		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary" 
+		on:click={publishCurrentMap}
+	>
+		Publish
+	</button>
 
 	<MapObjectSelector
 		on:create={(event) => {

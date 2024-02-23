@@ -65,9 +65,9 @@
 		}
 	`);
 
-	const createMap = graphql(`
-		mutation createMapSimple($floorId: ID!, $mapInput: MapInput!) {
-			createMap(floorId: $floorId, mapInput: $mapInput) {
+	const createSnapshot = graphql(`
+		mutation createSnapshot($floorId: ID!, $name: String!, $fallback: MapInput) {
+			createMapSnapshotOfFloor(floorId: $floorId, name: $name, fallback: $fallback) {
 				pk_mapId
 			}
 		}
@@ -105,10 +105,12 @@
 	}
 
 	const fetchSnapshots = async (floorId: string) => {
-		return await snapshots.fetch({
+		const fetchedSnaps = await snapshots.fetch({
 			variables: { floorId: floorId },
 			policy: CachePolicy.NetworkOnly
 		});
+
+		return fetchedSnaps;
 	};
 
 	const snapshotSelected = (mapId: string) => {
@@ -121,22 +123,22 @@
 			return;
 		}
 
-		const newMap = await createMap.mutate({
+		const newMap = await createSnapshot.mutate({
 			floorId: floorId,
-			mapInput: {
+			name: name,
+			fallback: {
 				height: defaultMapProps.height,
 				width: defaultMapProps.width,
-				published: false,
 				name: name
 			}
 		});
 
-		if (!newMap.data?.createMap?.pk_mapId) {
+		if (!newMap.data?.createMapSnapshotOfFloor?.pk_mapId) {
 			toastStore.trigger(toastMapNotCreated);
 			return;
 		}
 
-		dispatch('create', newMap.data?.createMap?.pk_mapId);
+		dispatch('create', newMap.data?.createMapSnapshotOfFloor?.pk_mapId);
 		// await fetchSnapshots(floorId);
 	};
 
