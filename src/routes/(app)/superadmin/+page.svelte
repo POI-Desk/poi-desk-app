@@ -1,28 +1,27 @@
 <script lang="ts">
-	import AddBuilding from '$components/SuperAdminComponents/AddBuilding.svelte';
-	import AddLocation from '$components/SuperAdminComponents/AddLocation.svelte';
-	import EditBuilding from '$components/SuperAdminComponents/EditBuilding.svelte';
-	import EditLocation from '$components/SuperAdminComponents/EditLocation.svelte';
-	import LocationList from '$components/SuperAdminComponents/LocationList.svelte';
-	import { addBuilding, changeNameOfBuilding } from '$lib/mutations/buildings';
-	import { getLocations } from '$lib/queries/locationQueries';
-	import { getBuildings } from '$lib/queries/buildingQueries';
-	import { addFloor, changeNameOfFloor } from '$lib/mutations/floors';
-	import { addLocation, changeNameOfLocation } from '$lib/mutations/locationMutations';
+	import AddBuilding from "$components/SuperAdminComponents/AddBuilding.svelte";
+	import AddLocation from "$components/SuperAdminComponents/AddLocation.svelte";
+	import EditBuilding from "$components/SuperAdminComponents/EditBuilding.svelte";
+	import EditLocation from "$components/SuperAdminComponents/EditLocation.svelte";
+	import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
+	import { addBuilding, changeNameOfBuilding } from "$lib/mutations/buildings";
+	import { getLocations } from "$lib/queries/locationQueries";
+	import { addFloor, changeNameOfFloor } from "$lib/mutations/floors";
+	import { addLocation, changeNameOfLocation } from "$lib/mutations/locationMutations";
 	import {
 		buildingToEdit,
-		locationToEdit,
+		changedBuidings,
+		floorsToEdit,
 		isSaveDisabled,
+		locationNames,
+		locationToEdit,
 		newBuildings,
 		newFloors,
-		locationNames,
 		newLocation,
-		floorsToEdit,
-		changedBuidings,
 		refreshLocations
-	} from '$lib/superAdminStore';
-	import { CachePolicy } from '$houdini';
-	import { showAddLocation } from '$lib/locationStore';
+	} from "$lib/superAdminStore";
+	import { CachePolicy } from "$houdini";
+	import { showAddLocation } from "$lib/locationStore";
 
 
 	/**
@@ -76,10 +75,6 @@
 						name: $newLocation.name
 					})
 					.then((value) => {
-						console.log('LOCATION');
-						console.log(value);
-
-						console.log('id: ' + value.data?.addLocation?.pklocationid);
 						saveBuildingChanges(value.data?.addLocation?.pklocationid);
 
 						$isSaveDisabled = true;
@@ -106,9 +101,6 @@
 						name: building.name
 					})
 					.then((value) => {
-						console.log('BUILDING');
-						console.log(value);
-
 						$refreshLocations = !$refreshLocations;
 						$isSaveDisabled = true;
 						saveFloorChanges(building.id, value.data?.addBuilding?.pk_buildingid);
@@ -132,8 +124,6 @@
 					buildingid,
 					name: floor.name
 				});
-				console.log('FLOOR');
-				console.log(result);
 			}
 		}
 	}
@@ -142,20 +132,12 @@
 	 * saves the changes made to an edited location
 	 */
 	async function saveEditLocationChanges() {
-		console.log($locationNames);
-		console.log('new name: ' + $locationToEdit.name);
-
-		// if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
-		// 	alert('EDIT A location with this name already exists. Please enter a different name!');
-		// } else {
 			const result = await changeNameOfLocation.mutate({
 				id: $locationToEdit.id,
 				newName: $locationToEdit.name
 			});
-			console.log(result);
 			$isSaveDisabled = true;
 			$refreshLocations = !$refreshLocations;
-		// }
 	}
 
 	/**
@@ -167,7 +149,6 @@
 				id,
 				newName: building
 			});
-			console.log(result);
 		});
 
 		$changedBuidings = new Map();
@@ -181,15 +162,10 @@
 		console.log('floorsToEdit:' + $floorsToEdit);
 
 		$floorsToEdit.forEach(async (floor, id) => {
-			console.log('FLOOOOOOOR');
-			console.log(id + ' name: ' + floor);
-
 			const result = await changeNameOfFloor.mutate({
 				id: id,
 				newName: floor
 			});
-
-			console.log(result);
 		});
 
 		$floorsToEdit = new Map();
@@ -197,7 +173,10 @@
 	}
 </script>
 
+<div class="grid cols">
+
 <AddLocation />
+
 {#if $showAddLocation}
 	<AddBuilding />
 {/if}
@@ -217,3 +196,4 @@
 >
 
 <LocationList />
+</div>
