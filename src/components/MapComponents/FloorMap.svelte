@@ -1,11 +1,10 @@
 <script lang="ts">
   import { CachePolicy } from "$houdini";
-  import { interval, selectedDesk } from "$lib/bookingStore";
+  import { interval } from "$lib/bookingStore";
   import { dateValue } from "$lib/dateStore";
   import { floorid } from "$lib/floorStore";
   import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from "$lib/map/props";
   import { getBookingsByDate } from "$lib/queries/booking";
-  import { getDeskById } from "$lib/queries/deskQueries";
   import type { MapTransform } from "$lib/types/mapTypes";
   import {
     ProgressBar,
@@ -27,6 +26,7 @@
 	import Label from './MapObjects/Label.svelte';
 	import { getPublishedMapOnFloor } from "$lib/queries/map";
 	import type { Desk } from "$lib/types/deskTypes";
+	import { getDeskById } from "$lib/queries/deskQueries";
 
   let container: HTMLDivElement;
   let grid: HTMLDivElement;
@@ -126,10 +126,13 @@
       policy: CachePolicy.NetworkOnly
     });
     drawMap();
-    await getBookingsByDate.fetch({
+    const l = await getBookingsByDate.fetch({
       variables: { date: $dateValue, floorId: $floorid },
       policy: CachePolicy.NetworkOnly
     });
+
+    console.log(l);
+
     await updateBookings();
   };
 
@@ -208,12 +211,10 @@
 
           $selectedDesks = $selectedDesks;
         } else {
-          $selectedDesk = (
-            await getDeskById.fetch({
-              variables: { deskId: desk.pk_deskid },
-              policy: CachePolicy.NetworkOnly
-            })
-          ).data?.getDeskById;
+          const i = await getDeskById.fetch({
+            variables: { deskId: desk.pk_deskid },
+            policy: CachePolicy.NetworkOnly
+          });
           modalStore.trigger(modal);
         }
       });

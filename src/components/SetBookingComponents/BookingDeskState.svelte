@@ -1,37 +1,47 @@
 <script lang="ts">
-	import { displayedTime, interval, selectedDesk } from '$lib/bookingStore';
+	import { displayedTime, interval } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
+	import { getDeskById } from '$lib/queries/deskQueries';
 	import { user } from '$lib/userStore';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	let morningSelected: boolean = false;
 	let afternoonSelected: boolean = false;
 	// export let shownInterval: String = 'default';
 	// just for now
-	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
-	let isBookedMorning: boolean = currentBookingsOnDate.some((booking: any) => booking.ismorning);
-	let isBookedAfternoon: boolean = currentBookingsOnDate.some(
-		(booking: any) => booking.isafternoon
-	);
-	const deskAssigned: boolean = $selectedDesk.user !== null;
 
+	$: selectedDesk = $getDeskById.data?.getDeskById;
+
+	let currentBookingsOnDate;
+	let isBookedMorning: boolean;
+	let isBookedAfternoon: boolean
+	let deskAssigned: boolean;
 	let morningAlreadyTakenName: string = '';
 	let afternoonAlreadyTakenName: string = '';
-	for (const booking of currentBookingsOnDate) {
-		if (booking.date === $dateValue) {
-			if (booking.ismorning) {
-				morningAlreadyTakenName = booking.user.username;
-			}
-			if (booking.isafternoon) {
-				afternoonAlreadyTakenName = booking.user.username;
+
+	onMount(() => {
+		currentBookingsOnDate = selectedDesk?.bookings?.filter((b: any) => b.date === $dateValue)!;
+		isBookedMorning = currentBookingsOnDate?.some((booking: any) => booking.ismorning)!;
+		isBookedAfternoon = currentBookingsOnDate?.some((booking: any) => booking.isafternoon);
+		deskAssigned = selectedDesk?.user !== null;
+
+		for (const booking of currentBookingsOnDate ?? []) {
+			if (booking.date === $dateValue) {
+				if (booking.ismorning) {
+					morningAlreadyTakenName = booking.user.username;
+				}
+				if (booking.isafternoon) {
+					afternoonAlreadyTakenName = booking.user.username;
+				}
 			}
 		}
-	}
 
-	if (deskAssigned) {
-		morningAlreadyTakenName = $selectedDesk.user.username;
-		afternoonAlreadyTakenName = $selectedDesk.user.username;
-	}
+		if (deskAssigned) {
+			morningAlreadyTakenName = selectedDesk?.user?.username ?? '';
+			afternoonAlreadyTakenName = selectedDesk?.user?.username ?? '';
+		}
+	});
 
 	$: $interval.morning = morningSelected;
 	$: $interval.afternoon = afternoonSelected;
@@ -40,7 +50,7 @@
 		if ($dateValue) {
 			morningSelected = false;
 			afternoonSelected = false;
-			currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+			currentBookingsOnDate = selectedDesk?.bookings!.filter((b: any) => b.date === $dateValue) ?? [];
 			isBookedMorning = currentBookingsOnDate.some((booking: any) => booking.ismorning);
 			isBookedAfternoon = currentBookingsOnDate.some((booking: any) => booking.isafternoon);
 			for (const booking of currentBookingsOnDate) {

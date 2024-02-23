@@ -45,6 +45,11 @@
       })
       .then(() => {
         let users = $getUsers.data?.getAllUsers.content;
+        if (!users){
+          console.warn('No Users');
+          return;
+        }
+
         searchUsers = users.map((user) => ({
           pk_userid: user?.pk_userid,
           username: user?.username,
@@ -72,13 +77,14 @@
 
   async function getUserInfo(user: User) {
     typedUser = user;
-    await getBookings.fetch({ variables: { userid: user.pk_userid ?? "" } });
+    await getBookings.fetch({ variables: { userid: user.pk_userid, isCurrent: true} }); // WHAT IS icCurrent???
     if (bookingsOfUser?.length ?? 0 > 0) {
       for (const booking of bookingsOfUser ?? []) {
         if (booking?.date == $dateValue) {
-          await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? "" } }).then(() => {
+          await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? "" } })
+          .then(() => {
             let desk = $getDesk.data?.getBookingById?.desk;
-            userLocation = desk?.floor?.building.location?.locationname ?? "";
+            userLocation = desk?.map?.floor?.building.location?.locationname ?? "";
             if (booking.ismorning && booking.isafternoon) {
               mpUserUserinfo.set(user.pk_userid, "today in " + userLocation);
               //user.userInfo = 'today in ' + userLocation;
@@ -122,18 +128,19 @@
 					desknum
 					y
 					x
-					floor {
-						pk_floorid
-						floorname
-						building {
-							buildingname
-							location {
-								locationname
-						}
-					}
-				}
-			}
-		}
+          map {
+            floor{
+              floorname
+              building{
+                buildingname
+                location{
+                  locationname
+                }
+              }
+            }
+          }
+        }
+      }
 		}
 	`);
 
@@ -172,8 +179,8 @@
   }
 </script>
 
-
-  <div class="flex items-center relative">
+<div class="flex justify-center">
+  <div class="flex items-center relative w-full max-w-screen-sm">
     <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
       <div class="dropdown w-full">
         <input
@@ -247,3 +254,4 @@
       <Search />
     </div>
   </div>
+</div>

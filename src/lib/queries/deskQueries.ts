@@ -27,12 +27,12 @@ export const getDeskById = graphql(`
 			attributes {
 				attributename
 			}
-			floor {
-				pk_floorid
-				floorname
-				building {
-					pk_buildingid
-					buildingname
+			map{
+				floor{
+					floorname
+					building{
+						buildingname
+					}
 				}
 			}
 		}

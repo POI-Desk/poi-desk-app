@@ -3,6 +3,7 @@
   import { getBookings, userBookings } from "$lib/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
   import { CachePolicy } from "$houdini";
+	import { onMount } from "svelte";
 
 
   export let isCurrentBookings = true;
@@ -10,7 +11,9 @@
   $: console.log("User:", $user?.pk_userid);
   $: usrid = $user?.pk_userid;
 
-  getBookings.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
+  onMount(() => {
+    getBookings.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
+  });
 
   $: bookings = $getBookings.data?.getBookingsByUserid;
 

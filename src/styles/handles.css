@@ -26,28 +26,28 @@
 
   .handle-east-point{
     @apply border-[#8B80F9];
-		@apply border-[2px];
-		@apply bg-[#FFFCF2];
-		@apply h-[15px];
-		@apply w-[15px];
+	@apply border-[2px];
+	@apply bg-[#FFFCF2];
+	@apply h-[15px];
+	@apply w-[15px];
     @apply top-1/2;
-		@apply right-[-7px];
-		@apply rounded-full;
-		@apply cursor-col-resize;
-    @apply -translate-y-1/2;
+	@apply right-[-7px];
+	@apply rounded-full;
+	@apply cursor-col-resize;
+	@apply -translate-y-1/2;
   }
 
   .handle-west-point{
-    @apply border-[#8B80F9];
-		@apply border-[2px];
-		@apply bg-[#FFFCF2];
-		@apply h-[15px];
-		@apply w-[15px];
-    @apply top-1/2;
-		@apply left-[-7px];
-		@apply rounded-full;
-		@apply cursor-col-resize;
-    @apply -translate-y-1/2;
+	@apply border-[#8B80F9];
+	@apply border-[2px];
+	@apply bg-[#FFFCF2];
+	@apply h-[15px];
+	@apply w-[15px];
+	@apply top-1/2;
+	@apply left-[-7px];
+	@apply rounded-full;
+	@apply cursor-col-resize;
+	@apply -translate-y-1/2;
   }
 
 	.handle-south {

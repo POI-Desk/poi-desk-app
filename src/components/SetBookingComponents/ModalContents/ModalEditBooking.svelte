@@ -315,7 +315,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {desk.floor.building.location.locationname}
+            {desk.map.floor.building.location.locationname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
@@ -323,7 +323,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {desk.floor.building.buildingname}
+            {desk.map.floor.building.buildingname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
@@ -331,7 +331,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {desk.floor.floorname}
+            {desk.map.floor.floorname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
@@ -447,7 +447,7 @@
           <div
             class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500"
           >
-            {desk.floor.building.location.locationname}
+            {desk.map.floor.building.location.locationname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
@@ -457,7 +457,7 @@
           <div
             class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500"
           >
-            {desk.floor.building.buildingname}
+            {desk.map.floor.building.buildingname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">
@@ -467,7 +467,7 @@
           <div
             class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500"
           >
-            {desk.floor.floorname}
+            {desk.map.floor.floorname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="{iconClasses}">

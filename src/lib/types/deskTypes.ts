@@ -2,11 +2,11 @@
 export type Desk = {
     pk_deskid: string;
     desknum: string;
-    bookings: [{
+    bookings: {
         date: string;
         ismorning: boolean;
         isafternoon: boolean;
-    }];
+    }[];
     floor: {
         floorname: string;
         building: {

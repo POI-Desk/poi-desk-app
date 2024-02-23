@@ -13,6 +13,11 @@ export const getPublishedMapOnFloor = graphql(`
 				x
 				y
 				rotation
+				bookings {
+					date
+					ismorning
+					isafternoon
+				}
 				user {
 					pk_userid
 					username

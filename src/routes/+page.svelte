@@ -11,13 +11,6 @@
   import { LightSwitch } from "@skeletonlabs/skeleton";
   import SearchBar from "$components/SearchBar.svelte";
   import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
-  import { MapPin, Search } from "lucide-svelte";
-
-  onMount(() => {
-    if (!$user.pk_userid) {
-      goto("/login");
-    }
-  });
 
   //
   // let visible = false;
@@ -49,23 +42,19 @@
 <div class="overflow-hidden h-screen">
   <FloorMap />
 
-  <div class="absolute m-3">
-    <a class="btn variant-filled-primary" href="./login">Login</a>
-    <a class="btn variant-filled-primary" href="./location">Location</a>
-    <a class="btn variant-filled-primary" href="./bookings">Bookings</a>
-    <a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
-    <a class="btn variant-filled-primary" href="./analysis">Analysis</a>
-    <a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
-    <LightSwitch />
-    <DateSelection />
-  </div>
-
-  <div class="absolute p-8" style="width: 100%">
+  <div class="absolute p-8 w-full">
     <SearchBar />
-
-
     <div class="flex justify-center p-1">
       <DateSelection />
+    </div>
+
+    <div>
+      <a class="btn variant-filled-primary" href="/login">Login</a>
+      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
+      <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
+      <a class="btn variant-filled-primary" href="/analysis">Analysis</a>
+      <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
+      <LightSwitch />
     </div>
   </div>
 
