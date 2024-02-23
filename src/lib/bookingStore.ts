@@ -1,6 +1,6 @@
 import { graphql } from '$houdini';
 import { writable } from 'svelte/store';
-import type {Interval } from './types/bookingTypes';
+import type { Booking, Interval } from "./types/bookingTypes";
 
 export const interval = writable<Interval>({
 	morning: false,
@@ -13,10 +13,10 @@ export const morningSelected = writable<boolean>(false);
 export const afternoonSelected = writable<boolean>(false);
 
 
-export const currentBooking = writable<any>({
+export const currentBooking = writable<Booking>({
 });
 
-export const userBookings = writable<any[]>([]);
+export const userBookings = writable<any>();
 
 export const selectedDesk = writable<any>();
 
@@ -25,8 +25,8 @@ export const _getBookingsByUseridVariables = () => {
 };
 
 export const getBookings = graphql(`
-	query getBookingsByUserid($userid: ID!) @load {
-		getBookingsByUserid(userid: $userid) {
+	query getBookingsByUserid($userid: ID!, $isCurrent: Boolean!) @load {
+		getBookingsByUserid(userid: $userid, isCurrent: $isCurrent) {
 			isafternoon
 			ismorning
 			pk_bookingid

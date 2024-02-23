@@ -13,7 +13,7 @@
             {#each bookings.data?.getBookingsByUserid ?? [] as booking}
             <div class="flex flex-row justify-between border mt-1 rounded-xl ml-2 mr-2 p-2" style="background-color: #d4d6d9;">
                 <div class="self-center w-1/2">
-                    <img src="/src/images/{booking.desk?.floor?.building?.location?.locationname}.png" alt="wien">
+                    <img src="/locationImages/{booking.desk?.floor?.building?.location?.locationname}.png" alt="wien">
                 </div>
                 <div class="grid grid-cols-3 grid-rows-4 gap-1 px-2 w-full" >
                     <div class="col-span-3">{booking.date}</div>
