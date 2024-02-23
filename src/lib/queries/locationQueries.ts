@@ -4,7 +4,7 @@ export const getLocations = graphql(`
 	query getLocations {
 		getAllLocations {
 			locationname,
-			pklocationid
+			pk_locationid
 			buildings {
 				buildingname
 			}

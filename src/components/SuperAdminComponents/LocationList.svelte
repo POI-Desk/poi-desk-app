@@ -60,7 +60,7 @@
 						<button
 							on:click={() => {
 								$showAddLocation = false;
-								$locationToEdit.id = location.pklocationid;
+								$locationToEdit.id = location.pk_locationid;
 								$locationToEdit.name = location.locationname;
 								$buildingToEdit.id = "";
 							}}>Edit</button
