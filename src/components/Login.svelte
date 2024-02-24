@@ -6,8 +6,8 @@
 
 
     const createOrLoginAsUser = graphql(`
-		mutation createOrLoginAsUser($username: String!) {
-			createOrLoginAsUser(username: $username) {
+		mutation createOrLoginAsUser($username: String!, $password: String!) {
+			createOrLoginAsUser(username: $username, password: $password) {
 				pk_userid
 				username
 				location {
@@ -20,16 +20,31 @@
 
 	let path: string = '/location';
 	let username: string = '';
+	let password: string = '';
+
+	function setCookie(cname: string, cvalue: string, exdays: number) {
+		const d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		let expires = "expires=" + d.toUTCString();
+		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
 
 	async function loginWithoutMicrosoft(){
 		try {
 			const result = await createOrLoginAsUser.mutate({
-				username: username
-		});
-		$user = {...result.data?.createOrLoginAsUser! };
-		path = $user.location == null ? '/location' : '/';
-		goto(path);
-		} catch (error) {
+				username: username,
+				password: password
+			});
+			if (result.data?.createOrLoginAsUser) {
+				$user = {...result.data?.createOrLoginAsUser! };
+				path = $user.location == null ? '/location' : '/';
+				goto(path);
+				setCookie("userid", $user.pk_userid, 7);
+				console.log(decodeURIComponent(document.cookie));
+				
+			} 
+		}
+		catch (error) {
 			console.error('Error:', error);
 		}
 	}
@@ -40,8 +55,8 @@
 
 <div class="h-screen flex flex-col items-center justify-center">
         <div class="p-3">
-<!--        <label for="usernameInput" class="label-text">user name</label>-->
         <input type="text" placeholder="Enter your username" class="input input-primary" id="usernameInput" bind:value={username}/>
+		<input type="password" placeholder="Enter your password" class="input input-primary" bind:value={password}/>
     </div>
     <div class="p-3">
         <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>

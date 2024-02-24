@@ -23,6 +23,7 @@ export const getUserById = graphql(`
 			}
 			location {
 				locationname
+				pk_locationid
 			}
 		}
 	}

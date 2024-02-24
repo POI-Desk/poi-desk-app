@@ -13,11 +13,11 @@
   import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
   import { MapPin, Search } from "lucide-svelte";
 
-  onMount(() => {
-    if (!$user.pk_userid) {
-      goto("/login");
-    }
-  });
+  // onMount(() => {
+  //   if (!$user.pk_userid) {
+  //     goto("/login");
+  //   }
+  // });
 
   //
   // let visible = false;
