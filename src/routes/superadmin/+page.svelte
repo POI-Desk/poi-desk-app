@@ -23,6 +23,7 @@
 	} from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
 	import { showAddLocation } from '$lib/locationStore';
+	import AddUser from '$components/SuperAdminComponents/AddUser.svelte';
 
 
 	/**
@@ -196,6 +197,8 @@
 		$isSaveDisabled = true;
 	}
 </script>
+
+<AddUser />
 
 <AddLocation />
 {#if $showAddLocation}
