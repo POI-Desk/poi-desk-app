@@ -9,3 +9,9 @@ export const updateMap = graphql(`
     }
   }
 `);
+
+export const deleteMap = graphql(`
+  mutation deleteMap($mapId: ID!){
+    deleteMap(mapId: $mapId)
+  }
+`);

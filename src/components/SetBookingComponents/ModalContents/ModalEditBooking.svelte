@@ -28,6 +28,7 @@
   import type { Booking } from "$lib/types/bookingTypes";
   import { user } from "$lib/userStore";
   import { CachePolicy, graphql } from "$houdini";
+	import { onMount } from "svelte";
 
   $: {
     if ($currentBooking.ismorning && $currentBooking.isafternoon) {

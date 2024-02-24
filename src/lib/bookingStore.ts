@@ -13,7 +13,7 @@ export const morningSelected = writable<boolean>(false);
 export const afternoonSelected = writable<boolean>(false);
 
 
-export const currentBooking = writable<Booking>({});
+export const currentBooking = writable<any>({});
 
 export const userBookings = writable<any>();
 

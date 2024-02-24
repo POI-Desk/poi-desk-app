@@ -30,7 +30,6 @@
   $interval.afternoon = false;
 
   $: selectedDesk = $getDeskById.data?.getDeskById;
-  $: console.log(selectedDesk);
 
   async function finishBooking() {
     const value = await bookDesk.mutate({

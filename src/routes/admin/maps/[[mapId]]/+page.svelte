@@ -73,7 +73,7 @@
 
 	const toastStore = getToastStore();
 
-	const modal: ModalSettings = {
+	const modalEditDesk: ModalSettings = {
 		type: 'component',
 		component: 'modalEditDesk',
 		response: (response: { userId: string } | null) => {
@@ -302,7 +302,7 @@
 
 		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
 			selectMapObject(event.detail);
-			modalStore.trigger(modal);
+			modalStore.trigger(modalEditDesk);
 		});
 
 		if (initialTransform == null) {

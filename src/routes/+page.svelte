@@ -52,7 +52,7 @@
       <a class="btn variant-filled-primary" href="/login">Login</a>
       <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
       <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
-      <a class="btn variant-filled-primary" href="/analysis">Analysis</a>
+      <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
       <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
       <LightSwitch />
     </div>

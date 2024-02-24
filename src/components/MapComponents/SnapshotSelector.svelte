@@ -17,9 +17,11 @@
 		AlignHorizontalDistributeCenter,
 		ChevronRight,
 		ChevronsRight,
-		MoveRight
+		MoveRight,
+		Trash2
 	} from 'lucide-svelte';
 	import { defaultMapProps } from '$lib/map/props';
+	import { deleteMap } from '$lib/mutations/map';
 
 	const dispatch = createEventDispatcher();
 	const toastStore = getToastStore();
@@ -53,6 +55,7 @@
 
 	let buildingGroup = 0;
 	let floorGroup = 0;
+	let formattedDate = '00-00-0000';
 
 	$: currentUser = $user;
 
@@ -61,6 +64,8 @@
 			getMapSnapshotsOfFloor(floorId: $floorId) {
 				pk_mapId
 				name
+				createdOn
+				updatedOn
 			}
 		}
 	`);
@@ -104,16 +109,42 @@
 		}
 	}
 
+	const deleteSnapshot = async (mapid: string) =>{
+		await deleteMap.mutate({mapId: mapid});
+		if (buildingsAndFloors) {
+			if (buildingsAndFloors[buildingGroup]) {
+				if (buildingsAndFloors[buildingGroup].floors) {
+					if (buildingsAndFloors[buildingGroup].floors![floorGroup]) {
+						fetchSnapshots(buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid);
+					}
+				}
+			}
+		}
+	}
+
 	const fetchSnapshots = async (floorId: string) => {
 		const fetchedSnaps = await snapshots.fetch({
 			variables: { floorId: floorId },
 			policy: CachePolicy.NetworkOnly
 		});
 
+		// Get current date
+		let today = new Date();
+
+		// Extract day, month, and year
+		let dd = String(today.getDate()).padStart(2, '0');
+		let mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+		let yyyy = today.getFullYear();
+
+		// Format as "dd-mm-yyyy"
+		formattedDate = yyyy + '-' + mm + '-' + dd;
+
 		return fetchedSnaps;
 	};
 
 	const snapshotSelected = (mapId: string) => {
+		if ($snapshots.fetching) return;
+		
 		dispatch('select', mapId);
 	};
 
@@ -209,12 +240,29 @@
 	</div>
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
-			{#each snapshotsOfFloor ?? [] as snapshot}
+			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot}
 				<button
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
-					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary {cardStyle}"
+					class="flex flex-col card card-hover select-none variant-ghost-secondary {cardStyle}"
 				>
-					{snapshot.name}
+					<div class="flex justify-end w-full">
+						<button class="p-1 m-1 rounded-lg bg-error-300" on:click|stopPropagation={() => deleteSnapshot(snapshot.pk_mapId)}>
+							<Trash2 class="text-error-500 rounded-full" />
+						</button>
+					</div>
+					<div class="flex justify-center items-center text-2xl h-full text-primary-500 font-bold">
+						{snapshot.name}
+					</div>
+					<div class="text-primary-500 border-t-[1px] border-tertiary-700">
+						<p class="p-2">{
+							snapshot.updatedOn.split('T')[0] !== formattedDate ? 
+							snapshot.updatedOn.split('T')[0] : 
+							snapshot.updatedOn.split('T')[1].split(':')[0] + 
+							':' +
+							snapshot.updatedOn.split('T')[1].split(':')[1]
+							}
+						</p>
+					</div>
 				</button>
 			{/each}
 		{/if}

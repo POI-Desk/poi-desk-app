@@ -15,7 +15,7 @@
 
 	let currentBookingsOnDate;
 	let isBookedMorning: boolean;
-	let isBookedAfternoon: boolean
+	let isBookedAfternoon: boolean;
 	let deskAssigned: boolean;
 	let morningAlreadyTakenName: string = '';
 	let afternoonAlreadyTakenName: string = '';
