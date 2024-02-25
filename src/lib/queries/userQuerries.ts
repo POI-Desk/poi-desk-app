@@ -8,3 +8,17 @@ export const usersInTeam = graphql(`
         }
     }
 `);
+
+export const authenticateUser = graphql(`
+	query authenticateUser($token: String!) {
+		authorizeUser(token: $token)
+	}
+`);
+
+
+export const loginWizzGoogol = graphql(`
+	mutation loginWizzGoogol($auth: String!) {
+		loginWizzGoogol(authToken: $auth)
+	}
+`);
+

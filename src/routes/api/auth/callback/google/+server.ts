@@ -1,20 +1,63 @@
-import { error } from '@sveltejs/kit';
+import { loginWizzGoogol } from '$lib/queries/userQuerries';
+import { error, json, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { oAuth2Client } from '$lib/auth/googleOAuthClient';
-import { load_getQuarterlyBooking } from '$houdini';
 
 export const GET: RequestHandler = async (req) => {
 	const code = req.url.searchParams.get('code');
 
-	console.log(code);
-
 	if (!code) {
-		throw error(400, 'Missing code');
+		throw error(400, 'Missing code parameter in the query string');
 	}
-/*
-	const tokenRes = await oAuth2Client.getToken(code);
 
-	console.log(tokenRes.tokens);
-*/
-	return new Response();
+	const res = await loginWizzGoogol.mutate(
+		{
+			auth: code
+		},
+		{ event: req }
+	);
+
+	if (res.errors) {
+		throw error(400, 'Missing code parameter in the query string' + res.errors[0].message);
+	}
+
+	const id = res.data?.loginWizzGoogol as string;
+
+	req.cookies.set('session', id, {
+		path: '/',
+		httpOnly: true,
+		sameSite: 'lax'
+	});
+
+	throw redirect(302, '/');
 };
+
+// export const GET: RequestHandler = await (req) => {
+// code = req.url.searchParams.get('code');
+
+// console.log(code);
+
+// if (!code) {
+// 	return error(400, 'Missing code parameter in the query string');
+// }
+
+// const res = await loginWizzGoogol.mutate(
+// 	{
+// 		auth: code
+// 	},
+// 	{ event: req }
+// );
+
+// if (res.errors)
+// 	return error(400, 'Missing code parameter in the query string' + res.errors[0].message);
+
+// console.log(res.data?.loginWizzGoogol);
+// const id: string = res.data?.loginWizzGoogol as string;
+
+// req.cookies.set('session-token', id, {
+// 	httpOnly: true,
+// 	sameSite: 'lax',
+// 	maxAge: 60 * 60 * 24 * 7
+// });
+
+// return redirect(302, '/');
+// };

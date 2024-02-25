@@ -5,15 +5,10 @@
 	import FloorSelection from '$components/FloorSelection.svelte';
 	import FloorMap from '$components/MapComponents/FloorMap.svelte';
 	import { onMount } from 'svelte';
-	import { user } from '$lib/userStore';
+	import { authId, user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
 	import { isExtended } from "$lib/stores/extendedUserStore";
-
-	onMount(() => {
-		if (!$user.pk_userid) {
-			goto('/login');
-		}
-	});
+	import { loginWizzGoogol } from '$lib/queries/userQuerries';
 
 	//
 	// let visible = false;
