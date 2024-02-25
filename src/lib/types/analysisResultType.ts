@@ -5,7 +5,7 @@ export type Day = {
 	day: number;
 	morning: number;
 	afternoon: number;
-	totalBookings: number;
+	total: number;
 };
 
 export type Month = {
@@ -26,7 +26,7 @@ export type Year = {
 
 export type AnalysisData = {
 	time: string;
-	totalBookings: number;
+	total: number;
 	days: number;
 	amountOfDesks: number;
 	morning_highestBooking: {
@@ -72,5 +72,13 @@ export type AnalysisComparisonInfo = {
 export type AnalysisComparisonInfoBoth = {
 	first: AnalysisComparisonInfo;
 	second: AnalysisComparisonInfo;
+	showType: 'Days' | 'Data';
+};
+
+export type AnaylsisSelection = {
+	Year: string | null;
+	Month: string | null;
+	Building: Building | null;
+	Floor: Floor | null;
 	showType: 'Days' | 'Data';
 };

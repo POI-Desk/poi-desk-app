@@ -1,211 +1,172 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { IdentifierType } from './../../../../$houdini/graphql/enums.js';
-	import { getMonthlyBookingPrediction } from '$lib/queries/predictionQueries';
-  import Chart from 'chart.js/auto';
-  import type { MonthlyPrediction } from '$lib/types/predictionType';
+	import {
+		getMonthlyBookingPrediction,
+		getQuarterlyBookingPrediction,
+		getYearlyBookingPrediction
+	} from '$lib/queries/predictionQueries';
+	import Chart from 'chart.js/auto';
+	import type { MonthlyPrediction } from '$lib/types/predictionType';
+	import PredictionCard from '$components/AnalysisComponents/PredictionCard.svelte';
+	import PredictionOverview from '$components/AnalysisComponents/PredictionOverview.svelte';
+	import type { Building } from '$lib/types/buildingType';
+	import type { Floor } from '$lib/types/floorType';
+	import { user } from '$lib/userStore';
+	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
+	import type { PredictionSelection } from '$lib/types/predictionType';
+	import type { PopupSettings } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import {
+		storePopup,
+		RadioGroup,
+		RadioItem,
+		ListBox,
+		ListBoxItem,
+		popup
+	} from '@skeletonlabs/skeleton';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  export const CHART_COLORS = {
-    red: 'rgb(255, 99, 132)',
-    orange: 'rgb(255, 159, 64)',
-    yellow: 'rgb(255, 205, 86)',
-    green: 'rgb(75, 192, 192)',
-    blue: 'rgb(54, 162, 235)',
-    purple: 'rgb(153, 102, 255)',
-    grey: 'rgb(201, 203, 207)'
-  };
+	import { onMount } from 'svelte';
 
-  let monthlyPredictions: MonthlyPrediction[] = [];
+	let start: Boolean = false;
 
-  async function loadData() {
-    let result = await getMonthlyBookingPrediction.fetch(
-      { variables: { identifier: "64794c3f-64ee-48c9-ac7b-474813cb6597", identifierType: IdentifierType.Floor} });
-    if(result){
-    let monthlyBookingPredictions = result.data?.getMonthlyBookingPrediction;
-    monthlyBookingPredictions?.forEach((element) => {
-      if (element) {
-        monthlyPredictions.push({
-          month: element.month,
-          totalBookings: element.totalBookings,
-          morning_highestBooking: element.morning_highestBooking,
-          morningAverageBooking: element.morningAverageBooking,
-          morning_lowestBooking: element.morning_lowestBooking,
-          afternoon_highestBooking: element.afternoon_highestBooking,
-          afternoonAverageBooking: element.afternoonAverageBooking,
-          afternoon_lowestBooking: element.afternoon_lowestBooking,
-        })
-      }
-    });
-  }
-  }
+	let buildingsWithFloors: Building[] = [
+		{
+			buildingid: '',
+			buildingname: 'All Buildings',
+			floors: [
+				{
+					floorid: '',
+					floorname: 'All Floors'
+				}
+			]
+		}
+	];
 
-  let x: any = {
-    months: monthlyPredictions.map((m) => m.month),
-    totalBookings: monthlyPredictions.map((m) => m.totalBookings),
-    morning_highestBooking: monthlyPredictions.map((m) => m.morning_highestBooking),
-    morningAverageBooking: monthlyPredictions.map((m) => m.morningAverageBooking),
-    morning_lowestBooking: monthlyPredictions.map((m) => m.morning_lowestBooking),
-    afternoon_highestBooking: monthlyPredictions.map((m) => m.afternoon_highestBooking),
-    afternoonAverageBooking: monthlyPredictions.map((m) => m.afternoonAverageBooking),
-    afternoon_lowestBooking: monthlyPredictions.map((m) => m.afternoon_lowestBooking),
-  }
+	let selection: PredictionSelection = {
+		Building: buildingsWithFloors[0] ?? null,
+		Floor: buildingsWithFloors[0].floors[0] ?? null,
+		showType: 'Month'
+	};
 
-    let ctx;
-    let chartCanvas: any;
-    /*let data = {
-        labels: x.month,
-        datasets: [{
-            label: 'totalBookings',
-            data: x.totalBookings,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-        {
-            label: 'morning_highestBooking',
-            data: x.morning_highestBooking,
-            backgroundColor: CHART_COLORS.orange,
-            borderWidth: 1
-        },
-      {
-            label: 'morningAverageBooking',
-            data: x.morningAverageBooking,
-            backgroundColor: CHART_COLORS.purple,
-            borderWidth: 1
-        },
-      {
-            label: 'morning_lowestBooking',
-            data: x.morning_lowestBooking,
-            backgroundColor: CHART_COLORS.blue,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoon_highestBooking',
-            data: x.afternoon_highestBooking,
-            backgroundColor: CHART_COLORS.green,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoonAverageBooking',
-            data: x.afternoonAverageBooking,
-            backgroundColor: CHART_COLORS.yellow,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoon_lowestBooking',
-            data: x.afternoon_lowestBooking,
-            backgroundColor: CHART_COLORS.grey,
-            borderWidth: 1
-        },]
-    };*/
-  onMount(async () => {
-    await loadData();
-    ctx = chartCanvas.getContext('2d');
-    var chart = new Chart(ctx,  {
-    type: 'line',
-    data: {
-        labels: monthlyPredictions.map((m) => m.month),
-        datasets: [{
-            label: 'totalBookings',
-            data: monthlyPredictions.map((m) => m.totalBookings),
-            backgroundColor: CHART_COLORS.red,
-            borderColor: CHART_COLORS.red,
-        },
-        {
-            label: 'morning_highestBooking',
-            data: monthlyPredictions.map((m) => m.morning_highestBooking),
-            backgroundColor: CHART_COLORS.orange,
-            borderColor: CHART_COLORS.orange,
-        },
-      {
-            label: 'morningAverageBooking',
-            data: monthlyPredictions.map((m) => m.morningAverageBooking),
-            backgroundColor: CHART_COLORS.purple,
-            borderColor: CHART_COLORS.purple,
-        },
-      {
-            label: 'morning_lowestBooking',
-            data: monthlyPredictions.map((m) => m.morning_lowestBooking),
-            backgroundColor: CHART_COLORS.blue,
-            borderColor: CHART_COLORS.blue,
-        },
-      {
-            label: 'afternoon_highestBooking',
-            data: monthlyPredictions.map((m) => m.afternoon_highestBooking),
-            backgroundColor: CHART_COLORS.green,
-            borderColor: CHART_COLORS.green,
-        },
-      {
-            label: 'afternoonAverageBooking',
-            data: monthlyPredictions.map((m) => m.afternoonAverageBooking),
-            backgroundColor: CHART_COLORS.yellow,
-            borderColor: CHART_COLORS.yellow,
-        },
-      {
-            label: 'afternoon_lowestBooking',
-            data: monthlyPredictions.map((m) => m.afternoon_lowestBooking),
-            backgroundColor: CHART_COLORS.grey,
-            borderColor: CHART_COLORS.grey,
-        },]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Chart.js Line Chart'
-        }
-      }
-    }
-  });
-  /*console.log({
-        labels: x.month,
-        datasets: [{
-            label: 'totalBookings',
-            data: x.totalBookings,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-        {
-            label: 'morning_highestBooking',
-            data: x.morning_highestBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-      {
-            label: 'morningAverageBooking',
-            data: x.morningAverageBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-      {
-            label: 'morning_lowestBooking',
-            data: x.morning_lowestBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoon_highestBooking',
-            data: x.afternoon_highestBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoonAverageBooking',
-            data: x.afternoonAverageBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },
-      {
-            label: 'afternoon_lowestBooking',
-            data: x.afternoon_lowestBooking,
-            backgroundColor: CHART_COLORS.red,
-            borderWidth: 1
-        },]
-    });*/
-  });
+	async function loadBuildings() {
+		if (buildingsWithFloors.length <= 1) {
+			let resultsFromBuildings = await getBuildingsWithFloors.fetch({
+				variables: { locationid: $user.location?.pk_locationid || '' }
+			});
+			if (resultsFromBuildings && buildingsWithFloors.length <= 1) {
+				let buildings = resultsFromBuildings.data?.getBuildingsInLocation;
+				buildings?.forEach((building: any) => {
+					let floors: Floor[] = [
+						{
+							floorid: '',
+							floorname: 'All Floors'
+						}
+					];
+					building.floors?.forEach((floor: any) => {
+						floors?.push({
+							floorid: floor.pk_floorid,
+							floorname: floor.floorname
+						});
+					});
+					buildingsWithFloors?.push({
+						buildingid: building.pk_buildingid,
+						buildingname: building.buildingname,
+						floors: floors
+					});
+				});
+			}
+		}
+		start = true;
+		return buildingsWithFloors;
+	}
+
+	function onBuildingChange(event: any) {
+		//selection.Floor = selection.Building?.floors[0]!;
+	}
+
+	const buildingSelection: PopupSettings = {
+		event: 'focus-click',
+		target: 'buildingSelection',
+		placement: 'right',
+		closeQuery: '.listbox-item'
+	};
+	const floorSelection: PopupSettings = {
+		event: 'focus-click',
+		target: 'floorSelection',
+		placement: 'right',
+		closeQuery: '.listbox-item'
+	};
 </script>
 
-<canvas bind:this={chartCanvas} id="myChart"></canvas>
+<div class="h-full flex flex-col p-5">
+	<div class="h-full">
+		<!--Last 30 Days-->
+		<!--<PredictionCard />-->
+		<div class="card h-1/2 flex flex-wrap">
+			<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+				<p>building:</p>
+				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
+					<span class="capitalize">{selection.Building?.buildingname ?? 'Building'}</span>
+					<span>↓</span>
+				</button>
+				<p>Floor:</p>
+				<button class="btn variant-filled w-48 justify-between" use:popup={floorSelection}>
+					{#key selection.Floor}
+						<span class="capitalize">{selection.Floor?.floorname ?? 'Floor'}</span>
+					{/key}
+					<span>↓</span>
+				</button>
+				<p>Time:</p>
+				<RadioGroup
+					flex="flex"
+					active="variant-filled-primary"
+					hover="hover:variant-soft-primary"
+					gap="gap-5"
+				>
+					<RadioItem bind:group={selection.showType} name="end" value="Month">
+						<p>Month</p>
+					</RadioItem>
+					<RadioItem bind:group={selection.showType} name="end" value="Quarter">
+						<p>Quarter</p>
+					</RadioItem>
+					<RadioItem bind:group={selection.showType} name="end" value="Year">
+						<p>Year</p>
+					</RadioItem>
+				</RadioGroup>
+			</div>
+			{#key selection}
+				{#if start === true}
+					<PredictionOverview {selection} />
+				{/if}
+			{/key}
+		</div>
+	</div>
+</div>
+
+<div class="card w-48 shadow-xl py-2" data-popup="buildingSelection">
+	<ListBox rounded="rounded-none">
+		{#await loadBuildings()}
+			<p>loading...</p>
+		{:then data}
+			{#each buildingsWithFloors as building}
+				<ListBoxItem
+					bind:group={selection.Building}
+					name="medium"
+					value={building}
+					on:change={onBuildingChange}>{building.buildingname}</ListBoxItem
+				>
+			{/each}
+		{/await}
+	</ListBox>
+</div>
+
+<div class="card w-48 shadow-xl py-2" data-popup="floorSelection">
+	<ListBox rounded="rounded-none">
+		{#each selection.Building?.floors ?? [] as floor}
+			<ListBoxItem bind:group={selection.Floor} name="medium" value={floor}
+				>{floor.floorname}</ListBoxItem
+			>
+		{/each}
+	</ListBox>
+</div>
