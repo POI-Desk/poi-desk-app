@@ -636,71 +636,72 @@
 		saving = true;
 		showMapLoader = false;
 
-		switch (mapObj.type) {
-			case mapObjectType.Desk:
-				const desk = await updateDesksOnMap.mutate({
-					mapId: mapData?.pk_mapId,
-					deskInputs: [getInputTypeFromMapObject(mapObj) as UpdateDeskInput]
-				});
-				if (desk.errors) return console.error(desk.errors);
+		await saveMap();
+		// switch (mapObj.type) {
+		// 	case mapObjectType.Desk:
+		// 		const desk = await updateDesksOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			deskInputs: [getInputTypeFromMapObject(mapObj) as UpdateDeskInput]
+		// 		});
+		// 		if (desk.errors) return console.error(desk.errors);
 
-				const dObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-				dObj!.dbID = desk.data?.updateDesksOnMap![0].pk_deskid! ?? dObj?.dbID;
-				break;
-			case mapObjectType.Room:
-				const room = await updateRoomsOnMap.mutate({
-					mapId: mapData?.pk_mapId,
-					roomInputs: [getInputTypeFromMapObject(mapObj) as UpdateRoomInput]
-				});
-				if (room.errors) return console.error(room.errors);
+		// 		const dObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		dObj!.dbID = desk.data?.updateDesksOnMap![0].pk_deskid! ?? dObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Room:
+		// 		const room = await updateRoomsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			roomInputs: [getInputTypeFromMapObject(mapObj) as UpdateRoomInput]
+		// 		});
+		// 		if (room.errors) return console.error(room.errors);
 
-				const rObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-				rObj!.dbID = room.data?.updateRoomsOnMap![0].pk_roomId! ?? rObj?.dbID;
-				break;
-			case mapObjectType.Wall:
-				const wall = await updateWallsOnMap.mutate({
-					mapId: mapData?.pk_mapId,
-					wallInputs: [getInputTypeFromMapObject(mapObj) as UpdateWallInput]
-				});
-				if (wall.errors) return console.error(wall.errors);
+		// 		const rObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		rObj!.dbID = room.data?.updateRoomsOnMap![0].pk_roomId! ?? rObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Wall:
+		// 		const wall = await updateWallsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			wallInputs: [getInputTypeFromMapObject(mapObj) as UpdateWallInput]
+		// 		});
+		// 		if (wall.errors) return console.error(wall.errors);
 
-				const wObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-				wObj!.dbID = wall.data?.updateWallsOnMap![0].pk_wallId! ?? wObj?.dbID;
-				break;
-			case mapObjectType.Door:
-				const door = await updateDoorsOnMap.mutate({
-					mapId: mapData?.pk_mapId,
-					doorInputs: [getInputTypeFromMapObject(mapObj) as UpdateDoorInput]
-				});
-				if (door.errors) return console.error(door.errors);
+		// 		const wObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		wObj!.dbID = wall.data?.updateWallsOnMap![0].pk_wallId! ?? wObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Door:
+		// 		const door = await updateDoorsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			doorInputs: [getInputTypeFromMapObject(mapObj) as UpdateDoorInput]
+		// 		});
+		// 		if (door.errors) return console.error(door.errors);
 
-				const doObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-				doObj!.dbID = door.data?.updateDoorsOnMap![0].pk_doorId! ?? doObj?.dbID;
-				break;
-			case mapObjectType.Label:
-				const label = await updateLabelsOnMap.mutate({
-					mapId: mapData?.pk_mapId,
-					labelInputs: [getInputTypeFromMapObject(mapObj) as UpdateLabelInput]
-				});
-				if (label.errors) return console.error(label.errors);
+		// 		const doObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		doObj!.dbID = door.data?.updateDoorsOnMap![0].pk_doorId! ?? doObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Label:
+		// 		const label = await updateLabelsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			labelInputs: [getInputTypeFromMapObject(mapObj) as UpdateLabelInput]
+		// 		});
+		// 		if (label.errors) return console.error(label.errors);
 
-				const lObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-				lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
-				break;
-		}
+		// 		const lObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
+		// 		break;
+		// }
 
-		if ($map.height !== mapData.height || $map.width !== mapData.width) {
-			await updateMap.mutate({
-				mapId: mapData.pk_mapId,
-				mapInput: {
-					height: $map.height,
-					width: $map.width,
-					name: mapData.name
-				}
-			});
-		}
+		// if ($map.height !== mapData.height || $map.width !== mapData.width) {
+		// 	await updateMap.mutate({
+		// 		mapId: mapData.pk_mapId,
+		// 		mapInput: {
+		// 			height: $map.height,
+		// 			width: $map.width,
+		// 			name: mapData.name
+		// 		}
+		// 	});
+		// }
 
-		await getMapById(mapData?.pk_mapId!);
+		// await getMapById(mapData?.pk_mapId!);
 
 		showMapLoader = true;
 		saving = false;
