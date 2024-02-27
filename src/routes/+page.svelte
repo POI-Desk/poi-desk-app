@@ -1,36 +1,44 @@
 <script lang="ts">
-  import DateSelection from "$components/DateSelection.svelte";
+	import DateSelection from '$components/DateSelection.svelte';
 
-  import BuildingSelection from "$components/BuildingSelection.svelte";
-  import FloorSelection from "$components/FloorSelection.svelte";
-  import FloorMap from "$components/MapComponents/FloorMap.svelte";
-  import { onMount } from "svelte";
-  import { user } from "$lib/userStore";
-  import { goto } from "$app/navigation";
-  import { isExtended } from "$lib/stores/extendedUserStore";
-  import { LightSwitch } from "@skeletonlabs/skeleton";
-  import SearchBar from "$components/SearchBar.svelte";
-  import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
+	import BuildingSelection from '$components/BuildingSelection.svelte';
+	import FloorSelection from '$components/FloorSelection.svelte';
+	import FloorMap from '$components/MapComponents/FloorMap.svelte';
+	import { onMount } from 'svelte';
+	import { authId, user } from '$lib/userStore';
+	import { goto } from '$app/navigation';
+	import { isExtended } from '$lib/stores/extendedUserStore';
+	import { loginWizzGoogol } from '$lib/queries/userQuerries';
 
-  //
-  // let visible = false;
-  // let panelVisible = false;
-  //
-  // function togglePanel() {
-  // 	panelVisible = !panelVisible;
-  // }
-  //
-  // function hidePanel() {
-  // 	panelVisible = false;
-  // }
-  //
-  // function spinnnnn() {
-  // 	visible = true;
-  // 	setTimeout(() => {
-  // 		visible = false;
-  // 	}, 5000);
-  // }
-  $isExtended = false; // TODO idk if this is a good idea.. but it works
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	//
+	// let visible = false;
+	// let panelVisible = false;
+	//
+	// function togglePanel() {
+	// 	panelVisible = !panelVisible;
+	// }
+	//
+	// function hidePanel() {
+	// 	panelVisible = false;
+	// }
+	//
+	// function spinnnnn() {
+	// 	visible = true;
+	// 	setTimeout(() => {
+	// 		visible = false;
+	// 	}, 5000);
+	// }
+	$isExtended = false; // TODO idk if this is a good idea.. but it works
+
+	//decode jwt
+	const jwtData = data.sessionToken?.split('.')[1];
+	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
+
+	$user.username = decodedJwt.name;
 </script>
 
 <!--{#if visible}-->

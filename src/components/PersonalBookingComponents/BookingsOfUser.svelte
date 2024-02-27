@@ -1,47 +1,25 @@
 <script lang="ts">
-  import { user } from "$lib/userStore";
-  import { getBookings, userBookings } from "$lib/bookingStore";
-  import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
-  import { CachePolicy } from "$houdini";
-	import { onMount } from "svelte";
+	import { CachePolicy } from '$houdini';
+	import { user } from '$lib/userStore';
+	import { getBookings, userBookings } from '$lib/bookingStore';
+	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
+	import { onMount } from 'svelte';
 
+	let bookings: any;
 
-  export let isCurrentBookings = true;
-  $: $userBookings = bookings as any;
-  $: console.log("User:", $user?.pk_userid);
-  $: usrid = $user?.pk_userid;
+	const hey = async () => {
+		console.log('test');
+		await getBookings.fetch({
+			policy: CachePolicy.NetworkOnly
+		});
+		console.log('Hey listen:', $getBookings.data?.getBookingsByUserId);
+		bookings = $getBookings.data?.getBookingsByUserId;
+		$userBookings = bookings;
+	};
 
-  onMount(() => {
-    getBookings.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
-  });
-
-  $: bookings = $getBookings.data?.getBookingsByUserid;
-
-  $: {
-    if ($user.pk_userid != "") {
-      getBookings.fetch({ variables: { userid: $user.pk_userid ?? "", isCurrent: isCurrentBookings } });
-    }
-  }
-  
-  // let bookings: any;
-	//
-	// const hey = async () => {
-	// 	await getBookings.fetch({
-	// 		variables: { userid: $user?.pk_userid, isCurrent: isCurrentBookings },
-	// 		policy: CachePolicy.NetworkOnly
-	// 	});
-	// 	console.log($getBookings.data?.getBookingsByUserid);
-	// };
-	//
-	// $: {
-	// 	hey();
-	// }
-	//
-	// $: {
-	// 	bookings = $getBookings.data?.getBookingsByUserid;
-	// 	$userBookings = bookings;
-	// }
-
+	onMount(() => {
+		hey();
+	});
 </script>
 
 {#await getBookings.fetch({

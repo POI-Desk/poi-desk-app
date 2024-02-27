@@ -9,7 +9,7 @@
 	import { AppShell, Modal, Toast } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
-	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
+	import ModalExtendedBooking from '$components/ExtendedBookingComponents/ModalExtendedBooking.svelte';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { goto } from "$app/navigation";
 	import { MapPin, Search } from "lucide-svelte";
@@ -56,7 +56,7 @@
 </script>
 
 <Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />
-<Toast 	zIndex="z-[1000]"/> 
+<Toast zIndex="z-[1000]" />
 <AppShell>
 	<slot />
 
