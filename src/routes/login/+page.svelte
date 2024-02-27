@@ -4,7 +4,7 @@
 </script>
 
 <div class="flex justify-center">
-	<div class="w-2/3">
+	<div class="h-full overflow-hidden ">
 		<LoginPage />
 		<div>
 			<!--

@@ -7,10 +7,10 @@ import type { PageServerLoad } from './$types';
 // 	};
 // }) satisfies PageServerLoad;
 
-export const load = (async ({locals}) => {
-	const session = locals.getSession();
+export const load = (async ({cookies}) => {
+	const sessionToken = cookies.get('session');
 
 	return {
-		session
+		sessionToken
 	};
 }) satisfies PageServerLoad;

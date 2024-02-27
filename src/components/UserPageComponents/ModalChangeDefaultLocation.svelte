@@ -1,16 +1,25 @@
-<!-- <script lang="ts">
+<script lang="ts">
 	import { Network } from 'lucide-svelte';
 	import { defaultLocation } from '$lib/mutations/location';
 	import { getUserByid } from '$lib/queries/userQuerries';
 	import { user } from '$lib/userStore';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
-	import { CachePolicy } from '$houdini';
+	import { CachePolicy, graphql } from '$houdini';
 
 	const modalStore = getModalStore();
 
-	$: getAllLocations.fetch();
+	const getAllLocationsChange = graphql(`
+		query getAllLocationsChange {
+			getAllLocations {
+				pk_locationid
+				locationname
+			}
+		}
+	`);
 
-	$: locations = $getAllLocations.data?.getAllLocations;
+	$: getAllLocationsChange.fetch();
+
+	$: locations = $getAllLocationsChange.data?.getAllLocations;
 
 	const toastStore = getToastStore();
 
@@ -34,7 +43,7 @@
 								await defaultLocation.mutate({
 									lid: location.pk_locationid
 								});
-								await getUserById.fetch({ policy: CachePolicy.NetworkOnly });
+								await getUserByid.fetch({ policy: CachePolicy.NetworkOnly });
 								modalStore.close();
 								toastStore.trigger(t);
 							}}
@@ -49,4 +58,4 @@
 {/if}
 
 <style>
-</style> -->
+</style>

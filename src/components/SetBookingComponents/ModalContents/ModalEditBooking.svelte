@@ -228,7 +228,9 @@
         deskid: deskid
       }
     });
+    await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
     modalStore.close();
+
   };
 
   const toastStore = getToastStore();
