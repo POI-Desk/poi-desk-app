@@ -4,13 +4,17 @@ export const _getDesksOnFloorVariables = () => {
 	return '';
 };
 
-export const getDesks = graphql(`
-	query getDesksOnFloor($floorid: ID!) @load {
-		getDesksOnFloor(floorid: $floorid) {
+export const getDeskById = graphql(`
+	query getDeskById($deskId: ID!) {
+		getDeskById(deskId: $deskId) {
 			pk_deskid
 			desknum
 			x
 			y
+			user {
+				pk_userid
+				username
+			}
 			bookings {
 				user {
 					pk_userid
@@ -23,45 +27,14 @@ export const getDesks = graphql(`
 			attributes {
 				attributename
 			}
-			floor {
-				pk_floorid
-				floorname
-				building {
-					pk_buildingid
-					buildingname
+			map{
+				floor{
+					floorname
+					building{
+						buildingname
+					}
 				}
 			}
 		}
 	}
-`);
-
-export const getDeskById = graphql(`
-  query getDeskById($deskId: ID!){
-  getDeskById(deskId: $deskId){
-    pk_deskid
-			desknum
-			x
-			y
-			bookings {
-				user {
-					pk_userid
-					username
-				}
-				date
-				ismorning
-				isafternoon
-			}
-			attributes {
-				attributename
-			}
-			floor {
-				pk_floorid
-				floorname
-				building {
-					pk_buildingid
-					buildingname
-				}
-			}
-		}
-  }
 `);

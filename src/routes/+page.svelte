@@ -48,21 +48,26 @@
 <!--{/if}-->
 
 <div class="overflow-hidden h-screen">
-	<FloorMap />
+  <FloorMap />
 
-	<div class="absolute m-3">
-		<a class="btn variant-filled-primary" href="./login">Login</a>
-		<a class="btn variant-filled-primary" href="./location">Location</a>
-		<a class="btn variant-filled-primary" href="./bookings">Bookings</a>
-		<a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
-		<a class="btn variant-filled-primary" href="./analysis">Analysis</a>
-		<a class="btn variant-filled-primary" href="./bookings">Bookings</a>
-		<a class="btn variant-filled-primary" href="./user">User-Page</a>
-		<a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
-		<DateSelection />
-	</div>
+  <div class="absolute p-8 w-full">
+    <SearchBar />
+    <div class="flex justify-center p-1">
+      <DateSelection />
+    </div>
 
-	<FloorSelection />
+    <div>
+      <a class="btn variant-filled-primary" href="/login">Login</a>
+      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
+      <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
+      <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
+      <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
+      <LightSwitch />
+    </div>
+  </div>
 
-	<BuildingSelection />
+  <FloorSelection />
+
+  <BuildingSelection />
+
 </div>

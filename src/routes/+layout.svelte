@@ -11,6 +11,12 @@
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import ModalExtendedBooking from '$components/ExtendedBookingComponents/ModalExtendedBooking.svelte';
 	import { storePopup } from '@skeletonlabs/skeleton';
+	import { goto } from "$app/navigation";
+	import { MapPin, Search } from "lucide-svelte";
+	import SearchBar from "$components/SearchBar.svelte";
+	import DateSelection from "$components/DateSelection.svelte";
+	
+	import ModalEditDesk from '$components/MapComponents/ModalEditDesk.svelte';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
@@ -35,6 +41,10 @@
 		modalChangeDefaultLocation: {
 			ref: ModalChangeDefaultLocation,
 			slot: '<p>skeleton</p>'
+		},
+		modalEditDesk: {
+			ref: ModalEditDesk,
+			slot: '<p>skeleton</p>'
 		}
 		/*
     modalEditMapObject: {
@@ -49,7 +59,8 @@
 <Toast zIndex="z-[1000]" />
 <AppShell>
 	<slot />
+
 	<svelte:fragment slot="footer">
-		<!--		 <BottomNav />-->
+		 <BottomNav />
 	</svelte:fragment>
 </AppShell>

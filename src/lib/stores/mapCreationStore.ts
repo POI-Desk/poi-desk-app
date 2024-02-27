@@ -7,3 +7,5 @@ export const map = writable<MapTransform>({
 	width: defaultMapProps.width,
 	scale: 1
 });
+
+export const editedMapId = writable<string>('');

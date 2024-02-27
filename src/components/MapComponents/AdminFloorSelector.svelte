@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher } from 'svelte';
 
 	export let floors: any[];

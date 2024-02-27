@@ -1,15 +1,17 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
 	// import { getBuildings } from '$lib/queries/buildingQueries';
-	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
-	import AdminFloorSelector from '$components/MapComponents/AdminFloorSelector.svelte';
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
+	import type { PageData } from '../[[mapId]]/$houdini';
 	import {
 		CachePolicy,
 		graphql,
 		type UpdateDeskInput,
 		type UpdateDoorInput,
+		type UpdateLabelInput,
 		type UpdateRoomInput,
 		type UpdateWallInput
 	} from '$houdini';
@@ -21,6 +23,7 @@
 		doorProps,
 		getInputTypeFromMapObject,
 		getTransformFromType,
+		labelProps,
 		mapObjectType,
 		panzoomProps,
 		roomProps,
@@ -28,11 +31,11 @@
 	} from '$lib/map/props';
 	import { deleteDesks, updateDesksOnMap } from '$lib/mutations/desks';
 	import { deleteDoors, updateDoorsOnMap } from '$lib/mutations/door';
-	import { createMap, updateMap } from '$lib/mutations/map';
+	import { deleteLabels, updateLabelsOnMap } from '$lib/mutations/label';
+	import { updateMap } from '$lib/mutations/map';
 	import { deleteRooms, updateRoomsOnMap } from '$lib/mutations/room';
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
-	import { getMapByFloor } from '$lib/queries/map';
-	import { map } from '$lib/stores/mapCreationStore';
+	import { editedMapId, map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import {
@@ -42,8 +45,12 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import { user } from '$lib/userStore';
-	import { getModalStore, ProgressBar, type ModalSettings } from '@skeletonlabs/skeleton';
+	import {
+		getModalStore,
+		getToastStore,
+		type ModalSettings,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -56,50 +63,79 @@
 
 	let mapObjects: { [key: string]: MapObjectComponent } = {};
 
-	let currentBuildingID: string = '';
-	let currentFloorID: string = '';
-	let loadingMap: boolean = false;
+	let saving: boolean = false;
+
+	let showMapLoader = true;
+
+	let finishedLoading = false;
 
 	const modalStore = getModalStore();
 
-	const modal: ModalSettings = {
+	const toastStore = getToastStore();
+
+	const modalEditDesk: ModalSettings = {
 		type: 'component',
-		component: 'modalEditMapObject',
-		response: (r: { newId: string; oldId: string }) => {
-			if (!r) return;
-			changeMapObjectId(r.oldId, r.newId);
+		component: 'modalEditDesk',
+		response: (response: { userId: string } | null) => {
+			if (!response?.userId || !$selectedMapObject) return;
+
+			$selectedMapObject!.userId = response.userId;
+			mapObjects[$selectedMapObject!.id].rerenderMapObject();
+			saveMapObject($selectedMapObject!);
 		}
 	};
 
-	const getBuildings = graphql(`
-		query GetBuildings($floorId: ID!) {
-			getBuildingsInLocation(locationid: $floorId) {
-				pk_buildingid
-				buildingname
-				floors {
-					pk_floorid
-					floorname
-				}
-			}
+	const toastOffline: ToastSettings = {
+		message: 'You are offline, changes may not be saved',
+		hideDismiss: true,
+		background: 'variant-filled-error'
+	};
+
+	const toastOnline: ToastSettings = {
+		message: 'You are online, changes are beeing saved',
+		hideDismiss: true,
+		background: 'variant-filled-success'
+	};
+
+	const toastPublishFailed: ToastSettings = {
+		message: 'Map could not be published',
+		hideDismiss: true,
+		background: 'variant-filled-error'
+	};
+
+	const toastPublishSuccess: ToastSettings = {
+		message: 'Map successfully published',
+		hideDismiss: true,
+		background: 'variant-filled-success'
+	};
+
+	const publishMap = graphql(`
+		mutation publishMap($mapId: ID!, $force: Boolean!) {
+			publishMap(mapId: $mapId, force: $force)
 		}
 	`);
 
-	$: mapData = $getMapByFloor.data?.getMapByFloor;
+	export let data: PageData;
 
-	$: $map.height = mapData?.height ?? defaultMapProps.height;
-	$: $map.width = mapData?.width ?? defaultMapProps.width;
+	$: ({ getMapSnapshotById } = data);
 
-	$: currentFloor = $getMapByFloor.data?.getMapByFloor?.floor;
+	$: mapData = $getMapSnapshotById.data?.getMapSnapshotById;
 
-	const locationIdVienna: string = $user.location?.pk_locationid!; //TODO: get from admin user
-	$: buildings = $getBuildings.data?.getBuildingsInLocation ?? [];
-
-	const fetchBuildings = async (id: string) => {
-		await getBuildings.fetch({ variables: { floorId: id } });
+	$: () => {
+		if (mapData) $map.height = mapData?.height;
 	};
 
+	$: () => {
+		if (mapData) $map.width = mapData?.width;
+	};
+
+	$: {
+		$editedMapId = mapData?.pk_mapId ?? '';
+	}
+
+	$: currentFloor = mapData?.floor;
+
 	onMount(() => {
-		initializeMap();
 		panz = panzoom(grid, {
 			...panzoomProps
 		});
@@ -108,9 +144,15 @@
 		});
 
 		recenterMap();
+		drawMapFromLocalDbData();
 
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('mousedown', handleMouseDown);
+
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
+
+		finishedLoading = true;
 	});
 
 	onDestroy(() => {
@@ -119,34 +161,62 @@
 		panz.dispose();
 		window.removeEventListener('keydown', handleKeyDown);
 		window.removeEventListener('mousedown', handleMouseDown);
+
+		window.removeEventListener('online', handleOnline);
+		window.removeEventListener('offline', handleOffline);
 	});
 
-	const changeMapObjectId = (oldId: string, newId: string) => {
-		if (!oldId || !newId) return;
-		const mapObject: MapObject = $allMapObjects.find((obj) => obj.id === oldId)!;
-		mapObjects[newId] = mapObjects[oldId];
-		delete mapObjects[oldId];
-		mapObject.id = newId;
-		mapObjects[newId].rerenderMapObject();
+	const getMapById = async (mapId: string) => {
+		return await getMapSnapshotById.fetch({
+			variables: { mapId: mapId },
+			policy: CachePolicy.NetworkOnly
+		});
 	};
 
+	const publishCurrentMap = async () => {
+		if (!mapData) return;
+		const response = await publishMap.mutate({ mapId: mapData?.pk_mapId, force: false });
+
+		if (response.errors) {
+			console.error(response.errors);
+			toastStore.trigger(toastPublishFailed);
+			return;
+		}
+
+		if (response.data?.publishMap) {
+			toastStore.trigger(toastPublishSuccess);
+		} else {
+			toastStore.trigger(toastPublishFailed);
+		}
+	};
+
+	//#region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
-			removeMapObject();
+			delSelectedMapObject();
 		}
 	};
 
 	const handleMouseDown = (event: MouseEvent) => {
-		if (event.target === canvas) {
-			resetSelectedMapObjectStyle();
-			$selectedMapObject = null;
-		}
+		if (!$selectedMapObject) return;
+
+		if (event.target !== container && event.target !== canvas) return;
+
+		resetSelectedMapObjectStyle();
+		$selectedMapObject = null;
 	};
 
-	const initializeMap = async () => {
-		await fetchBuildings(locationIdVienna);
-		await changeBuilding(buildings[0].pk_buildingid, buildings[0].floors![0].pk_floorid);
+	const handleOffline = () => {
+		toastStore.clear();
+		toastStore.trigger(toastOffline);
 	};
+
+	const handleOnline = () => {
+		saveMap();
+		toastStore.clear();
+		toastStore.trigger(toastOnline);
+	};
+	//#endregion
 
 	const recenterMap = (smooth: boolean = false, offsetX: number = 0, offsetY: number = 0) => {
 		if (!smooth)
@@ -161,26 +231,25 @@
 			);
 	};
 
-	const removeMapObject = () => {
-		if (!$selectedMapObject) {
-			return;
-		}
-		delSelectedMapObject();
-	};
+	const discardUnsavedChanges = () => alert('THIS IS DEPRICATED');
 
 	const createMapObject = (
 		event: MouseEvent,
 		type: string,
 		initialTransform: TransformType | null,
 		id: string = '',
-		dbID: string | null = null
+		dbID: string | null = null,
+		text: string = '',
+		userId: string | null = null
 	) => {
 		resetSelectedMapObjectStyle();
 		let mapObject: MapObject = {
 			dbID: dbID,
 			id: id === '' ? genRandomId(type) : id,
 			type: type,
-			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) }
+			transform: { ...(initialTransform == null ? getTransformFromType(type) : initialTransform) },
+			text: text,
+			userId: userId
 		};
 
 		if (initialTransform == null) {
@@ -192,7 +261,6 @@
 			target: initialTransform == null ? main : grid,
 			props: {
 				mapObject: mapObject,
-				enabled: initialTransform != null,
 				target: grid,
 				main: main,
 				drawer: container,
@@ -209,20 +277,32 @@
 			selectMapObject($allMapObjects.find((mapObject) => mapObject.transform === event.detail)!);
 		});
 
-		element.$on('release', (event: CustomEvent<{ transform: TransformType; enabled: boolean }>) => {
-			panz.resume();
-			if (!event.detail.enabled) {
-				delSelectedMapObject();
-				return;
-			}
-			resizeGrid(event.detail.transform);
-			normalizeGridSize();
-			rerenderObjects();
+		element.$on('resetSelection', (event: CustomEvent<void>) => {
+			resetSelectedMapObjectStyle();
+			$selectedMapObject = null;
 		});
 
-		element.$on('openModal', (event: CustomEvent<MapObject>) => {
+		// enabled: boolean
+		element.$on(
+			'release',
+			(event: CustomEvent<{ obj: MapObject; start: TransformType; destroyed: boolean }>) => {
+				panz.resume();
+
+				if (event.detail.destroyed) return;
+
+				//check if the object was actually altered
+				if (compareObjectsByValues(event.detail.obj.transform, event.detail.start)) return;
+
+				resizeGrid(event.detail.obj.transform);
+				normalizeGridSize();
+				rerenderObjects();
+				saveMapObject(event.detail.obj);
+			}
+		);
+
+		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
 			selectMapObject(event.detail);
-			modalStore.trigger(modal);
+			modalStore.trigger(modalEditDesk);
 		});
 
 		if (initialTransform == null) {
@@ -236,7 +316,7 @@
 	const genRandomId = (type: string) => {
 		let result: string = '';
 		if (type !== mapObjectType.Desk) {
-			while ($allMapObjects.find((obj) => obj.id === result)){
+			while ($allMapObjects.find((obj) => obj.id === result)) {
 				result = type + Math.random() * 100000;
 			}
 			return result;
@@ -249,7 +329,7 @@
 		while ($allMapObjects.find((obj) => obj.id === result + num)) {
 			num++;
 		}
-		
+
 		result += num;
 
 		return result;
@@ -261,6 +341,7 @@
 		mapObjects[obj.id].applySelectedStyle();
 	};
 
+	//#region humongous
 	//x and y are in local space of the parent element
 	const resizeGrid = (transform: TransformType) => {
 		let panzOffsetX: number = 0;
@@ -365,12 +446,62 @@
 	};
 
 	const delSelectedMapObject = () => {
-		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== $selectedMapObject!.id);
-		mapObjects[$selectedMapObject!.id].$destroy();
-		delete mapObjects[$selectedMapObject!.id];
-		$selectedMapObject = null;
+		if (!$selectedMapObject) return;
+		delMapObject($selectedMapObject);
+	};
+
+	const delMapObject = async (obj: MapObject) => {
+		if ($getMapSnapshotById.fetching || saving) {
+			return;
+		}
+
+		let deletePromis;
+		if (obj.dbID) {
+			showMapLoader = false;
+
+			switch (obj.type) {
+				case mapObjectType.Desk:
+					deletePromis = deleteDesks.mutate({ deskIds: [obj.dbID] });
+					break;
+				case mapObjectType.Room:
+					deletePromis = deleteRooms.mutate({ roomIds: [obj.dbID] });
+					break;
+				case mapObjectType.Wall:
+					deletePromis = deleteWalls.mutate({ wallIds: [obj.dbID] });
+					break;
+				case mapObjectType.Door:
+					deletePromis = deleteDoors.mutate({ doorIds: [obj.dbID] });
+					break;
+				case mapObjectType.Label:
+					deletePromis = deleteLabels.mutate({ labelIds: [obj.dbID] });
+					break;
+			}
+		}
+
+		$allMapObjects = $allMapObjects.filter((mapObject) => mapObject.id !== obj.id);
+		mapObjects[obj.id].$destroy();
+		delete mapObjects[obj.id];
 		normalizeGridSize();
 		rerenderObjects();
+		if (obj === $selectedMapObject) $selectedMapObject = null;
+
+		if (obj.dbID) {
+			await deletePromis;
+
+			if ($map.height !== mapData?.height || $map.width !== mapData?.width) {
+				await updateMap.mutate({
+					mapId: mapData?.pk_mapId!,
+					mapInput: {
+						height: $map.height,
+						width: $map.width,
+						name: mapData?.name!
+					}
+				});
+			}
+
+			await getMapById(mapData?.pk_mapId!);
+			showMapLoader = true;
+		}
 	};
 
 	const resetSelectedMapObjectStyle = () => {
@@ -392,38 +523,6 @@
 		);
 	};
 
-	const changeBuilding = async (buildingID: string, customFloorID: string | null) => {
-		if (buildingID === currentBuildingID) return;
-		currentBuildingID = buildingID;
-		let floorID: string =
-			customFloorID ??
-			buildings.filter((b) => b.pk_buildingid === buildingID)[0]?.floors![0].pk_floorid;
-		await changeFloor(floorID);
-		buildings = buildings;
-	};
-
-	const changeFloor = async (floorID: string) => {
-		if (floorID === currentFloorID) return;
-		emptyMap();
-		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		drawMap();
-		currentFloorID = floorID;
-	};
-
-	const createNewMap = async (floorID: string) => {
-		const newMap = await createMap.mutate({
-			floorId: floorID,
-			mapInput: { height: defaultMapProps.height, width: defaultMapProps.height }
-		});
-
-		if (newMap.errors) return console.error(newMap.errors);
-		if (!newMap.data?.createMap) return;
-
-		panz.zoomAbs(0, 0, 1);
-		await getMapByFloor.fetch({ variables: { floorID: floorID }, policy: CachePolicy.NetworkOnly });
-		recenterMap();
-	};
-
 	const emptyMap = () => {
 		$allMapObjects = [];
 		$selectedMapObject = null;
@@ -435,15 +534,16 @@
 		mapObjects = {};
 	};
 
-	const drawMap = (recenter: boolean = true) => {
+	const drawMapFromLocalDbData = (recenter: boolean = true) => {
 		emptyMap();
 		if (!mapData) {
+			// DEBUG
+			console.warn('no local map data to draw!');
 			return;
 		}
 
 		$map.height = mapData.height;
 		$map.width = mapData.width;
-		panz.zoomAbs(0, 0, 1);
 
 		mapData.desks!.map((desk) => {
 			createMapObject(
@@ -457,7 +557,9 @@
 					rotation: desk.rotation
 				} as TransformType,
 				desk.desknum,
-				desk.pk_deskid
+				desk.pk_deskid,
+				'',
+				desk.user?.pk_userid
 			);
 		});
 		mapData.doors!.map((door) => {
@@ -505,15 +607,113 @@
 				wall.pk_wallId
 			);
 		});
-		if (recenter) recenterMap();
+		mapData.labels!.map((label) => {
+			createMapObject(
+				{ clientX: label.x, clientY: label.y } as MouseEvent,
+				mapObjectType.Label,
+				{
+					x: label.x,
+					y: label.y,
+					width: labelProps.width,
+					height: labelProps.height,
+					rotation: label.rotation
+				} as TransformType,
+				'',
+				label.pk_labelId,
+				label.text
+			);
+		});
+		if (recenter) {
+			panz.zoomAbs(0, 0, 1);
+			recenterMap();
+		}
 		$allMapObjects = $allMapObjects;
 		mapObjects = mapObjects;
 	};
 
-	const saveMap = async () => {
-		//TODO: Ignore objetcs with no changes
-
+	const saveMapObject = async (mapObj: MapObject) => {
 		if (mapData == null) return;
+		saving = true;
+		showMapLoader = false;
+
+		await saveMap();
+		// switch (mapObj.type) {
+		// 	case mapObjectType.Desk:
+		// 		const desk = await updateDesksOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			deskInputs: [getInputTypeFromMapObject(mapObj) as UpdateDeskInput]
+		// 		});
+		// 		if (desk.errors) return console.error(desk.errors);
+
+		// 		const dObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		dObj!.dbID = desk.data?.updateDesksOnMap![0].pk_deskid! ?? dObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Room:
+		// 		const room = await updateRoomsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			roomInputs: [getInputTypeFromMapObject(mapObj) as UpdateRoomInput]
+		// 		});
+		// 		if (room.errors) return console.error(room.errors);
+
+		// 		const rObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		rObj!.dbID = room.data?.updateRoomsOnMap![0].pk_roomId! ?? rObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Wall:
+		// 		const wall = await updateWallsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			wallInputs: [getInputTypeFromMapObject(mapObj) as UpdateWallInput]
+		// 		});
+		// 		if (wall.errors) return console.error(wall.errors);
+
+		// 		const wObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		wObj!.dbID = wall.data?.updateWallsOnMap![0].pk_wallId! ?? wObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Door:
+		// 		const door = await updateDoorsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			doorInputs: [getInputTypeFromMapObject(mapObj) as UpdateDoorInput]
+		// 		});
+		// 		if (door.errors) return console.error(door.errors);
+
+		// 		const doObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		doObj!.dbID = door.data?.updateDoorsOnMap![0].pk_doorId! ?? doObj?.dbID;
+		// 		break;
+		// 	case mapObjectType.Label:
+		// 		const label = await updateLabelsOnMap.mutate({
+		// 			mapId: mapData?.pk_mapId,
+		// 			labelInputs: [getInputTypeFromMapObject(mapObj) as UpdateLabelInput]
+		// 		});
+		// 		if (label.errors) return console.error(label.errors);
+
+		// 		const lObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
+		// 		lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
+		// 		break;
+		// }
+
+		// if ($map.height !== mapData.height || $map.width !== mapData.width) {
+		// 	await updateMap.mutate({
+		// 		mapId: mapData.pk_mapId,
+		// 		mapInput: {
+		// 			height: $map.height,
+		// 			width: $map.width,
+		// 			name: mapData.name
+		// 		}
+		// 	});
+		// }
+
+		// await getMapById(mapData?.pk_mapId!);
+
+		showMapLoader = true;
+		saving = false;
+	};
+
+	const saveMap = async () => {
+		if (mapData == null) return;
+
+		saving = true;
+		resetSelectedMapObjectStyle();
+		$selectedMapObject = null;
+		showMapLoader = false;
 
 		const desks: UpdateDeskInput[] = $allMapObjects
 			.filter((obj) => obj.type === mapObjectType.Desk)
@@ -521,8 +721,20 @@
 				const desk = mapData!.desks?.find((d) => d.pk_deskid === obj.dbID);
 				if (
 					compareObjectsByValues(
-						{ dbID: obj.dbID, id: obj.id, x: obj.transform.x, y: obj.transform.y },
-						{ dbID: desk?.pk_deskid, id: desk?.desknum, x: desk?.x, y: desk?.y }
+						{
+							dbID: obj.dbID,
+							id: obj.id,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							userId: obj.userId
+						},
+						{
+							dbID: desk?.pk_deskid,
+							id: desk?.desknum,
+							x: desk?.x,
+							y: desk?.y,
+							userId: desk?.user?.pk_userid ?? null
+						}
 					)
 				)
 					return {} as UpdateDeskInput;
@@ -611,6 +823,33 @@
 			})
 			.filter((door) => Object.keys(door).length !== 0);
 
+		const labels: UpdateLabelInput[] = $allMapObjects
+			.filter((obj) => obj.type === mapObjectType.Label)
+			.map((obj) => {
+				const label = mapData!.labels?.find((d) => d.pk_labelId === obj.dbID);
+				if (
+					compareObjectsByValues(
+						{
+							dbID: obj.dbID,
+							x: obj.transform.x,
+							y: obj.transform.y,
+							rotation: obj.transform.rotation,
+							text: obj.text
+						},
+						{
+							dbID: label?.pk_labelId,
+							x: label?.x,
+							y: label?.y,
+							rotation: label?.rotation,
+							text: label?.text
+						}
+					)
+				)
+					return {} as UpdateLabelInput;
+				return getInputTypeFromMapObject(obj) as UpdateLabelInput;
+			})
+			.filter((label) => Object.keys(label).length !== 0);
+
 		const deskIdsToDelete: string[] =
 			mapData.desks
 				?.filter(
@@ -639,6 +878,15 @@
 						!$allMapObjects?.find((d) => d.dbID === wall.pk_wallId && d.type === mapObjectType.Wall)
 				)
 				?.map((wall) => wall.pk_wallId) ?? [];
+		const labelsToDelete: string[] =
+			mapData.labels
+				?.filter(
+					(label) =>
+						!$allMapObjects?.find(
+							(d) => d.dbID === label.pk_labelId && d.type === mapObjectType.Label
+						)
+				)
+				?.map((label) => label.pk_labelId) ?? [];
 
 		let updateDesks;
 		if (desks.length > 0) {
@@ -672,11 +920,20 @@
 			});
 		}
 
+		let updateLabels;
+		if (labels.length > 0) {
+			updateLabels = updateLabelsOnMap.mutate({
+				mapId: mapData.pk_mapId,
+				labelInputs: labels
+			});
+		}
+
 		let mapUpdate = updateMap.mutate({
 			mapId: mapData.pk_mapId,
 			mapInput: {
 				height: $map.height,
-				width: $map.width
+				width: $map.width,
+				name: mapData.name
 			}
 		});
 
@@ -708,16 +965,25 @@
 			});
 		}
 
+		let delLabels;
+		if (labelsToDelete?.length > 0) {
+			delLabels = deleteLabels.mutate({
+				labelIds: labelsToDelete
+			});
+		}
+
 		const resolves = await Promise.all([
 			updateDesks,
 			updateRooms,
 			updateWalls,
 			updateDoors,
+			updateLabels,
 			mapUpdate,
 			delDesks,
 			delRooms,
 			delDoors,
-			delWalls
+			delWalls,
+			delLabels
 		]);
 
 		resolves.map((resolve) => {
@@ -725,46 +991,79 @@
 			if (resolve.errors) return console.error(resolve.errors);
 		});
 
-		const receivedMap = await getMapByFloor.fetch({
-			variables: { floorID: currentFloorID },
-			policy: CachePolicy.NetworkOnly
-		});
+		await getMapById(mapData?.pk_mapId!);
 
-    $allMapObjects = $allMapObjects.map((obj) => {
-      obj.dbID = receivedMap.data?.getMapByFloor?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
-      return obj;
-    });
+		$allMapObjects = $allMapObjects.map((obj) => {
+			obj.dbID = mapData?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
+			return obj;
+		});
+		showMapLoader = true;
+		saving = false;
 	};
+	//#endregion
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<!--temporarily-->
-	<a href="/" class="btn variant-filled-primary absolute z-[100] m-2">MAP</a>
-	<!---->
+	<div class="absolute p-2 flex gap-1 w-full bg-red-500">
+		<!--temporary-->
+		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
+		<!---->
+		<!-- <button
+			on:click={saveMap}
+			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
+			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
+		> -->
+		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
+			Discrad
+		</button>
+		<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
+		<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
+		<button
+			class="btn variant-filled-primary z-[100]"
+			on:click={() => {
+				goto(`/admin`);
+			}}
+		>
+			Change Snapshot
+		</button>
+	</div>
+
 	<button
-		on:click={saveMap}
-		class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-		>{$getMapByFloor.fetching ? 'loading' : 'SAVE'}</button
+		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary z-[100]"
+		on:click={publishCurrentMap}
 	>
+		Publish
+	</button>
+
 	<MapObjectSelector
 		on:create={(event) => {
+			if ($getMapSnapshotById.fetching || !mapData) {
+				return;
+			}
+
 			createMapObject(event.detail.e, event.detail.type, null);
-			$allMapObjects = $allMapObjects;
-			mapObjects = mapObjects;
 		}}
 	/>
-	<AdminBuildingSelector
-		on:changeBuilding={(event) => changeBuilding(event.detail, null)}
-		{buildings}
-	/>
-	<AdminFloorSelector
-		on:changeFloor={(event) => changeFloor(event.detail)}
-		floors={buildings.filter((b) => b.pk_buildingid === currentBuildingID)[0]?.floors ?? []}
-	/>
+
 	<AdminSerachbar
-		names={$allMapObjects.map((o) => o.id)}
+		values={mapData?.desks
+			?.map((desk) => ({
+				label: desk.desknum,
+				value: desk.desknum
+			}))
+			.concat(
+				mapData?.desks
+					?.filter((d) => d.user !== null)
+					.map((des) => ({ label: des.user?.username ?? des.desknum, value: des.desknum })) // des.user CAN NOT BE NULL!!!!!!!!
+			)
+			?.sort(
+				(a, b) =>
+					parseFloat(a.label.substring(2, a.label.length)) -
+					parseFloat(b.label.substring(2, b.label.length))
+			) ?? []}
 		on:selected={(event) => zoomToObjectId(event.detail)}
 	/>
+
 	<div bind:this={container} class="overflow-hidden h-full">
 		<div
 			bind:this={grid}
@@ -773,27 +1072,15 @@
 			style="width: {$map.width}px; height: {$map.height}px;"
 			class="z-0"
 		>
-			{#if $getMapByFloor.fetching}
-				<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
-					<ProgressBar value={undefined} />
-				</div>
-			{:else if mapData}
-				<canvas
-					bind:this={canvas}
-					width={$map.width}
-					height={$map.height}
-					draggable="false"
-					class="canvasStyle"
-				/>
-			{/if}
+			<canvas
+				bind:this={canvas}
+				width={$map.width}
+				height={$map.height}
+				draggable="false"
+				class="canvasStyle"
+			/>
 		</div>
 	</div>
-	{#if !$getMapByFloor.fetching && !mapData}
-		<button
-			class="absolute btn variant-filled-primary left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
-			on:click={() => createNewMap(currentFloorID)}>CREATE NEW MAP</button
-		>
-	{/if}
 </main>
 
 <style>

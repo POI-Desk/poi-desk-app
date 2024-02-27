@@ -15,8 +15,6 @@
 
 	let visibility = 'hidden';
 	$dateValue = new Date().toISOString().split('T')[0];
-	console.log($dateValue);
-
 	const getBookings = () => {
 		$selectedDesks = [];
 		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
@@ -29,7 +27,7 @@
 <div class="group w-fit">
 	<div class="dropdown">
 		<input
-			class="timeselect input input-bordered"
+			class="input border-none"
 			type="date"
 			id="calendar"
 			min="{today}"

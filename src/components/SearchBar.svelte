@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
   import { searchedUser } from "$lib/searchStore";
   import { goto } from "$app/navigation";
-  import { MapPin } from "lucide-svelte";
+  import { MapPin, Search } from "lucide-svelte";
 
   export const _getAllUsersVariables = () => {
     return "";
@@ -31,12 +31,11 @@
   let hasNextPage: boolean;
 
 
-  // onMount(() => {
-  // 	getSearchUsers(0);
-  // });
+  onMount(() => {
+    getSearchUsers(0);
+  });
 
   async function getSearchUsers(pageNumber_param: number) {
-    console.log("geSearchUsers");
     if (typedUsername === "") {
       pageNumber = 1;
     }
@@ -46,6 +45,11 @@
       })
       .then(() => {
         let users = $getUsers.data?.getAllUsers.content;
+        if (!users){
+          console.warn('No Users');
+          return;
+        }
+
         searchUsers = users.map((user) => ({
           pk_userid: user?.pk_userid,
           username: user?.username,
@@ -73,13 +77,14 @@
 
   async function getUserInfo(user: User) {
     typedUser = user;
-    await getBookings.fetch({ variables: { userid: user.pk_userid ?? "" } });
+    await getBookings.fetch({ variables: { userid: user.pk_userid, isCurrent: true} }); // WHAT IS icCurrent???
     if (bookingsOfUser?.length ?? 0 > 0) {
       for (const booking of bookingsOfUser ?? []) {
         if (booking?.date == $dateValue) {
-          await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? "" } }).then(() => {
+          await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? "" } })
+          .then(() => {
             let desk = $getDesk.data?.getBookingById?.desk;
-            userLocation = desk?.floor?.building.location?.locationname ?? "";
+            userLocation = desk?.map?.floor?.building.location?.locationname ?? "";
             if (booking.ismorning && booking.isafternoon) {
               mpUserUserinfo.set(user.pk_userid, "today in " + userLocation);
               //user.userInfo = 'today in ' + userLocation;
@@ -123,31 +128,29 @@
 					desknum
 					y
 					x
-					floor {
-						pk_floorid
-						floorname
-						building {
-							buildingname
-							location {
-								locationname
-						}
-					}
-				}
-			}
-		}
+          map {
+            floor{
+              floorname
+              building{
+                buildingname
+                location{
+                  locationname
+                }
+              }
+            }
+          }
+        }
+      }
 		}
 	`);
 
   function handleDropDownClick() {
     dropdownIsOpen = true;
-    console.log(dropdownIsOpen + " dropDown wurde geklickt");
   }
 
   const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }) => {
-
     if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return;
     dropdownIsOpen = false;
-    console.log(dropdownIsOpen + " dropDown sollte wieder zu sein");
   };
 
   $: {
@@ -155,7 +158,10 @@
       pageNumber = 0;
     }
     if (typedUsername) {
-      //getSearchUsers(pageNumber);
+      getSearchUsers(pageNumber);
+    }
+    if (typedUsername === "") {
+      dropdownIsOpen = false;
     }
   }
 
@@ -165,7 +171,7 @@
   function handleLoadMore() {
     // TODO was passiert, wenn es keine pages mehr gibt?
     pageNumber++;
-    //getSearchUsers(pageNumber);
+    getSearchUsers(pageNumber);
   }
 
   function handleLoadLess() {
@@ -173,69 +179,79 @@
   }
 </script>
 
+<div class="flex justify-center">
+  <div class="flex items-center relative w-full max-w-screen-sm">
+    <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
+      <div class="dropdown w-full">
+        <input
+          class="input my-1 w-full rounded-full pl-20 py-3 border-none"
+          placeholder="Search..."
+          bind:value={typedUsername}
+          on:input={handleDropDownClick}
+        />
+        <div class="absolute left-0 right-0 w-full px-2 z-10">
+          {#if dropdownIsOpen}
 
-<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
-  <div class="dropdown w-full">
-    <div>
-      <input
-        class="input my-1 w-full rounded-full"
-        placeholder="Search..."
-        bind:value={typedUsername}
-        on:click={handleDropDownClick}
-
-      />
-    </div>
-    <div class="absolute left-0 right-0 w-full px-2 z-10">
-      {#if dropdownIsOpen}
-
-        <ul
-          style="background-color: white;"
-          class="dropdown-content menu shadow bg-base-100 rounded-xl max-h-90 flex-nowrap overflow-auto"
-        >
-          {#each searchUsers as usr}
-            <li class="m-1 flex justify-center">
-              <button class="w-full px-3 border rounded-2xl flex flex-col"
-                      style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
-                      on:click={() => {
+            <ul
+              class="dropdown-content menu shadow variant-filled-tertiary dark:bg-surface-600 rounded-xl max-h-90 flex-nowrap overflow-auto"
+            >
+              {#each searchUsers as usr}
+                <li class="m-1 flex justify-center">
+                  <button class="w-full px-3 py-2 border rounded-2xl flex flex-col"
+                          style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
+                          on:click={() => {
 								$searchedUser = usr;
 								goto("/bookings/" + usr.username)
 							}}>
-                <div class="grid grid-cols-1 justify-items-start">
-                  <span>{usr.username}</span>
-                  <span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
-                </div>
-              </button>
-
-            </li>
-          {/each}
-          <li class="m-1">
-            <div class="grid grid-cols-2 grid-rows-1">
-              <div style="grid-col: 1">
-                {#if pageNumber > 0}
-                  <button on:click={() => {pageNumber --}}
-                          class="border rounded-2xl py-1 px-2"
-                          style="background-color: #FFFCF2;">show less...
+                    <div class="grid grid-cols-1 justify-items-start">
+                      <span>{usr.username}</span>
+                      <span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
+                    </div>
                   </button>
-                {/if}
-              </div>
-              {#if hasNextPage && typedUsername}
-                <div style="grid-col: 2" class="flex justify-end">
-                  <button
-                    class="border rounded-2xl py-1 px-2"
-                    style="background-color: #FFFCF2;"
-                    on:click={
+
+                </li>
+              {/each}
+              <li class="m-1">
+                <div class="grid grid-cols-2 grid-rows-1">
+                  <div style="grid-col: 1">
+                    {#if pageNumber > 0}
+                      <button on:click={() => {pageNumber --}}
+                              class="border rounded-2xl py-1 px-2"
+                              style="background-color: #FFFCF2;">show less...
+                      </button>
+                    {/if}
+                  </div>
+                  {#if hasNextPage && typedUsername}
+                    <div style="grid-col: 2" class="flex justify-end">
+                      <button
+                        class="border rounded-2xl py-1 px-2"
+                        style="background-color: #FFFCF2;"
+                        on:click={
 											() => {
 												//dropdownIsOpen = true;
 												pageNumber ++;
 												getSearchUsers(pageNumber);
 											}}>show more...
-                  </button>
+                      </button>
+                    </div>
+                  {/if}
                 </div>
-              {/if}
-            </div>
-          </li>
-        </ul>
-      {/if}
+              </li>
+            </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
+      on:click={() => {goto("/location")}}
+    >
+      <MapPin />
+    </button>
+
+    <div class="absolute right-1 w-10 text-secondary-900 pointer-events-none">
+      <Search />
     </div>
   </div>
 </div>

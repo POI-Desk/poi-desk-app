@@ -22,10 +22,27 @@
 	});
 </script>
 
-<div class="flex flex-wrap">
-	{#if bookings}
-		{#each $userBookings ?? [] as booking}
-			<BookingCard thisBooking={booking} />
-		{/each}
-	{/if}
-</div>
+{#await getBookings.fetch({
+  variables: { userid: usrid, isCurrent: isCurrentBookings },
+  policy: CachePolicy.NetworkOnly
+})}
+  <p></p>
+{:then fetched}
+  {#each bookings ?? [] as booking}
+    <BookingCard
+      thisBooking={booking}
+    />
+  {/each}
+{/await}
+
+{#if (bookings?.length === 0)}
+  <p class="text-xl">No future bookings</p>
+{/if}
+
+<!--<div class="flex flex-wrap">-->
+<!--	{#if bookings}-->
+<!--		{#each $userBookings ?? [] as booking}-->
+<!--			<BookingCard thisBooking={booking} />-->
+<!--		{/each}-->
+<!--	{/if}-->
+<!--</div>-->
