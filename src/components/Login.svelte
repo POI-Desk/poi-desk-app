@@ -38,7 +38,7 @@
 	POI-Desk
 </h1>
 
-<div class="h-screen flex flex-col items-center justify-center">
+<div class="h-full absolute flex flex-col items-center justify-center left-1/2 -translate-x-1/2">
 	<div class="p-3">
 		<!--        <label for="usernameInput" class="label-text">user name</label>-->
 		<!--
