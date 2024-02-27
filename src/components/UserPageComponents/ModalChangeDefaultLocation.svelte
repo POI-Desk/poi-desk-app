@@ -30,7 +30,6 @@
 							class="btn btn-block variant-filled-primary w-2/3 px-14"
 							on:click={async () => {
 								await defaultLocation.mutate({
-									uid: $user.pk_userid,
 									lid: location.pk_locationid
 								});
                 modalStore.close();

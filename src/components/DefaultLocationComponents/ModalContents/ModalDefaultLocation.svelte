@@ -11,7 +11,6 @@
 
 	async function setAsDefault() {
 		await defaultLocation.mutate({
-			uid: currentUser.pk_userid,
 			lid: $user.location?.pk_locationid!
 		});
 	}
