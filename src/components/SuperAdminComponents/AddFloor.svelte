@@ -45,6 +45,7 @@
 <div>
 		<h1>Floors</h1>
 		{#if showAddFloor}
+			
 			{#each $newFloors as { id, name }}
 				<div class="input">
 					<BuildingInput {id} {name} onInput={(newId, newName) => updateNewNames(newId, newName)} />
