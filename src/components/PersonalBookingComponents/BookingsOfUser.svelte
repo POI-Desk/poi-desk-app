@@ -6,37 +6,37 @@
 	import { onMount } from 'svelte';
 
 	let bookings: any;
+	export let isCurrentBookings = true;
 
-	const hey = async () => {
-		console.log('test');
-		await getBookings.fetch({
-			policy: CachePolicy.NetworkOnly
-		});
-		console.log('Hey listen:', $getBookings.data?.getBookingsByUserId);
-		bookings = $getBookings.data?.getBookingsByUserId;
-		$userBookings = bookings;
-	};
+	$: $userBookings = bookings as any;
+	$: console.log('User:', $user?.pk_userid);
+	$: usrid = $user?.pk_userid;
 
 	onMount(() => {
-		hey();
+		getBookings.fetch({ variables: { isCurrent: isCurrentBookings } });
 	});
+
+	$: bookings = $getBookings.data?.getBookingsByUserid;
+
+	$: {
+		if ($user.pk_userid != '') {
+			getBookings.fetch({
+				variables: { isCurrent: isCurrentBookings }
+			});
+		}
+	}
 </script>
 
-{#await getBookings.fetch({
-  variables: { userid: usrid, isCurrent: isCurrentBookings },
-  policy: CachePolicy.NetworkOnly
-})}
-  <p></p>
+{#await getBookings.fetch( { variables: { isCurrent: isCurrentBookings }, policy: CachePolicy.NetworkOnly } )}
+	<p />
 {:then fetched}
-  {#each bookings ?? [] as booking}
-    <BookingCard
-      thisBooking={booking}
-    />
-  {/each}
+	{#each bookings ?? [] as booking}
+		<BookingCard thisBooking={booking} />
+	{/each}
 {/await}
 
-{#if (bookings?.length === 0)}
-  <p class="text-xl">No future bookings</p>
+{#if bookings?.length === 0}
+	<p class="text-xl">No future bookings</p>
 {/if}
 
 <!--<div class="flex flex-wrap">-->

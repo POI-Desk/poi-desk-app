@@ -5,10 +5,21 @@
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { floorid } from '$lib/floorStore';
 	import { buildingid } from '$lib/buildingStore';
-	import { getAllLocations } from '$lib/queries/floorQueries';
+	import { graphql } from '$houdini';
 
+	// export const _getAllLocationsVariables = () => {
+	// 	return {};
+	// };
+	export let data: PageData;
 
-	$: getAllLocations.fetch();
+	const getAllLocationsPage = graphql(`
+		query getAllLocations @load {
+			getAllLocations {
+				pk_locationid
+				locationname
+			}
+		}
+	`);
 
 	const modalStore = getModalStore();
 
@@ -18,8 +29,7 @@
 		component: 'modalDefaultLocation'
 	};
 
-	export let data: PageData;
-	//$: ({ getAllLocations } = data);
+	$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
 </script>
 
@@ -30,6 +40,7 @@
 			<button
 				class="btn btn-block variant-filled-primary w-2/3 px-14"
 				on:click={() => {
+					console.log('hello');
 					$user.location = {
 						locationname: location?.locationname,
 						pk_locationid: location?.pk_locationid

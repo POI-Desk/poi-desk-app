@@ -12,12 +12,3 @@ export const getFloors = graphql(`
 		}
 	}
 `);
-
-export const getAllLocations = graphql(`
-	query getAllLocations {
-		getAllLocations {
-			pk_locationid
-			locationname
-		}
-	}
-`);

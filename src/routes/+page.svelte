@@ -11,6 +11,7 @@
 	import { loginWizzGoogol } from '$lib/queries/userQuerries';
 
 	import type { PageData } from './$types';
+	import SearchBar from '$components/SearchBar.svelte';
 
 	export let data: PageData;
 
@@ -62,7 +63,6 @@
       <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
       <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
       <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
-      <LightSwitch />
     </div>
   </div>
 

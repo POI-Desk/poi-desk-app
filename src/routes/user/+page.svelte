@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { CachePolicy } from '$houdini';
 	import { user } from '$lib/userStore';
 	import { SlideToggle, type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
 	import { Pen } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	$: getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
-	$: thisUser = $getUserById.data?.getUserById;
-	$: console.log(thisUser);
+	// $: getUserByid.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
+	// $: thisUser = $getUserByid.data?.getUserById;
+	// $: console.log(thisUser);
 	let lightModeTrue = true;
 	// let addToOutlookTrue = false;
 
-	$: bookings = thisUser?.bookings;
+	// $: bookings = thisUser?.bookings;
 	const currentMonth = new Date().getMonth();
 	// get currentMonth in a human readable format
 	const months = [
@@ -31,11 +30,11 @@
 	];
 	const currentMonthName = months[currentMonth];
 	const currentYear = new Date().getFullYear();
-	$: bookingsThisMonth = bookings?.filter((booking: any) => {
-		const bookingDate = new Date(booking.date);
-		return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
-	});
-	$: amountOfBookingsThisMonth = bookingsThisMonth?.length;
+	// $: bookingsThisMonth = bookings?.filter((booking: any) => {
+	// 	const bookingDate = new Date(booking.date);
+	// 	return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+	// });
+	// $: amountOfBookingsThisMonth = bookingsThisMonth?.length;
 
 	const modal: ModalSettings = {
 		type: 'component',
@@ -73,7 +72,7 @@
 			class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center gap-5"
 		>
 			<div>
-				{thisUser?.location?.locationname}
+				test
 			</div>
 			<Pen /></button
 		>
@@ -104,11 +103,11 @@
 				{currentMonthName}
 			</div>
 			<div class="w-1/2 flex justify-center items-center bg-yellow-500 rounded-3xl">
-				{amountOfBookingsThisMonth}
+				test
 			</div>
 		</div>
 		<!-- button to change into a different role-->
-		{#if thisUser.roles[0].rolename === 'Admin'}
+		<!-- {#if thisUser.roles[0].rolename === 'Admin'}
 			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
@@ -117,9 +116,9 @@
 			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
-		{/if}
+		{/if} -->
 	</div>
-
+</div>
 <style>
 	hr {
 		border: 1px solid black;

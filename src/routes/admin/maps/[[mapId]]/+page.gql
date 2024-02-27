@@ -1,4 +1,3 @@
-
 query getMapSnapshotById($mapId: ID! = "") {
 	getMapSnapshotById(mapId: $mapId) {
 		pk_mapId

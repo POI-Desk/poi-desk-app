@@ -9,9 +9,9 @@ export const updateLabelsOnMap = graphql(`
 `);
 
 export const deleteLabels = graphql(`
-    mutation DeleteLabels($labelIds: [ID!]!) {
-        deleteLabels(labelIds: $labelIds) {
-            pk_labelId
-        }
-    }
+	mutation DeleteLabels($labelIds: [ID!]!) {
+		deleteLabels(labelIds: $labelIds) {
+			pk_labelId
+		}
+	}
 `);

@@ -9,7 +9,7 @@ export const usersInTeam = graphql(`
 	}
 `);
 
-export const getUserById = graphql(`
+export const getUserByid = graphql(`
 	query getUserInfo($id: ID) {
 		getUserById(id: $id) {
 			pk_userid

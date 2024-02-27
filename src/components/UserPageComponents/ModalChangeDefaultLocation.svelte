@@ -1,8 +1,7 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { Network } from 'lucide-svelte';
 	import { defaultLocation } from '$lib/mutations/location';
-	import { getAllLocations } from '$lib/queries/floorQueries';
-	import { getUserById } from '$lib/queries/userQuerries';
+	import { getUserByid } from '$lib/queries/userQuerries';
 	import { user } from '$lib/userStore';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { CachePolicy } from '$houdini';
@@ -35,7 +34,7 @@
 								await defaultLocation.mutate({
 									lid: location.pk_locationid
 								});
-								await getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
+								await getUserById.fetch({ policy: CachePolicy.NetworkOnly });
 								modalStore.close();
 								toastStore.trigger(t);
 							}}
@@ -50,4 +49,4 @@
 {/if}
 
 <style>
-</style>
+</style> -->
