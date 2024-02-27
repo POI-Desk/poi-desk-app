@@ -44,8 +44,11 @@
 	//decode jwt
 	const jwtData = data.sessionToken?.split('.')[1];
 	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
-
+	const location = decodedJwt.location;
+	$user.location = location;
 	const modalStore = getModalStore();
+
+	
 </script>
 
 <a class="btn variant-filled-primary" href="./">Go the fuck back</a>

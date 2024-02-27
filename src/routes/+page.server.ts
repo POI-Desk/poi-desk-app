@@ -1,8 +1,9 @@
 import type { PageServerLoad } from './$types';
 
-export const load = (async ({cookies}) => {
-	const sessionToken = cookies.get('session');
+export const load = (async ({ locals }) => {
+	const session = locals.getSession();
+	console.log('Test', session);
 	return {
-		sessionToken
+		session
 	};
 }) satisfies PageServerLoad;

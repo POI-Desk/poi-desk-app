@@ -25,12 +25,6 @@
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-	onMount(() => {
-		if (!$user.pk_userid) {
-			goto('/login');
-		}
-	});
-
 	async function loadData() {
 		if (buildingsWithFloors.length <= 1) {
 			const resultsFromBuildings = await getBuildingsWithFloors.fetch({

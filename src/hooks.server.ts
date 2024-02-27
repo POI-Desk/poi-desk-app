@@ -1,8 +1,21 @@
 import { page } from '$app/stores';
 import { authenticateUser } from '$lib/queries/userQuerries';
 import type { Handle } from '@sveltejs/kit';
-import { setSession } from '$houdini';
+import { graphql, setSession } from '$houdini';
+import { user } from '$lib/userStore';
 
+const getData = graphql(`
+	query getData($session: String!) {
+		getUserInformation(jwt: $session) {
+			pk_userid
+			username
+			location {
+				pk_locationid
+				locationname
+			}
+		}
+	}
+`);
 
 /*
 export const handle: Handle = async ({ event }) => {
@@ -18,22 +31,25 @@ export const handle: Handle = async ({ event }) => {
 };
 */
 
-
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get('session');
-  const response = await resolve(event);
+	const response = await resolve(event);
+
+	const data = await getData.fetch({ variables: { session: sessionToken! }, event});
 
 	event.locals.getSession = () => {
-		return sessionToken ?? 'Amongus';
+		return data.data?.getUserInformation;
 	};
-	
-  if (event.request.url.includes('/login')) {
-    return response;
-  }
-  if (event.request.url.includes('/api/auth/callback/google')){
-    console.log('Callback');
-    return response;
-  }
+
+	if (event.request.url.includes('/login')) {
+		console.log('The request url inclues login');
+		return response;
+	}
+	if (event.request.url.includes('/api/auth/callback/google')) {
+		console.log('The request url inclues /api/auth/callback/google');
+		console.log('Callback');
+		return response;
+	}
 
 	if (!sessionToken) {
 		console.log('No session token found');
@@ -42,17 +58,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 		return response;
 	}
-	setSession(event, {sessionToken});
-	console.log("Session token found:", sessionToken);
+	setSession(event, { sessionToken });
+	//console.log("Session token found:", sessionToken);
 	const res = await authenticateUser.fetch({
 		event
 	});
-  console.log("AuthenticateUser response:", res.data?.authorizeUser);
-  if (res.data?.authorizeUser) {
-    return await resolve(event);
-  }
-  else{
-    return Response.redirect('http://localhost:5173/login', 302);
-  }
+	//console.log("AuthenticateUser response:", res.data?.authorizeUser);
+	if (res.data?.authorizeUser) {
+		console.log('User is authorized');
+		return await resolve(event);
+	} else {
+		console.log('User is not authorized');
+		return Response.redirect('http://localhost:5173/login', 302);
+	}
 };
-

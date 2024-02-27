@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getDataStore } from './../../$houdini/plugins/houdini-svelte/stores/getData.js';
 	import DateSelection from '$components/DateSelection.svelte';
 
 	import BuildingSelection from '$components/BuildingSelection.svelte';
@@ -9,11 +10,12 @@
 	import { goto } from '$app/navigation';
 	import { isExtended } from '$lib/stores/extendedUserStore';
 	import { loginWizzGoogol } from '$lib/queries/userQuerries';
-
-	import type { PageData } from './$types';
 	import SearchBar from '$components/SearchBar.svelte';
 
-	export let data: PageData;
+	import type { PageServerData } from './$types';
+	
+	export let data: PageServerData;
+
 
 	//
 	// let visible = false;
@@ -35,11 +37,9 @@
 	// }
 	$isExtended = false; // TODO idk if this is a good idea.. but it works
 
-	//decode jwt
-	const jwtData = data.sessionToken?.split('.')[1];
-	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
-
-	$user.username = decodedJwt.name;
+	onMount(() => {
+		$user = data.session;
+	});
 </script>
 
 <!--{#if visible}-->
