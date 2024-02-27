@@ -3,14 +3,17 @@
 	import { user } from '$lib/userStore';
 	import { SlideToggle, type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
 	import { Pen } from 'lucide-svelte';
-	import { getUserByid } from '$lib/queries/userQuerries';
-	import type { PageLoad } from './$types';
+	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 
-	export let data: PageLoad;
+	export let data: PageData;
 
-	$: getUserByid.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
-	$: thisUser = $getUserByid.data?.getUserById;
-	$: console.log(thisUser);
+	onMount(() => {
+		$user = data.session;
+	});
+
+	$: thisUser = data.res.data?.getUserById;
+
 	let lightModeTrue = true;
 	// let addToOutlookTrue = false;
 
@@ -103,12 +106,12 @@
 			</div>
 		</div>
 		<!-- button to change into a different role-->
-		{#if thisUser.roles[0].rolename === 'Admin'}
+		{#if thisUser.roles && thisUser.roles[0].rolename === 'Admin'}
 			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
 		{/if}
-		{#if thisUser.roles[0].rolename === 'Super Admin'}
+		{#if thisUser.roles && thisUser.roles[0].rolename === 'Super Admin'}
 			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
