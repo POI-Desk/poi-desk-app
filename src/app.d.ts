@@ -9,6 +9,9 @@ declare global {
 		interface PageData {
 			sussy: string;
 		}
+		interface Session {
+			sessionToken: string;
+		}
 		// interface Platform {}
 	}
 }

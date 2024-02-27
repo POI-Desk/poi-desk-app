@@ -1,6 +1,8 @@
 import { page } from '$app/stores';
 import { authenticateUser } from '$lib/queries/userQuerries';
 import type { Handle } from '@sveltejs/kit';
+import { setSession } from '$houdini';
+
 
 /*
 export const handle: Handle = async ({ event }) => {
@@ -24,6 +26,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.getSession = () => {
 		return sessionToken ?? 'Amongus';
 	};
+	
   if (event.request.url.includes('/login')) {
     return response;
   }
@@ -39,15 +42,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 		return response;
 	}
+	setSession(event, {sessionToken});
+	console.log("Session token found:", sessionToken);
 	const res = await authenticateUser.fetch({
-		event,
-		variables: {
-			token: sessionToken!
-		}
+		event
 	});
-  console.log(res.data?.authorizeUser);
+  console.log("AuthenticateUser response:", res.data?.authorizeUser);
   if (res.data?.authorizeUser) {
-    return response;
+    return await resolve(event);
   }
   else{
     return Response.redirect('http://localhost:5173/login', 302);

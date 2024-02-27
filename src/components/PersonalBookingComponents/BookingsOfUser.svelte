@@ -3,25 +3,23 @@
 	import { user } from '$lib/userStore';
 	import { getBookings, userBookings } from '$lib/bookingStore';
 	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
+	import { onMount } from 'svelte';
 
 	let bookings: any;
 
 	const hey = async () => {
+		console.log('test');
 		await getBookings.fetch({
-			variables: { userid: $user?.pk_userid },
 			policy: CachePolicy.NetworkOnly
 		});
-		console.log($getBookings.data?.getBookingsByUserid);
+		console.log('Hey listen:', $getBookings.data?.getBookingsByUserId);
+		bookings = $getBookings.data?.getBookingsByUserId;
+		$userBookings = bookings;
 	};
 
-	$: {
+	onMount(() => {
 		hey();
-	}
-
-	$: {
-		bookings = $getBookings.data?.getBookingsByUserid;
-		$userBookings = bookings;
-	}
+	});
 </script>
 
 <div class="flex flex-wrap">

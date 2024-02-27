@@ -10,8 +10,8 @@ export const usersInTeam = graphql(`
 `);
 
 export const authenticateUser = graphql(`
-	query authenticateUser($token: String!) {
-		authorizeUser(token: $token)
+	query authenticateUser{
+		authorizeUser
 	}
 `);
 

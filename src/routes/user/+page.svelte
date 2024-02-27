@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { user } from '$lib/userStore';
-	import {
-		SlideToggle,
-		type ModalSettings,
-		getModalStore
-	} from '@skeletonlabs/skeleton';
+	import { SlideToggle, type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
 	import { Pen } from 'lucide-svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 
 	let lightModeTrue = true;
 	let addToOutlookTrue = false;
@@ -15,6 +14,10 @@
 		component: 'modalChangeDefaultLocation'
 	};
 
+	//decode jwt
+	const jwtData = data.sessionToken?.split('.')[1];
+	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
+
 	const modalStore = getModalStore();
 </script>
 
@@ -23,10 +26,14 @@
 <div class="rounded-3xl bg-red-500 h-1/2 mt-5 p-2 m-2 flex flex-col gap-2">
 	<div class="rounded-3xl flex flex-row bg-green-500 h-1/2 p-2">
 		<div class="w-1/2 flex justify-center items-center">
-			<img class="rounded-full h-full" src="/src/images/cover.jpg" alt="profile picture" />
+			<img
+				class="rounded-full h-full"
+				src={decodedJwt.picture}
+				alt="profile picture"
+			/>
 		</div>
 		<div class="flex flex-col w-1/2">
-			<h1>{$user.username}</h1>
+			<h1>{decodedJwt.name}</h1>
 			<hr />
 			<h1>POI/AT</h1>
 			<h1>{$user.location?.locationname}</h1>
@@ -47,12 +54,6 @@
 		<div>Light Mode</div>
 		<div class="flex items-center">
 			<SlideToggle name="themeChanger" bind:checked={lightModeTrue} />
-		</div>
-	</div>
-	<div class="rounded-3xl bg-green-500 h-1/6 flex items-center justify-around">
-		<div>Add to Outlook</div>
-		<div class="flex items-center">
-			<SlideToggle name="addToOutlookChanger" bind:checked={addToOutlookTrue} />
 		</div>
 	</div>
 	Statistics:

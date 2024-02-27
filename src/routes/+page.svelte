@@ -7,8 +7,12 @@
 	import { onMount } from 'svelte';
 	import { authId, user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
-	import { isExtended } from "$lib/stores/extendedUserStore";
+	import { isExtended } from '$lib/stores/extendedUserStore';
 	import { loginWizzGoogol } from '$lib/queries/userQuerries';
+
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 
 	//
 	// let visible = false;
@@ -29,6 +33,12 @@
 	// 	}, 5000);
 	// }
 	$isExtended = false; // TODO idk if this is a good idea.. but it works
+
+	//decode jwt
+	const jwtData = data.sessionToken?.split('.')[1];
+	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
+
+	$user.username = decodedJwt.name;
 </script>
 
 <!--{#if visible}-->
