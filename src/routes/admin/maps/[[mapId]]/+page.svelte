@@ -85,6 +85,39 @@
 		}
 	};
 
+	const modalPublishMap: ModalSettings = {
+		type: 'component',
+		component: 'modalPublishMap',
+		response: (response: { keepPublishedMap: boolean; keepBookings: boolean }) => {
+			toastStore.clear();
+			if (!response) return;
+			publish(response.keepPublishedMap, response.keepBookings);
+		}
+	};
+
+	const publish = async (keepMap: boolean, keepBookings: boolean) => {
+		if (!mapData) return;
+		const response = await publishMap.mutate({
+			publishMapInput: {
+				keepBookings: keepBookings,
+				keepOldMap: keepMap,
+				mapId: mapData.pk_mapId
+			}
+		});
+
+		if (response.errors) {
+			console.error(response.errors);
+			toastStore.trigger(toastPublishFailed);
+			return;
+		}
+
+		if (response.data?.publishMap) {
+			toastStore.trigger(toastPublishSuccess);
+		} else {
+			toastStore.trigger(toastPublishFailed);
+		}
+	};
+
 	const toastOffline: ToastSettings = {
 		message: 'You are offline, changes may not be saved',
 		hideDismiss: true,
@@ -110,8 +143,8 @@
 	};
 
 	const publishMap = graphql(`
-		mutation publishMap($mapId: ID!, $force: Boolean!) {
-			publishMap(mapId: $mapId, force: $force)
+		mutation publishMap($publishMapInput: PublishMapInput!) {
+			publishMap(publishMapInput: $publishMapInput)
 		}
 	`);
 
@@ -173,27 +206,18 @@
 		});
 	};
 
-	const publishCurrentMap = async () => {
-		if (!mapData) return;
-		const response = await publishMap.mutate({ mapId: mapData?.pk_mapId, force: false });
-
-		if (response.errors) {
-			console.error(response.errors);
-			toastStore.trigger(toastPublishFailed);
-			return;
-		}
-
-		if (response.data?.publishMap) {
-			toastStore.trigger(toastPublishSuccess);
-		} else {
-			toastStore.trigger(toastPublishFailed);
-		}
+	const triggerPublishModal = async () => {
+		modalStore.trigger(modalPublishMap);
 	};
 
-	//#region handles
+	// #region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Delete') {
 			delSelectedMapObject();
+		}
+		if (event.key === 'Escape') {
+			resetSelectedMapObjectStyle();
+			$selectedMapObject = null;
 		}
 	};
 
@@ -711,8 +735,6 @@
 		if (mapData == null) return;
 
 		saving = true;
-		resetSelectedMapObjectStyle();
-		$selectedMapObject = null;
 		showMapLoader = false;
 
 		const desks: UpdateDeskInput[] = $allMapObjects
@@ -1030,7 +1052,7 @@
 
 	<button
 		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary z-[100]"
-		on:click={publishCurrentMap}
+		on:click={triggerPublishModal}
 	>
 		Publish
 	</button>

@@ -68,7 +68,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		console.log('User is authorized');
 		return await resolve(event);
 	} else {
-		console.log('User is not authorized');
+		console.warn('User is not authorized');
 		return Response.redirect('http://localhost:5173/login', 302);
 	}
 };
