@@ -12,6 +12,7 @@
   import SearchBar from "$components/SearchBar.svelte";
   import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
   import { MapPin, Search } from "lucide-svelte";
+	import { searchedUser } from "$lib/searchStore";
 
   // onMount(() => {
   //   if (!$user.pk_userid) {
@@ -37,6 +38,12 @@
   // 		visible = false;
   // 	}, 5000);
   // }
+
+  function handleUserClicked(event) {    
+    $searchedUser = event.detail;
+    goto("/bookings/" + event.detail.username)
+  }
+
   $isExtended = false; // TODO idk if this is a good idea.. but it works
 </script>
 
@@ -61,7 +68,8 @@
   <!--	</div>-->
 
   <div class="absolute p-8" style="width: 100%">
-    <SearchBar />
+    <SearchBar showUsrInfo={false} on:clicked={handleUserClicked}/>
+
 
 
     <div class="flex justify-center p-1">

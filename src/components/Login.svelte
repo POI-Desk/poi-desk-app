@@ -34,15 +34,21 @@
 			const result = await createOrLoginAsUser.mutate({
 				username: username,
 				password: password
-			});
-			if (result.data?.createOrLoginAsUser) {
+			});			
+			if (result.data?.createOrLoginAsUser?.pk_userid) {
+				console.log("hallo defined");
+				
 				$user = {...result.data?.createOrLoginAsUser! };
 				path = $user.location == null ? '/location' : '/';
 				goto(path);
 				setCookie("userid", $user.pk_userid, 7);
 				console.log(decodeURIComponent(document.cookie));
 				
-			} 
+			} else {
+				alert("Incorrect user name or password");
+				username = '';
+				password = '';
+			}
 		}
 		catch (error) {
 			console.error('Error:', error);
@@ -60,7 +66,7 @@
     </div>
     <div class="p-3">
         <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-            <a href="../" class="pl-5 pr-5">Login</a>
+            Login
         </button>
     </div>
 </div>

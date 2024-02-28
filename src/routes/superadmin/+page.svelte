@@ -1,12 +1,12 @@
 <script lang="ts">
 	import AddBuilding from '$components/SuperAdminComponents/AddBuilding.svelte';
 	import AddLocation from '$components/SuperAdminComponents/AddLocation.svelte';
+	import AddTeam from '$components/SuperAdminComponents/AddTeam.svelte';
 	import EditBuilding from '$components/SuperAdminComponents/EditBuilding.svelte';
 	import EditLocation from '$components/SuperAdminComponents/EditLocation.svelte';
 	import LocationList from '$components/SuperAdminComponents/LocationList.svelte';
 	import { addBuilding, changeNameOfBuilding } from '$lib/mutations/buildings';
 	import { getLocations } from '$lib/queries/locationQueries';
-	import { getBuildings } from '$lib/queries/buildingQueries';
 	import { addFloor, changeNameOfFloor } from '$lib/mutations/floors';
 	import { addLocation, changeNameOfLocation } from '$lib/mutations/locationMutations';
 	import {
@@ -24,7 +24,7 @@
 	import { CachePolicy } from '$houdini';
 	import { showAddLocation } from '$lib/locationStore';
 	import AddUser from '$components/SuperAdminComponents/AddUser.svelte';
-
+	
 
 	/**
 	 * updates the locationNames-list, which is used for checking whether a location name is already in use
@@ -40,7 +40,7 @@
 			}
 		});
 	}
-
+	
 	/**
 	 * determines whether only changes to the location have been made or to a building or floor as well
 	 */
@@ -55,8 +55,6 @@
 		if ($floorsToEdit.size > 0) {
 			saveEditFloorChanges();
 		}
-
-		
 	}
 
 	/**
@@ -149,13 +147,13 @@
 		// if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
 		// 	alert('EDIT A location with this name already exists. Please enter a different name!');
 		// } else {
-			const result = await changeNameOfLocation.mutate({
-				id: $locationToEdit.id,
-				newName: $locationToEdit.name
-			});
-			console.log(result);
-			$isSaveDisabled = true;
-			$refreshLocations = !$refreshLocations;
+		const result = await changeNameOfLocation.mutate({
+			id: $locationToEdit.id,
+			newName: $locationToEdit.name
+		});
+		console.log(result);
+		$isSaveDisabled = true;
+		$refreshLocations = !$refreshLocations;
 		// }
 	}
 
@@ -198,6 +196,7 @@
 	}
 </script>
 
+<AddTeam />
 <AddUser />
 
 <AddLocation />
@@ -206,7 +205,6 @@
 {/if}
 
 {#if $locationToEdit.id !== ''}
-
 	<EditLocation />
 	{#if $buildingToEdit.id !== ''}
 		<EditBuilding />
