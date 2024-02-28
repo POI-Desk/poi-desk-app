@@ -1,20 +1,11 @@
 <script lang="ts">
-	//import { addBuilding } from "$lib/mutations/buildings";
-	import { getBuildings } from '$lib/queries/buildingQueries';
-	import { onMount } from 'svelte';
-	import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
-	import { locationid } from '$lib/locationStore';
-	import { showAddLocation } from '$lib/locationStore';
-	import { isSaveDisabled, editBuildingclicked, newFloors } from '$lib/superAdminStore';
+	import { editBuildingclicked, newFloors } from '$lib/superAdminStore';
 	import BuildingInput from './BuildingInput.svelte';
-	import type { UUID } from 'crypto';
     import {v4 as uuidv4} from 'uuid';
 
 
     export let buildingId = "";
-	let floorNames: String[] = [];
 	let showAddFloor: boolean = false;
-	let newName: String = '';
     $newFloors = [];
 	
 
