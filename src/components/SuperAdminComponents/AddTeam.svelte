@@ -70,13 +70,14 @@
 	 * @param newTeamName name of the new team
 	 * @param newMembers User[] list of members
 	 */
-	async function saveNewTeam(newTeamName: string, newMembers: User[]) {
+	async function saveNewTeam(newTeamName: string, newMembers: User[], newTeamLeader: User) {
 		newMemberIds = newMembers.map((m) => m.pk_userid);
 		if (!saveTeamDisabled) {
 			const result = await addTeam
 				.mutate({
 					name: newTeamName,
-					memberids: newMemberIds
+					memberids: newMemberIds,
+                    leaderid: newTeamLeader.pk_userid
 				})
 				.then((value) => {
 					console.log('MEMEBERES');
@@ -116,14 +117,18 @@
 
 	<div>
 		<h2>Teamleader</h2>
-		<!-- {#each extendedUsers as extendedUser}
-			
-		{/each} -->
+		<select bind:value={teamLeader}>
+            {#each extendedUsers as extendedUser}
+                <option value={extendedUser}>
+                    {extendedUser.username}
+                </option>
+            {/each}
+        </select>
 	</div>
 
 	<button
 		class="btn variant-filled-secondary"
 		disabled={saveTeamDisabled}
-		on:click={() => saveNewTeam(newTeamName, newMembers)}>Save team</button
+		on:click={() => saveNewTeam(newTeamName, newMembers, teamLeader)}>Save team</button
 	>
 {/if}
