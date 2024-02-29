@@ -4,6 +4,9 @@
     let newUsername: string = "";
     let saveUserDisabled: boolean = true;
     let newUserClicked: boolean = false;
+    let isExtended: boolean = false;
+    let isAdmin: boolean = false;
+    let isSuperAdmin: boolean = false;
 
     function handleNewUserClick() {
         newUserClicked = true;
@@ -19,8 +22,13 @@
     
     async function handleSaveUserClick() {
         const result = await addUser.mutate({
-            username: newUsername})
+            username: newUsername,
+            isExtended,
+            isAdmin,
+            isSuperAdmin
+        })
         console.log(result.data?.addUser?.pk_userid);
+        
     }
 
 </script>
@@ -29,5 +37,28 @@
 
 {#if newUserClicked}
     <input type="text" class="input input-primary" bind:value={newUsername} on:input={handleInput}>
+
+    <label>
+        <input type="checkbox" disabled checked class="disabled:checkbox">
+        Is standard user
+    </label>
+    <label>
+        <input type="checkbox" class="checkbox" bind:checked={isExtended}>
+        Is extended user
+    </label>
+    <label>
+        <input type="checkbox" class="checkbox" bind:checked={isAdmin}>
+        Is admin user
+    </label>
+    <label>
+        <input type="checkbox" class="checkbox" bind:checked={isSuperAdmin}>
+        Is super admin user
+    </label>
+
+    {#if isExtended}
+        <p>hallo</p>
+    {/if}
+
     <button class="btn variant-filled-secondary" disabled={saveUserDisabled} on:click={handleSaveUserClick}>Save user</button>
+
 {/if}

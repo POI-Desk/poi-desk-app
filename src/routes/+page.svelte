@@ -68,7 +68,7 @@
   <!--	</div>-->
 
   <div class="absolute p-8" style="width: 100%">
-    <SearchBar showUsrInfo={false} on:clicked={handleUserClicked}/>
+    <SearchBar showUsrInfo={true} on:clicked={handleUserClicked}/>
 
 
 

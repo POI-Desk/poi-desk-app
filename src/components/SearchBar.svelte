@@ -205,9 +205,9 @@
 								>
 									<div class="grid grid-cols-1 justify-items-start">
 										<span>{usr.username}</span>
-                    {#if showUsrInfo}
-										  <span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
-                    {/if}
+										{#if showUsrInfo}
+											<span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
+										{/if}
 									</div>
 								</button>
 							</li>
@@ -248,14 +248,16 @@
 		</div>
 	</div>
 
-	<button
-		class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
-		on:click={() => {
-			goto('/location');
-		}}
-	>
-		<MapPin />
-	</button>
+	{#if showUsrInfo}
+		<button
+			class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
+			on:click={() => {
+				goto('/location');
+			}}
+		>
+			<MapPin />
+		</button>
+	{/if}
 
 	<div class="absolute right-1 w-10 text-secondary-900 pointer-events-none">
 		<Search />

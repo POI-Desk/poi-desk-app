@@ -28,3 +28,12 @@ export const getUserById = graphql(`
 		}
 	}
 `);
+
+export const getExtendedUsers = graphql(`
+	query getExtendedUsers @load {
+		getExtendedUsers {
+			pk_userid
+			username
+		}
+	}
+`);
