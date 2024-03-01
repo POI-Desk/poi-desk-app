@@ -23,11 +23,17 @@
 		refreshLocations,
 		admin,
 		newAdmins,
-		adminsToRemove
+		adminsToRemove,
+		showTeams,
+
+		teamToEdit
+
 	} from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
 	import { showAddLocation } from '$lib/locationStore';
 	import AddUser from '$components/SuperAdminComponents/AddUser.svelte';
+	import EditTeam from '$components/SuperAdminComponents/EditTeam.svelte';
+	import TeamList from '$components/SuperAdminComponents/TeamList.svelte';
 
 	/**
 	 * updates the locationNames-list, which is used for checking whether a location name is already in use
@@ -111,7 +117,7 @@
 				.then((value) => {
 					console.log(value);
 					$newAdmins = [];
-					$admin = {pk_userid: "", name: ""};
+					$admin = { pk_userid: '', name: '' };
 				});
 		});
 	}
@@ -253,6 +259,16 @@
 	<EditLocation />
 	{#if $buildingToEdit.id !== ''}
 		<EditBuilding />
+	{/if}
+{/if}
+
+{#if !$showTeams}
+	<button class="btn variant-filled-primary" on:click={() => ($showTeams = true)}>Teams</button>
+{:else}
+	<TeamList />
+	<button on:click={() => $showTeams = false}>Back</button>
+	{#if $teamToEdit}
+		<EditTeam />
 	{/if}
 {/if}
 

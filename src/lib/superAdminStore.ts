@@ -26,4 +26,5 @@ export const adminsOfLocation = writable([]);
 export const newAdmins = writable([]);
 export const adminsToRemove = writable([]);
 
-
+export const showTeams = writable(false);
+export const teamToEdit = writable(false);
