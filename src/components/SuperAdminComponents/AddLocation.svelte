@@ -13,7 +13,10 @@
 		locationToEdit,
 		admins,
 		admin,
-		newAdmins
+		newAdmins,
+
+		adminsOfLocation
+
 	} from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
 	import type { User } from '$lib/types/userTypes';

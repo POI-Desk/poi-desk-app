@@ -1,12 +1,13 @@
 import type { Writable } from '$houdini';
 import { writable } from 'svelte/store';
 
+
 export const saveChangesClicked = writable(false);
 export const isSaveDisabled = writable(true);
 
 export const newBuildings = writable([]);
 
-export const locationNames = writable<[""]>([]);
+export const locationNames = writable([]);
 export const newLocation = writable({id: "", name: ""});
 
 export const refreshLocations = writable(true);
@@ -24,3 +25,5 @@ export const admin = writable({pk_userid: "", name: ""});
 export const adminsOfLocation = writable([]);
 export const newAdmins = writable([]);
 export const adminsToRemove = writable([]);
+
+

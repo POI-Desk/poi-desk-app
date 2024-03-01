@@ -11,7 +11,7 @@
 </script>
 
 <select class="select"
-	bind:value={$admin.pk_userid}
+	bind:value={$admin}
 	on:change={() => {
 
 		handleSelect();
@@ -19,7 +19,7 @@
 >
 	<option value="" disabled selected>Select your option</option>
 	{#each $admins as admin}
-		<option value={admin.pk_userid}>
+		<option value={admin}>
 			{admin.username}
 		</option>
 	{/each}

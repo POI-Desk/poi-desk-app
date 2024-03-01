@@ -90,6 +90,7 @@
 								getAdminsOfLocationFunction();
 								$isSaveDisabled = true;
 								$admin = {pk_userid: "", name: ""};
+								$adminsOfLocation = [];
 							}}>Edit</button
 						>
 						<button on:click={() => onDeleteLocation(location.pk_locationid)}>Delete</button>
