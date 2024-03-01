@@ -11,3 +11,13 @@ export const addTeam = graphql(`
 		}
 	}
 `);
+
+export const deleteTeam = graphql(`
+	mutation deleteTeam($teamid: ID!) {
+		deleteTeam(teamid: $teamid) {
+			pk_teamid
+			teamname
+		}
+	}
+`);
+

@@ -8,3 +8,21 @@ export const addUser = graphql(`
 		}
 	}
 `);
+
+export const setAdminLocation = graphql(`
+	mutation setAdminLocation($userid: ID!, $locationid: ID!) {
+		setAdminLocation(userid: $userid, locationid: $locationid) {
+			pk_locationid,
+            locationname
+		}
+	}
+`);
+
+export const removeAdminLocation = graphql(`
+	mutation removeAdminLocation($userid: ID!) {
+		removeAdminLocation(userid: $userid) {
+			pk_userid,
+            username
+		}
+	}
+`);

@@ -15,7 +15,6 @@
 
 	let visibility = 'hidden';
 	$dateValue = new Date().toISOString().split('T')[0];
-	console.log($dateValue);
 
 	const getBookings = () => {
 		$selectedDesks = [];

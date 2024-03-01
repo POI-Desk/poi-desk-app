@@ -22,7 +22,11 @@ export const changeNameOfLocation = graphql(`
 	mutation changeNameOfLocation($id: ID!, $newName: String!) {
 		changeNameOfLocation(id: $id, newName: $newName) {
 			pk_locationid,
-			locationname
+			locationname,
+			admins {
+				username,
+				pk_userid
+			}
 		}
 	}
 `)

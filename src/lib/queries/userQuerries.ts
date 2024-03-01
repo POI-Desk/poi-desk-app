@@ -37,3 +37,12 @@ export const getExtendedUsers = graphql(`
 		}
 	}
 `);
+
+export const getAdminUsers = graphql(`
+	query getAdminUsers @load {
+		getAdminUsers {
+			pk_userid
+			username
+		}
+	}
+`);

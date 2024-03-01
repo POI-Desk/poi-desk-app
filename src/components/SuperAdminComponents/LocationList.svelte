@@ -1,20 +1,44 @@
 <script lang="ts">
 	import { CachePolicy } from '$houdini';
 	import { deleteLocation } from '$lib/mutations/locationMutations';
-	import { getLocations } from '$lib/queries/locationQueries';
+	import { getAdminsOfLocation, getLocations } from '$lib/queries/locationQueries';
 	import { onMount } from 'svelte';
-	import { refreshLocations, locationToEdit, buildingToEdit, locationNames } from '$lib/superAdminStore';
+	import {
+		refreshLocations,
+		locationToEdit,
+		buildingToEdit,
+		locationNames,
+		adminsOfLocation,
+		admin,
+		isSaveDisabled
+
+	} from '$lib/superAdminStore';
 	import { showAddLocation } from '$lib/locationStore';
 
 	$: locations = $getLocations?.data?.getAllLocations;
+	// $: tempLocAdmins = $getAdminsOfLocation.data?.getAdminsOfLocation;
 
 	onMount(() => {
 		getLocationsFunction();
 	});
 
+	$: adminsOfLoc = $getAdminsOfLocation.data?.getAdminsOfLocation;
+
+	async function getAdminsOfLocationFunction() {		
+		console.log($locationToEdit.id);
+		
+		const result = await getAdminsOfLocation.fetch({ variables: { locationid: $locationToEdit.id }, policy: CachePolicy.NetworkOnly }).then((value) => {
+			console.log("value " + value.data?.getAdminsOfLocation);
+			$adminsOfLocation = adminsOfLoc;
+		});
+
+		console.log(result);
+		
+	}
+
 	async function getLocationsFunction() {
 		await getLocations.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
-			$locationNames = [""];
+			$locationNames = [''];
 			let locations = $getLocations.data?.getAllLocations;
 
 			for (let i = 0; i < locations?.length; i++) {
@@ -53,7 +77,7 @@
 		{#await getLocations.fetch({ policy: CachePolicy.NetworkOnly })}
 			<p>fetching locations...</p>
 		{:then fetched}
-			{#each locations.sort((a,b) => compare(a,b)) as location}
+			{#each locations.sort((a, b) => compare(a, b)) as location}
 				<div>
 					<div class="variant-outline-primary">
 						{location.locationname}
@@ -62,10 +86,13 @@
 								$showAddLocation = false;
 								$locationToEdit.id = location.pk_locationid;
 								$locationToEdit.name = location.locationname;
-								$buildingToEdit.id = "";
+								$buildingToEdit.id = '';
+								getAdminsOfLocationFunction();
+								$isSaveDisabled = true;
+								$admin = {pk_userid: "", name: ""};
 							}}>Edit</button
 						>
-						<button on:click={() => onDeleteLocation(location.pklocationid)}>Delete</button>
+						<button on:click={() => onDeleteLocation(location.pk_locationid)}>Delete</button>
 					</div>
 					<br />
 				</div>

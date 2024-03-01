@@ -9,6 +9,7 @@
 	import { getLocations } from '$lib/queries/locationQueries';
 	import { addFloor, changeNameOfFloor } from '$lib/mutations/floors';
 	import { addLocation, changeNameOfLocation } from '$lib/mutations/locationMutations';
+	import { removeAdminLocation, setAdminLocation } from '$lib/mutations/user';
 	import {
 		buildingToEdit,
 		locationToEdit,
@@ -19,12 +20,14 @@
 		newLocation,
 		floorsToEdit,
 		changedBuidings,
-		refreshLocations
+		refreshLocations,
+		admin,
+		newAdmins,
+		adminsToRemove
 	} from '$lib/superAdminStore';
 	import { CachePolicy } from '$houdini';
 	import { showAddLocation } from '$lib/locationStore';
 	import AddUser from '$components/SuperAdminComponents/AddUser.svelte';
-	
 
 	/**
 	 * updates the locationNames-list, which is used for checking whether a location name is already in use
@@ -40,7 +43,7 @@
 			}
 		});
 	}
-	
+
 	/**
 	 * determines whether only changes to the location have been made or to a building or floor as well
 	 */
@@ -79,15 +82,38 @@
 						console.log(value);
 
 						console.log('id: ' + value.data?.addLocation?.pklocationid);
+						saveAdminToLocation(value.data?.addLocation?.pk_locationid ?? '');
 						saveBuildingChanges(value.data?.addLocation?.pklocationid);
 
 						$isSaveDisabled = true;
 						getLocationsFunction();
+						$admin = { pk_userid: '', name: '' };
 						$refreshLocations = !$refreshLocations;
 					});
 			}
 		}
 		getLocationsFunction();
+	}
+
+	/**
+	 * saves the selected admin users to a location
+	 * @param locationid
+	 */
+	function saveAdminToLocation(locationid: string) {
+		console.log($newAdmins);
+
+		$newAdmins.forEach(async (a) => {
+			const result = await setAdminLocation
+				.mutate({
+					userid: a.pk_userid,
+					locationid: locationid
+				})
+				.then((value) => {
+					console.log(value);
+					$newAdmins = [];
+					$admin = {pk_userid: "", name: ""};
+				});
+		});
 	}
 
 	/**
@@ -147,14 +173,33 @@
 		// if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
 		// 	alert('EDIT A location with this name already exists. Please enter a different name!');
 		// } else {
-		const result = await changeNameOfLocation.mutate({
-			id: $locationToEdit.id,
-			newName: $locationToEdit.name
-		});
+		const result = await changeNameOfLocation
+			.mutate({
+				id: $locationToEdit.id,
+				newName: $locationToEdit.name
+			})
+			.then((value) => {
+				let adminIds = value.data?.changeNameOfLocation?.admins?.map((a) => a?.pk_userid);
+				if (!adminIds?.includes($admin.pk_userid)) {
+					saveAdminToLocation(value.data?.changeNameOfLocation?.pk_locationid ?? '');
+				}
+				if ($adminsToRemove) {
+					removeAdmins(value.data?.changeNameOfLocation?.pk_locationid ?? '');
+				}
+			});
 		console.log(result);
 		$isSaveDisabled = true;
 		$refreshLocations = !$refreshLocations;
 		// }
+	}
+
+	async function removeAdmins(locationid: string) {
+		$adminsToRemove.forEach(async (a) => {
+			const result = await removeAdminLocation.mutate({
+				userid: a.pk_userid
+			});
+		});
+		$adminsToRemove = [];
 	}
 
 	/**
