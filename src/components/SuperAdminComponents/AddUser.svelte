@@ -7,6 +7,8 @@
     let isExtended: boolean = false;
     let isAdmin: boolean = false;
     let isSuperAdmin: boolean = false;
+    let password: string;
+    let passwordAgain: string;
 
     function handleNewUserClick() {
         newUserClicked = true;
@@ -25,7 +27,8 @@
             username: newUsername,
             isExtended,
             isAdmin,
-            isSuperAdmin
+            isSuperAdmin,
+            password
         })
         console.log(result.data?.addUser?.pk_userid);
         
@@ -55,10 +58,10 @@
         Is super admin user
     </label>
 
-    {#if isExtended}
-        <p>hallo</p>
-    {/if}
+    <input type="password" placeholder="Enter the user's password" bind:value={password}>
+    <input type="password" placeholder="Confirm the user's password" bind:value={passwordAgain}>
 
-    <button class="btn variant-filled-secondary" disabled={saveUserDisabled} on:click={handleSaveUserClick}>Save user</button>
+
+    <button class="btn variant-filled-secondary" disabled={saveUserDisabled || password !== passwordAgain || !password} on:click={handleSaveUserClick}>Save user</button>
 
 {/if}

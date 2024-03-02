@@ -1,5 +1,6 @@
 <script>
-  import { LightSwitch } from "@skeletonlabs/skeleton";
+  import ChangePassword from "$components/ChangePassword.svelte";
+import { LightSwitch } from "@skeletonlabs/skeleton";
 </script>
 
 TO DELETE
@@ -11,6 +12,8 @@ TO DELETE
   <a class="btn variant-filled-primary" href="./admin/maps">Map Editor</a>
   <a class="btn variant-filled-primary" href="./analysis">Analysis</a>
   <a class="btn variant-filled-primary" href="./extendedUser">Extended User</a>
+  <a class="btn variant-filled-primary" href="./profile/changePassword">Change password</a>
   <LightSwitch />
+  
 </div>
 

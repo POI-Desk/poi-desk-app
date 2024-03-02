@@ -278,4 +278,6 @@
 	>Save Changes</button
 >
 
+<a href="./superadmin/editUser" class="btn variant-filled-primary">Edit user</a>
+
 <LocationList />
