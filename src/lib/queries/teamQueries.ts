@@ -7,4 +7,13 @@ export const getAllTeams = graphql(`
             pk_teamid
         }
     }
-`)
+`);
+
+export const getMembersOfTeam = graphql(`
+	query getMembersOfTeam($teamid: ID!) {
+		getMembersOfTeam(teamid: $teamid) {
+			pk_userid
+			username
+		}
+	}
+`);

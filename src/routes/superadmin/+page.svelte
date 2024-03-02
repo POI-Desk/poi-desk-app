@@ -267,7 +267,7 @@
 {:else}
 	<TeamList />
 	<button on:click={() => $showTeams = false}>Back</button>
-	{#if $teamToEdit}
+	{#if $teamToEdit.pk_teamid !== ""}
 		<EditTeam />
 	{/if}
 {/if}
