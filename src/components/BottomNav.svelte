@@ -3,8 +3,7 @@
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { goto } from "$app/navigation";
   import { isExtended } from "$lib/stores/extendedUserStore";
-
-  let page = "/";
+  import { curPage } from "$lib/pageStore";
 </script>
 
 <!-- TODO still some problems when switching pages -->
@@ -21,57 +20,48 @@
   >
     <div class="grid grid-cols-3 w-full">
       <button on:click={() => {
-        page = "/user"
-        goto(page);
+        $curPage = "/user"
+        goto($curPage);
       }} class="flex flex-col justify-center items-center font-semibold">
-        <RadioItem bind:group={page}
+        <RadioItem bind:group={$curPage}
                    name="page"
                    value={"/user"}
                    class="flex flex-col items-center justify-center"
-                   on:change={() => goto(page)}
+                   on:change={() => goto($curPage)}
         >
           <User strokeWidth="2.5" size="30" />
         </RadioItem>
-
-<!--        <button on:click={() => goto("/user")} class="select-none font-semibold">-->
-          Profiles
-<!--        </button>-->
+        Profiles
       </button>
 
       <button on:click={() => {
-        page = $isExtended ? "/extendedUser" : "/";
-        goto(page);
+        $curPage = $isExtended ? "/extendedUser" : "/";
+        goto($curPage);
       }} class="flex flex-col justify-center items-center font-semibold">
-        <RadioItem bind:group={page}
+        <RadioItem bind:group={$curPage}
                    name="page"
                    value={$isExtended ? "/extendedUser" : "/"}
                    class="flex flex-col items-center justify-center"
-                   on:change={() => goto(page)}
+                   on:change={() => goto($curPage)}
         >
           <Map strokeWidth="2" size="30" />
         </RadioItem>
-
-<!--        <button on:click={() => goto($isExtended ? "/extendedUser" : "/")} class="select-none font-semibold">-->
-          Map
-<!--        </button>-->
+        Map
       </button>
 
       <button on:click={() => {
-        page = "/bookings"
-        goto(page);
+        $curPage = "/bookings"
+        goto($curPage);
       }} class="flex flex-col justify-center items-center font-semibold">
-        <RadioItem bind:group={page}
+        <RadioItem bind:group={$curPage}
                    name="page"
                    value={"/bookings"}
                    class="flex flex-col items-center justify-center p-0"
-                   on:change={() => goto(page)}
+                   on:change={() => goto($curPage)}
         >
           <List strokeWidth="2.5" size="30" />
         </RadioItem>
-
-        <!--        <button on:click={() => goto("/bookings")} class="select-none font-semibold">-->
         Bookings
-        <!--        </button>-->
       </button>
     </div>
   </RadioGroup>

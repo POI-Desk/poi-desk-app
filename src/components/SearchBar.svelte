@@ -129,13 +129,15 @@
 					desknum
 					y
 					x
-					floor {
-						pk_floorid
-						floorname
-						building {
-							buildingname
-							location {
-								locationname
+					map {
+						floor {
+							pk_floorid
+							floorname
+							building {
+								buildingname
+								location {
+									locationname
+								}
 							}
 						}
 					}
