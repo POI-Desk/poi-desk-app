@@ -45,16 +45,7 @@
     });
     // console.log($admins);
   }
-
-
-  async function onDeleteBuilding(id: string) {
-    console.log(id);
-
-    const result = await deleteBuilding.mutate({
-      id: id
-    });
-    $refreshLocations = !$refreshLocations;
-  }
+  
 
   function handleNameInput() {
     if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {

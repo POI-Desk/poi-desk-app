@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ModalDefaultLocation from "../components/DefaultLocationComponents/ModalContents/ModalDefaultLocation.svelte";
+	import ModalDefaultLocation from "$components/DefaultLocationComponents/ModalContents/ModalDefaultLocation.svelte";
 	import ModalBooking from "$components/SetBookingComponents/ModalContents/ModalBooking.svelte";
 	import ModalEditBooking from "$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte";
 	import ModalChangeDefaultLocation from "$components/UserPageComponents/ModalChangeDefaultLocation.svelte";
-	import "../app.css";
+	import "../../app.css";
 	import { arrow, autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 	import BottomNav from "$components/BottomNav.svelte";
 	import type { ModalComponent } from "@skeletonlabs/skeleton";

@@ -43,4 +43,4 @@ export const resetPassword = graphql(`
             username
 		}
 	}
-`);	
+`);

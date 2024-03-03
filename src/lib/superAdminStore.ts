@@ -5,7 +5,7 @@ export const isSaveDisabled = writable(true);
 
 export const newBuildings = writable([]);
 
-export const locationNames = writable<['']>([]);
+export const locationNames = writable<['']>(['']);
 export const newLocation = writable({ id: '', name: '' });
 
 export const refreshLocations = writable(true);

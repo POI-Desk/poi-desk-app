@@ -1,7 +1,6 @@
 <script lang="ts">
   import AddBuilding from "$components/SuperAdminComponents/AddBuilding.svelte";
   import AddLocation from "$components/SuperAdminComponents/AddLocation.svelte";
-  import AddTeam from "$components/SuperAdminComponents/AddTeam.svelte";
   import EditBuilding from "$components/SuperAdminComponents/EditBuilding.svelte";
   import EditLocation from "$components/SuperAdminComponents/EditLocation.svelte";
   import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
@@ -14,7 +13,8 @@
     admin,
     adminsToRemove,
     buildingToEdit,
-    changedBuildings, editBuildingclicked,
+    changedBuildings,
+    editBuildingclicked,
     floorsToEdit,
     isSaveDisabled,
     locationNames,
@@ -23,15 +23,10 @@
     newBuildings,
     newFloors,
     newLocation,
-    refreshLocations,
-    showTeams,
-    teamToEdit
+    refreshLocations
   } from "$lib/superAdminStore";
   import { CachePolicy } from "$houdini";
   import { showAddLocation } from "$lib/locationStore";
-  import AddUser from "$components/SuperAdminComponents/AddUser.svelte";
-  import EditTeam from "$components/SuperAdminComponents/EditTeam.svelte";
-  import TeamList from "$components/SuperAdminComponents/TeamList.svelte";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 
   /**
@@ -293,18 +288,3 @@
     {/if}
   </div>
 </div>
-
-<!-- TODO auslagern-->
-
-<AddTeam />
-<AddUser />
-
-{#if !$showTeams}
-  <button class="btn variant-filled-primary" on:click={() => ($showTeams = true)}>Teams</button>
-{:else}
-  <TeamList />
-  <button on:click={() => $showTeams = false}>Back</button>
-  {#if $teamToEdit.pk_teamid !== ""}
-    <EditTeam />
-  {/if}
-{/if}
