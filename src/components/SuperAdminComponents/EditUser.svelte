@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resetPassword } from '$lib/mutations/user';
+	import { resetPassword } from "$lib/mutations/user";
 	import type { User } from '$lib/types/userTypes';
 
 	export let userToEdit: User;
