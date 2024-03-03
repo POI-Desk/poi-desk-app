@@ -49,7 +49,7 @@
       $admins = $getAdminUsers.data?.getAdminUsers;
     });
   }
-  
+
 
   function handleNameInput() {
     // if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
@@ -105,24 +105,36 @@
 
     <AddBuilding />
 
-    <div>
+    <div class="flex flex-col">
       <h2 class="font-bold">Admins of {$locationToEdit.name}</h2>
 
       <AddAdminToLocation />
 
       {#if $adminsOfLocation}
         {#each $adminsOfLocation as admin}
-          <button on:click={() => handleRemoveAdmin(admin)}>X</button>{admin.username}<br />
+          <div class="grid grid-cols-4 items-center gap-2 variant-filled-tertiary rounded-full p-2 py-1 bold my-2">
+            <span class="col-span-3 bg-white rounded-full py-2 p-1 text-center">{admin.username}</span>
+            <button
+              class="btn flex flex-row justify-center items-center variant-filled-error text-white"
+              on:click={() => handleRemoveAdmin(admin)}>
+              <Trash2 />
+            </button>
+          </div>
         {/each}
       {/if}
 
       {#each $newAdmins as newAdmin}
-        <button
-          class="btn variant-filled-error"
-          on:click={() => {
+        <div class="grid grid-cols-4 items-center gap-2 variant-filled-tertiary rounded-full p-2 py-1 bold my-2">
+          <span class="col-span-3 bg-white rounded-full py-2 p-1 text-center">{newAdmin.username}</span>
+          <button
+            class="btn variant-filled-error text-white"
+            on:click={() => {
             $newAdmins.splice($newAdmins.indexOf(newAdmin), 1);
             $newAdmins = $newAdmins;
-          }}>X</button>{newAdmin.username}<br>
+          }}>
+            <Trash2 />
+          </button>
+        </div>
       {/each}
     </div>
   {/key}

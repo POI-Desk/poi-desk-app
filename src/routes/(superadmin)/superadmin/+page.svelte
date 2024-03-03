@@ -29,12 +29,15 @@
   import { showAddLocation } from "$lib/locationStore";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 
+  /**
+   * Handles when the save button should be enabled or disabled
+   */
   $: {
-    console.log($changedBuildings);
     $isSaveDisabled =
       ($newAdmins.length === 0)
       && ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name.toLowerCase()))
       && ($changedBuildings.size === 0)
+      && ($floorsToEdit.size === 0)
     ;
   }
 

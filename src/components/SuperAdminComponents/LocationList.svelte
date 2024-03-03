@@ -25,18 +25,12 @@
   $: adminsOfLoc = $getAdminsOfLocation.data?.getAdminsOfLocation;
 
   async function getAdminsOfLocationFunction() {
-    console.log($locationToEdit.id);
-
     const result = await getAdminsOfLocation.fetch({
       variables: { locationid: $locationToEdit.id },
       policy: CachePolicy.NetworkOnly
     }).then((value) => {
-      console.log("value " + value.data?.getAdminsOfLocation);
       $adminsOfLocation = adminsOfLoc;
     });
-
-    console.log(result);
-
   }
 
   async function getLocationsFunction() {
