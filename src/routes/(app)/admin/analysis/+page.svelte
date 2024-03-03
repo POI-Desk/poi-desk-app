@@ -20,9 +20,9 @@
 
 	onMount(() => {
 		getYears();
-		if (!$user.pk_userid) {
-			goto('/login');
-		}
+		// if (!$user.pk_userid) {
+		// 	goto('/login');
+		// }
 	});
 
 	let years = ['2023'];

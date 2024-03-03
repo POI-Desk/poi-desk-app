@@ -1,16 +1,11 @@
 <script lang="ts">
-  import { buildingToEdit, editBuildingclicked, newFloors } from "$lib/superAdminStore";
+  import { buildingToEdit, newFloors } from "$lib/superAdminStore";
   import InputField from "./BuildingInput.svelte";
   import { v4 as uuidv4 } from "uuid";
-	import { PenLine, Trash2 } from "lucide-svelte";
+  import { Trash2 } from "lucide-svelte";
 
-
-  export let buildingId = "";
-  let floorNames: String[] = [];
   let showAddFloor: boolean = false;
-  let newName: String = "";
   $newFloors = [];
-
 
   function handleAddFloor() {
     showAddFloor = true;
@@ -34,24 +29,23 @@
 </script>
 
 <div class="flex flex-col gap-5">
-	<div class="input grid grid-cols-4 justify-between items-center p-1 gap-1">
-		<div class="flex justify-center col-span-3 text-center bg-white rounded-full p-3">New floor</div>
-		<button class="btn variant-filled-primary text-xl inline-flex items-center justify-center align-middle"
-						on:click={handleAddFloor}>+
-		</button>
-	</div>
+  <div class="input grid grid-cols-4 justify-between items-center p-1 gap-1">
+    <div class="flex justify-center col-span-3 text-center bg-white rounded-full p-3">New floor</div>
+    <button class="btn variant-filled-primary text-xl inline-flex items-center justify-center align-middle"
+            on:click={handleAddFloor}>+
+    </button>
+  </div>
 
   {#if showAddFloor}
     {#each $newFloors.filter((f) => f.buildingid === $buildingToEdit.id) as { id, name }}
       <div class="input grid grid-cols-4 p-1 gap-1">
         <InputField {id} {name} colSpan={3} onInput={(newId, newName) => updateNewNames(newId, newName)} />
 
-				<button
-					class="btn flex justify-center items-center variant-filled-error text-white"
-					on:click={() => removeBuildingInput(id, name)}>
-					<Trash2 />
-				</button>
-
+        <button
+          class="btn flex justify-center items-center variant-filled-error text-white"
+          on:click={() => removeBuildingInput(id, name)}>
+          <Trash2 />
+        </button>
       </div>
     {/each}
   {/if}

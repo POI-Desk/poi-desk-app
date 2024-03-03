@@ -23,7 +23,26 @@ export const getUserById = graphql(`
 			}
 			location {
 				locationname
+				pk_locationid
 			}
+		}
+	}
+`);
+
+export const getExtendedUsers = graphql(`
+	query getExtendedUsers @load {
+		getExtendedUsers {
+			pk_userid
+			username
+		}
+	}
+`);
+
+export const getAdminUsers = graphql(`
+	query getAdminUsers @load {
+		getAdminUsers {
+			pk_userid
+			username
 		}
 	}
 `);

@@ -17,3 +17,13 @@ export const locationToEdit = writable({ id: '', name: '' });
 export const buildingToEdit = writable({ id: '', name: '' });
 export const floorsToEdit = writable<Map<string, string>>(new Map([]));
 export const changedBuildings = writable<Map<string, string>>(new Map([]));
+
+export const admins = writable([]);
+export const admin = writable({ pk_userid: '', name: '' });
+export const adminsOfLocation = writable([]);
+export const newAdmins = writable([]);
+export const adminsToRemove = writable([]);
+
+export const showTeams = writable(false);
+export const teamToEdit = writable({ teamname: '', pk_teamid: '' });
+export const refreshTeams = writable(false);

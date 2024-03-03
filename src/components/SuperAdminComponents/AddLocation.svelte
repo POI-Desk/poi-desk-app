@@ -1,14 +1,18 @@
 <script lang="ts">
   import { v4 as uuidv4 } from "uuid";
   import { getLocations } from "$lib/queries/locationQueries";
+  import { getAdminUsers } from "$lib/queries/userQuerries";
   import { onMount } from "svelte";
   import { showAddLocation } from "$lib/locationStore";
-  import { isSaveDisabled, locationNames, locationToEdit, newLocation } from "$lib/superAdminStore";
+  import AddAdminToLocation from "./AddAdminToLocation.svelte";
+  import { admins, isSaveDisabled, locationNames, locationToEdit, newAdmins, newLocation } from "$lib/superAdminStore";
   import { CachePolicy } from "$houdini";
+  import type { User } from "$lib/types/userTypes";
 
 
   onMount(() => {
     getLocationsFunction();
+    getAdmins();
     showAddLocation.set(false);
   });
 
@@ -21,6 +25,14 @@
         $locationNames.push(locations?.at(i)?.locationname.toLowerCase() ?? "");
       }
     });
+  }
+
+  async function getAdmins() {
+    $admins = [];
+    await getAdminUsers.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
+      $admins = $getAdminUsers.data?.getAdminUsers;
+    });
+    console.log(admins);
   }
 
   function onAddLocation() {
@@ -37,7 +49,21 @@
       $isSaveDisabled = false;
     }
   }
+
+  function handleRemoveAdmin(newAdmin: User) {
+    $newAdmins.splice($newAdmins.indexOf(newAdmin), 1);
+    $newAdmins = $newAdmins;
+  }
+
+  // function handleSelect() {
+  // 	if (!$newAdmins.includes($admin)) {
+  // 		$newAdmins.push($admin);
+  // 		$newAdmins = $newAdmins;
+  // 	}
+  // 	console.log($newAdmins);
+  // }
 </script>
+
 
 <h1 class="h2 text-primary-500-400-token m-1">Locations</h1>
 
@@ -59,3 +85,11 @@
     </button>
   {/if}
 </div>
+
+<!--TODO auslagern-->
+
+<AddAdminToLocation />
+
+{#each $newAdmins as newAdmin}
+  <button on:click={() => handleRemoveAdmin(newAdmin)}>X</button>{newAdmin.username}<br>
+{/each}

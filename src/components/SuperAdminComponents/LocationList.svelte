@@ -1,9 +1,17 @@
 <script lang="ts">
   import { CachePolicy } from "$houdini";
   import { deleteLocation } from "$lib/mutations/locationMutations";
-  import { getLocations } from "$lib/queries/locationQueries";
+  import { getAdminsOfLocation, getLocations } from "$lib/queries/locationQueries";
   import { onMount } from "svelte";
-  import { refreshLocations, locationToEdit, buildingToEdit, locationNames } from "$lib/superAdminStore";
+  import {
+    admin,
+    adminsOfLocation,
+    buildingToEdit,
+    isSaveDisabled,
+    locationNames,
+    locationToEdit,
+    refreshLocations
+  } from "$lib/superAdminStore";
   import { showAddLocation } from "$lib/locationStore";
   import { PenLine, Trash2 } from "lucide-svelte";
 
@@ -12,6 +20,24 @@
   onMount(() => {
     getLocationsFunction();
   });
+
+
+  $: adminsOfLoc = $getAdminsOfLocation.data?.getAdminsOfLocation;
+
+  async function getAdminsOfLocationFunction() {
+    console.log($locationToEdit.id);
+
+    const result = await getAdminsOfLocation.fetch({
+      variables: { locationid: $locationToEdit.id },
+      policy: CachePolicy.NetworkOnly
+    }).then((value) => {
+      console.log("value " + value.data?.getAdminsOfLocation);
+      $adminsOfLocation = adminsOfLoc;
+    });
+
+    console.log(result);
+
+  }
 
   async function getLocationsFunction() {
     await getLocations.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
@@ -57,22 +83,26 @@
       {#each locations.sort((a, b) => compare(a, b)) as location}
         <div>
           <div class="input p-1 grid grid-cols-4 gap-1">
-            <div class="col-span-2 text-center bg-white rounded-full p-2 bold" >{location.locationname}</div>
+            <div class="col-span-2 text-center bg-white rounded-full p-2 bold">{location.locationname}</div>
 
             <button
-							class="btn flex justify-center items-center variant-filled-primary"
+              class="btn flex justify-center items-center variant-filled-primary"
               on:click={() => {
 								$showAddLocation = false;
 								$locationToEdit.id = location.pk_locationid;
 								$locationToEdit.name = location.locationname;
-								$buildingToEdit.id = "";
+								$buildingToEdit.id = '';
+								getAdminsOfLocationFunction();
+								$isSaveDisabled = true;
+								$admin = {pk_userid: "", name: ""};
+								$adminsOfLocation = [];
 							}}>
               <PenLine />
             </button>
 
             <button
-							class="btn flex justify-center items-center variant-filled-error text-white"
-							on:click={() => onDeleteLocation(location.pk_locationid)}>
+              class="btn flex justify-center items-center variant-filled-error text-white"
+              on:click={() => onDeleteLocation(location.pk_locationid)}>
               <Trash2 />
             </button>
           </div>

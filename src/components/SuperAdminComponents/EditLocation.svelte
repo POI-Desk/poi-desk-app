@@ -2,15 +2,21 @@
   import { CachePolicy } from "$houdini";
   import { deleteBuilding } from "$lib/mutations/buildings";
   import { getBuildings } from "$lib/queries/buildingQueries";
-  import AddBuilding from "./AddBuilding.svelte";
+  import { onMount } from "svelte";
   import {
+    admins,
+    adminsOfLocation,
+    adminsToRemove,
     buildingToEdit,
     isSaveDisabled,
     locationNames,
     locationToEdit,
     refreshLocations
   } from "$lib/superAdminStore";
-  import { showAddLocation } from "$lib/locationStore";
+  import AddBuilding from "./AddBuilding.svelte";
+  import { getAdminUsers } from "$lib/queries/userQuerries";
+  import type { User } from "$lib/types/userTypes";
+  import AddAdminToLocation from "./AddAdminToLocation.svelte";
   import { PenLine, Trash2 } from "lucide-svelte";
 
   $: buildings = $getBuildings.data?.getBuildingsInLocation;
@@ -24,12 +30,47 @@
     $refreshLocations = !$refreshLocations;
   }
 
+
+  onMount(() => {
+    getAdmins();
+  });
+
+  /**
+   * gets all admin users currently existing
+   */
+  async function getAdmins() {
+    $admins = [];
+    await getAdminUsers.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
+      $admins = $getAdminUsers.data?.getAdminUsers;
+    });
+    // console.log($admins);
+  }
+
+
+  async function onDeleteBuilding(id: string) {
+    console.log(id);
+
+    const result = await deleteBuilding.mutate({
+      id: id
+    });
+    $refreshLocations = !$refreshLocations;
+  }
+
   function handleNameInput() {
     if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
       $isSaveDisabled = true;
     } else {
       $isSaveDisabled = false;
     }
+  }
+
+  function handleRemoveAdmin(admin: User) {
+    $adminsToRemove.push(admin);
+    $adminsToRemove = $adminsToRemove;
+    $adminsOfLocation.splice($adminsOfLocation.indexOf(admin), 1);
+    $adminsOfLocation = $adminsOfLocation;
+    console.log($adminsOfLocation);
+    $isSaveDisabled = false;
   }
 </script>
 
@@ -70,5 +111,16 @@
 
     <AddBuilding />
 
+    <!--	TODO auslagern	-->
+
+    <h2>Admins of {$locationToEdit.name}</h2>
+
+    {#if $adminsOfLocation}
+      {#each $adminsOfLocation as admin}
+        <button on:click={() => handleRemoveAdmin(admin)}>X</button>{admin.username}<br />
+      {/each}
+    {/if}
+
+    <AddAdminToLocation />
   {/key}
 </div>

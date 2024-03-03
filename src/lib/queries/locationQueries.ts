@@ -11,3 +11,12 @@ export const getLocations = graphql(`
 		}
 	}
 `);
+
+export const getAdminsOfLocation = graphql(`
+	query getAdminsOfLocation($locationid: ID!) {
+		getAdminsOfLocation(locationid: $locationid) {
+			pk_userid
+			username
+		}
+	}
+`);
