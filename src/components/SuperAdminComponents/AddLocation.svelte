@@ -54,14 +54,6 @@
     $newAdmins.splice($newAdmins.indexOf(newAdmin), 1);
     $newAdmins = $newAdmins;
   }
-
-  // function handleSelect() {
-  // 	if (!$newAdmins.includes($admin)) {
-  // 		$newAdmins.push($admin);
-  // 		$newAdmins = $newAdmins;
-  // 	}
-  // 	console.log($newAdmins);
-  // }
 </script>
 
 
@@ -88,8 +80,8 @@
 
 <!--TODO auslagern-->
 
-<AddAdminToLocation />
+<!--<AddAdminToLocation />-->
 
-{#each $newAdmins as newAdmin}
-  <button on:click={() => handleRemoveAdmin(newAdmin)}>X</button>{newAdmin.username}<br>
-{/each}
+<!--{#each $newAdmins as newAdmin}-->
+<!--  <button on:click={() => handleRemoveAdmin(newAdmin)}>X</button>{newAdmin.username}<br>-->
+<!--{/each}-->

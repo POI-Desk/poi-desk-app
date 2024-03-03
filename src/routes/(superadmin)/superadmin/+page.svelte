@@ -29,6 +29,15 @@
   import { showAddLocation } from "$lib/locationStore";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 
+  $: {
+    console.log($changedBuildings);
+    $isSaveDisabled =
+      ($newAdmins.length === 0)
+      && ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name.toLowerCase()))
+      && ($changedBuildings.size === 0)
+    ;
+  }
+
   /**
    * updates the locationNames-list, which is used for checking whether a location name is already in use
    */
@@ -78,10 +87,6 @@
             name: $newLocation.name
           })
           .then((value) => {
-            console.log("LOCATION");
-            console.log(value);
-
-            console.log("id: " + value.data?.addLocation?.pklocationid);
             saveAdminToLocation(value.data?.addLocation?.pk_locationid ?? "");
             saveBuildingChanges(value.data?.addLocation?.pklocationid);
 
@@ -100,8 +105,6 @@
    * @param locationid
    */
   function saveAdminToLocation(locationid: string) {
-    console.log($newAdmins);
-
     $newAdmins.forEach(async (a) => {
       const result = await setAdminLocation
         .mutate({
@@ -131,9 +134,6 @@
             name: building.name
           })
           .then((value) => {
-            console.log("BUILDING");
-            console.log(value);
-
             $refreshLocations = !$refreshLocations;
             $isSaveDisabled = true;
             saveFloorChanges(building.id, value.data?.addBuilding?.pk_buildingid);
@@ -157,8 +157,6 @@
           buildingid,
           name: floor.name
         });
-        console.log("FLOOR");
-        console.log(result);
       }
     }
   }
@@ -167,12 +165,6 @@
    * saves the changes made to an edited location
    */
   async function saveEditLocationChanges() {
-    console.log($locationNames);
-    console.log("new name: " + $locationToEdit.name);
-
-    // if ($locationNames.includes($locationToEdit.name.toLowerCase())) {
-    // 	alert('EDIT A location with this name already exists. Please enter a different name!');
-    // } else {
     const result = await changeNameOfLocation
       .mutate({
         id: $locationToEdit.id,
@@ -187,7 +179,6 @@
           removeAdmins(value.data?.changeNameOfLocation?.pk_locationid ?? "");
         }
       });
-    console.log(result);
     $isSaveDisabled = true;
     $refreshLocations = !$refreshLocations;
     // }
@@ -211,7 +202,6 @@
         id,
         newName: building
       });
-      console.log(result);
     });
 
     $changedBuildings = new Map();
@@ -222,18 +212,11 @@
    * saves the changes made to an edited floor
    */
   async function saveEditFloorChanges() {
-    console.log("floorsToEdit:" + $floorsToEdit);
-
     $floorsToEdit.forEach(async (floor, id) => {
-      console.log("FLOOOOOOOR");
-      console.log(id + " name: " + floor);
-
       const result = await changeNameOfFloor.mutate({
         id: id,
         newName: floor
       });
-
-      console.log(result);
     });
 
     $floorsToEdit = new Map();

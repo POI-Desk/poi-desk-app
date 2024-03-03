@@ -10,7 +10,7 @@
     buildingToEdit,
     isSaveDisabled,
     locationNames,
-    locationToEdit,
+    locationToEdit, newAdmins,
     refreshLocations
   } from "$lib/superAdminStore";
   import AddBuilding from "./AddBuilding.svelte";
@@ -22,6 +22,11 @@
   $: buildings = $getBuildings.data?.getBuildingsInLocation;
 
   $: locationIdToEdit = $locationToEdit.id;
+
+  $: {
+    $locationToEdit;
+    $newAdmins = [];
+  }
 
   async function onDeleteBuilding(id: string) {
     const result = await deleteBuilding.mutate({
@@ -43,16 +48,15 @@
     await getAdminUsers.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
       $admins = $getAdminUsers.data?.getAdminUsers;
     });
-    // console.log($admins);
   }
   
 
   function handleNameInput() {
-    if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
-      $isSaveDisabled = true;
-    } else {
-      $isSaveDisabled = false;
-    }
+    // if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
+    //   $isSaveDisabled = true;
+    // } else {
+    //   $isSaveDisabled = false;
+    // }
   }
 
   function handleRemoveAdmin(admin: User) {
@@ -60,7 +64,6 @@
     $adminsToRemove = $adminsToRemove;
     $adminsOfLocation.splice($adminsOfLocation.indexOf(admin), 1);
     $adminsOfLocation = $adminsOfLocation;
-    console.log($adminsOfLocation);
     $isSaveDisabled = false;
   }
 </script>
@@ -102,16 +105,25 @@
 
     <AddBuilding />
 
-    <!--	TODO auslagern	-->
+    <div>
+      <h2 class="font-bold">Admins of {$locationToEdit.name}</h2>
 
-    <h2>Admins of {$locationToEdit.name}</h2>
+      <AddAdminToLocation />
 
-    {#if $adminsOfLocation}
-      {#each $adminsOfLocation as admin}
-        <button on:click={() => handleRemoveAdmin(admin)}>X</button>{admin.username}<br />
+      {#if $adminsOfLocation}
+        {#each $adminsOfLocation as admin}
+          <button on:click={() => handleRemoveAdmin(admin)}>X</button>{admin.username}<br />
+        {/each}
+      {/if}
+
+      {#each $newAdmins as newAdmin}
+        <button
+          class="btn variant-filled-error"
+          on:click={() => {
+            $newAdmins.splice($newAdmins.indexOf(newAdmin), 1);
+            $newAdmins = $newAdmins;
+          }}>X</button>{newAdmin.username}<br>
       {/each}
-    {/if}
-
-    <AddAdminToLocation />
+    </div>
   {/key}
 </div>
