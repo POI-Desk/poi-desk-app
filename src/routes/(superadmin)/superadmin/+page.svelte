@@ -209,14 +209,14 @@
   </div>
 
   <div class="p-5 flex flex-col gap-5">
-    <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
-
     {#if $locationToEdit.id !== '' && $buildingToEdit.id !== ''}
+      <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
       <EditBuilding />
       <AddFloor />
     {/if}
 
     {#if $showAddLocation && $editBuildingclicked}
+      <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
       <AddFloor />
     {/if}
   </div>
