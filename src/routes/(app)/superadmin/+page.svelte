@@ -76,7 +76,7 @@
             name: $newLocation.name
           })
           .then((value) => {
-            saveBuildingChanges(value.data?.addLocation?.pklocationid);
+            saveBuildingChanges(value.data?.addLocation?.pk_locationid);
 
             $isSaveDisabled = true;
             getLocationsFunction();
@@ -183,7 +183,10 @@
 
   <div class="p-5 flex flex-col gap-5">
     {#if $showAddLocation}
+      <h1 class="h2 text-primary-500-400-token m-1">Buildings</h1>
+
       <AddBuilding />
+
       <button disabled={$isSaveDisabled}
               class="btn variant-filled-primary"
               on:click={saveLocationChanges}>
@@ -193,6 +196,8 @@
     {/if}
 
     {#if $locationToEdit.id !== ''}
+      <h1 class="h2 text-primary-500-400-token m-1">Buildings</h1>
+
       <EditLocation />
       <button disabled={$isSaveDisabled}
               class="btn variant-filled-primary bottom-2"
@@ -204,9 +209,11 @@
   </div>
 
   <div class="p-5 flex flex-col gap-5">
+    <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
+
     {#if $locationToEdit.id !== '' && $buildingToEdit.id !== ''}
-      <AddFloor />
       <EditBuilding />
+      <AddFloor />
     {/if}
 
     {#if $showAddLocation && $editBuildingclicked}

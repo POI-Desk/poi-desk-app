@@ -4,6 +4,7 @@
 	import { SlideToggle, type ModalSettings, getModalStore, LightSwitch } from "@skeletonlabs/skeleton";
 	import { Pen } from 'lucide-svelte';
 	import { getUserById } from '$lib/queries/userQuerries';
+	import { goto } from "$app/navigation";
 
 	$: getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
 	$: thisUser = $getUserById.data?.getUserById;
@@ -103,6 +104,14 @@
 		{/if}
 	</div>
 {/if}
+
+<button
+	class="btn variant-filled-primary"
+	on:click={() => goto("/extendedUser")}>Extended User</button>
+
+<button
+	class="btn variant-filled-primary"
+	on:click={() => goto("/admin/maps")}>Admin</button>
 
 <style>
 	hr {

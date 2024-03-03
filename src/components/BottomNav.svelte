@@ -23,7 +23,7 @@
       <button on:click={() => {
         page = "/user"
         goto(page);
-      }} class="flex flex-col justify-center items-center">
+      }} class="flex flex-col justify-center items-center font-semibold">
         <RadioItem bind:group={page}
                    name="page"
                    value={"/user"}
@@ -33,15 +33,15 @@
           <User strokeWidth="2.5" size="30" />
         </RadioItem>
 
-        <button on:click={() => goto("/user")} class="select-none font-semibold">
+<!--        <button on:click={() => goto("/user")} class="select-none font-semibold">-->
           Profiles
-        </button>
+<!--        </button>-->
       </button>
 
       <button on:click={() => {
         page = $isExtended ? "/extendedUser" : "/";
         goto(page);
-      }} class="flex flex-col justify-center items-center">
+      }} class="flex flex-col justify-center items-center font-semibold">
         <RadioItem bind:group={page}
                    name="page"
                    value={$isExtended ? "/extendedUser" : "/"}
@@ -51,15 +51,15 @@
           <Map strokeWidth="2" size="30" />
         </RadioItem>
 
-        <button on:click={() => goto($isExtended ? "/extendedUser" : "/")} class="select-none font-semibold">
+<!--        <button on:click={() => goto($isExtended ? "/extendedUser" : "/")} class="select-none font-semibold">-->
           Map
-        </button>
+<!--        </button>-->
       </button>
 
       <button on:click={() => {
         page = "/bookings"
         goto(page);
-      }} class="flex flex-col justify-center items-center">
+      }} class="flex flex-col justify-center items-center font-semibold">
         <RadioItem bind:group={page}
                    name="page"
                    value={"/bookings"}

@@ -36,8 +36,6 @@
 <div class="flex flex-col gap-5">
   {#key $refreshLocations}
 
-    <AddBuilding />
-
     {#await getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })}
       <p>fetching buildings...</p>
     {:then fetched}
@@ -69,5 +67,8 @@
         </div>
       {/each}
     {/await}
+
+    <AddBuilding />
+
   {/key}
 </div>

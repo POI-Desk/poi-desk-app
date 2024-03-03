@@ -72,7 +72,7 @@
 
             <button
 							class="btn flex justify-center items-center variant-filled-error text-white"
-							on:click={() => onDeleteLocation(location.pklocationid)}>
+							on:click={() => onDeleteLocation(location.pk_locationid)}>
               <Trash2 />
             </button>
           </div>
