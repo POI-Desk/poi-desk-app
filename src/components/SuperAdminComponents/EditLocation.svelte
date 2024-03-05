@@ -10,7 +10,7 @@
     buildingToEdit,
     isSaveDisabled,
     locationNames,
-    locationToEdit,
+    locationToEdit, newAdmins,
     refreshLocations
   } from "$lib/superAdminStore";
   import AddBuilding from "./AddBuilding.svelte";
@@ -22,6 +22,11 @@
   $: buildings = $getBuildings.data?.getBuildingsInLocation;
 
   $: locationIdToEdit = $locationToEdit.id;
+
+  $: {
+    $locationToEdit;
+    $newAdmins = [];
+  }
 
   async function onDeleteBuilding(id: string) {
     const result = await deleteBuilding.mutate({
@@ -43,16 +48,15 @@
     await getAdminUsers.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
       $admins = $getAdminUsers.data?.getAdminUsers;
     });
-    // console.log($admins);
   }
-  
+
 
   function handleNameInput() {
-    if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
-      $isSaveDisabled = true;
-    } else {
-      $isSaveDisabled = false;
-    }
+    // if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
+    //   $isSaveDisabled = true;
+    // } else {
+    //   $isSaveDisabled = false;
+    // }
   }
 
   function handleRemoveAdmin(admin: User) {
@@ -60,7 +64,6 @@
     $adminsToRemove = $adminsToRemove;
     $adminsOfLocation.splice($adminsOfLocation.indexOf(admin), 1);
     $adminsOfLocation = $adminsOfLocation;
-    console.log($adminsOfLocation);
     $isSaveDisabled = false;
   }
 </script>
@@ -102,16 +105,37 @@
 
     <AddBuilding />
 
-    <!--	TODO auslagern	-->
+    <div class="flex flex-col">
+      <h2 class="font-bold">Admins of {$locationToEdit.name}</h2>
 
-    <h2>Admins of {$locationToEdit.name}</h2>
+      <AddAdminToLocation />
 
-    {#if $adminsOfLocation}
-      {#each $adminsOfLocation as admin}
-        <button on:click={() => handleRemoveAdmin(admin)}>X</button>{admin.username}<br />
+      {#if $adminsOfLocation}
+        {#each $adminsOfLocation as admin}
+          <div class="grid grid-cols-4 items-center gap-2 variant-filled-tertiary rounded-full p-2 py-1 bold my-2">
+            <span class="col-span-3 bg-white rounded-full py-2 p-1 text-center">{admin.username}</span>
+            <button
+              class="btn flex flex-row justify-center items-center variant-filled-error text-white"
+              on:click={() => handleRemoveAdmin(admin)}>
+              <Trash2 />
+            </button>
+          </div>
+        {/each}
+      {/if}
+
+      {#each $newAdmins as newAdmin}
+        <div class="grid grid-cols-4 items-center gap-2 variant-filled-tertiary rounded-full p-2 py-1 bold my-2">
+          <span class="col-span-3 bg-white rounded-full py-2 p-1 text-center">{newAdmin.username}</span>
+          <button
+            class="btn variant-filled-error text-white"
+            on:click={() => {
+            $newAdmins.splice($newAdmins.indexOf(newAdmin), 1);
+            $newAdmins = $newAdmins;
+          }}>
+            <Trash2 />
+          </button>
+        </div>
       {/each}
-    {/if}
-
-    <AddAdminToLocation />
+    </div>
   {/key}
 </div>

@@ -3,7 +3,7 @@
   import { deleteFloor } from "$lib/mutations/floors";
   import { getFloors } from "$lib/queries/floorQueries";
   import { buildingToEdit, changedBuildings, floorsToEdit, refreshLocations } from "$lib/superAdminStore";
-  import { PenLine, Trash2 } from "lucide-svelte";
+  import { Trash2 } from "lucide-svelte";
 
   $: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -25,6 +25,17 @@
     $floorsToEdit.set(id, name);
     $floorsToEdit = $floorsToEdit;
   }
+
+  function checkBuildingName() {
+    buildingName = $changedBuildings.has($buildingToEdit.id) ? $changedBuildings.get($buildingToEdit.id) : $buildingToEdit.name;
+  }
+
+  $: {
+    $buildingToEdit;
+    checkBuildingName();
+  }
+
+  let buildingName = $changedBuildings.has($buildingToEdit.id) ? $changedBuildings.get($buildingToEdit.id) : $buildingToEdit.name;
 </script>
 
 <div class="flex flex-col gap-5">
@@ -36,8 +47,9 @@
         <input
           type="text"
           class="input bg-white col-span-4 p-3"
-          bind:value={$buildingToEdit.name}
-          on:input={() => handleNameInput($buildingToEdit.id, $buildingToEdit.name)}>
+          placeholder="Enter a floor name"
+          bind:value={buildingName}
+          on:input={() => handleNameInput($buildingToEdit.id, buildingName)}>
       </div>
 
       {#each floors as floor}

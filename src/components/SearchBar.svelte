@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import type { User } from '$lib/types/userTypes';
-	import { getBookings } from '$lib/bookingStore';
-	import { dateValue } from '$lib/dateStore';
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { searchedUser } from '$lib/searchStore';
-	import { goto } from '$app/navigation';
-	import { MapPin, Search } from 'lucide-svelte';
-	import { writable } from 'svelte/store';
+	import { graphql } from "$houdini";
+	import type { User } from "$lib/types/userTypes";
+	import { getBookings } from "$lib/bookingStore";
+	import { dateValue } from "$lib/dateStore";
+	import { createEventDispatcher, onMount } from "svelte";
+	import { goto } from "$app/navigation";
+	import { MapPin, Search } from "lucide-svelte";
 
 	export let showUsrInfo: boolean;
 	const dispatch = createEventDispatcher();
@@ -188,7 +186,9 @@
 	<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
 		<div class="dropdown w-full">
 			<input
-				class="input my-1 w-full rounded-full pl-20 py-3 border-none"
+				class="input my-1 w-full rounded-full py-3 border-none"
+				class:pl-20={showUsrInfo}
+				class:pl-3={!showUsrInfo}
 				placeholder="Search..."
 				bind:value={typedUsername}
 				on:input={handleDropDownClick}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resetPassword } from '$lib/mutations/user';
+	import { resetPassword } from "$lib/mutations/user";
 	import type { User } from '$lib/types/userTypes';
 
 	export let userToEdit: User;
@@ -29,7 +29,8 @@
 	>
 
 	{#if showChangePassword}
-		<input class="input" bind:value={newPassword} />
+		<span>New Password</span>
+		<input placeholder="Enter new password" class="input" bind:value={newPassword} />
 	{/if}
 	<button class="btn variant-filled-primary" on:click={saveUser}>Save</button>
 {/if}
