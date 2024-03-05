@@ -8,9 +8,8 @@
   import { isExtended } from "$lib/stores/extendedUserStore";
   import { curPage} from "$lib/pageStore";
 
-  $: getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
+  $: if ($user?.pk_userid) getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
   $: thisUser = $getUserById.data?.getUserById;
-  $: console.log(thisUser);
 
   $: bookings = thisUser?.bookings;
   const currentMonth = new Date().getMonth();
@@ -31,10 +30,12 @@
   ];
   const currentMonthName = months[currentMonth];
   const currentYear = new Date().getFullYear();
+
   $: bookingsThisMonth = bookings?.filter((booking: any) => {
     const bookingDate = new Date(booking.date);
     return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
   });
+
   $: amountOfBookingsThisMonth = bookingsThisMonth?.length;
 
   const modal: ModalSettings = {
