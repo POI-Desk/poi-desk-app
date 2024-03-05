@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getModalStore, getToastStore, type ToastSettings } from "@skeletonlabs/skeleton";
-  import { displayedTime, interval, selectedDesk } from "$lib/bookingStore";
+  import { getModalStore, getToastStore, ToastSettings } from "@skeletonlabs/skeleton";
+  import { displayedTime, interval } from "$lib/bookingStore";
   import { dateValue, maxBookingDate, todaysDate } from "$lib/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
   import { user } from "$lib/userStore";
@@ -8,21 +8,23 @@
 
   //icons
   import {
-    Calendar,
-    Clock,
-    MapPin,
-    Building,
     Armchair,
-    Cuboid,
     ArrowBigLeft,
     ArrowBigRight,
-    X,
-    ArrowLeft
+    ArrowLeft,
+    Building,
+    Calendar,
+    Clock,
+    Cuboid,
+    MapPin,
+    X
   } from "lucide-svelte";
   import { refreshDesks } from "$lib/refreshStore";
   import { getBookingsByDate } from "$lib/queries/booking";
   import { CachePolicy } from "$houdini";
   import { floorid } from "$lib/floorStore";
+  import { getDeskById } from "$lib/queries/deskQueries";
+  import { onMount } from "svelte";
 
   $interval.morning = false;
   $interval.afternoon = false;
@@ -30,10 +32,13 @@
   const toastStore = getToastStore();
 
   const cantBook: ToastSettings = {
-    message: 'You already have a booking at that time!',
+    message: "You already have a booking at that time!",
     timeout: 3000,
-    background: 'variant-filled-error'
+    background: "variant-filled-error"
   };
+
+  $: selectedDesk = $getDeskById.data?.getDeskById;
+
 
   async function finishBooking() {
     const value = await bookDesk.mutate({
@@ -42,7 +47,7 @@
         ismorning: $interval.morning,
         isafternoon: $interval.afternoon,
         userid: $user.pk_userid,
-        deskid: $selectedDesk.pk_deskid,
+        deskid: selectedDesk!.pk_deskid,
         extendedid: ""
       }
     });
@@ -69,20 +74,26 @@
 
   let selectionPage: boolean = true;
 
-  let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+  let currentBookingsOnDate;
 
-  let hasBookings: boolean = currentBookingsOnDate.length > 0;
+  let hasBookings: boolean;
 
-  let isBookedMorning: boolean =
-    ((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ??
-    false;
+  let isBookedMorning: boolean;
 
-  let isBookedAfternoon: boolean =
-    ((hasBookings && currentBookingsOnDate[0].isafternoon) ||
-      currentBookingsOnDate[1]?.isafternoon) ??
-    false;
+  let isBookedAfternoon: boolean;
 
-  let isFullDay: boolean = hasBookings && isBookedMorning && isBookedAfternoon;
+  let isFullDay: boolean;
+
+  onMount(() => {
+    currentBookingsOnDate = selectedDesk?.bookings?.filter((b: any) => b.date === $dateValue) ?? [];
+    hasBookings = currentBookingsOnDate.length > 0;
+    isBookedMorning = ((hasBookings && currentBookingsOnDate[0].ismorning) || currentBookingsOnDate[1]?.ismorning) ?? false;
+    isBookedAfternoon =
+      ((hasBookings && currentBookingsOnDate[0].isafternoon) ||
+        currentBookingsOnDate[1]?.isafternoon) ??
+      false;
+    isFullDay = hasBookings && isBookedMorning && isBookedAfternoon;
+  });
 
   const modalStore = getModalStore();
 
@@ -96,6 +107,7 @@
       if (!$interval.morning && !$interval.afternoon) {
         return;
       }
+      console.log(selectedDesk);
       selectionPage = !selectionPage;
       return;
     }
@@ -130,7 +142,7 @@
     {#if selectionPage}
       <div class=" flex justify-center items-center">
         <div class="flex items-center gap-x-5 bg-white text-primary-500 rounded-full p-4 px-10">
-          <h1>{$selectedDesk.desknum}</h1>
+          <h1>{selectedDesk?.desknum}</h1>
         </div>
         <button
           on:click={() => onExitHandler()}
@@ -200,7 +212,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {$selectedDesk.floor.building.buildingname}
+            {selectedDesk?.map?.floor.building.buildingname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
@@ -208,7 +220,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {$selectedDesk.floor.floorname}
+            {selectedDesk?.map?.floor.floorname}
           </div>
           <div class="{iconContainerClasses}">
             <div class="rounded-3xl m-3 mx-5">
@@ -216,7 +228,7 @@
             </div>
           </div>
           <div class="{textClasses}">
-            {$selectedDesk.desknum}
+            {selectedDesk?.desknum}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {elasticOut} from 'svelte/easing';
-    import {fade} from 'svelte/transition';
+    import { elasticOut } from 'svelte/easing';
+    import { fade } from 'svelte/transition';
 
     export let duration = 5000;
 

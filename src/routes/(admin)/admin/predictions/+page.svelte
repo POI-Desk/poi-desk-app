@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IdentifierType } from './../../../../$houdini/graphql/enums.js';
+	import { IdentifierType } from '$houdini/graphql/enums.js';
 	import {
 		getMonthlyBookingPrediction,
 		getQuarterlyBookingPrediction,

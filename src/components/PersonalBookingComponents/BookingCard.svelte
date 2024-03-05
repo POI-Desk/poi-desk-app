@@ -57,15 +57,15 @@
     </div>
     <div class="col-span-2 {bookingPropertyClasses}">
       <MapPin />
-      {thisBooking?.desk?.floor?.building?.location?.locationname}
+      {thisBooking?.desk?.map?.floor?.building?.location?.locationname}
     </div>
     <div class="{bookingPropertyClasses}">
       <Building />
-      {thisBooking?.desk?.floor?.building?.buildingname}
+      {thisBooking?.desk?.map?.floor?.building?.buildingname}
     </div>
     <div class="{bookingPropertyClasses}">
       <Cuboid />
-      {thisBooking?.desk?.floor?.floorname}
+      {thisBooking?.desk?.map?.floor?.floorname}
     </div>
     <div class="{bookingPropertyClasses}">
       <MonitorSmartphone />

@@ -1,12 +1,10 @@
 <script lang="ts">
   import { CachePolicy } from "$houdini";
-  import { interval, selectedDesk } from "$lib/bookingStore";
+  import { interval } from "$lib/bookingStore";
   import { dateValue } from "$lib/dateStore";
   import { floorid } from "$lib/floorStore";
   import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from "$lib/map/props";
   import { getBookingsByDate } from "$lib/queries/booking";
-  import { getDeskById } from "$lib/queries/deskQueries";
-  import { getMapByFloor } from "$lib/queries/map";
   import type { MapTransform } from "$lib/types/mapTypes";
   import {
     ProgressBar,
@@ -25,6 +23,10 @@
   import { isExtended, selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
   import { refreshDesks } from "$lib/refreshStore";
   import { buildingid } from "$lib/buildingStore";
+	import Label from './MapObjects/Label.svelte';
+	import { getPublishedMapOnFloor } from "$lib/queries/map";
+	import type { Desk } from "$lib/types/deskTypes";
+	import { getDeskById } from "$lib/queries/deskQueries";
 
   let container: HTMLDivElement;
   let grid: HTMLDivElement;
@@ -52,14 +54,15 @@
     background: 'variant-filled-error'
   };
 
-
-
   let deskObjects: { [key: string]: DeskSvg } = {};
   let roomObjects: { [key: string]: RoomSvg } = {};
   let doorObjects: { [key: string]: DoorSvg } = {};
   let wallObjects: { [key: string]: WallSvg } = {};
+  let labelObjects: { [key: string]: Label } = {};
 
-  $: mapData = $getMapByFloor.data?.getMapByFloor;
+
+
+  $: mapData = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor;
 
   $: bookingsData = $getBookingsByDate.data?.getBookingsByDateOnFloor;
 
@@ -91,19 +94,45 @@
 
     panz.dispose();
   });
+	const emptyMap = () => {
+		for (const [key, value] of Object.entries(deskObjects)) {
+			value.$destroy();
+		}
+		for (const [key, value] of Object.entries(roomObjects)) {
+			value.$destroy();
+		}
+		for (const [key, value] of Object.entries(wallObjects)) {
+			value.$destroy();
+		}
+		for (const [key, value] of Object.entries(doorObjects)) {
+			value.$destroy();
+		}
+		for (const [key, value] of Object.entries(labelObjects)) {
+			value.$destroy();
+		}
+
+		deskObjects = {};
+		roomObjects = {};
+		wallObjects = {};
+		doorObjects = {};
+		labelObjects = {};
+	};
 
   const updateMap = async () => {
     if (!$floorid) return;
     emptyMap();
-    await getMapByFloor.fetch({
+    await getPublishedMapOnFloor.fetch({
       variables: { floorID: $floorid },
       policy: CachePolicy.NetworkOnly
     });
     drawMap();
-    await getBookingsByDate.fetch({
+    const l = await getBookingsByDate.fetch({
       variables: { date: $dateValue, floorId: $floorid },
       policy: CachePolicy.NetworkOnly
     });
+
+    console.log(l);
+
     await updateBookings();
   };
 
@@ -137,26 +166,7 @@
         window.innerHeight / 2 - (map.height / 2 + offsetY) * map.scale
       );
   };
-
-  const emptyMap = () => {
-    for (const [key, value] of Object.entries(deskObjects)) {
-      value.$destroy();
-    }
-    for (const [key, value] of Object.entries(roomObjects)) {
-      value.$destroy();
-    }
-    for (const [key, value] of Object.entries(wallObjects)) {
-      value.$destroy();
-    }
-    for (const [key, value] of Object.entries(doorObjects)) {
-      value.$destroy();
-    }
-    deskObjects = {};
-    roomObjects = {};
-    wallObjects = {};
-    doorObjects = {};
-  };
-
+  
   const drawMap = () => {
     if (!mapData) return;
     map.height = mapData.height;
@@ -179,27 +189,32 @@
       });
       deskSvg.$on("click", async () => {
         if ($isExtended) {
-          if ($selectedDesks.includes(desk)) {
-            $selectedDesks.splice($selectedDesks.indexOf(desk), 1);
+
+          let newD: Desk = {
+            pk_deskid: desk.pk_deskid,
+            desknum: desk.desknum,
+            bookings: desk.bookings!,
+            floor: mapData?.floor!
+          }
+          if ($selectedDesks.includes(newD)) {
+            $selectedDesks.splice($selectedDesks.indexOf(newD), 1);
             deskSvg.setSelected(false);
             } else if ($selectedDesks.length >= $selectedUsers.length) {
               toastStore.trigger(tooManyDesks);
           } else {
             if (($interval.morning && !deskSvg.getBookedMorning())
               || ($interval.afternoon && !deskSvg.getBookedAfternoon())) {
-              $selectedDesks.push(desk);
+              $selectedDesks.push(newD);
               deskSvg.setSelected(true);
             }
           }
 
           $selectedDesks = $selectedDesks;
         } else {
-          $selectedDesk = (
-            await getDeskById.fetch({
-              variables: { deskId: desk.pk_deskid },
-              policy: CachePolicy.NetworkOnly
-            })
-          ).data?.getDeskById;
+          const i = await getDeskById.fetch({
+            variables: { deskId: desk.pk_deskid },
+            policy: CachePolicy.NetworkOnly
+          });
           modalStore.trigger(modal);
         }
       });
@@ -261,6 +276,23 @@
       });
       wallObjects[wall.pk_wallId] = wallSvg;
     });
+
+    mapData.labels?.map((label) => {
+			const labelSvg = new Label({
+				target: grid,
+				props: {
+					text: label.text,
+					z: 60,
+					transform: {
+						x: label.x,
+						y: label.y,
+						rotation: 0
+					}
+				}
+			});
+			labelObjects[label.pk_labelId] = labelSvg;
+		});
+
     recenterMap();
   };
 </script>
@@ -273,7 +305,7 @@
     style="width: {map.width}px; height: {map.height}px;"
     class="z-0"
   >
-    {#if $getMapByFloor.fetching}
+    {#if $getPublishedMapOnFloor.fetching}
       <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
         <ProgressBar value={undefined} />
       </div>
@@ -288,7 +320,7 @@
     {/if}
   </div>
 </div>
-{#if !$getMapByFloor.fetching && !mapData}
+{#if !$getPublishedMapOnFloor.fetching && !mapData}
   <div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
     <p class="text-2xl">No map found for this floor</p>
   </div>

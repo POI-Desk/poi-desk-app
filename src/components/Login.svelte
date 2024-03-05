@@ -1,8 +1,9 @@
 <script lang="ts">
 
-  import { graphql } from "$houdini";
-  import { user } from "$lib/userStore";
-  import { goto } from "$app/navigation";
+
+	import { goto } from '$app/navigation';
+	import { graphql } from '$houdini';
+	import { user } from '$lib/userStore';
 
 
   const createOrLoginAsUser = graphql(`

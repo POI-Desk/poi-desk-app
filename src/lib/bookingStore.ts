@@ -17,38 +17,36 @@ export const currentBooking = writable<Booking>();
 
 export const userBookings = writable<any>();
 
-export const selectedDesk = writable<any>();
-
 export const _getBookingsByUseridVariables = () => {
 	return {};
 };
 
 export const getBookings = graphql(`
-	query getBookingsByUserid($userid: ID!, $isCurrent: Boolean!) @load {
-		getBookingsByUserid(userid: $userid, isCurrent: $isCurrent) {
-			isafternoon
-			ismorning
-			pk_bookingid
-			bookingnumber
-			date
-			desk {
-				pk_deskid
-				desknum
-				map {
-					floor {
-						pk_floorid
-						floorname
-						building {
-							pk_buildingid
-							buildingname
-							location {
-								pk_locationid
-								locationname
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    query getBookingsByUserid($userid: ID!, $isCurrent: Boolean!) @load {
+        getBookingsByUserid(userid: $userid, isCurrent: $isCurrent) {
+            isafternoon
+            ismorning
+            pk_bookingid
+            bookingnumber
+            date
+            desk {
+                pk_deskid
+                desknum
+                map {
+                    floor {
+                        pk_floorid
+                        floorname
+                        building {
+                            pk_buildingid
+                            buildingname
+                            location {
+                                pk_locationid
+                                locationname
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 `);

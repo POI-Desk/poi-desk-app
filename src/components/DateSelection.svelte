@@ -21,8 +21,6 @@
 		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
 	};
 
-	
-
 </script>
 
 <div class="group w-fit">
@@ -38,11 +36,3 @@
 		/>
 	</div>
 </div>
-
-<!--{#if bookings}-->
-<!--	<ul>-->
-<!--		{#each bookings as booking (booking?.pk_bookingid)}-->
-<!--			<li>{booking?.bookingnumber}</li>-->
-<!--		{/each}-->
-<!--	</ul>-->
-<!--{/if}-->

@@ -1,31 +1,47 @@
 <script lang="ts">
-	import { interval, selectedDesk, displayedTime } from '$lib/bookingStore';
+	import { displayedTime, interval } from '$lib/bookingStore';
 	import { dateValue } from '$lib/dateStore';
-	import { fade } from 'svelte/transition';
+	import { getDeskById } from '$lib/queries/deskQueries';
 	import { user } from '$lib/userStore';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let morningSelected: boolean = false;
 	let afternoonSelected: boolean = false;
 	// export let shownInterval: String = 'default';
 	// just for now
-	let currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
-	let isBookedMorning: boolean = currentBookingsOnDate.some((booking: any) => booking.ismorning);
-	let isBookedAfternoon: boolean = currentBookingsOnDate.some(
-		(booking: any) => booking.isafternoon
-	);
 
+	$: selectedDesk = $getDeskById.data?.getDeskById;
+
+	let currentBookingsOnDate;
+	let isBookedMorning: boolean;
+	let isBookedAfternoon: boolean;
+	let deskAssigned: boolean;
 	let morningAlreadyTakenName: string = '';
 	let afternoonAlreadyTakenName: string = '';
-	for (const booking of currentBookingsOnDate) {
-		if (booking.date === $dateValue) {
-			if (booking.ismorning) {
-				morningAlreadyTakenName = booking.user.username;
-			}
-			if (booking.isafternoon) {
-				afternoonAlreadyTakenName = booking.user.username;
+
+	onMount(() => {
+		currentBookingsOnDate = selectedDesk?.bookings?.filter((b: any) => b.date === $dateValue)!;
+		isBookedMorning = currentBookingsOnDate?.some((booking: any) => booking.ismorning)!;
+		isBookedAfternoon = currentBookingsOnDate?.some((booking: any) => booking.isafternoon);
+		deskAssigned = selectedDesk?.user !== null;
+
+		for (const booking of currentBookingsOnDate ?? []) {
+			if (booking.date === $dateValue) {
+				if (booking.ismorning) {
+					morningAlreadyTakenName = booking.user.username;
+				}
+				if (booking.isafternoon) {
+					afternoonAlreadyTakenName = booking.user.username;
+				}
 			}
 		}
-	}
+
+		if (deskAssigned) {
+			morningAlreadyTakenName = selectedDesk?.user?.username ?? '';
+			afternoonAlreadyTakenName = selectedDesk?.user?.username ?? '';
+		}
+	});
 
 	$: $interval.morning = morningSelected;
 	$: $interval.afternoon = afternoonSelected;
@@ -34,7 +50,7 @@
 		if ($dateValue) {
 			morningSelected = false;
 			afternoonSelected = false;
-			currentBookingsOnDate = $selectedDesk.bookings.filter((b: any) => b.date === $dateValue);
+			currentBookingsOnDate = selectedDesk?.bookings!.filter((b: any) => b.date === $dateValue) ?? [];
 			isBookedMorning = currentBookingsOnDate.some((booking: any) => booking.ismorning);
 			isBookedAfternoon = currentBookingsOnDate.some((booking: any) => booking.isafternoon);
 			for (const booking of currentBookingsOnDate) {
@@ -49,6 +65,7 @@
 			}
 		}
 	}
+
 	$: {
 		if ($interval.morning && $interval.afternoon) {
 			$displayedTime = '07:00 - 20:00';
@@ -69,7 +86,7 @@
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
 		on:click={() => {
-			if (!isBookedMorning) {
+			if (!isBookedMorning && !deskAssigned) {
 				morningSelected = !morningSelected;
 			}
 		}}
@@ -94,11 +111,11 @@
 						<p>{$user.username}</p>
 					</div>
 				</div>
-			{:else if !isBookedMorning}
+			{:else if !isBookedMorning && !deskAssigned}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex justify-center items-center w-full h-full">FREE</div>
 				</div>
-			{:else if isBookedMorning}
+			{:else}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
 						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
@@ -124,7 +141,7 @@
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
 		on:click={() => {
-			if (!isBookedAfternoon) {
+			if (!isBookedAfternoon && !deskAssigned) {
 				afternoonSelected = !afternoonSelected;
 			}
 		}}
@@ -149,11 +166,11 @@
 						<p>{$user.username}</p>
 					</div>
 				</div>
-			{:else if !isBookedAfternoon}
+			{:else if !isBookedAfternoon && !deskAssigned}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex justify-center items-center w-full h-full">FREE</div>
 				</div>
-			{:else if isBookedAfternoon}
+			{:else}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
 						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
