@@ -42,8 +42,8 @@
   export const setText = (newText: string) => {
     text = newText;
   };
-	const freeColor: string = '#D1F3FF';
-	const bookedColor: string = '#9EBBD9';
+	const freeColor: string = '#ffffff';
+	const bookedColor: string = '#A8ADB3';
 	const assignedColor: string = '#FF4538';
 	//E680BA
 	//red: FF4538
