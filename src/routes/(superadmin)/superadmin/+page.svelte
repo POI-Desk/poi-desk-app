@@ -115,7 +115,6 @@
           locationid: locationid
         })
         .then((value) => {
-          console.log(value);
           $newAdmins = [];
           $admin = { pk_userid: "", name: "" };
         });
@@ -204,6 +203,11 @@
       const result = await changeNameOfBuilding.mutate({
         id,
         newName: building
+      }).then((building) => {
+        if ($newFloors.length > 0) {
+          const curBuildingId = building.data?.changeNameOfBuilding?.pk_buildingid;
+          saveFloorChanges(curBuildingId, curBuildingId)
+        }
       });
     });
 
