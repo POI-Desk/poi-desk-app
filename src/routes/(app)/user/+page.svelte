@@ -116,7 +116,7 @@
 </button
 >
 
-<button class="btn variant-filled-primary" on:click={() => goto('/admin/maps')}>Admin</button>
+<button class="btn variant-filled-primary" on:click={() => goto('/admin')}>Admin</button>
 
 <style>
     hr {

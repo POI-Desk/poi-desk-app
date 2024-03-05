@@ -61,31 +61,6 @@
     }
   }
 
-  async function getSearchUsers(pageNumber_param: number) {
-    if (typedUsername === "") {
-      pageNumber = 1;
-    }
-    await getUsers
-      .fetch({
-        variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst }
-      })
-      .then(() => {
-        let users = $getUsers.data?.getAllUsers.content;
-        if (!users) {
-          console.warn("No Users");
-          return;
-        }
-
-        searchUsers = users.map((user) => ({
-          pk_userid: user?.pk_userid,
-          username: user?.username,
-          location: null,
-          userInfo: ""
-        }));
-        hasNextPage = $getUsers.data?.getAllUsers?.hasNextPage ?? false;
-      });
-  }
-
   // let userInfo: string = "";
   let userLocation: string = "";
 

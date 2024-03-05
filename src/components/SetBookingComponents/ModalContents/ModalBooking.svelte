@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getModalStore, getToastStore, ToastSettings } from "@skeletonlabs/skeleton";
+  import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
   import { displayedTime, interval } from "$lib/bookingStore";
   import { dateValue, maxBookingDate, todaysDate } from "$lib/dateStore";
   import { bookDesk } from "$lib/mutations/booking";

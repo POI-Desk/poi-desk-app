@@ -1,19 +1,19 @@
 import { graphql } from '$houdini';
 
 export const MonthlyBookingsByLocation = graphql(`
-	query getMonthlyBookingByLocation($year: String!, $month: String!, $location: ID!) {
-		getMonthlyBookingByLocation(year: $year, month: $month, location: $location) {
-			pk_monthlyBookingId
-			amountOfDesks
-			month
-			dailyBookings {
-				day
-				morning
-				afternoon
-				total
-			}
-		}
-	}
+    query getMonthlyBookingByLocation($year: String!, $month: String!, $location: ID!) {
+        getMonthlyBookingByLocation(year: $year, month: $month, location: $location) {
+            pk_monthlyBookingId
+            amountOfDesks
+            month
+            dailyBookings {
+                day
+                morning
+                afternoon
+                total
+            }
+        }
+    }
 `);
 
 export const MonthlyBookingDataByLocation = graphql(`
@@ -119,7 +119,7 @@ export const MonthlyBookingsByFloor = graphql(`
 `);
 
 export const MonthlyBookingDataByFloor = graphql(`
-	query getMonthlyBookingDataByFloor($year: String! $month: String! $floor: ID!) {
+	query getMonthlyBookingDataByFloor($year: String!, $month: String!, $floor: ID!) {
 		getMonthlyBookingByFloor(year: $year, month: $month, floor: $floor) {
 			month
 
@@ -272,7 +272,7 @@ export const QuarterlyBookingsByFloor = graphql(`
 			pk_quarterlyBookingId
 			amountOfDesks
 			quarter
-			
+
 			total
 			monthlyBookings {
 				month
@@ -280,7 +280,7 @@ export const QuarterlyBookingsByFloor = graphql(`
 					day
 					morning
 					afternoon
-					
+
 					total
 				}
 			}
@@ -293,7 +293,7 @@ export const QuarterlyBookingDataByFloor = graphql(`
 		getQuarterlyBookingByFloor(year: $year, quarter: $quarter, floor: $floor) {
 			year
 			quarter
-			
+
 			total
 			days
 			amountOfDesks
@@ -327,7 +327,7 @@ export const YearlyBookingsByLocation = graphql(`
 		getYearlyBookingByLocation(year: $year, location: $location) {
 			pk_yearlyBookingId
 			amountOfDesks
-			
+
 			total
 			quarterlyBookings {
 				quarter
@@ -337,7 +337,7 @@ export const YearlyBookingsByLocation = graphql(`
 						day
 						morning
 						afternoon
-						
+
 						total
 					}
 				}
@@ -349,7 +349,7 @@ export const YearlyBookingDataByLocation = graphql(`
 	query getYearlyBookingDataByLocation($year: String!, $location: ID!) {
 		getYearlyBookingByLocation(year: $year, location: $location) {
 			year
-			
+
 			total
 			days
 			amountOfDesks
@@ -383,7 +383,7 @@ export const YearlyBookingsByBuilding = graphql(`
 		getYearlyBookingByBuilding(year: $year, building: $building) {
 			pk_yearlyBookingId
 			amountOfDesks
-			
+
 			total
 			quarterlyBookings {
 				quarter
@@ -393,7 +393,7 @@ export const YearlyBookingsByBuilding = graphql(`
 						day
 						morning
 						afternoon
-						
+
 						total
 					}
 				}
@@ -405,7 +405,7 @@ export const YearlyBookingDataByBuilding = graphql(`
 	query getYearlyBookingDataByBuilding($year: String!, $building: ID!) {
 		getYearlyBookingByBuilding(year: $year, building: $building) {
 			year
-			
+
 			total
 			days
 			amountOfDesks
@@ -440,7 +440,7 @@ export const YearlyBookingsByFloor = graphql(`
 		getYearlyBookingByFloor(year: $year, floor: $floor) {
 			pk_yearlyBookingId
 			amountOfDesks
-			
+
 			total
 			quarterlyBookings {
 				quarter
@@ -450,7 +450,7 @@ export const YearlyBookingsByFloor = graphql(`
 						day
 						morning
 						afternoon
-						
+
 						total
 					}
 				}
@@ -462,7 +462,7 @@ export const YearlyBookingDataByFloor = graphql(`
 	query getYearlyBookingDataByFloor($year: String!, $floor: ID!) {
 		getYearlyBookingByFloor(year: $year, floor: $floor) {
 			year
-			
+
 			total
 			days
 			amountOfDesks
@@ -492,9 +492,8 @@ export const YearlyBookingDataByFloor = graphql(`
 	}
 `);
 
-
 export const YearsSinceStart = graphql(`
-	query getAllYears{
+	query getAllYears {
 		getAllYears
 	}
 `);

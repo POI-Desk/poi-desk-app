@@ -39,7 +39,7 @@
   // 	}, 5000);
   // }
 
-  function handleUserClicked(event) {    
+  function handleUserClicked(event) {
     $searchedUser = event.detail;
     goto("/bookings/" + event.detail.username)
   }
@@ -61,15 +61,6 @@
 
     <div class="flex justify-center p-1">
       <DateSelection />
-    </div>
-
-    <div>
-      <a class="btn variant-filled-primary" href="/login">Login</a>
-      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
-      <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
-      <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
-      <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
-      <LightSwitch />
     </div>
   </div>
 

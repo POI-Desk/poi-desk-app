@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	// import { getBuildings } from '$lib/queries/buildingQueries';
-	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
+	import AdminSearchbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
 	import type { PageData } from '../[[mapId]]/$houdini';
@@ -1045,7 +1045,7 @@
 		}}
 	/>
 
-	<AdminSerachbar
+	<AdminSearchbar
 		values={mapData?.desks
 			?.map((desk) => ({
 				label: desk.desknum,
