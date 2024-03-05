@@ -12,7 +12,7 @@
 
 
   async function finishBooking() {
-    const extendedid = "EXTID" + todaysDate.getTime() + "+" + $user.pk_userid;
+    const extendedid = "EXTID" + new Date().getTime() + "+" + $user.pk_userid;
 
     for (const desk of $selectedDesks) {
       const i = $selectedDesks.indexOf(desk);

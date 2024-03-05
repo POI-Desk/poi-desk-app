@@ -1,8 +1,8 @@
 import { graphql } from '$houdini';
 
 export const usersInTeam = graphql(`
-	query getUsersInTeam @load {
-		getUsersInTeam {
+	query getUsersInTeam($teamid: ID!) {
+		getUsersInTeam(teamid: $teamid) {
 			pk_userid
 			username
 		}
@@ -19,7 +19,7 @@ export const getUserById = graphql(`
 			}
 			bookings {
 				bookingnumber
-                date
+				date
 			}
 			location {
 				locationname

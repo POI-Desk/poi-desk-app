@@ -7,10 +7,12 @@ export type Desk = {
         ismorning: boolean;
         isafternoon: boolean;
     }[];
-    floor: {
-        floorname: string;
-        building: {
-            buildingname: string;
+    map: {
+        floor: {
+            floorname: string;
+            building: {
+                buildingname: string;
+            }
         }
-    };
+    }
 };

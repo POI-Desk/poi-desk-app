@@ -189,15 +189,16 @@
       });
       deskSvg.$on("click", async () => {
         if ($isExtended) {
-
           let newD: Desk = {
             pk_deskid: desk.pk_deskid,
             desknum: desk.desknum,
             bookings: desk.bookings!,
-            floor: mapData?.floor!
+            floor: desk.map.floor
           }
-          if ($selectedDesks.includes(newD)) {
-            $selectedDesks.splice($selectedDesks.indexOf(newD), 1);
+          console.log($selectedDesks);
+          console.log(newD);
+          if ($selectedDesks.map((d) => d.pk_deskid).includes(newD.pk_deskid)) {
+            $selectedDesks.splice($selectedDesks.map((d) => d.pk_deskid).indexOf(newD.pk_deskid), 1);
             deskSvg.setSelected(false);
             } else if ($selectedDesks.length >= $selectedUsers.length) {
               toastStore.trigger(tooManyDesks);

@@ -4,7 +4,8 @@ import type { User } from "./types/userTypes";
 export const user = writable<User>({
 	pk_userid: '',
 	username: '',
-	location: null
+	location: null,
+	teams: null
 });
 
 export const currentLocation = writable("");

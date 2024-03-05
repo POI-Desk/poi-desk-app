@@ -3,13 +3,18 @@
   import { usersInTeam } from "$lib/queries/userQuerries";
   import type { User } from "$lib/types/userTypes";
   import { selectedUsers } from "$lib/stores/extendedUserStore";
+  import { user } from "$lib/userStore";
+  import { getTeamsOfLeader } from "$lib/queries/teamQueries";
 
   $: allUsers = $usersInTeam?.data?.getUsersInTeam;
+  $: teamsOfLeader = $getTeamsOfLeader?.data?.getTeamsOfLeader
 
   let newSelectedUsers: User[] = [];
 
   onMount(async () => {
-    await usersInTeam.fetch();
+    await getTeamsOfLeader.fetch({variables: {userid: $user.pk_userid}});
+    $user.teams = teamsOfLeader;
+    await usersInTeam.fetch({variables: {teamid: $user.teams[0].pk_teamid }});
   });
 
   function handleUserSelection(user: User) {
@@ -35,7 +40,6 @@
         class:variant-filled-secondary={!newSelectedUsers.includes(user)}
         class:variant-filled-primary={newSelectedUsers.includes(user)}
       >
-
         {user?.username}
       </button>
     {/each}
