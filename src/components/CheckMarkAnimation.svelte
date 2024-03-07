@@ -15,7 +15,7 @@
   }
 </script>
 
-<div class="fixed top-0 h-screen w-screen z-10" transition:scale={{ duration, start: 0.5, easing: quadOut }}>>
+<div class="fixed top-0 h-screen w-screen z-10" transition:scale={{ duration, start: 0.5, easing: quadOut }}>
   <div
     in:easeAnim="{{ duration }}"
     class="h-full w-full text-[24rem] flex justify-center items-center"

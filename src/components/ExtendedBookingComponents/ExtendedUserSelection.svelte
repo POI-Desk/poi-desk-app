@@ -4,6 +4,7 @@
   import { selectedUsers } from "$lib/stores/extendedUserStore";
   import { user } from "$lib/stores/userStore";
   import { getMembersOfTeam, getTeamsOfLeader } from "$lib/queries/teamQueries";
+  import { CachePolicy } from "$houdini";
 
   $: teamMembers = $getMembersOfTeam?.data?.getMembersOfTeam;
   $: teamsOfLeader = $getTeamsOfLeader?.data?.getTeamsOfLeader;
@@ -11,9 +12,11 @@
   let newSelectedUsers: User[] = [];
 
   onMount(async () => {
-    await getTeamsOfLeader.fetch({variables: {userid: $user.pk_userid}});
-    $user.teams = teamsOfLeader;
-    await getMembersOfTeam.fetch({variables: {teamid: $user.teams[0].pk_teamid }});
+    await getTeamsOfLeader.fetch({ variables: { userid: $user.pk_userid }, policy: CachePolicy.NetworkOnly }).then(async () => {
+      $user.teams = teamsOfLeader;
+      console.log($user);
+      await getMembersOfTeam.fetch({ variables: { teamid: $user.teams[0].pk_teamid }, policy: CachePolicy.NetworkOnlyt });
+    });
   });
 
   function handleUserSelection(user: User) {
@@ -45,4 +48,6 @@
   {/if}
 </div>
 
-<button class="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 btn variant-filled-primary mt-5" on:click={() => {$selectedUsers = newSelectedUsers}}>Confirm Selection</button>
+<button class="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 btn variant-filled-primary mt-5"
+        on:click={() => {$selectedUsers = newSelectedUsers}}>Confirm Selection
+</button>

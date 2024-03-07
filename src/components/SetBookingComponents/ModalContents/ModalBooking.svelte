@@ -25,6 +25,7 @@
   import { floorid } from "$lib/stores/floorStore";
   import { getDeskById } from "$lib/queries/deskQueries";
   import { onMount } from "svelte";
+  import { playAnimation } from "$lib/services/animationService";
 
   $interval.morning = false;
   $interval.afternoon = false;
@@ -54,6 +55,8 @@
 
     if (value.data?.bookDesk == null) {
       toastStore.trigger(cantBook);
+      modalStore.close();
+      return;
     }
 
     await getBookingsByDate.fetch({
@@ -62,6 +65,7 @@
     });
 
     $refreshDesks = !$refreshDesks;
+    playAnimation();
     modalStore.close();
   }
 

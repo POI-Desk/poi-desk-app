@@ -10,25 +10,22 @@
   import { searchedUser } from "$lib/stores/searchStore";
   import CheckMarkAnimation from "$components/CheckMarkAnimation.svelte";
   import { Check } from "lucide-svelte";
-
-  let visible = false;
-
-  function playAnimation() {
-    visible = true;
-    setTimeout(() => {
-      visible = false;
-    }, 1000);
-  }
+  import { visible } from "$lib/services/animationService";
+  import { onMount } from "svelte";
+  import { curPage } from "$lib/stores/pageStore";
 
   function handleUserClicked(event) {
     $searchedUser = event.detail;
     goto("/bookings/" + event.detail.username);
   }
+  onMount(() => {
+    $curPage = "/";
+  })
 
-  $isExtended = false; // TODO idk if this is a good idea.. but it works
+  $isExtended = false;
 </script>
 
-{#if visible}
+{#if $visible}
   <CheckMarkAnimation>
     <Check size="300" color="#8CAE68"/>
   </CheckMarkAnimation>

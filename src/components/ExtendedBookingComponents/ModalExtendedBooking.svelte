@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getModalStore } from "@skeletonlabs/skeleton";
+  import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
   import { interval } from "$lib/stores/bookingStore";
   import { dateValue } from "$lib/stores/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
@@ -9,7 +9,15 @@
   import { Armchair, ArrowLeft, Building, Calendar, Clock, Cuboid, MapPin, User, X } from "lucide-svelte";
   import { refreshDesks } from "$lib/stores/refreshStore";
   import { selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
+  import { playAnimation } from "$lib/services/animationService";
 
+  const toastStore = getToastStore();
+
+  const cantBook: ToastSettings = {
+    message: "A user already has a booking at that time!",
+    timeout: 3000,
+    background: "variant-filled-error"
+  };
 
   async function finishBooking() {
     const extendedid = "EXTID" + new Date().getTime() + "+" + $user.pk_userid;
@@ -26,9 +34,16 @@
           extendedid: extendedid
         }
       });
+
+      if (value.data?.bookDesk == null) {
+        toastStore.trigger(cantBook);
+        modalStore.close();
+        return;
+      }
     }
     $selectedDesks = [];
     $refreshDesks = !$refreshDesks;
+    playAnimation();
     modalStore.close();
   }
 

@@ -122,10 +122,12 @@
     <span>Add Users</span>
     <SearchBar showUsrInfo={false} on:clicked={handleUserClicked} />
 
-    <div>
+    <div class="flex flex-col gap-1">
       {#each newMembers as newMember}
-        <button on:click={() => handleRemoveNewUser(newMember)}>x</button>
-        <span>{newMember.username}</span>
+        <div class="flex flex-row gap-1 align-middle">
+          <button class="flex align-middle font-bold" on:click={() => handleRemoveNewUser(newMember)}>x</button>
+          <span>{newMember.username}</span>
+        </div>
       {/each}
     </div>
 

@@ -79,7 +79,7 @@
     <input class="input" type="password" placeholder="Enter the user's password" bind:value={password}>
     <input class="input" type="password" placeholder="Confirm the user's password" bind:value={passwordAgain}>
 
-    <button class="btn variant-filled-secondary" disabled={saveUserDisabled || password !== passwordAgain || !password}
+    <button class="btn variant-filled-primary" disabled={saveUserDisabled || password !== passwordAgain || !password}
             on:click={handleSaveUserClick}>Save user
     </button>
   </div>
