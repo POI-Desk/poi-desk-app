@@ -9,24 +9,6 @@
   import SearchBar from "$components/SearchBar.svelte";
   import { searchedUser } from "$lib/searchStore";
 
-  // onMount(() => {
-  //   if (!$user.pk_userid) {
-  //     goto("/login");
-  //   }
-  // });
-
-  //
-  // let visible = false;
-  // let panelVisible = false;
-  //
-  // function togglePanel() {
-  // 	panelVisible = !panelVisible;
-  // }
-  //
-  // function hidePanel() {
-  // 	panelVisible = false;
-  // }
-  //
   // function spinnnnn() {
   // 	visible = true;
   // 	setTimeout(() => {

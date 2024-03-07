@@ -26,7 +26,7 @@
 <div class="group w-fit">
 	<div class="dropdown">
 		<input
-			class="input border-none"
+			class="input border-none shadow-md"
 			type="date"
 			id="calendar"
 			min="{today}"

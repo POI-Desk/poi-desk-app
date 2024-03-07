@@ -31,6 +31,7 @@
 {:then fetched}
   {#each bookings ?? [] as booking}
     <BookingCard
+      canEdit="{true}"
       thisBooking={booking}
     />
   {/each}

@@ -5,6 +5,7 @@
   import { MapPin, Clock, Building, MonitorSmartphone, Cuboid } from "lucide-svelte";
 
 
+  export let canEdit = true;
   const dispatch = createEventDispatcher();
 
   function deleteBooking(id: string) {
@@ -22,8 +23,10 @@
   };
 
   function toggleModal() {
-    $currentBooking = thisBooking;
-    modalStore.trigger(modal);
+    if (canEdit) {
+      $currentBooking = thisBooking;
+      modalStore.trigger(modal);
+    }
   }
 
   const bookingPropertyClasses: string = "text-base grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center py-1 pl-3";
@@ -38,10 +41,8 @@
   <div class="w-1/3 rounded-lg">
     <img
       class="rounded-3xl w-full h-full object-cover"
-      src="/locationImages/Wien.png"
-      alt=""
-      srcset=""
-    />
+      src="/locationImages/{thisBooking.desk?.map?.floor?.building?.location?.locationname}.png"
+      alt="{thisBooking.desk?.map?.floor?.building?.location?.locationname}">
   </div>
 
   <!-- svelte-ignore a11y-click-events-have-key-events -->

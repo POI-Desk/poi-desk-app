@@ -172,7 +172,7 @@
   <div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
     <div class="dropdown w-full">
       <input
-        class="input my-1 w-full rounded-full py-3 border-none"
+        class="input my-1 w-full rounded-full py-3 border-none shadow-md"
         class:pl-20={showUsrInfo}
         class:pl-3={!showUsrInfo}
         placeholder="Search..."
