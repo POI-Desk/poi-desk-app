@@ -1,7 +1,7 @@
 <script lang="ts">
   import { graphql } from "$houdini";
   import type { User } from "$lib/types/userTypes";
-  import { getBookings } from "$lib/bookingStore";
+  import { getBookingsOfUserAndTime } from "$lib/bookingStore";
   import { dateValue } from "$lib/dateStore";
   import { createEventDispatcher, onMount } from "svelte";
   import { goto } from "$app/navigation";
@@ -61,52 +61,38 @@
     }
   }
 
-  // let userInfo: string = "";
   let userLocation: string = "";
 
-  $: bookingsOfUser = $getBookings.data?.getBookingsByUserid;
+  $: bookingsOfUser = $getBookingsOfUserAndTime.data?.getBookingsByUserAndCurrent;
 
   let typedUsername: string;
-  let typedUser: User;
   let mpUserUserinfo = new Map();
 
   async function getUserInfo(user: User) {
-    typedUser = user;
-    await getBookings.fetch({ variables: { userid: user.pk_userid ?? "" } });
+    await getBookingsOfUserAndTime.fetch({ variables: { userid: user.pk_userid ?? "", isCurrent: true } });
     if (bookingsOfUser?.length ?? 0 > 0) {
       for (const booking of bookingsOfUser ?? []) {
-        if (booking?.date == $dateValue) {
+        if (booking?.date === $dateValue) {
           await getDesk.fetch({ variables: { bookingid: booking.pk_bookingid ?? "" } }).then(() => {
             let desk = $getDesk.data?.getBookingById?.desk;
-            userLocation = desk?.floor?.building.location?.locationname ?? "";
+            userLocation = desk?.map?.floor?.building.location?.locationname ?? "";
             if (booking.ismorning && booking.isafternoon) {
               mpUserUserinfo.set(user.pk_userid, "today in " + userLocation);
-              //user.userInfo = 'today in ' + userLocation;
             } else if (booking.ismorning) {
               mpUserUserinfo.set(user.pk_userid, "this morning in " + userLocation);
-              //user.userInfo = 'this morning in ' + userLocation;
             } else if (booking.isafternoon) {
               mpUserUserinfo.set(user.pk_userid, "this afternoon in " + userLocation);
-              //user.userInfo = 'this afternoon in ' + userLocation;
             }
           });
           break;
         } else {
           mpUserUserinfo.set(user.pk_userid, "not in office today");
-          //user.userInfo = 'not in office today';
         }
       }
     } else {
       mpUserUserinfo.set(user.pk_userid, "not in office today");
-      //user.userInfo = 'not in office today';
     }
-    console.log(
-      user.username +
-      " -> userLocation: " +
-      userLocation +
-      "; userInfo: " +
-      mpUserUserinfo.get(user.pk_userid)
-    );
+
     return user;
   }
 

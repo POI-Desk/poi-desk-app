@@ -1,16 +1,16 @@
 <script>
-    import { getBookings } from "$lib/bookingStore";
+    import { getBookingsOfUserAndTime } from "$lib/bookingStore";
     import { searchedUser } from "$lib/searchStore";
     import { Building, Building2, Clock10, MapPin, MonitorSmartphone } from 'lucide-svelte';
 </script>
 
 
 <div class="mt-4 gap-2">
-    {#await getBookings.fetch({ variables: { userid: $searchedUser.pk_userid ?? '', isCurrent: true } })}
+    {#await getBookingsOfUserAndTime.fetch({ variables: { userid: $searchedUser.pk_userid ?? '', isCurrent: true } })}
         <p>Loading...</p>
     {:then bookings}
-        {#if bookings.data?.getBookingsByUserid?.length ?? 0 > 0}
-            {#each bookings.data?.getBookingsByUserid ?? [] as booking}
+        {#if bookings.data?.getBookingsByUserAndCurrent?.length ?? 0 > 0}
+            {#each bookings.data?.getBookingsByUserAndCurrent ?? [] as booking}
             <div class="flex flex-row justify-between border mt-1 rounded-xl ml-2 mr-2 p-2" style="background-color: #d4d6d9;">
                 <div class="self-center w-1/2">
                     <img src="/locationImages/{booking.desk?.map?.floor?.building?.location?.locationname}.png" alt="wien">

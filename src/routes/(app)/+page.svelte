@@ -4,15 +4,10 @@
   import BuildingSelection from "$components/BuildingSelection.svelte";
   import FloorSelection from "$components/FloorSelection.svelte";
   import FloorMap from "$components/MapComponents/FloorMap.svelte";
-  import { onMount } from "svelte";
-  import { user } from "$lib/userStore";
   import { goto } from "$app/navigation";
   import { isExtended } from "$lib/stores/extendedUserStore";
-  import { LightSwitch } from "@skeletonlabs/skeleton";
   import SearchBar from "$components/SearchBar.svelte";
-  import IntervalSelection from "$components/ExtendedBookingComponents/IntervalSelection.svelte";
-  import { MapPin, Search } from "lucide-svelte";
-	import { searchedUser } from "$lib/searchStore";
+  import { searchedUser } from "$lib/searchStore";
 
   // onMount(() => {
   //   if (!$user.pk_userid) {

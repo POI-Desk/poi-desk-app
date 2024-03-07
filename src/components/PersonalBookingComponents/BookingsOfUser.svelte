@@ -1,6 +1,6 @@
 <script lang="ts">
   import { user } from "$lib/userStore";
-  import { getBookings, userBookings } from "$lib/bookingStore";
+  import { getBookingsOfUserAndTime, userBookings } from "$lib/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
   import { CachePolicy } from "$houdini";
 	import { onMount } from "svelte";
@@ -8,43 +8,22 @@
 
   export let isCurrentBookings = true;
   $: $userBookings = bookings as any;
-  $: console.log("User:", $user?.pk_userid);
   $: usrid = $user?.pk_userid;
+  $: bookings = $getBookingsOfUserAndTime.data?.getBookingsByUserAndCurrent;
 
   onMount(() => {
-    getBookings.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
+    getBookingsOfUserAndTime.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
   });
 
-  $: bookings = $getBookings.data?.getBookingsByUserid;
 
   $: {
     if ($user.pk_userid != "") {
-      getBookings.fetch({ variables: { userid: $user.pk_userid ?? "", isCurrent: isCurrentBookings } });
+      getBookingsOfUserAndTime.fetch({ variables: { userid: $user.pk_userid ?? "", isCurrent: isCurrentBookings } });
     }
   }
-  
-  // let bookings: any;
-	//
-	// const hey = async () => {
-	// 	await getBookings.fetch({
-	// 		variables: { userid: $user?.pk_userid, isCurrent: isCurrentBookings },
-	// 		policy: CachePolicy.NetworkOnly
-	// 	});
-	// 	console.log($getBookings.data?.getBookingsByUserid);
-	// };
-	//
-	// $: {
-	// 	hey();
-	// }
-	//
-	// $: {
-	// 	bookings = $getBookings.data?.getBookingsByUserid;
-	// 	$userBookings = bookings;
-	// }
-
 </script>
 
-{#await getBookings.fetch({
+{#await getBookingsOfUserAndTime.fetch({
   variables: { userid: usrid, isCurrent: isCurrentBookings },
   policy: CachePolicy.NetworkOnly
 })}
@@ -60,11 +39,3 @@
 {#if (bookings?.length === 0)}
   <p class="text-xl">No future bookings</p>
 {/if}
-
-<!--<div class="flex flex-wrap">-->
-<!--	{#if bookings}-->
-<!--		{#each $userBookings ?? [] as booking}-->
-<!--			<BookingCard thisBooking={booking} />-->
-<!--		{/each}-->
-<!--	{/if}-->
-<!--</div>-->
