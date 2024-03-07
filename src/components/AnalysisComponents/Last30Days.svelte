@@ -2,7 +2,7 @@
 	import BarChart from '$components/AnalysisComponents/BarChart.svelte';
 	import { onMount } from 'svelte';
 	import { MonthlyBookingsByLocation } from '$lib/queries/analysisQueries';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import Chart from 'chart.js/auto';
 
 	async function loadDays() {

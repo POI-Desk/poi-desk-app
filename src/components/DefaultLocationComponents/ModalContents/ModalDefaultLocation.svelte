@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { defaultLocation } from '$lib/mutations/location'
 	//export let parent: any;

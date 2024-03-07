@@ -3,7 +3,7 @@
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
 	import type { AnalysisResult, AnalysisComparisonInfo } from '$lib/types/analysisResultType';
-	import { user } from '$lib/userStore.js';
+	import { user } from '$lib/stores/userStore.js';
 	import {
 		MonthlyBookingsByLocation,
 		MonthlyBookingsByBuilding,

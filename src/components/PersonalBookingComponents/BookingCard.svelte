@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-  import { currentBooking } from "$lib/bookingStore";
+  import { currentBooking } from "$lib/stores/bookingStore";
   import { MapPin, Clock, Building, MonitorSmartphone, Cuboid } from "lucide-svelte";
 
 

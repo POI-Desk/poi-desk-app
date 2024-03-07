@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { admin, admins, newAdmins } from "$lib/superAdminStore";
+	import { admin, admins, newAdmins } from "$lib/stores/superAdminStore";
 
 	function handleSelect() {
     if (!$newAdmins.includes($admin)) {

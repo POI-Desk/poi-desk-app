@@ -11,8 +11,8 @@
     locationNames,
     locationToEdit,
     refreshLocations
-  } from "$lib/superAdminStore";
-  import { showAddLocation } from "$lib/locationStore";
+  } from "$lib/stores/superAdminStore";
+  import { showAddLocation } from "$lib/stores/locationStore";
   import { PenLine, Trash2 } from "lucide-svelte";
 
   $: locations = $getLocations?.data?.getAllLocations;

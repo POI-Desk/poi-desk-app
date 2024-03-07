@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { buildingToEdit, newFloors } from "$lib/superAdminStore";
+  import { buildingToEdit, newFloors } from "$lib/stores/superAdminStore";
   import InputField from "./BuildingInput.svelte";
   import { v4 as uuidv4 } from "uuid";
   import { Trash2 } from "lucide-svelte";

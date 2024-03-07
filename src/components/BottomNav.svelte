@@ -3,7 +3,7 @@
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { goto } from "$app/navigation";
   import { isExtended } from "$lib/stores/extendedUserStore";
-  import { curPage } from "$lib/pageStore";
+  import { curPage } from "$lib/stores/pageStore";
 </script>
 
 <!-- TODO still some problems when switching pages -->

@@ -12,9 +12,9 @@
     locationNames,
     locationToEdit, newAdmins,
     refreshLocations
-  } from "$lib/superAdminStore";
+  } from "$lib/stores/superAdminStore";
   import AddBuilding from "./AddBuilding.svelte";
-  import { getAdminUsers } from "$lib/queries/userQuerries";
+  import { getAdminUsers } from "$lib/queries/userQueries";
   import type { User } from "$lib/types/userTypes";
   import AddAdminToLocation from "./AddAdminToLocation.svelte";
   import { PenLine, Trash2 } from "lucide-svelte";

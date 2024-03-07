@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import type { User } from "$lib/types/userTypes";
   import { selectedUsers } from "$lib/stores/extendedUserStore";
-  import { user } from "$lib/userStore";
+  import { user } from "$lib/stores/userStore";
   import { getMembersOfTeam, getTeamsOfLeader } from "$lib/queries/teamQueries";
 
   $: teamMembers = $getMembersOfTeam?.data?.getMembersOfTeam;

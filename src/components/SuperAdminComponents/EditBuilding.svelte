@@ -2,7 +2,7 @@
   import { CachePolicy } from "$houdini";
   import { deleteFloor } from "$lib/mutations/floors";
   import { getFloors } from "$lib/queries/floorQueries";
-  import { buildingToEdit, changedBuildings, floorsToEdit, refreshLocations } from "$lib/superAdminStore";
+  import { buildingToEdit, changedBuildings, floorsToEdit, refreshLocations } from "$lib/stores/superAdminStore";
   import { Trash2 } from "lucide-svelte";
 
   $: floors = $getFloors.data?.getFloorsInBuilding;

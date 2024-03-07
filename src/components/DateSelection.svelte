@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { selectedDesks } from "$lib/stores/extendedUserStore";
-	import { dateValue, maxBookingValue, today } from "$lib/dateStore";
+	import { dateValue, maxBookingValue, today } from "$lib/stores/dateStore";
 	import { getBookingsByDate } from '$lib/queries/booking';
-	import { floorid } from '$lib/floorStore';
+	import { floorid } from '$lib/stores/floorStore';
 
 	$dateValue = new Date().toISOString().split('T')[0];
 

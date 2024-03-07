@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 	import { graphql } from '$houdini';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 
 
   const createOrLoginAsUser = graphql(`

@@ -5,7 +5,7 @@
 	import { IdentifierType } from '$houdini/graphql/enums.js';
 	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
 	import type { Floor } from '$lib/types/floorType';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import type { PredictionSelection, PredictionDays } from '$lib/types/predictionType';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import { BarChart3, File, Info } from 'lucide-svelte';

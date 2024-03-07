@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { building } from '$app/environment';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import { YearsSinceStart } from '$lib/queries/analysisQueries';

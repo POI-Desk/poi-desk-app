@@ -2,7 +2,7 @@
   import { deskProps, wallThickness } from "$lib/map/props";
   import { createEventDispatcher } from "svelte";
   import { isExtended } from "$lib/stores/extendedUserStore";
-  import { interval } from "$lib/bookingStore.js";
+  import { interval } from "$lib/stores/bookingStore.js";
 
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;

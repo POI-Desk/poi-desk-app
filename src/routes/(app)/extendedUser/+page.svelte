@@ -6,9 +6,9 @@
   import FloorSelection from "$components/FloorSelection.svelte";
   import FloorMap from "$components/MapComponents/FloorMap.svelte";
   import { isExtended, selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
-  import { interval } from "$lib/bookingStore";
+  import { interval } from "$lib/stores/bookingStore";
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
-  import { dateValue } from "$lib/dateStore";
+  import { dateValue } from "$lib/stores/dateStore";
   import { fade } from "svelte/transition";
   import ExtendedUserSelection from "$components/ExtendedBookingComponents/ExtendedUserSelection.svelte";
 

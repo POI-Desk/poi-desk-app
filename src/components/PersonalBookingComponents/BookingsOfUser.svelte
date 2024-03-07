@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { user } from "$lib/userStore";
-  import { getBookingsOfUserAndTime, userBookings } from "$lib/bookingStore";
+  import { user } from "$lib/stores/userStore";
+  import { getBookingsOfUserAndTime, userBookings } from "$lib/stores/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
   import { CachePolicy } from "$houdini";
 	import { onMount } from "svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mapObjectType } from '$lib/map/props';
-	import { getPublishedMapOnFloor } from '$lib/queries/map';
+	import { getPublishedMapOnFloor } from '$lib/queries/mapQueries';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher } from 'svelte';
 

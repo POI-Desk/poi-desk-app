@@ -1,9 +1,9 @@
 <script lang="ts">
   import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
-  import { displayedTime, interval } from "$lib/bookingStore";
-  import { dateValue, maxBookingDate, todaysDate } from "$lib/dateStore";
+  import { displayedTime, interval } from "$lib/stores/bookingStore";
+  import { dateValue, maxBookingDate, todaysDate } from "$lib/stores/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
-  import { user } from "$lib/userStore";
+  import { user } from "$lib/stores/userStore";
   import BookingDeskState from "$components/SetBookingComponents/BookingDeskState.svelte";
 
   //icons
@@ -19,10 +19,10 @@
     MapPin,
     X
   } from "lucide-svelte";
-  import { refreshDesks } from "$lib/refreshStore";
+  import { refreshDesks } from "$lib/stores/refreshStore";
   import { getBookingsByDate } from "$lib/queries/booking";
   import { CachePolicy } from "$houdini";
-  import { floorid } from "$lib/floorStore";
+  import { floorid } from "$lib/stores/floorStore";
   import { getDeskById } from "$lib/queries/deskQueries";
   import { onMount } from "svelte";
 

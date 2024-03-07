@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { user } from "$lib/userStore";
-  import { buildingid } from "$lib/buildingStore";
+  import { user } from "$lib/stores/userStore";
+  import { buildingid } from "$lib/stores/buildingStore";
 	import { getBuildings } from '$lib/queries/buildingQueries';
 
   import { getFloors } from "$lib/queries/floorQueries";

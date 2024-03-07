@@ -1,8 +1,8 @@
 <script lang="ts">
   import { graphql } from "$houdini";
   import type { User } from "$lib/types/userTypes";
-  import { getBookingsOfUserAndTime } from "$lib/bookingStore";
-  import { dateValue } from "$lib/dateStore";
+  import { getBookingsOfUserAndTime } from "$lib/stores/bookingStore";
+  import { dateValue } from "$lib/stores/dateStore";
   import { createEventDispatcher, onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { MapPin, Search } from "lucide-svelte";
@@ -46,12 +46,12 @@
       })
       .then(() => {
         let users = $getUsers.data?.getAllUsers.content;
-        searchUsers = users.map((user) => ({
+        searchUsers = users?.map((user) => ({
           pk_userid: user?.pk_userid,
           username: user?.username,
           location: null,
           userInfo: ""
-        }));
+        })) ?? [];
         hasNextPage = $getUsers.data?.getAllUsers?.hasNextPage ?? false;
       });
 

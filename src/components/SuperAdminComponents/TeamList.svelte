@@ -2,7 +2,7 @@
   import { getAllTeams } from "$lib/queries/teamQueries";
   import { CachePolicy } from "$houdini";
   import { onMount } from "svelte";
-	import { teamToEdit, refreshTeams, buildingToEdit } from "$lib/superAdminStore";
+	import { teamToEdit, refreshTeams, buildingToEdit } from "$lib/stores/superAdminStore";
   import { deleteTeam } from "$lib/mutations/teams";
 	import { PenLine, Trash2 } from "lucide-svelte";
 

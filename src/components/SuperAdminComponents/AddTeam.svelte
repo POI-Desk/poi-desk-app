@@ -5,8 +5,8 @@
   import SearchBar from "$components/SearchBar.svelte";
   import type { User } from "$lib/types/userTypes";
   import { addTeam } from "$lib/mutations/teams";
-  import { getExtendedUsers } from "$lib/queries/userQuerries";
-  import { showTeams } from "$lib/superAdminStore";
+  import { getExtendedUsers } from "$lib/queries/userQueries";
+  import { showTeams } from "$lib/stores/superAdminStore";
 
   let newTeamClicked: boolean = false;
   let saveTeamDisabled: boolean = true;

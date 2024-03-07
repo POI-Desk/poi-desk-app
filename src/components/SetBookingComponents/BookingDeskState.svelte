@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { displayedTime, interval } from '$lib/bookingStore';
-	import { dateValue } from '$lib/dateStore';
+	import { displayedTime, interval } from '$lib/stores/bookingStore';
+	import { dateValue } from '$lib/stores/dateStore';
 	import { getDeskById } from '$lib/queries/deskQueries';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { v4 as uuidv4 } from "uuid";
   import { getLocations } from "$lib/queries/locationQueries";
-  import { getAdminUsers } from "$lib/queries/userQuerries";
+  import { getAdminUsers } from "$lib/queries/userQueries";
   import { onMount } from "svelte";
-  import { showAddLocation } from "$lib/locationStore";
+  import { showAddLocation } from "$lib/stores/locationStore";
   import AddAdminToLocation from "./AddAdminToLocation.svelte";
-  import { admins, isSaveDisabled, locationNames, locationToEdit, newAdmins, newLocation } from "$lib/superAdminStore";
+  import { admins, isSaveDisabled, locationNames, locationToEdit, newAdmins, newLocation } from "$lib/stores/superAdminStore";
   import { CachePolicy } from "$houdini";
   import type { User } from "$lib/types/userTypes";
 

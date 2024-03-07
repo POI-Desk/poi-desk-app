@@ -2,7 +2,7 @@
   import EditUser from "$components/SuperAdminComponents/EditUser.svelte";
   import SearchBar from "$components/SearchBar.svelte";
   import type { User } from "$lib/types/userTypes";
-  import { showTeams, teamToEdit } from "$lib/superAdminStore";
+  import { showTeams, teamToEdit } from "$lib/stores/superAdminStore";
   import AddTeam from "$components/SuperAdminComponents/AddTeam.svelte";
   import AddUser from "$components/SuperAdminComponents/AddUser.svelte";
   import TeamList from "$components/SuperAdminComponents/TeamList.svelte";

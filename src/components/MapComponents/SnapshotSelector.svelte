@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CachePolicy, graphql } from '$houdini';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import {
 		ListBox,
 		ListBoxItem,

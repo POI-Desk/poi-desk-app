@@ -2,8 +2,8 @@
 	import { Network } from 'lucide-svelte';
 	import { defaultLocation } from '$lib/mutations/location';
 	import { getAllLocations } from '$lib/queries/floorQueries';
-	import { getUserById } from '$lib/queries/userQuerries';
-	import { user } from '$lib/userStore';
+	import { getUserById } from '$lib/queries/userQueries';
+	import { user } from '$lib/stores/userStore';
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { CachePolicy } from '$houdini';
 

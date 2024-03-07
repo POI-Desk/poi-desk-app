@@ -1,8 +1,8 @@
 <script lang="ts">
   import { CachePolicy } from "$houdini";
-  import { interval } from "$lib/bookingStore";
-  import { dateValue } from "$lib/dateStore";
-  import { floorid } from "$lib/floorStore";
+  import { interval } from "$lib/stores/bookingStore";
+  import { dateValue } from "$lib/stores/dateStore";
+  import { floorid } from "$lib/stores/floorStore";
   import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from "$lib/map/props";
   import { getBookingsByDate } from "$lib/queries/booking";
   import type { MapTransform } from "$lib/types/mapTypes";
@@ -21,10 +21,10 @@
   import RoomSvg from "./MapObjects/RoomSVG.svelte";
   import WallSvg from "./MapObjects/WallSVG.svelte";
   import { isExtended, selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
-  import { refreshDesks } from "$lib/refreshStore";
-  import { buildingid } from "$lib/buildingStore";
+  import { refreshDesks } from "$lib/stores/refreshStore";
+  import { buildingid } from "$lib/stores/buildingStore";
 	import Label from './MapObjects/Label.svelte';
-	import { getPublishedMapOnFloor } from "$lib/queries/map";
+	import { getPublishedMapOnFloor } from "$lib/queries/mapQueries";
 	import type { Desk } from "$lib/types/deskTypes";
 	import { getDeskById } from "$lib/queries/deskQueries";
 

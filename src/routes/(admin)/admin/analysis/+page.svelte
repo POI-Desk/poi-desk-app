@@ -16,7 +16,7 @@
 		AnalysisComparisonInfoBoth
 	} from '$lib/types/analysisResultType';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';

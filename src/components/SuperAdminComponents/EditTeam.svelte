@@ -1,7 +1,7 @@
 <script lang="ts">
   import { addMemberToTeam, changeNameOfTeam, removeMembersOfTeam } from "$lib/mutations/teams";
   import { getMembersOfTeam } from "$lib/queries/teamQueries";
-  import { refreshTeams, teamToEdit } from "$lib/superAdminStore";
+  import { refreshTeams, teamToEdit } from "$lib/stores/superAdminStore";
   import { CachePolicy } from "$houdini";
   import { onMount } from "svelte";
   import type { User } from "$lib/types/userTypes";

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { getModalStore } from "@skeletonlabs/skeleton";
-  import { interval } from "$lib/bookingStore";
-  import { dateValue } from "$lib/dateStore";
+  import { interval } from "$lib/stores/bookingStore";
+  import { dateValue } from "$lib/stores/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
-  import { user } from "$lib/userStore";
+  import { user } from "$lib/stores/userStore";
 
   //icons
   import { Armchair, ArrowLeft, Building, Calendar, Clock, Cuboid, MapPin, User, X } from "lucide-svelte";
-  import { refreshDesks } from "$lib/refreshStore";
+  import { refreshDesks } from "$lib/stores/refreshStore";
   import { selectedDesks, selectedUsers } from "$lib/stores/extendedUserStore";
 
 

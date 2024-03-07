@@ -11,8 +11,8 @@
 	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
-	import { user } from "$lib/userStore";
-	import { getUserById } from "$lib/queries/userQuerries";
+	import { user } from "$lib/stores/userStore";
+	import { getUserById } from "$lib/queries/userQueries";
 
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 

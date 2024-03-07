@@ -7,7 +7,9 @@
   import { goto } from "$app/navigation";
   import { isExtended } from "$lib/stores/extendedUserStore";
   import SearchBar from "$components/SearchBar.svelte";
-  import { searchedUser } from "$lib/searchStore";
+  import { searchedUser } from "$lib/stores/searchStore";
+  import { modeUserPrefers, setModeCurrent } from "@skeletonlabs/skeleton";
+  import { onMount } from "svelte";
 
   // function spinnnnn() {
   // 	visible = true;
@@ -22,6 +24,10 @@
   }
 
   $isExtended = false; // TODO idk if this is a good idea.. but it works
+
+  onMount(() => {
+    setModeCurrent($modeUserPrefers ?? true);
+  })
 </script>
 
 <!--{#if visible}-->
@@ -44,5 +50,4 @@
   <FloorSelection />
 
   <BuildingSelection />
-
 </div>

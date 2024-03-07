@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentBooking, displayedTime, getBookings, userBookings } from "$lib/bookingStore";
+  import { currentBooking, displayedTime, getBookings, userBookings } from "$lib/stores/bookingStore";
   import { delBooking, editBooking } from "$lib/mutations/booking";
   import { getBookingsByDateBetween } from "$lib/queries/booking";
   import {
@@ -26,7 +26,7 @@
   } from "lucide-svelte";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import type { Booking } from "$lib/types/bookingTypes";
-  import { user } from "$lib/userStore";
+  import { user } from "$lib/stores/userStore";
   import { CachePolicy, graphql } from "$houdini";
 	import { onMount } from "svelte";
 

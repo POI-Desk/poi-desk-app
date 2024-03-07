@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
-	import { user } from '$lib/userStore.js';
+	import { user } from '$lib/stores/userStore.js';
 
 	export let data: any;
 	export let title: any;

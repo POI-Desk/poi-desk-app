@@ -1004,7 +1004,7 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<div class="absolute p-2 flex gap-1 w-full bg-red-500">
+	<div class="absolute p-2 flex gap-1 w-full">
 		<!--temporary-->
 		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
 		<!---->

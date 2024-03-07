@@ -1,6 +1,6 @@
 <script lang="ts">
     import { changePassword } from "$lib/mutations/user";
-    import { user } from '$lib/userStore';
+    import { user } from '$lib/stores/userStore';
 
     let oldPassword: string;
     let newPassword: string;

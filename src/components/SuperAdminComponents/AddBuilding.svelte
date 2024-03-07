@@ -1,13 +1,13 @@
 <script lang="ts">
   import { getBuildings } from "$lib/queries/buildingQueries";
   import { onMount } from "svelte";
-  import { locationid } from "$lib/locationStore";
+  import { locationid } from "$lib/stores/locationStore";
   import {
     buildingToEdit,
     editBuildingclicked,
     isSaveDisabled, locationToEdit,
     newBuildings,
-  } from "$lib/superAdminStore";
+  } from "$lib/stores/superAdminStore";
   import BuildingInput from "./BuildingInput.svelte";
   import { v4 as uuidv4 } from "uuid";
   import { PenLine, Trash2 } from "lucide-svelte";

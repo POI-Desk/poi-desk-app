@@ -1,10 +1,10 @@
 <script lang="ts">
 	// TODO: BITTE KEINE PAGE SONDERN MODAL @LEOPOLD
 	import type { PageData } from '../../../../$houdini/types/src/routes';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { floorid } from '$lib/floorStore';
-	import { buildingid } from '$lib/buildingStore';
+	import { floorid } from '$lib/stores/floorStore';
+	import { buildingid } from '$lib/stores/buildingStore';
 	import { getAllLocations } from '$lib/queries/floorQueries';
 
 

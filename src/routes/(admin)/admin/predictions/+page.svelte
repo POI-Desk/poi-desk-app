@@ -11,7 +11,7 @@
 	import PredictionOverview from '$components/AnalysisComponents/PredictionOverview.svelte';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
-	import { user } from '$lib/userStore';
+	import { user } from '$lib/stores/userStore';
 	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
 	import type { PredictionSelection } from '$lib/types/predictionType';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';

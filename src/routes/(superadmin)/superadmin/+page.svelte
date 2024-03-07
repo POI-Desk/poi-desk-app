@@ -24,9 +24,9 @@
     newFloors,
     newLocation,
     refreshLocations
-  } from "$lib/superAdminStore";
+  } from "$lib/stores/superAdminStore";
   import { CachePolicy } from "$houdini";
-  import { showAddLocation } from "$lib/locationStore";
+  import { showAddLocation } from "$lib/stores/locationStore";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
 
   /**
