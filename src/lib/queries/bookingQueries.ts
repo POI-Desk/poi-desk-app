@@ -31,3 +31,11 @@ export const getBookingsByDateBetween = graphql(`
 	}
 `);
 
+export const getBookingsByNumContains = graphql(`
+    query GetBookingsByBookingnumberContains($string: String!) {
+        getBookingsByBookingnumberContains(string: $string) {
+            pk_bookingid
+            bookingnumber
+        }
+    }
+`);

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { currentBooking, displayedTime, getBookings, userBookings } from "$lib/stores/bookingStore";
+  import { currentBooking, displayedTime, getBookingsOfUserAndTime } from "$lib/stores/bookingStore";
   import { delBooking, editBooking } from "$lib/mutations/booking";
-  import { getBookingsByDateBetween } from "$lib/queries/booking";
+  import { getBookingsByDateBetween, getBookingsByNumContains } from "$lib/queries/bookingQueries";
   import {
     getModalStore,
     getToastStore,
@@ -9,26 +9,14 @@
     ListBoxItem,
     popup,
     type PopupSettings,
+    RadioGroup,
+    RadioItem,
     type ToastSettings
   } from "@skeletonlabs/skeleton";
-  import {
-    Armchair,
-    ArrowLeft,
-    Building,
-    Calendar,
-    Check,
-    Clock,
-    Cuboid,
-    MapPin,
-    X,
-    Sun,
-    Moon
-  } from "lucide-svelte";
-  import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
+  import { Armchair, ArrowLeft, Building, Calendar, Check, Clock, Cuboid, MapPin, Moon, Sun, X } from "lucide-svelte";
   import type { Booking } from "$lib/types/bookingTypes";
   import { user } from "$lib/stores/userStore";
   import { CachePolicy, graphql } from "$houdini";
-	import { onMount } from "svelte";
 
   $: {
     if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -67,18 +55,6 @@
     closeQuery: ".fortniteDates"
   };
 
-  const getBookingsByNumContains = graphql(`
-		query GetBookingsByBookingnumberContains($string: String!) @load {
-			getBookingsByBookingnumberContains(string: $string) {
-				pk_bookingid
-				bookingnumber
-			}
-		}
-	`);
-
-  export const _GetBookingsByBookingnumberContainsVariables = () => {
-    return {};
-  };
 
   $: extendedBookings = $getBookingsByNumContains.data?.getBookingsByBookingnumberContains;
 
@@ -99,8 +75,7 @@
       await delBooking.mutate({ id });
     }
 
-    await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
-
+    await getBookingsOfUserAndTime.fetch({ variables: { userid: $user.pk_userid ?? "", isCurrent: true }, policy: CachePolicy.NetworkOnly });
     modalStore.close();
   };
 
@@ -130,24 +105,23 @@
       endDate: stringDates[stringDates.length - 1]
     }
   });
+
   $: bookings = $getBookingsByDateBetween.data?.getBookingsByDateBetween;
+
   $: if (bookings) {
     for (let i = 0; i < bookings.length; i++) {
       for (let j = 0; j < stringDates.length; j++) {
         if (bookings[i].date == stringDates[j]) {
           if (bookings[i].ismorning && bookings[i].isafternoon) {
-            console.log(bookings[i].date, stringDates[j], "deleted");
             stringDates.splice(j, 1);
           }
           if ($currentBooking.ismorning && !$currentBooking.isafternoon) {
             if (bookings[i].ismorning && !bookings[i].isafternoon) {
-              console.log(bookings[i].date, stringDates[j], "deleted");
               stringDates.splice(j, 1);
             }
           }
           if ($currentBooking.isafternoon && !$currentBooking.ismorning) {
             if (!bookings[i].ismorning && bookings[i].isafternoon) {
-              console.log(bookings[i].date, stringDates[j], "deleted");
               stringDates.splice(j, 1);
             }
           }

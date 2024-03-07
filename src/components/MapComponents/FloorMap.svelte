@@ -4,7 +4,7 @@
   import { dateValue } from "$lib/stores/dateStore";
   import { floorid } from "$lib/stores/floorStore";
   import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from "$lib/map/props";
-  import { getBookingsByDate } from "$lib/queries/booking";
+  import { getBookingsByDate } from "$lib/queries/bookingQueries";
   import type { MapTransform } from "$lib/types/mapTypes";
   import {
     ProgressBar,

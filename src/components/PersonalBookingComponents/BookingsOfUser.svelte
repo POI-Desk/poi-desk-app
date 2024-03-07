@@ -3,7 +3,7 @@
   import { getBookingsOfUserAndTime, userBookings } from "$lib/stores/bookingStore";
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
   import { CachePolicy } from "$houdini";
-	import { onMount } from "svelte";
+  import { onMount } from "svelte";
   import { curPage } from "$lib/stores/pageStore";
 
 
@@ -13,7 +13,7 @@
   $: bookings = $getBookingsOfUserAndTime.data?.getBookingsByUserAndCurrent;
 
   onMount(() => {
-    $curPage = "/bookings"
+    $curPage = "/bookings";
     getBookingsOfUserAndTime.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
   });
 
@@ -40,5 +40,9 @@
 {/await}
 
 {#if (bookings?.length === 0)}
-  <p class="text-xl">No future bookings</p>
+  {#if isCurrentBookings}
+    <p class="text-xl">No future bookings</p>
+  {:else }
+    <p class="text-xl">No past bookings</p>
+  {/if}
 {/if}

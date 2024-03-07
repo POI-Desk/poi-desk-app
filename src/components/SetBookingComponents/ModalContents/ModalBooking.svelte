@@ -20,7 +20,7 @@
     X
   } from "lucide-svelte";
   import { refreshDesks } from "$lib/stores/refreshStore";
-  import { getBookingsByDate } from "$lib/queries/booking";
+  import { getBookingsByDate } from "$lib/queries/bookingQueries";
   import { CachePolicy } from "$houdini";
   import { floorid } from "$lib/stores/floorStore";
   import { getDeskById } from "$lib/queries/deskQueries";
