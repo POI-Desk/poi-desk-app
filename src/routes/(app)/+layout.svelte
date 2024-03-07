@@ -7,7 +7,15 @@
 	import { arrow, autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 	import BottomNav from "$components/BottomNav.svelte";
 	import type { ModalComponent } from "@skeletonlabs/skeleton";
-	import { AppShell, initializeStores, Modal, storePopup, Toast } from "@skeletonlabs/skeleton";
+	import {
+		AppShell,
+		initializeStores,
+		Modal,
+		modeCurrent,
+		modeUserPrefers, setModeCurrent,
+		storePopup,
+		Toast
+	} from "@skeletonlabs/skeleton";
 	import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
@@ -53,9 +61,7 @@
 	};
 
 	onMount(() => {
-		//document.cookie = "userid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-		console.log($user.pk_userid);
-
+		setModeCurrent($modeUserPrefers ?? true);
 		checkCookie();
 	});
 

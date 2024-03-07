@@ -5,6 +5,7 @@
   import { Pen, User } from "lucide-svelte";
   import { getUserById } from "$lib/queries/userQueries";
   import { onMount } from "svelte";
+  import { curPage } from "$lib/stores/pageStore";
 
   $: if ($user?.pk_userid) getUserById.fetch({ variables: { id: $user?.pk_userid }, policy: CachePolicy.NetworkOnly });
   $: thisUser = $getUserById.data?.getUserById;
@@ -44,10 +45,11 @@
   const modalStore = getModalStore();
 
   onMount(() => {
+    $curPage = "/user"
     $modeCurrent = $modeUserPrefers ?? false;
   });
 
-  const sectionStyle = "rounded-3xl bg-white text-surface-900 flex flex-row justify-around items-center p-5";
+  const sectionStyle = "rounded-3xl bg-white text-surface-900 text-token flex flex-row justify-around items-center p-5 dark:bg-primary-800";
 
 
   const modalRoleSelection: ModalSettings = {
@@ -58,11 +60,11 @@
 
 {#if thisUser}
   <div class="rounded-3xl variant-filled-primary mt-5 p-2 m-2 flex flex-col gap-2">
-    <div class="rounded-3xl grid grid-cols-2 bg-white text-surface-900 h-1/2 p-2 items-center">
+    <div class="rounded-3xl grid grid-cols-2 bg-white text-surface-900 text-token p-2 items-center dark:bg-primary-800">
       <div class="flex justify-center">
         <div class="rounded-full bg-tertiary-100-800-token p-5 text-token">
           <User size="110px" />
-          <!--        <img class="rounded-full" src="/src/images/profile.jpg" alt="profile picture" />-->
+<!--          <img class="rounded-full" src="/src/images/profile.jpg" alt="profile picture" />-->
         </div>
       </div>
       <div class="flex flex-col">
@@ -92,15 +94,15 @@
     </div>
 
     <div class="{sectionStyle}">
-      <div>Change Theme</div>
+      <span>Change Theme</span>
       <LightSwitch />
     </div>
 
     <div class="rounded-3xl grid grid-cols-2 gap-2">
-      <div class="flex justify-center items-center text-center bg-white text-surface-900 rounded-3xl p-5">
+      <div class="flex justify-center items-center text-center text-token bg-white text-surface-900 rounded-3xl p-5 dark:bg-primary-800">
         <span>Bookings in {currentMonthName}</span>
       </div>
-      <div class="flex justify-center items-center bg-white text-surface-900 rounded-3xl p-5">
+      <div class="flex justify-center items-center text-center text-token bg-white text-surface-900 rounded-3xl p-5 dark:bg-primary-800">
         <span>{amountOfBookingsThisMonth}</span>
       </div>
     </div>

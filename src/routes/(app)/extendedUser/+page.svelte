@@ -35,7 +35,7 @@
     <FloorMap />
 
     <div class="absolute p-8" style="width: 100%">
-      <SearchBar />
+      <SearchBar showUsrInfo="true"/>
 
       <div class="flex justify-center p-1">
         <DateSelection />
@@ -58,12 +58,12 @@
                     modalStore.trigger(modal);
                 }
             }}
-                  class="btn px-7 variant-filled-primary"
+                  class="btn px-7 variant-filled-primary shadow-md"
                   disabled="{$selectedDesks.length !== $selectedUsers.length || !($interval.morning || $interval.afternoon)}"
           >Book
           </button>
         {:else}
-          <div in:fade class="py-1 px-3 rounded-full variant-filled-secondary"
+          <div in:fade class="py-1 px-3 rounded-full variant-filled-secondary shadow-md"
           >{$selectedDesks.length}/{$selectedUsers.length} Selected
           </div>
         {/if}

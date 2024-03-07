@@ -4,6 +4,7 @@
   import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
   import { CachePolicy } from "$houdini";
 	import { onMount } from "svelte";
+  import { curPage } from "$lib/stores/pageStore";
 
 
   export let isCurrentBookings = true;
@@ -12,6 +13,7 @@
   $: bookings = $getBookingsOfUserAndTime.data?.getBookingsByUserAndCurrent;
 
   onMount(() => {
+    $curPage = "/bookings"
     getBookingsOfUserAndTime.fetch({ variables: { userid: usrid ?? "", isCurrent: isCurrentBookings } });
   });
 

@@ -29,7 +29,7 @@
     }
   }
 
-  const bookingPropertyClasses: string = "text-base grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center py-1 pl-3";
+  const bookingPropertyClasses: string = "text-base grid grid-cols-3 items-center align-middle variant-filled-tertiary rounded-full text-center py-1 pl-3 dark:bg-white";
   const isBookingToday = thisBooking?.date === new Date().toISOString().split("T")[0];
 </script>
 
@@ -48,7 +48,7 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div on:click={toggleModal}
-       class="bg-slate-50 dark:bg-surface-700 grid grid-cols-2 gap-2 gap-x-0.5 w-2/3 rounded-3xl ml-3 p-2 text-gray-700">
+       class="bg-slate-50 dark:bg-primary-800 grid grid-cols-2 gap-2 gap-x-0.5 w-2/3 rounded-3xl ml-3 p-2 text-gray-700">
     <div class="text-xl text-surface-900-50-token col-span-2 font-bold text-center">
       {#if (isBookingToday)}
         Today
