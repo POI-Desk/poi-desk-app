@@ -131,8 +131,6 @@
       policy: CachePolicy.NetworkOnly
     });
 
-    console.log(l);
-
     await updateBookings();
   };
 
@@ -195,8 +193,6 @@
             bookings: desk.bookings!,
             floor: desk.map.floor
           }
-          console.log($selectedDesks);
-          console.log(newD);
           if ($selectedDesks.map((d) => d.pk_deskid).includes(newD.pk_deskid)) {
             $selectedDesks.splice($selectedDesks.map((d) => d.pk_deskid).indexOf(newD.pk_deskid), 1);
             deskSvg.setSelected(false);

@@ -1,5 +1,5 @@
 <script>
-    import {interval} from "$lib/stores/bookingStore.js";
+    import {interval} from "$lib/stores/bookingStore";
     import {selectedDesks} from "$lib/stores/extendedUserStore";
 
     let selectedInterval = "morning";

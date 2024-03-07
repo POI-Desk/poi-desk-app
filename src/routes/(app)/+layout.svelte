@@ -13,6 +13,7 @@
 	import { onMount } from "svelte";
 	import { user } from "$lib/stores/userStore";
 	import { getUserById } from "$lib/queries/userQueries";
+	import ModalRoleSelection from "$components/UserPageComponents/ModalRoleSelection.svelte";
 
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -37,6 +38,10 @@
 		},
 		modalChangeDefaultLocation: {
 			ref: ModalChangeDefaultLocation,
+			slot: '<p>skeleton</p>'
+		},
+		modalRoleSelection: {
+			ref: ModalRoleSelection,
 			slot: '<p>skeleton</p>'
 		}
 		/*
