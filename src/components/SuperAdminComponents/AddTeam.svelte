@@ -125,7 +125,7 @@
     <div class="flex flex-col gap-1">
       {#each newMembers as newMember}
         <div class="flex flex-row gap-1 align-middle">
-          <button class="flex align-middle font-bold" on:click={() => handleRemoveNewUser(newMember)}>x</button>
+          <button class="flex align-middle font-bold" on:click={() => handleRemoveNewUser(newMember)}>X</button>
           <span>{newMember.username}</span>
         </div>
       {/each}

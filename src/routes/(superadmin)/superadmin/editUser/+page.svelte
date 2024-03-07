@@ -32,7 +32,7 @@
 
     {#if $showTeams}
       <TeamList />
-      {#if $teamToEdit.pk_teamid !== ""}
+      {#if $teamToEdit}
         <EditTeam />
       {/if}
     {/if}

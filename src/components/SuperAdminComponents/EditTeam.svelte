@@ -110,7 +110,10 @@
 
   {#key refreshMembers}
     {#each members ?? [] as member}
-      <button on:click={() => handleRemoveMember(member)}>X</button>{member?.username}<br />
+      <div>
+        <button class="font-bold" on:click={() => handleRemoveMember(member)}>X</button>
+        <span>{member?.username}</span>
+      </div>
     {/each}
   {/key}
 
