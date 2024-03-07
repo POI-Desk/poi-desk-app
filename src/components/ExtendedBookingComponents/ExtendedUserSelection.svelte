@@ -1,20 +1,19 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { usersInTeam } from "$lib/queries/userQuerries";
   import type { User } from "$lib/types/userTypes";
   import { selectedUsers } from "$lib/stores/extendedUserStore";
   import { user } from "$lib/userStore";
-  import { getTeamsOfLeader } from "$lib/queries/teamQueries";
+  import { getMembersOfTeam, getTeamsOfLeader } from "$lib/queries/teamQueries";
 
-  $: allUsers = $usersInTeam?.data?.getUsersInTeam;
-  $: teamsOfLeader = $getTeamsOfLeader?.data?.getTeamsOfLeader
+  $: teamMembers = $getMembersOfTeam?.data?.getMembersOfTeam;
+  $: teamsOfLeader = $getTeamsOfLeader?.data?.getTeamsOfLeader;
 
   let newSelectedUsers: User[] = [];
 
   onMount(async () => {
     await getTeamsOfLeader.fetch({variables: {userid: $user.pk_userid}});
     $user.teams = teamsOfLeader;
-    await usersInTeam.fetch({variables: {teamid: $user.teams[0].pk_teamid }});
+    await getMembersOfTeam.fetch({variables: {teamid: $user.teams[0].pk_teamid }});
   });
 
   function handleUserSelection(user: User) {
@@ -32,8 +31,8 @@
 <h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500">Select Users</h1>
 
 <div class="grid place-items-center place-content-center space-y-6 h-screen">
-  {#if allUsers}
-    {#each allUsers as user}
+  {#if teamMembers}
+    {#each teamMembers as user}
       <button
         class="btn btn-block w-2/3 py-3 px-32"
         on:click={() => handleUserSelection(user)}

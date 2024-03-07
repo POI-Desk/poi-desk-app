@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getModalStore } from "@skeletonlabs/skeleton";
   import { interval } from "$lib/bookingStore";
-  import { dateValue, todaysDate } from "$lib/dateStore";
+  import { dateValue } from "$lib/dateStore";
   import { bookDesk } from "$lib/mutations/booking";
   import { user } from "$lib/userStore";
 

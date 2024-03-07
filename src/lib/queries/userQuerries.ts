@@ -1,13 +1,5 @@
 import { graphql } from '$houdini';
 
-export const usersInTeam = graphql(`
-	query getUsersInTeam($teamid: ID!) {
-		getUsersInTeam(teamid: $teamid) {
-			pk_userid
-			username
-		}
-	}
-`);
 
 export const getUserById = graphql(`
 	query getUserInfo($id: ID) {
