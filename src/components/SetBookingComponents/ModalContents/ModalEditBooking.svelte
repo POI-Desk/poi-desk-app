@@ -63,7 +63,6 @@
 
     if (booking.bookingnumber.includes("EXTID")) {
       const extId = booking.bookingnumber.split("EXTID")[1];
-      console.log(extId);
 
       if (extId.split("+")[1] !== $user.pk_userid) modalStore.close();
 

@@ -1,6 +1,6 @@
 <script>
-    import { getBookingsOfUserAndTime } from "$lib/stores/bookingStore.js";
-    import { searchedUser } from "$lib/stores/searchStore.js";
+    import { getBookingsOfUserAndTime } from "$lib/stores/bookingStore";
+    import { searchedUser } from "$lib/stores/searchStore";
     import BookingCard from "$components/PersonalBookingComponents/BookingCard.svelte";
 </script>
 

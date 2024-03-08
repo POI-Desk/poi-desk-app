@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
 
   import BookingsOfSearchedUser from "$components/BookingsOfSearchedUser.svelte";
-  import { searchedUser } from "$lib/stores/searchStore.js";
+  import { searchedUser } from "$lib/stores/searchStore";
   import { X } from "lucide-svelte";
 </script>
 

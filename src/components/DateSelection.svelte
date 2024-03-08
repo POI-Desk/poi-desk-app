@@ -24,9 +24,9 @@
 </script>
 
 <div class="group w-fit">
-	<div class="dropdown">
+	<div class="dropdown shadow-md rounded-full">
 		<input
-			class="input border-none shadow-md"
+			class="input border-none "
 			type="date"
 			id="calendar"
 			min="{today}"
