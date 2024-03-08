@@ -14,6 +14,7 @@
   } from "$lib/stores/superAdminStore";
   import { showAddLocation } from "$lib/stores/locationStore";
   import { PenLine, Trash2 } from "lucide-svelte";
+  import { ProgressBar } from "@skeletonlabs/skeleton";
 
   $: locations = $getLocations?.data?.getAllLocations;
 
@@ -72,7 +73,7 @@
 <div>
   {#key $refreshLocations}
     {#await getLocations.fetch({ policy: CachePolicy.NetworkOnly })}
-      <p>fetching locations...</p>
+      <ProgressBar value={undefined} />
     {:then fetched}
       {#each locations.sort((a, b) => compare(a, b)) as location}
         <div>

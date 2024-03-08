@@ -30,6 +30,8 @@
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
   import BurgerMenu from "$components/SuperAdminComponents/BurgerMenu.svelte";
   import { goto } from "$app/navigation";
+  import { quintInOut, quintOut } from "svelte/easing";
+  import { slide } from "svelte/transition";
 
   /**
    * Handles when the save button should be enabled or disabled
@@ -232,7 +234,7 @@
     $isSaveDisabled = true;
   }
 
-  const btn = "btn variant-filled-primary shadow-md"
+  const btn = "btn variant-filled-primary shadow-md";
 </script>
 
 <div class="grid grid-cols-3 gap-5 divide-x-2 divide-black dark:divide-white h-full">
@@ -240,25 +242,23 @@
   <div class="p-5 flex flex-col gap-5">
     <AddLocation />
     <LocationList />
-    <BurgerMenu>
-      <button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
-      <button on:click={() => goto("/superadmin/editUser")} class="{btn}">Edit Users</button>
-      <button on:click={() => goto("/superadmin")} class="{btn}">Home</button>
-    </BurgerMenu>
   </div>
 
   <div class="p-5 flex flex-col gap-5">
     {#if $showAddLocation}
-      <h1 class="h2 text-primary-500-400-token m-1">Buildings</h1>
+      <div class="p-5 flex flex-col gap-5"
+           transition:slide={{ delay: 25, duration: 300, easing: quintInOut, axis: 'y' }}>
+        <h1 class="h2 text-primary-500-400-token m-1">Buildings</h1>
 
-      <AddBuilding />
+        <AddBuilding />
 
-      <button disabled={$isSaveDisabled}
-              class="btn variant-filled-primary"
-              on:click={saveLocationChanges}>
-        Save Changes
-      </button
-      >
+        <button disabled={$isSaveDisabled}
+                class="btn variant-filled-primary"
+                on:click={saveLocationChanges}>
+          Save Changes
+        </button
+        >
+      </div>
     {/if}
 
     {#if $locationToEdit.id !== ''}
@@ -274,16 +274,28 @@
     {/if}
   </div>
 
-  <div class="p-5 flex flex-col gap-5">
+  <div class="p-5">
     {#if $locationToEdit.id !== '' && $buildingToEdit.id !== ''}
-      <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
-      <EditBuilding />
-      <AddFloor />
+      <div class="flex flex-col gap-5" transition:slide={{ delay: 25, duration: 300, easing: quintInOut, axis: 'y' }}>
+        <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
+        <EditBuilding />
+        <AddFloor />
+      </div>
     {/if}
 
     {#if $showAddLocation && $editBuildingclicked}
-      <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
-      <AddFloor />
+      <div class="flex flex-col gap-5" transition:slide={{ delay: 25, duration: 300, easing: quintInOut, axis: 'y' }}>
+        <h1 class="h2 text-primary-500-400-token m-1">Floors</h1>
+        <AddFloor />
+      </div>
     {/if}
   </div>
+</div>
+
+<div class="p-5">
+  <BurgerMenu>
+    <button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+    <button on:click={() => goto("/superadmin/editUser")} class="{btn}">Edit Users</button>
+    <button on:click={() => goto("/superadmin")} class="{btn}">Home</button>
+  </BurgerMenu>
 </div>

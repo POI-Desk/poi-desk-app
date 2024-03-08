@@ -18,6 +18,7 @@
   import type { User } from "$lib/types/userTypes";
   import AddAdminToLocation from "./AddAdminToLocation.svelte";
   import { PenLine, Trash2 } from "lucide-svelte";
+  import { ProgressBar } from "@skeletonlabs/skeleton";
 
   $: buildings = $getBuildings.data?.getBuildingsInLocation;
 
@@ -72,7 +73,7 @@
   {#key $refreshLocations}
 
     {#await getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })}
-      <p>fetching buildings...</p>
+      <ProgressBar value={undefined} />
     {:then fetched}
       <div class="input p-1">
         <input

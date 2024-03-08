@@ -4,6 +4,7 @@
   import { getFloors } from "$lib/queries/floorQueries";
   import { buildingToEdit, changedBuildings, floorsToEdit, refreshLocations } from "$lib/stores/superAdminStore";
   import { Trash2 } from "lucide-svelte";
+  import { ProgressBar } from "@skeletonlabs/skeleton";
 
   $: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -41,7 +42,7 @@
 <div class="flex flex-col gap-5">
   {#key $refreshLocations}
     {#await getFloors.fetch({ variables: { buildingid: buildingIdToEdit }, policy: CachePolicy.NetworkOnly })}
-      <p>fetching floors...</p>
+      <ProgressBar value={undefined} />
     {:then fetched}
       <div class="input p-1">
         <input
