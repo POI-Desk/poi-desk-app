@@ -53,6 +53,8 @@
 	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
+	import LocationList from "$components/SuperAdminComponents/LocationList.svelte";
+	import BurgerMenu from "$components/SuperAdminComponents/BurgerMenu.svelte";
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -1001,33 +1003,11 @@
 		saving = false;
 	};
 	//#endregion
+
+	const btn = "btn variant-filled-primary shadow-md"
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<div class="absolute p-2 flex gap-1 w-full">
-		<!--temporary-->
-		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
-		<!---->
-		<!-- <button
-			on:click={saveMap}
-			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
-		> -->
-		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
-			Discrad
-		</button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
-		<button
-			class="btn variant-filled-primary z-[100]"
-			on:click={() => {
-				goto(`/admin`);
-			}}
-		>
-			Change Snapshot
-		</button>
-	</div>
-
 	<button
 		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary z-[100]"
 		on:click={publishCurrentMap}
@@ -1080,6 +1060,25 @@
 				class="canvasStyle"
 			/>
 		</div>
+	</div>
+
+	<div class="px-5">
+		<BurgerMenu>
+			<button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+			<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
+				Discard
+			</button>
+			<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
+			<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
+			<button
+				class="btn variant-filled-primary z-[100]"
+				on:click={() => {
+				goto(`/admin`);
+			}}
+			>
+				Change Snapshot
+			</button>
+		</BurgerMenu>
 	</div>
 </main>
 

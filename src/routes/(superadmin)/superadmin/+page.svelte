@@ -28,7 +28,8 @@
   import { CachePolicy } from "$houdini";
   import { showAddLocation } from "$lib/stores/locationStore";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
-  import SuperAdminNavigation from "$components/SuperAdminComponents/SuperAdminNavigation.svelte";
+  import BurgerMenu from "$components/SuperAdminComponents/BurgerMenu.svelte";
+  import { goto } from "$app/navigation";
 
   /**
    * Handles when the save button should be enabled or disabled
@@ -230,6 +231,8 @@
     $floorsToEdit = new Map();
     $isSaveDisabled = true;
   }
+
+  const btn = "btn variant-filled-primary shadow-md"
 </script>
 
 <div class="grid grid-cols-3 gap-5 divide-x-2 divide-black dark:divide-white h-full">
@@ -237,7 +240,11 @@
   <div class="p-5 flex flex-col gap-5">
     <AddLocation />
     <LocationList />
-    <SuperAdminNavigation />
+    <BurgerMenu>
+      <button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+      <button on:click={() => goto("/superadmin/editUser")} class="{btn}">Edit Users</button>
+      <button on:click={() => goto("/superadmin")} class="{btn}">Home</button>
+    </BurgerMenu>
   </div>
 
   <div class="p-5 flex flex-col gap-5">
