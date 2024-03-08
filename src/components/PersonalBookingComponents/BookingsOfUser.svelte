@@ -5,6 +5,7 @@
   import { CachePolicy } from "$houdini";
   import { onMount } from "svelte";
   import { curPage } from "$lib/stores/pageStore";
+  import { ProgressBar } from "@skeletonlabs/skeleton";
 
 
   export let isCurrentBookings = true;
@@ -29,7 +30,11 @@
   variables: { userid: usrid, isCurrent: isCurrentBookings },
   policy: CachePolicy.NetworkOnly
 })}
-  <p></p>
+  <div
+    class="flex variant-filled-primary rounded-3xl w-1/2"
+  >
+    <ProgressBar value={undefined} />
+  </div>
 {:then fetched}
   {#each bookings ?? [] as booking}
     <BookingCard

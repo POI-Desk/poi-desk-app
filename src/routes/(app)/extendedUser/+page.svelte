@@ -11,6 +11,8 @@
   import { dateValue } from "$lib/stores/dateStore";
   import { fade } from "svelte/transition";
   import ExtendedUserSelection from "$components/ExtendedBookingComponents/ExtendedUserSelection.svelte";
+  import { searchedUser } from "$lib/stores/searchStore";
+  import { goto } from "$app/navigation";
 
 
   $isExtended = true;
@@ -26,6 +28,11 @@
       $dateValue = new Date().toISOString().split("T")[0];
     }
   };
+
+  function handleUserClicked(event) {
+    $searchedUser = event.detail;
+    goto("/bookings/" + event.detail.username);
+  }
 </script>
 
 {#if ($selectedUsers.length === 0)}
@@ -35,7 +42,7 @@
     <FloorMap />
 
     <div class="absolute p-8" style="width: 100%">
-      <SearchBar showUsrInfo="true"/>
+      <SearchBar showUsrInfo="true" on:clicked={handleUserClicked}/>
 
       <div class="flex justify-center p-1">
         <DateSelection />

@@ -294,8 +294,7 @@
 
 <div class="p-5">
   <BurgerMenu>
-    <button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+    <button on:click={() => goto("/")} class="{btn}">Home</button>
     <button on:click={() => goto("/superadmin/editUser")} class="{btn}">Edit Users</button>
-    <button on:click={() => goto("/superadmin")} class="{btn}">Home</button>
   </BurgerMenu>
 </div>
