@@ -1,6 +1,4 @@
 <script lang="ts">
-	// TODO: BITTE KEINE PAGE SONDERN MODAL @LEOPOLD
-	import type { PageData } from '../../../../$houdini/types/src/routes';
 	import { user } from '$lib/stores/userStore';
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { floorid } from '$lib/stores/floorStore';
@@ -18,7 +16,7 @@
 		component: 'modalDefaultLocation'
 	};
 
-	export let data: PageData;
+	export let data;
 	//$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
 </script>
