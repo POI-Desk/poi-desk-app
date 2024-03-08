@@ -28,6 +28,7 @@
   import { CachePolicy } from "$houdini";
   import { showAddLocation } from "$lib/stores/locationStore";
   import AddFloor from "$components/SuperAdminComponents/AddFloor.svelte";
+  import SuperAdminNavigation from "$components/SuperAdminComponents/SuperAdminNavigation.svelte";
 
   /**
    * Handles when the save button should be enabled or disabled
@@ -206,7 +207,7 @@
       }).then((building) => {
         if ($newFloors.length > 0) {
           const curBuildingId = building.data?.changeNameOfBuilding?.pk_buildingid;
-          saveFloorChanges(curBuildingId, curBuildingId)
+          saveFloorChanges(curBuildingId, curBuildingId);
         }
       });
     });
@@ -236,6 +237,7 @@
   <div class="p-5 flex flex-col gap-5">
     <AddLocation />
     <LocationList />
+    <SuperAdminNavigation />
   </div>
 
   <div class="p-5 flex flex-col gap-5">

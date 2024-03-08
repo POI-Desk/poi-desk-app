@@ -43,7 +43,7 @@
 
 <div class="grid place-items-center place-content-center space-y-6 h-screen">
   {#if (showTeamsOfLeader && teamsOfLeader)}
-    <h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token">Please select a
+    <h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token text-center">Please select a
       team</h1>
     {#each teamsOfLeader as team}
       <button
@@ -57,7 +57,7 @@
       </button>
     {/each}
   {:else if (teamMembers)}
-    <h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token">Please select
+    <h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token text-center">Please select
       users</h1>
     {#each teamMembers as user}
       <button

@@ -5,7 +5,6 @@
 	import { buildingid } from '$lib/stores/buildingStore';
 	import { getAllLocations } from '$lib/queries/floorQueries';
 
-
 	$: getAllLocations.fetch();
 
 	const modalStore = getModalStore();
@@ -16,8 +15,6 @@
 		component: 'modalDefaultLocation'
 	};
 
-	export let data;
-	//$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
 </script>
 

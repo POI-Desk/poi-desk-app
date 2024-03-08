@@ -7,6 +7,7 @@
   import AddUser from "$components/SuperAdminComponents/AddUser.svelte";
   import TeamList from "$components/SuperAdminComponents/TeamList.svelte";
   import EditTeam from "$components/SuperAdminComponents/EditTeam.svelte";
+  import SuperAdminNavigation from "$components/SuperAdminComponents/SuperAdminNavigation.svelte";
 
   let userToEdit: User;
 
@@ -36,6 +37,7 @@
         <EditTeam />
       {/if}
     {/if}
+    <SuperAdminNavigation />
   </div>
 
   <div class="flex flex-col p-5 gap-5">
