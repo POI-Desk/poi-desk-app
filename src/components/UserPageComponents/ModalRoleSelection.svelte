@@ -31,6 +31,12 @@
 				modalStore.close();
       }}>Admin
       </button>
+
+      <button class="btn variant-filled-primary" on:click={() => {
+        goto('/superadmin')
+				modalStore.close();
+      }}>Super Admin
+      </button>
     </div>
   </div>
 {/if}

@@ -11,8 +11,8 @@
 		AppShell,
 		initializeStores,
 		Modal,
-		modeCurrent,
-		modeUserPrefers, setModeCurrent,
+		modeUserPrefers,
+		setModeCurrent,
 		storePopup,
 		Toast
 	} from "@skeletonlabs/skeleton";

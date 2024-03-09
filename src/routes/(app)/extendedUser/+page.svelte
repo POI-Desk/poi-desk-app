@@ -42,7 +42,7 @@
     <FloorMap />
 
     <div class="absolute p-8" style="width: 100%">
-      <SearchBar showUsrInfo="true" on:clicked={handleUserClicked}/>
+      <SearchBar showUsrInfo="{true}" on:clicked={handleUserClicked}/>
 
       <div class="flex justify-center p-1">
         <DateSelection />
