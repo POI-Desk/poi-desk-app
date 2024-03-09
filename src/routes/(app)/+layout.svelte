@@ -22,6 +22,7 @@
 	import { user } from "$lib/stores/userStore";
 	import { getUserById } from "$lib/queries/userQueries";
 	import ModalRoleSelection from "$components/UserPageComponents/ModalRoleSelection.svelte";
+	import { checkCookie } from "$lib/services/authenticationService";
 
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -62,44 +63,9 @@
 
 	onMount(() => {
 		setModeCurrent($modeUserPrefers ?? true);
-		checkCookie();
+		checkCookie("Standard");
 	});
 
-	async function getUser(userid: string) {
-		const tempUser = await getUserById.fetch({ variables: { id: userid } });
-		$user.location = {
-			locationname: tempUser.data?.getUserById?.location?.locationname ?? "",
-			pk_locationid: tempUser.data?.getUserById?.location?.pk_locationid ?? ""
-		};
-		$user.pk_userid = tempUser.data?.getUserById?.pk_userid ?? "";
-		$user.username = tempUser.data?.getUserById?.username ?? "";
-	}
-
-	function getCookie(cname: string) {
-		let name = cname + '=';
-		let decodedCookie = decodeURIComponent(document.cookie);
-		let ca = decodedCookie.split(';');
-		for (let i = 0; i < ca.length; i++) {
-			let c = ca[i];
-			while (c.charAt(0) == ' ') {
-				c = c.substring(1);
-			}
-			if (c.indexOf(name) == 0) {
-				return c.substring(name.length, c.length);
-			}
-		}
-		return '';
-	}
-
-	function checkCookie() {
-		let userid = getCookie('userid');
-		if (userid != '') {
-			getUser(userid);
-			console.log("$user: " + $user.username);
-		} else {
-			goto('/login');
-		}
-	}
 </script>
 
 <Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />
