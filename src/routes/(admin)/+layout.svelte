@@ -8,6 +8,8 @@
   import type { ModalComponent } from "@skeletonlabs/skeleton";
   import { AppShell, initializeStores, Modal, storePopup, Toast } from "@skeletonlabs/skeleton";
   import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
+  import { onMount } from "svelte";
+  import { checkCookie } from "$lib/services/authenticationService";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -36,6 +38,9 @@
     }
   };
 
+  onMount(() => {
+    checkCookie("Admin");
+  })
 </script>
 
 <Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />

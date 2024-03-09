@@ -17,10 +17,6 @@
   } from "@skeletonlabs/skeleton";
   import ModalExtendedBooking from "$components/ExtendedBookingComponents/ModalExtendedBooking.svelte";
   import { onMount } from "svelte";
-  import { getUserById } from "$lib/queries/userQueries";
-  import { user } from "$lib/stores/userStore";
-  import { goto } from "$app/navigation";
-  import type { Role } from "$lib/types/roleTypes";
   import { checkCookie } from "$lib/services/authenticationService";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });

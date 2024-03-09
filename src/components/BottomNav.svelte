@@ -7,8 +7,9 @@
 </script>
 
 <div
-  class="w-full z-[100] translate-x-0
-    bg-primary-50-900-token dark:bg-surface-800 text-lg text-primary-500-400-token border-t-[3px] border-primary-500 shadow-around-10 py-2">
+  class="overflow-hidden w-full z-[100] translate-x-0
+    bg-primary-50-900-token dark:bg-surface-800 text-lg text-primary-500-400-token
+    border-t-[3px] border-primary-500 shadow-around-10 py-2">
   <RadioGroup
     display="grid"
     border="none"

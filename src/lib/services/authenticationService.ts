@@ -15,10 +15,6 @@ export async function getUser(userid: string) {
       pk_locationid: tempUser.data?.getUserById?.location?.pk_locationid ?? ""
     }
   });
-
-  // user.pk_userid = tempUser.data?.getUserById?.pk_userid ?? "";
-  // $user.username = tempUser.data?.getUserById?.username ?? "";
-  // $user.roles = tempUser.data?.getUserById?.roles;
 }
 
 export function getCookie(cname: string) {
@@ -41,9 +37,9 @@ export function checkCookie(role: string) {
   let userid = getCookie("userid");
   if (userid != "") {
     getUser(userid).then(() => {
-      !user.subscribe((u) => {
+      user.subscribe((u) => {
         if (!u.roles?.map((r: Role) => r.rolename).includes(role)) {
-          goto("/");
+          goto("/denied");
         }
 			});
     });
