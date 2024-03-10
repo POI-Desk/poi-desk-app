@@ -58,7 +58,7 @@
 
 <div class="h-screen w-full flex items-center justify-center">
   <div class="h-full flex flex-col items-center justify-between py-52">
-    <img class="max-w-md" src="/static/poi-desk_logo.svg" alt="Das POI-Desk Logo" />
+    <img class="max-w-md" src="/poi-desk_logo.svg" alt="Das POI-Desk Logo" />
 
     <div class="p-3 flex flex-col justify-center gap-2">
       <input type="text" placeholder="username" class="input input-primary" id="usernameInput"

@@ -71,7 +71,7 @@
 
   function onExitHandler() {
     modalStore.close();
-    $dateValue = new Date().toISOString().split("T")[0];
+    if (wasDateChanged) $dateValue = new Date().toISOString().split("T")[0];
   }
 
   let date: Date = new Date($dateValue);
@@ -103,6 +103,8 @@
 
   const cBase = "card p-4 shadow-xl space-y-4";
 
+  let wasDateChanged = false;
+
   function whenSelection() {
     const selectedDate = new Date($dateValue);
     const isInBookingRange = selectedDate.getTime() >= todaysDate.setHours(0, 0, 0, 0)
@@ -111,20 +113,20 @@
       if (!$interval.morning && !$interval.afternoon) {
         return;
       }
-      console.log(selectedDesk);
       selectionPage = !selectionPage;
       return;
     }
   }
 
   function addDay() {
+    wasDateChanged = true;
     let date = new Date($dateValue);
     date.setDate(date.getDate() + 1);
     $dateValue = date.toISOString().split("T")[0]; // format back to 'yyyy-mm-dd'
-    console.log($dateValue);
   }
 
   function subtractDay() {
+    wasDateChanged = true;
     if ($dateValue === new Date().toISOString().split("T")[0]) {
       return;
     }

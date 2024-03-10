@@ -1,6 +1,7 @@
 import { HoudiniClient } from '$houdini';
 
 export default new HoudiniClient({
+	// url: '/api'
 	url: 'http://localhost:8080/graphql'
 
 	// uncomment this to configure the network call (for things like authentication)

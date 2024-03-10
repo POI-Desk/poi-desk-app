@@ -34,16 +34,14 @@
       <div class="h-full rounded-full placeholder animate-pulse" />
     {:else}
       {#each floors ?? [] as floor}
-<!--        <div class="flex justify-center items-center">-->
           <RadioItem bind:group={$floorid}
                      name="floors"
                      value={floor?.pk_floorid ?? ''}
                      class="flex items-center justify-center">
             <p class="select-none font-semibold">
-              {floor?.floorname.split(' ')[0]}
+              {floor?.floorname}
             </p>
           </RadioItem>
-<!--        </div>-->
       {/each}
     {/if}
   </div>
