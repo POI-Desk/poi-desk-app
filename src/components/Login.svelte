@@ -1,9 +1,9 @@
 <script lang="ts">
 
 
-	import { goto } from '$app/navigation';
-	import { graphql } from '$houdini';
-	import { user } from '$lib/stores/userStore';
+  import { goto } from "$app/navigation";
+  import { graphql } from "$houdini";
+  import { user } from "$lib/stores/userStore";
 
 
   const createOrLoginAsUser = graphql(`
@@ -56,19 +56,21 @@
   }
 </script>
 
+<div class="h-screen w-full flex items-center justify-center">
+  <div class="h-full flex flex-col items-center justify-between py-52">
+    <img class="max-w-md" src="/static/poi-desk_logo.svg" alt="Das POI-Desk Logo" />
 
-<h1 class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500-400-token">
-  POI-Desk</h1>
+    <div class="p-3 flex flex-col justify-center gap-2">
+      <input type="text" placeholder="username" class="input input-primary" id="usernameInput"
+             bind:value={username} />
+      <input type="password" placeholder="password" class="input input-primary" bind:value={password} />
 
-<div class="h-screen flex flex-col items-center justify-center">
-  <div class="p-3">
-    <input type="text" placeholder="Enter your username" class="input input-primary" id="usernameInput"
-           bind:value={username} />
-    <input type="password" placeholder="Enter your password" class="input input-primary" bind:value={password} />
-  </div>
-  <div class="p-3">
-    <button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-      Login
-    </button>
+      <div class="p-4 flex justify-center">
+        <button class="btn variant-filled-primary p-3 px-5" on:click={loginWithoutMicrosoft}>
+          Login
+        </button>
+      </div>
+    </div>
+    <div></div>
   </div>
 </div>
