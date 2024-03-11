@@ -1,5 +1,7 @@
 <script lang="ts">
   import { addUser } from "$lib/mutations/user";
+  import { getExtendedUsers } from "$lib/queries/userQueries";
+  import { CachePolicy } from "$houdini";
 
   let newUsername: string = "";
   let saveUserDisabled: boolean = true;
@@ -15,11 +17,7 @@
   }
 
   function handleInput() {
-    if (newUsername === "") {
-      saveUserDisabled = true;
-    } else {
-      saveUserDisabled = false;
-    }
+    saveUserDisabled = newUsername === "";
   }
 
   async function handleSaveUserClick() {
@@ -29,9 +27,13 @@
       isAdmin,
       isSuperAdmin,
       password
+    }).then(() => {
+      newUsername = "";
+      password = "";
+      passwordAgain = "";
     });
-    console.log(result.data?.addUser?.pk_userid);
 
+    await getExtendedUsers.fetch({ policy: CachePolicy.NetworkOnly });
   }
 
 </script>

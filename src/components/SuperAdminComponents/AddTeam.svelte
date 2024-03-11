@@ -14,8 +14,9 @@
   let currentTeamNames: String[] = [];
   let newMemberIds: User[] = [];
   let newMembers: User[] = [];
-  let extendedUsers: User[] = [];
   let teamLeader: User;
+
+  $: extendedUsers = $getExtendedUsers.data?.getExtendedUsers;
 
   onMount(() => {
     getTeams();
@@ -38,10 +39,7 @@
   }
 
   async function getExtendedUsrs() {
-    await getExtendedUsers.fetch({ policy: CachePolicy.NetworkOnly }).then(() => {
-      extendedUsers = [];
-      extendedUsers = $getExtendedUsers.data?.getExtendedUsers;
-    });
+    await getExtendedUsers.fetch({ policy: CachePolicy.NetworkOnly });
   }
 
   function handleNewTeamClicked() {

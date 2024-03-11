@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { graphql } from "$houdini";
+  import { CachePolicy, graphql } from "$houdini";
   import type { User } from "$lib/types/userTypes";
   import { getBookingsOfUserAndTime } from "$lib/stores/bookingStore";
   import { dateValue } from "$lib/stores/dateStore";
@@ -42,7 +42,8 @@
     }
     await getUsers
       .fetch({
-        variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst }
+        variables: { input: typedUsername, pageNumber: pageNumber_param, pageSize: pageSizeConst },
+        policy: CachePolicy.NetworkOnly
       })
       .then(() => {
         let users = $getUsers.data?.getAllUsers.content;

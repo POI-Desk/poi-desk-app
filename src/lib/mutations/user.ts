@@ -44,3 +44,11 @@ export const resetPassword = graphql(`
 		}
 	}
 `);
+
+export const deleteUser = graphql(`
+    mutation deleteUser($userid: ID!) {
+        deleteUser(userid: $userid) {
+            pk_userid
+        }
+    }
+`)
