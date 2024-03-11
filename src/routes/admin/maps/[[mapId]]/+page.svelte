@@ -113,6 +113,7 @@
 
 		if (response.data?.publishMap) {
 			toastStore.trigger(toastPublishSuccess);
+			goto(`/admin`);
 		} else {
 			toastStore.trigger(toastPublishFailed);
 		}
@@ -1026,15 +1027,32 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<div class="absolute p-2 flex gap-1 w-full bg-red-500">
-		<!--temporary-->
+	<button
+		class="absolute top-28 left-1/2 -translate-x-1/2 btn variant-filled-primary z-[100]"
+		on:click={triggerPublishModal}
+	>
+		Publish
+	</button>
+	<div class="absolute z-[100] bottom-0 flex justify-center items-center w-full p-8">
+		<div
+			class="w-2/3 max-w-screen-lg flex justify-between p-2 bg-surface-50 rounded-full shadow-around-10"
+		>
+			<button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</button>
+			<button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</button>
+			<button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+				>Analytics</button
+			>
+		</div>
+	</div>
+
+	<!-- <div class="absolute p-2 flex gap-1 w-full bg-red-500">
+		temporary
 		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
-		<!---->
-		<!-- <button
+		<button
 			on:click={saveMap}
 			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
 			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
-		> -->
+		>
 		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
 			Discrad
 		</button>
@@ -1048,14 +1066,7 @@
 		>
 			Change Snapshot
 		</button>
-	</div>
-
-	<button
-		class="absolute -translate-x-1/2 left-1/2 bottom-10 btn variant-filled-primary z-[100]"
-		on:click={triggerPublishModal}
-	>
-		Publish
-	</button>
+	</div> -->
 
 	<MapObjectSelector
 		on:create={(event) => {

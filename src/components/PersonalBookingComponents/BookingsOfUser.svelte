@@ -4,12 +4,12 @@
 	import { getBookings, userBookings } from '$lib/bookingStore';
 	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
 	import { onMount } from 'svelte';
+	import BottomNav from '$components/BottomNav.svelte';
 
 	let bookings: any;
 	export let isCurrentBookings = true;
 
 	$: $userBookings = bookings as any;
-	$: console.log('User:', $user?.pk_userid);
 	$: usrid = $user?.pk_userid;
 
 	onMount(() => {
@@ -30,14 +30,22 @@
 {#await getBookings.fetch( { variables: { isCurrent: isCurrentBookings }, policy: CachePolicy.NetworkOnly } )}
 	<p />
 {:then fetched}
-	{#each bookings ?? [] as booking}
+	{#each fetched.data?.getBookingsByUserid ?? [] as booking}
 		<BookingCard thisBooking={booking} />
 	{/each}
 {/await}
 
 {#if bookings?.length === 0}
-	<p class="text-xl">No future bookings</p>
+	<p class="text-4xl text-primary-500">
+		{isCurrentBookings ? 'No current bookings' : 'No past bookings'}
+	</p>
 {/if}
+
+<div class="absolute bottom-0 w-screen">
+	<BottomNav />
+</div>
+
+<!-- <BottomNav /> -->
 
 <!--<div class="flex flex-wrap">-->
 <!--	{#if bookings}-->

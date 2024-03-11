@@ -117,8 +117,7 @@
 					<p class="select-none text-primary-500 font-semibold">Label</p>
 				</div>
 			</div>
-			<div class="grid grid-cols-2 divide-x-2 divide-primary-300">
-				<div class="flex items-center justify-center" />
+			<div class="grid grid-cols-1 ">
 				<div
 					class=" flex items-center justify-center"
 					on:mousedown={(e) => onCreate(e, mapObjectType.Door)}

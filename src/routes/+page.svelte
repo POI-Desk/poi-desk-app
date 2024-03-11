@@ -9,6 +9,7 @@
 	import { isExtended } from '$lib/stores/extendedUserStore';
 	import SearchBar from '$components/SearchBar.svelte';
 	import type { PageServerData } from './$types';
+	import BottomNav from '$components/BottomNav.svelte';
 
 	export let data: PageServerData;
 
@@ -31,6 +32,8 @@
 	// 	}, 5000);
 	// }
 	$isExtended = false; // TODO idk if this is a good idea.. but it works
+	let floorName: string;
+	let buildingName: string;
 
 	onMount(() => {
 		$user = data.session;
@@ -63,36 +66,42 @@
     </div> -->
 	</div>
 
-	<div
-		class="absolute flex flex-col top-1/2 -translate-y-1/2 lg:right-11 right-2 w-52 border-2 border-primary-300 bg-surface-50 rounded-xl shadow-around-10"
-	>
-		<a
-			href="/bookings"
-			class="btn rounded-none rounded-t-[10px] w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-			>Bookings</a
+	<div class="hidden md:block">
+		<div
+			class="absolute flex flex-col top-1/2 -translate-y-1/2 lg:right-11 right-2 w-52 border-2 border-primary-300 bg-surface-50 rounded-xl shadow-around-10"
 		>
+			<a
+				href="/bookings"
+				class="btn rounded-none rounded-t-[10px] w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+				>Bookings</a
+			>
 
-		<a href="/admin" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-			>Map Creator</a
-		>
+			<a href={`/admin?building=${buildingName}&floor=${floorName}`} class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+				>Map Creator</a
+			>
 
-		<a
-			href="/admin/analysis"
-			class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Analysis</a
-		>
+			<a
+				href="/admin/analysis"
+				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Analysis</a
+			>
 
-		<a href="/user" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-			>User</a
-		>
+			<a href="/user" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+				>User</a
+			>
 
-		<a
-			href="/login"
-			class="btn rounded-none rounded-b-[10px] border-surface-900 w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-			>Change User</a
-		>
+			<a
+				href="/login"
+				class="btn rounded-none rounded-b-[10px] border-surface-900 w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+				>Change User</a
+			>
+		</div>
 	</div>
 
-	<FloorSelection />
+	<div class="absolute bottom-0 w-screen md:hidden block">
+		<BottomNav />
+	</div>
 
-	<BuildingSelection />
+	<FloorSelection bind:floorName />
+
+	<BuildingSelection bind:buildingName />
 </div>

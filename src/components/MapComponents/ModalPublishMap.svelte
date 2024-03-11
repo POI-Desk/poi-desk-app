@@ -25,8 +25,7 @@
 	};
 
 	const bookingActionToast: ToastSettings = {
-		message: 'Changing this deletese all bookings now and in the futrure',
-		timeout: 999999,
+		message: 'All bookings on the map will be deleted. Are you sure?',
 		background: 'variant-filled-warning'
 	};
 
@@ -39,7 +38,7 @@
 		modalStore.close();
 	};
 
-	const bookingChange = () => {
+	const bookingsChanged = () => {
 		if (bookings) {
 			return;
 		}
@@ -61,7 +60,7 @@
 				class="select-none text-primary-500"
 				name="slider-label"
 				bind:checked={bookings}
-				on:change={bookingChange}
+				on:change={bookingsChanged}
 			>
 				remove {bookings ? ' necessary ' : ' all '} bookings
 			</SlideToggle>

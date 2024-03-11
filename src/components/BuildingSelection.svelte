@@ -7,6 +7,8 @@
 
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
+	export let buildingName: string;
+
 	$: locationid = $user.location?.pk_locationid!;
 
 	$: buildings = $getBuildings.data?.getBuildingsInLocation;
@@ -25,6 +27,8 @@
 	$: {
 		if ($buildingid) {
 			getFloors.fetch({ variables: { buildingid: $buildingid } });
+			buildingName =
+				buildings?.find((building) => building.pk_buildingid === $buildingid)?.buildingname ?? '';
 		}
 	}
 </script>
@@ -39,7 +43,7 @@
 	<div
 		class="absolute {$getFloors.fetching
 			? 'min-w-[25%]'
-			: ''} h-11 bottom-2 lg:bottom-11 left-1/2 z-[100] rounded-full -translate-x-1/2 bg-surface-50-900-token
+			: ''} h-11 bottom-28 md:bottom-11 left-1/2 z-[100] rounded-full -translate-x-1/2 bg-surface-50-900-token
     flex border-2 border-primary-300 shadow-around-10"
 	>
 		{#if $getBuildings.fetching}

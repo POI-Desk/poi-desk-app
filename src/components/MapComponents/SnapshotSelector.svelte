@@ -1,27 +1,26 @@
 <script lang="ts">
-	import { CachePolicy, graphql } from '$houdini';
-	import { user } from '$lib/userStore';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
+	import { defaultMapProps } from '$lib/map/props';
+	import { deleteMap } from '$lib/mutations/map';
+	import type { Location } from '$lib/types/locationType';
 	import {
 		ListBox,
 		ListBoxItem,
-		getToastStore,
-		type ToastSettings,
 		getModalStore,
-		type ModalSettings
+		getToastStore,
+		type ModalSettings,
+		type ToastSettings
 	} from '@skeletonlabs/skeleton';
-	import { createEventDispatcher, onMount } from 'svelte';
 	import {
-		Building,
-		Building2,
-		AlignJustify,
 		AlignHorizontalDistributeCenter,
+		Building2,
 		ChevronRight,
 		ChevronsRight,
-		MoveRight,
 		Trash2
 	} from 'lucide-svelte';
-	import { defaultMapProps } from '$lib/map/props';
-	import { deleteMap } from '$lib/mutations/map';
+	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 	const toastStore = getToastStore();
@@ -30,7 +29,7 @@
 	const toastMapNotCreated: ToastSettings = {
 		message: 'Map could not be created!',
 		hideDismiss: true,
-		timeout: 7500,
+		timeout: 3500,
 		background: 'variant-filled-error'
 	};
 
@@ -41,34 +40,28 @@
 		body: 'Provide a name for the map',
 		// Populates the input value and attributes
 		value: '',
-		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
+		valueAttr: { type: 'text', minlength: 1, maxlength: 10, required: true },
 		// Returns the updated response value
 		response: (r: string) => {
 			if (!r) return;
 
 			const id: string = buildingsAndFloors![buildingGroup].floors![floorGroup].pk_floorid;
 			if (!id) return;
-
 			createNewSnapshot(id, r);
 		}
 	};
 
-	let buildingGroup = 0;
-	let floorGroup = 0;
+	export let snapshotsOfFloor: any;
+	export let buildingsAndFloors: any;
+	export let location: Location | null;
+
+	let buildingGroup = buildingsAndFloors.findIndex(
+		(b: any) => b.buildingname === $page.url.searchParams.get('building')
+	);
+	let floorGroup = buildingsAndFloors[buildingGroup].floors.findIndex(
+		(f: any) => f.floorname === $page.url.searchParams.get('floor')
+	);
 	let formattedDate = '00-00-0000';
-
-	$: currentUser = $user;
-
-	const snapshots = graphql(`
-		query getMapSnapshotsOfFloor($floorId: ID!) {
-			getMapSnapshotsOfFloor(floorId: $floorId) {
-				pk_mapId
-				name
-				createdOn
-				updatedOn
-			}
-		}
-	`);
 
 	const createSnapshot = graphql(`
 		mutation createSnapshot($floorId: ID!, $name: String!, $fallback: MapInput) {
@@ -78,73 +71,11 @@
 		}
 	`);
 
-	export const _getBuildingsAndFloorsInLocationVariables = () => {
-		return { locationId: $user.location?.pk_locationid };
-	};
-
-	const buildings = graphql(`
-		query getBuildingsAndFloorsInLocation($locationId: ID!) @load {
-			getBuildingsInLocation(locationid: $locationId) {
-				pk_buildingid
-				buildingname
-				floors {
-					pk_floorid
-					floorname
-				}
-			}
-		}
-	`);
-
-	$: snapshotsOfFloor = $snapshots.data?.getMapSnapshotsOfFloor;
-	$: buildingsAndFloors = $buildings.data?.getBuildingsInLocation;
-
-	// INFO: 🤮🤮🤮🤮🤮🤮🤮🤮
-	$: if (buildingsAndFloors) {
-		if (buildingsAndFloors[buildingGroup]) {
-			if (buildingsAndFloors[buildingGroup].floors) {
-				if (buildingsAndFloors[buildingGroup].floors![floorGroup]) {
-					fetchSnapshots(buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid);
-				}
-			}
-		}
-	}
-
-	const deleteSnapshot = async (mapid: string) =>{
-		await deleteMap.mutate({mapId: mapid});
-		if (buildingsAndFloors) {
-			if (buildingsAndFloors[buildingGroup]) {
-				if (buildingsAndFloors[buildingGroup].floors) {
-					if (buildingsAndFloors[buildingGroup].floors![floorGroup]) {
-						fetchSnapshots(buildingsAndFloors[buildingGroup].floors![floorGroup].pk_floorid);
-					}
-				}
-			}
-		}
-	}
-
-	const fetchSnapshots = async (floorId: string) => {
-		const fetchedSnaps = await snapshots.fetch({
-			variables: { floorId: floorId },
-			policy: CachePolicy.NetworkOnly
-		});
-
-		// Get current date
-		let today = new Date();
-
-		// Extract day, month, and year
-		let dd = String(today.getDate()).padStart(2, '0');
-		let mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-		let yyyy = today.getFullYear();
-
-		// Format as "dd-mm-yyyy"
-		formattedDate = yyyy + '-' + mm + '-' + dd;
-
-		return fetchedSnaps;
+	const deleteSnapshot = async (mapid: string) => {
+		await deleteMap.mutate({ mapId: mapid });
 	};
 
 	const snapshotSelected = (mapId: string) => {
-		if ($snapshots.fetching) return;
-		
 		dispatch('select', mapId);
 	};
 
@@ -179,10 +110,21 @@
 		modalStore.trigger(namePromptModal);
 	};
 
+	const buildingChange = (buildingName: string) => {
+		floorGroup = 0;
+		goto(
+			`?building=${buildingName}&floor=${buildingsAndFloors[buildingGroup].floors![0].floorname}`
+		);
+	};
+
+	const floorChange = (floorName: string) => {
+		goto(`?building=${buildingsAndFloors[buildingGroup].buildingname}&floor=${floorName}`);
+	};
+
 	const headStyle: string =
 		'flex flex-row pl-2 mb-1 text-surface-900 text-lg py-1 border-b-[1px] border-surface-900';
 
-	const cardStyle: string = "w-48 h-48"
+	const cardStyle: string = 'w-48 h-48';
 </script>
 
 <div
@@ -190,7 +132,7 @@
 >
 	<div class="border-r-[1px] border-surface-900 -m-5 mr-5 flex flex-col p-4 gap-1 max-w-[17rem]">
 		<p class="flex align-top justify-center mb-2 text-3xl text-primary-500">
-			{currentUser.location?.locationname}
+			{location?.locationname}
 		</p>
 		<div class={headStyle}>
 			<Building2 class="text-surface-400 mr-2" />
@@ -201,7 +143,7 @@
 			<ListBox>
 				{#each buildingsAndFloors ?? [] as building, i (i)}
 					<ListBoxItem
-						on:change={() => (floorGroup = 0)}
+						on:change={() => buildingChange(building.buildingname)}
 						class="py-2 pr-48 pl-4"
 						bind:group={buildingGroup}
 						name="medium"
@@ -224,7 +166,15 @@
 			<ListBox>
 				{#if buildingsAndFloors != null}
 					{#each buildingsAndFloors[buildingGroup].floors ?? [] as floor, i (i)}
-						<ListBoxItem class="py-2 pr-48 pl-4" bind:group={floorGroup} name="medium" value={i}>
+						<ListBoxItem
+							class="py-2 pr-48 pl-4"
+							bind:group={floorGroup}
+							name="medium"
+							value={i}
+							on:change={() => {
+								floorChange(floor.floorname);
+							}}
+						>
 							<div class="flex flex-row">
 								<!-- <MoveRight class="mr-2 w-[22px]" /> -->
 								<ChevronRight class="mr-2 w-[22px]" />
@@ -241,12 +191,19 @@
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
 			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot}
-				<button
+				<div
+					tabindex="0"
+					role="button"
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
+					on:keydown={() => {}}
+					on:keyup={() => {}}
 					class="flex flex-col card card-hover select-none variant-ghost-secondary {cardStyle}"
 				>
 					<div class="flex justify-end w-full">
-						<button class="p-1 m-1 rounded-lg bg-error-300" on:click|stopPropagation={() => deleteSnapshot(snapshot.pk_mapId)}>
+						<button
+							class="p-1 m-1 rounded-lg bg-error-300"
+							on:click|stopPropagation={() => deleteSnapshot(snapshot.pk_mapId)}
+						>
 							<Trash2 class="text-error-500 rounded-full" />
 						</button>
 					</div>
@@ -254,16 +211,15 @@
 						{snapshot.name}
 					</div>
 					<div class="text-primary-500 border-t-[1px] border-tertiary-700">
-						<p class="p-2">{
-							snapshot.updatedOn.split('T')[0] !== formattedDate ? 
-							snapshot.updatedOn.split('T')[0] : 
-							snapshot.updatedOn.split('T')[1].split(':')[0] + 
-							':' +
-							snapshot.updatedOn.split('T')[1].split(':')[1]
-							}
+						<p class="p-2 text-center">
+							{snapshot.updatedOn.split('T')[0] !== formattedDate
+								? snapshot.updatedOn.split('T')[0]
+								: snapshot.updatedOn.split('T')[1].split(':')[0] +
+								  ':' +
+								  snapshot.updatedOn.split('T')[1].split(':')[1]}
 						</p>
 					</div>
-				</button>
+				</div>
 			{/each}
 		{/if}
 

@@ -9,7 +9,6 @@ export const getBuildings = graphql(`
 	}
 `);
 
-
 export const getBuildingsWithFloors = graphql(`
 	query GetBuildingsinLocationWithFloors($locationid: ID!) {
 		getBuildingsInLocation(locationid: $locationid) {

@@ -31,7 +31,7 @@
           <User strokeWidth="2.5" size="30" />
         </RadioItem>
 
-        <button on:click={() => page = "/profile"} class="select-none font-semibold">
+        <button on:click={() => page = "/user"} class="select-none font-semibold">
           Profiles
         </button>
       </div>
@@ -40,7 +40,7 @@
                    name="page"
                    value={$isExtended ? "/extendedUser" : "/"}
                    class="flex flex-col items-center justify-center">
-          <Map strokeWidth="2" size="30" />
+          <Map strokeWidth="2" size="25" />
         </RadioItem>
 
         <button on:click={() => page = "/"} class="select-none font-semibold">
