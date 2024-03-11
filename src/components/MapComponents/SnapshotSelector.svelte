@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import { defaultMapProps } from '$lib/map/props';
@@ -73,6 +73,7 @@
 
 	const deleteSnapshot = async (mapid: string) => {
 		await deleteMap.mutate({ mapId: mapid });
+		invalidateAll(); // TODO: Invalidate only the map query
 	};
 
 	const snapshotSelected = (mapId: string) => {
@@ -101,7 +102,6 @@
 		}
 
 		dispatch('create', newMap.data?.createMapSnapshotOfFloor?.pk_mapId);
-		// await fetchSnapshots(floorId);
 	};
 
 	const newButtonClicked = () => {
