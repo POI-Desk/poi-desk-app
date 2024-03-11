@@ -36,7 +36,7 @@
     $refreshLocations = !$refreshLocations;
   }
 
-  $: if ($locationToEdit.id !== '') {
+  $: if ($locationToEdit.id !== '' || $refreshLocations) {
     getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })
   }
 
