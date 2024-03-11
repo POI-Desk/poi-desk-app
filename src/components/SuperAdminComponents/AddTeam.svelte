@@ -59,9 +59,12 @@
    * @param event
    */
   function handleUserClicked(event) {
-    newMembers.push(event.detail);
-    newMembers = newMembers;
-    console.log(newMemberIds);
+    if (!newMembers.some((m) => m.pk_userid === event.detail.pk_userid)) {
+      newMembers.push(event.detail);
+      newMembers = newMembers;
+    } else {
+      alert("User is already in this team!")
+    }
   }
 
   /**
@@ -79,10 +82,6 @@
           leaderid: newTeamLeader.pk_userid
         })
         .then((value) => {
-          console.log("MEMEBERES");
-
-          console.log(value.data?.addTeam?.teammembers);
-
           getTeams();
           saveTeamDisabled = true;
         });
