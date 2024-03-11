@@ -30,7 +30,7 @@
 
 
   onMount(async () => {
-    await getBuildings.fetch({ variables: { locationid: locid } });
+    if (locid !== '') await getBuildings.fetch({ variables: { locationid: locid } });
     let buildings = $getBuildings.data?.getBuildingsInLocation;
     for (let building in buildings) {
       buildingNames.push(building.buildingname);

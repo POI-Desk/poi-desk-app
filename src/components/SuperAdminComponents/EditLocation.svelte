@@ -1,7 +1,7 @@
 <script lang="ts">
   import { CachePolicy } from "$houdini";
   import { deleteBuilding } from "$lib/mutations/buildings";
-  import { getBuildings } from "$lib/queries/buildingQueries";
+  import { getBuildings } from '$lib/queries/buildingQueries';
   import { onMount } from "svelte";
   import {
     admins,
@@ -36,6 +36,9 @@
     $refreshLocations = !$refreshLocations;
   }
 
+  $: if ($locationToEdit.id !== '') {
+    getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })
+  }
 
   onMount(() => {
     getAdmins();
@@ -51,15 +54,6 @@
     });
   }
 
-
-  function handleNameInput() {
-    // if ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name)) {
-    //   $isSaveDisabled = true;
-    // } else {
-    //   $isSaveDisabled = false;
-    // }
-  }
-
   function handleRemoveAdmin(admin: User) {
     $adminsToRemove.push(admin);
     $adminsToRemove = $adminsToRemove;
@@ -71,16 +65,15 @@
 
 <div class="flex flex-col gap-5">
   {#key $refreshLocations}
-
-    {#await getBuildings.fetch({ variables: { locationid: locationIdToEdit }, policy: CachePolicy.NetworkOnly })}
+    {#if $getBuildings.fetching}
       <ProgressBar value={undefined} />
-    {:then fetched}
+    {:else }
       <div class="input p-1">
         <input
           type="text"
           class="input bg-white col-span-4 p-3"
           bind:value={$locationToEdit.name}
-          on:input={handleNameInput}>
+        >
       </div>
 
       {#each buildings ?? [] as building}
@@ -102,7 +95,7 @@
           </button>
         </div>
       {/each}
-    {/await}
+    {/if}
 
     <AddBuilding />
 

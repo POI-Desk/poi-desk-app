@@ -42,6 +42,7 @@
       && ($locationToEdit.name === "" || $locationNames.includes($locationToEdit.name.toLowerCase()))
       && ($changedBuildings.size === 0)
       && ($floorsToEdit.size === 0)
+      && ($newFloors.length === 0)
     ;
   }
 
@@ -165,6 +166,9 @@
         });
       }
     }
+
+    $refreshLocations = !$refreshLocations;
+    $newFloors = [];
   }
 
   /**
@@ -187,7 +191,6 @@
       });
     $isSaveDisabled = true;
     $refreshLocations = !$refreshLocations;
-    // }
   }
 
   async function removeAdmins(locationid: string) {
