@@ -154,12 +154,12 @@
 
   function handleUserClicked(usr) {
     dispatch("clicked", usr);
+    dropdownIsOpen = false;
   }
 
   let loadMore: boolean = true;
 
   function handleLoadMore() {
-    // TODO was passiert, wenn es keine pages mehr gibt?
     pageNumber++;
     getSearchUsers(pageNumber);
   }
