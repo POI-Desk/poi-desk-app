@@ -17,8 +17,7 @@
         .mutate({
           userid: userToEdit.pk_userid,
           newPassword
-        })
-        .then((value) => console.log(value));
+        });
     }
   }
 
@@ -44,6 +43,6 @@
     <input placeholder="Enter new password" class="input" bind:value={newPassword} />
   {/if}
 
-  <button class="btn variant-filled-error" on:click={removeUser}>Delete</button>
+  <button class="btn variant-filled-error text-white" on:click={removeUser}>Delete</button>
   <button class="btn variant-filled-primary" on:click={saveUser}>Save</button>
 {/if}
