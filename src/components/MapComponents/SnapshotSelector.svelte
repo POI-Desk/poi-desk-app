@@ -45,7 +45,7 @@
 		response: (r: string) => {
 			if (!r) return;
 
-			const id: string = buildingsAndFloors![buildingGroup].floors![floorGroup].pk_floorid;
+			const id: string = buildingsAndFloors![buildingGroup]?.floors![floorGroup].pk_floorid;
 			if (!id) return;
 			createNewSnapshot(id, r);
 		}
@@ -55,13 +55,38 @@
 	export let buildingsAndFloors: any;
 	export let location: Location | null;
 
-	let buildingGroup = buildingsAndFloors.findIndex(
-		(b: any) => b.buildingname === $page.url.searchParams.get('building')
-	);
-	let floorGroup = buildingsAndFloors[buildingGroup].floors.findIndex(
-		(f: any) => f.floorname === $page.url.searchParams.get('floor')
-	);
-	let formattedDate = '00-00-0000';
+	const buildingGroupFromName = (name: string) => {
+		const index = buildingsAndFloors.findIndex((b: any) => b.buildingname === name);
+
+		return index !== -1 ? index : 0;
+	};
+
+	const floorGroupFromName = (name: string) => {
+		const index = buildingsAndFloors[buildingGroup]?.floors?.findIndex(
+			(f: any) => f.floorname === name
+		);
+
+		return index !== -1 ? index : 0;
+	};
+
+	$: buildingName = $page.url.searchParams.get('building');
+	$: floorName = $page.url.searchParams.get('floor');
+
+	$: buildingGroup = buildingGroupFromName(buildingName ?? '');
+	$: floorGroup = floorGroupFromName(floorName ?? '');
+
+	const formattedDate = () => {
+		const date = new Date();
+
+		let month = '' + (date.getMonth() + 1);
+		if (month.length < 2) month = '0' + month;
+
+		let day = '' + date.getDate();
+		if (day.length < 2) day = '0' + day;
+
+		const fDate = date.getFullYear() + '-' + month + '-' + day;
+		return fDate;
+	};
 
 	const createSnapshot = graphql(`
 		mutation createSnapshot($floorId: ID!, $name: String!, $fallback: MapInput) {
@@ -113,7 +138,7 @@
 	const buildingChange = (buildingName: string) => {
 		floorGroup = 0;
 		goto(
-			`?building=${buildingName}&floor=${buildingsAndFloors[buildingGroup].floors![0].floorname}`
+			`?building=${buildingName}&floor=${buildingsAndFloors[buildingGroup]?.floors[0].floorname}`
 		);
 	};
 
@@ -165,7 +190,7 @@
 		<div class="max-h-56 overflow-x-hidden">
 			<ListBox>
 				{#if buildingsAndFloors != null}
-					{#each buildingsAndFloors[buildingGroup].floors ?? [] as floor, i (i)}
+					{#each buildingsAndFloors[buildingGroup]?.floors ?? [] as floor, i (i)}
 						<ListBoxItem
 							class="py-2 pr-48 pl-4"
 							bind:group={floorGroup}
@@ -190,9 +215,9 @@
 	</div>
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
-			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot}
+			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot, i (i)}
 				<div
-					tabindex="0"
+					tabindex={i}
 					role="button"
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
 					on:keydown={() => {}}
@@ -212,7 +237,7 @@
 					</div>
 					<div class="text-primary-500 border-t-[1px] border-tertiary-700">
 						<p class="p-2 text-center">
-							{snapshot.updatedOn.split('T')[0] !== formattedDate
+							{snapshot.updatedOn.split('T')[0] !== formattedDate()
 								? snapshot.updatedOn.split('T')[0]
 								: snapshot.updatedOn.split('T')[1].split(':')[0] +
 								  ':' +

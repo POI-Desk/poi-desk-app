@@ -113,7 +113,7 @@
 
 		if (response.data?.publishMap) {
 			toastStore.trigger(toastPublishSuccess);
-			goto(`/admin`);
+			goto(`/`);
 		} else {
 			toastStore.trigger(toastPublishFailed);
 		}

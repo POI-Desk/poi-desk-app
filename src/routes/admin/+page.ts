@@ -1,5 +1,6 @@
+import { goto } from '$app/navigation';
 import { CachePolicy, getMapSnapshotsByLocationBuildingFloorNameStore, graphql } from '$houdini';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 const snapshots = graphql(`
 	query getMapSnapshotsByLocationBuildingFloorName(
@@ -38,7 +39,7 @@ export const load = async (event) => {
 	});
 
 	return {
-		snapShots: s,
+		snapshots: s,
 		...event.data
 	};
 };

@@ -179,16 +179,16 @@
 </script>
 
 <div class="flex justify-center">
-	<div class="flex items-center relative w-full shadow-around-10 max-w-screen-sm">
+	<div class="flex items-center relative w-full rounded-full max-w-screen-sm">
 		<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
-			<div class="dropdown w-full">
+			<div class="dropdown w-full rounded-full border-2 border-primary-300">
 				<input
-					class="input my-1 w-full rounded-full pl-20 py-3 border-none"
+					class="input bg-surface-50 w-full rounded-full pl-20 py-3 border-none shadow-around-10"
 					placeholder="Search..."
 					bind:value={typedUsername}
 					on:input={handleDropDownClick}
 				/>
-				<div class="absolute left-0 right-0 w-full px-2 z-10">
+				<div class="absolute w-full px-2 z-10">
 					{#if dropdownIsOpen}
 						<ul
 							class="dropdown-content menu shadow variant-filled-tertiary dark:bg-surface-600 rounded-xl max-h-90 flex-nowrap overflow-auto"

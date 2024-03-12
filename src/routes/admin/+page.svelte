@@ -6,7 +6,7 @@
 
 	export let data: PageData;
 
-	$: ({ snapShots } = data);
+	$: ({ snapshots } = data);
 
 	$: session = data.session! as User;
 
@@ -29,7 +29,7 @@
 
 <SnapshotSelector
 	buildingsAndFloors={data.buildings}
-	snapshotsOfFloor={$snapShots.data?.getMapSnapshotsByLocationBuildingFloorName}
+	snapshotsOfFloor={$snapshots.data?.getMapSnapshotsByLocationBuildingFloorName}
 	location={session.location}
 	on:select={(event) => changeMap(event.detail)}
 	on:create={(event) => changeMap(event.detail)}
