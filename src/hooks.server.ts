@@ -33,22 +33,21 @@ export const handle: Handle = async ({ event }) => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get('session');
-	const response = await resolve(event);
-
+	
 	const data = await getData.fetch({ variables: { session: sessionToken! }, event});
-
+	
 	event.locals.getSession = () => {
 		return data.data?.getUserInformation;
 	};
-
+	
 	if (event.request.url.includes('/login')) {
 		console.log('The request url inclues login');
-		return response;
+		return await resolve(event);
 	}
 	if (event.request.url.includes('/api/auth/callback/google')) {
 		console.log('The request url inclues /api/auth/callback/google');
 		console.log('Callback');
-		return response;
+		return await resolve(event);
 	}
 
 	if (!sessionToken) {
@@ -56,7 +55,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (!event.request.url.includes('/login')) {
 			return Response.redirect('http://localhost:5173/login', 302);
 		}
-		return response;
+		return await resolve(event);
 	}
 	setSession(event, { sessionToken });
 	//console.log("Session token found:", sessionToken);
