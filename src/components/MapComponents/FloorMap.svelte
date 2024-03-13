@@ -62,12 +62,17 @@
 
 	export let bookingsData: any;
 
-	let query: string = 'null';
+	let query: URLSearchParams = new URLSearchParams('');
 
 	$: {
-		const q = new URLSearchParams($page.url.searchParams).toString();
-		if (query !== q) {
-			drawMap();
+		const q = new URLSearchParams($page.url.searchParams);
+		if (query.toString() !== q.toString()) {
+			if (q.get('buildings') !== query.get('buildings') || q.get('floor') !== query.get('floor')) {
+				drawMap();
+			} else if (q.get('date') !== query.get('date')) {
+				console.log('date changed');
+				updateBookings();
+			}
 			query = q;
 		}
 	}
@@ -118,7 +123,7 @@
 	};
 
 	const updateBookings = () => {
-		if (!bookingsData || !finRender) return;
+		if (!finRender) return;
 
 		for (const key of Object.keys(deskObjects)) {
 			const desk: DeskSvg = deskObjects[key];
@@ -153,7 +158,6 @@
 	const drawMap = () => {
 		emptyMap();
 		if (!mapData || !browser || !finRender) return;
-		console.log('Drawing map');
 
 		drawingMap = true;
 		map.height = mapData.height;

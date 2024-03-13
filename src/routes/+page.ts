@@ -109,29 +109,15 @@ export const load = async (event) => {
 		};
 	}
 
-	let building = searchParams.get('building');
-	if (!building) {
-		building = event.data.buildings[0].buildingname;
-		searchParams.set('building', building);
-	}
-
-	let floor = searchParams.get('floor');
-	if (!floor) {
-		floor = event.data.buildings[0].floors[0].floorname;
-		searchParams.set('floor', floor);
-	}
-
-	let date = searchParams.get('date');
-	if (!date) {
-		date = new Date().toISOString().split('T')[0];
-		searchParams.set('date', date);
-	}
+	const buildingName = event.data.query.building;
+	const floorName = event.data.query.floor;
+	const date = event.data.query.date;
 
 	const p = new getPublishedMapByBuildingNameAndFloorNameStore();
 	const buildingsPromise = p.fetch({
 		variables: {
-			buildingName: building ?? '',
-			floorName: floor ?? '',
+			buildingName: buildingName,
+			floorName: floorName,
 			locationId: event.data.session.location!.pk_locationid
 		},
 		policy: CachePolicy.CacheAndNetwork,
@@ -141,10 +127,10 @@ export const load = async (event) => {
 	const b = new getBookingsByDateInLocationAndBuildingNameFloorNameStore();
 	const bookingsPromise = b.fetch({
 		variables: {
-			date: date ?? '',
+			date: date,
 			locationId: event.data.session.location!.pk_locationid,
-			floorName: floor ?? '',
-			buildingName: building ?? ''
+			floorName: floorName,
+			buildingName: buildingName
 		},
 		policy: CachePolicy.CacheAndNetwork,
 		event
@@ -155,11 +141,6 @@ export const load = async (event) => {
 	return {
 		map: p,
 		bookings: b,
-		...event.data,
-        query: {
-            building: building,
-            floor: floor,
-            date: date
-        }
+		...event.data
 	};
 };
