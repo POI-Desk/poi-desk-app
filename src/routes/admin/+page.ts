@@ -24,15 +24,15 @@ const snapshots = graphql(`
 export const load = async (event) => {
 	const searchParams = event.url.searchParams;
 
-	const building = searchParams.get('building');
-	const floor = searchParams.get('floor');
+	const building = searchParams.get('building') ?? '';
+	const floor = searchParams.get('floor') ?? '';
 
 	const s = new getMapSnapshotsByLocationBuildingFloorNameStore();
 	await s.fetch({
 		variables: {
 			buildingName: building ?? '',
 			floorName: floor ?? '',
-			locationId: event.data.session.location.pk_locationid
+			locationId: event.data.session.location!.pk_locationid
 		},
 		policy: CachePolicy.NetworkOnly,
 		event
@@ -40,6 +40,10 @@ export const load = async (event) => {
 
 	return {
 		snapshots: s,
-		...event.data
+		...event.data,
+		query: {
+			building: building,
+			floor: floor
+		}
 	};
 };

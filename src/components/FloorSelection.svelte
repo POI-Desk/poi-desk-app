@@ -1,33 +1,12 @@
 <script lang="ts">
-	import { floorid } from '$lib/floorStore';
-	import { buildingid } from '$lib/buildingStore';
-	import { getFloors } from '$lib/queries/floorQueries';
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-	import { getBookings } from '$lib/bookingStore';
 	import { getBuildings } from '$lib/queries/buildingQueries';
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import { createEventDispatcher, onMount } from 'svelte';
 
-	$: floors = $getFloors.data?.getFloorsInBuilding;
+	const dispatcher = createEventDispatcher();
 
+	export let floors: any;
 	export let floorName: string;
-
-	$: {
-		if ($floorid) {
-			floorName = floors?.find((floor) => floor.pk_floorid === $floorid)?.floorname ?? '';
-		}
-	
-	}
-
-	async function selectFirstFloor() {
-		await getFloors.fetch({ variables: { buildingid: $buildingid } });
-
-		if (floors) {
-			$floorid = floors[0]?.pk_floorid || ''; // Set to the first floor
-		}
-	}
-
-	$: {
-		if ($buildingid) selectFirstFloor();
-	}
 </script>
 
 <RadioGroup
@@ -38,28 +17,26 @@
 	background="none"
 >
 	<div
-		class="absolute {$getBuildings.fetching
-			? 'min-h-[25%]'
-			: ''} w-11 left-2 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50-900-token
+		class="absolute w-11 left-2 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50-900-token
     flex flex-col border-2 border-primary-300 shadow-around-10"
 	>
-		{#if $getBuildings.fetching}
-			<div  />
-		{:else}
-			{#each floors ?? [] as floor}
-				<!--        <div class="flex justify-center items-center">-->
-				<RadioItem
-					bind:group={$floorid}
-					name="floors"
-					value={floor?.pk_floorid ?? ''}
-					class="flex items-center justify-center"
-				>
-					<p class="select-none font-semibold py-12">
-						{floor?.floorname.split(' ')[0]}
-					</p>
-				</RadioItem>
-				<!--        </div>-->
-			{/each}
-		{/if}
+		{#each floors ?? [] as floor}
+			<!--        <div class="flex justify-center items-center">-->
+			<RadioItem
+				bind:group={floorName}
+				name="floors"
+				value={floor?.floorname ?? ''}
+				class="flex items-center justify-center"
+				on:change={() => {
+					floorName = floor.floorname;
+					dispatcher('change');
+				}}
+			>
+				<p class="select-none font-semibold py-12">
+					{floor?.floorname.split(' ')[0]}
+				</p>
+			</RadioItem>
+			<!--        </div>-->
+		{/each}
 	</div>
 </RadioGroup>

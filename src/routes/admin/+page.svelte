@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { building } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import SnapshotSelector from '$components/MapComponents/SnapshotSelector.svelte';
 	import type { User } from '$lib/types/userTypes';
@@ -7,6 +8,9 @@
 	export let data: PageData;
 
 	$: ({ snapshots } = data);
+
+	$: buildingName = data.query?.building ?? '';
+	$: floorName = data.query?.floor ?? '';
 
 	$: session = data.session! as User;
 
@@ -20,7 +24,10 @@
 		class="w-2/3 ml-4 max-w-screen-lg flex justify-between p-2 bg-surface-50 rounded-full shadow-around-10"
 	>
 		<button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</button>
-		<button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</button>
+		<button
+			class="btn variant-filled-primary"
+			on:click={() => goto(`/?building=${buildingName}&floor=${floorName}`)}>Home</button
+		>
 		<button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
 			>Analytics</button
 		>
@@ -28,6 +35,8 @@
 </div>
 
 <SnapshotSelector
+	{buildingName}
+	{floorName}
 	buildingsAndFloors={data.buildings}
 	snapshotsOfFloor={$snapshots.data?.getMapSnapshotsByLocationBuildingFloorName}
 	location={session.location}

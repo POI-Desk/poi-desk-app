@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { deskProps, wallThickness } from "$lib/map/props";
-  import { createEventDispatcher } from "svelte";
-  import { isExtended } from "$lib/stores/extendedUserStore";
-  import { interval } from "$lib/bookingStore.js";
+	import { deskProps, wallThickness } from '$lib/map/props';
+	import { createEventDispatcher } from 'svelte';
+	import { isExtended } from '$lib/stores/extendedUserStore';
+	import { interval } from '$lib/bookingStore.js';
 
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;
@@ -19,49 +19,49 @@
 		rotation: 0
 	};
 
-  export const getBookedMorning = () => {
-    return bookedMorning;
-  };
+	export const getBookedMorning = () => {
+		return bookedMorning;
+	};
 
-  export const getBookedAfternoon = () => {
-    return bookedAfternoon;
-  };
+	export const getBookedAfternoon = () => {
+		return bookedAfternoon;
+	};
 
-  export const setBookedMorning = (isBookedMorning: boolean) => {
-    bookedMorning = isBookedMorning;
-  };
+	export const setBookedMorning = (isBookedMorning: boolean) => {
+		bookedMorning = isBookedMorning;
+	};
 
-  export const setBookedAfternoon = (isBookedAfternoon: boolean) => {
-    bookedAfternoon = isBookedAfternoon;
-  };
+	export const setBookedAfternoon = (isBookedAfternoon: boolean) => {
+		bookedAfternoon = isBookedAfternoon;
+	};
 
-  export const setSelected = (isSelected: boolean) => {
-    selected = isSelected;
-  };
+	export const setSelected = (isSelected: boolean) => {
+		selected = isSelected;
+	};
 
-  export const setText = (newText: string) => {
-    text = newText;
-  };
+	export const setText = (newText: string) => {
+		text = newText;
+	};
 	const freeColor: string = '#D1F3FF';
 	const bookedColor: string = '#9EBBD9';
 	const assignedColor: string = '#FF4538';
 	//E680BA
 	//red: FF4538
 
-  const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-  const borderThickness: number = 3;
+	const borderThickness: number = 3;
 
-  const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${
-    transform.y
-  }px;`;
+	const style: string = `position: absolute; left: ${transform.x + wallThickness / 2}px; top: ${
+		transform.y
+	}px;`;
 </script>
 
 <button
-  class="z-{z}"
-  style={useAsMain ? style : ''}
-  on:touchend={() => dispatch('click')}
-  on:click={() => dispatch('click')}
+	class="z-{z}"
+	style={useAsMain ? style : ''}
+	on:touchend={() => dispatch('click')}
+	on:click={() => dispatch('click')}
 >
 	<svg {width} {height}>
 		<rect

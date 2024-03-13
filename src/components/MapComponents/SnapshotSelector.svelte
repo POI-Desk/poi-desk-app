@@ -69,8 +69,8 @@
 		return index !== -1 ? index : 0;
 	};
 
-	$: buildingName = $page.url.searchParams.get('building');
-	$: floorName = $page.url.searchParams.get('floor');
+	export let buildingName: string;
+	export let floorName: string;
 
 	$: buildingGroup = buildingGroupFromName(buildingName ?? '');
 	$: floorGroup = floorGroupFromName(floorName ?? '');
@@ -210,8 +210,6 @@
 				{/if}
 			</ListBox>
 		</div>
-		<!-- <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Buildings</button>
-        <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Floors</button> -->
 	</div>
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}

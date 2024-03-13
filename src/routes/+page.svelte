@@ -1,69 +1,64 @@
 <script lang="ts">
 	import DateSelection from '$components/DateSelection.svelte';
 
+	import { page } from '$app/stores';
+	import BottomNav from '$components/BottomNav.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
 	import FloorMap from '$components/MapComponents/FloorMap.svelte';
-	import { onMount } from 'svelte';
-	import { authId, user } from '$lib/userStore';
-	import { isExtended } from '$lib/stores/extendedUserStore';
 	import SearchBar from '$components/SearchBar.svelte';
-	import type { PageServerData } from './$types';
-	import BottomNav from '$components/BottomNav.svelte';
+	import { isExtended } from '$lib/stores/extendedUserStore';
+	import { user } from '$lib/userStore';
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
+	import { goto } from '$app/navigation';
 
-	export let data: PageServerData;
+	export let data: PageData;
+	$: ({ map } = data);
+	$: ({ bookings } = data);
 
-	//
-	// let visible = false;
-	// let panelVisible = false;
-	//
-	// function togglePanel() {
-	// 	panelVisible = !panelVisible;
-	// }
-	//
-	// function hidePanel() {
-	// 	panelVisible = false;
-	// }
-	//
-	// function spinnnnn() {
-	// 	visible = true;
-	// 	setTimeout(() => {
-	// 		visible = false;
-	// 	}, 5000);
-	// }
 	$isExtended = false; // TODO idk if this is a good idea.. but it works
-	let floorName: string;
-	let buildingName: string;
+
+	$: floorName = data.query?.floor ?? '';
+	$: buildingName = data.query?.building ?? '';
+	$: date = data.query?.date ?? new Date().toISOString().split('T')[0];
+
+	const changeBuilding = (name: string) => {
+		const query = new URLSearchParams($page.url.searchParams);
+
+		const floor =
+			data.buildings
+				?.filter((b) => b.buildingname === name)
+				.flatMap((b) => b.floors)
+				.map((f) => f?.floorname)[0] ?? '';
+		query.set('building', name);
+		query.set('floor', floor);
+		goto(`?${query.toString()}`);
+	};
+
+	const changeFloor = (name: string) => {
+		const query = new URLSearchParams($page.url.searchParams);
+		query.set('floor', name);
+		goto(`?${query.toString()}`);
+	};
 
 	onMount(() => {
 		$user = data.session;
 	});
 </script>
 
-<!--{#if visible}-->
-<!--	<CrazyAnimation>-->
-<!--		<Check />-->
-<!--	</CrazyAnimation>-->
-<!--{/if}-->
-
 <div class="overflow-hidden h-screen">
-	<FloorMap />
+	<FloorMap
+		mapData={$map?.data?.getPublishedMapByLocationBuildingFloorName}
+		bookingsData={$bookings?.data?.getBookingsByDateInLocationAndBuildingNameFloorName}
+	/>
 
 	<div class="absolute p-8 w-full">
 		<SearchBar />
 		<div class="flex justify-center p-1">
-			<DateSelection />
+			<DateSelection {date} />
 		</div>
-
-		<!-- <div>
-      <a class="btn variant-filled-primary" href="/login">Login</a>
-      <a class="btn variant-filled-primary" href="/bookings">Bookings</a>
-      <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
-      <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
-      <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
-      
-      <LightSwitch />
-    </div> -->
 	</div>
 
 	<div class="hidden md:block">
@@ -76,8 +71,9 @@
 				>Bookings</a
 			>
 
-			<a href={`/admin?building=${buildingName}&floor=${floorName}`} class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-				>Map Creator</a
+			<a
+				href={`/admin?building=${buildingName}&floor=${floorName}`}
+				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Map Creator</a
 			>
 
 			<a
@@ -101,7 +97,15 @@
 		<BottomNav />
 	</div>
 
-	<FloorSelection bind:floorName />
+	<FloorSelection
+		bind:floorName
+		floors={data.buildings?.filter((b) => b.buildingname === buildingName).flatMap((b) => b.floors)}
+		on:change={() => changeFloor(floorName)}
+	/>
 
-	<BuildingSelection bind:buildingName />
+	<BuildingSelection
+		bind:buildingName
+		buildings={data.buildings}
+		on:change={() => changeBuilding(buildingName)}
+	/>
 </div>

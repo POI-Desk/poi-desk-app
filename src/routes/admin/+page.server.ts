@@ -1,5 +1,6 @@
 import { getBuildingsAndFloorsInLocationStore, graphql } from '$houdini';
 import type { PageServerLoad } from './$types';
+import type { User } from '$lib/types/userTypes';
 
 const buildingsForSnapshots = graphql(`
 	query getBuildingsAndFloorsInLocation($locationId: ID!) {
@@ -15,11 +16,11 @@ const buildingsForSnapshots = graphql(`
 `);
 
 export const load: PageServerLoad = async (event) => {
-	const session = event.locals.getSession();
+	const session = event.locals.getSession() as User;
 
 	const b = new getBuildingsAndFloorsInLocationStore();
 	const res = await b.fetch({
-		variables: { locationId: session.location.pk_locationid },
+		variables: { locationId: session.location!.pk_locationid },
 		event
 	});
 
