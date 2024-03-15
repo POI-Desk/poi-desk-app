@@ -4,6 +4,7 @@ import {
 	getPublishedMapByBuildingNameAndFloorNameStore,
 	graphql
 } from '$houdini';
+import type { PageLoad } from './$types';
 
 const getPublishedMap = graphql(`
 	query getPublishedMapByBuildingNameAndFloorName(
@@ -101,7 +102,11 @@ const getBookingsByDate = graphql(`
 
 export const load = async (event) => {
 	const searchParams = event.url.searchParams;
-	if (!event.data.buildings || !event.data.buildings[0].floors) {
+	if (
+		!event.data.location ||
+		!event.data.location.buildings ||
+		!event.data.location.buildings[0].floors
+	) {
 		return {
 			map: null,
 			bookings: null,

@@ -33,7 +33,7 @@ export const load = (async (event) => {
 	if (!buildings || !buildings[0].floors) {
 		return {
 			session,
-			buildings: null
+			location: null
 		};
 	}
 
@@ -57,7 +57,7 @@ export const load = (async (event) => {
 
 	return {
 		session,
-		buildings: res.data?.getLocationByName?.buildings,
+		location: res.data?.getLocationByName,
 		query: {
 			building,
 			floor,

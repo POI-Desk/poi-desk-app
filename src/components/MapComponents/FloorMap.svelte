@@ -22,6 +22,7 @@
 	import Label from './MapObjects/Label.svelte';
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
+	import { compareObjectsByValues } from '$lib/map/helper';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
@@ -63,17 +64,16 @@
 	export let bookingsData: any;
 
 	let query: URLSearchParams = new URLSearchParams('');
+	let oldMapData: any = null;
 
 	$: {
 		const q = new URLSearchParams($page.url.searchParams);
-		if (query.toString() !== q.toString()) {
-			if (q.get('buildings') !== query.get('buildings') || q.get('floor') !== query.get('floor')) {
-				drawMap();
-			} else if (q.get('date') !== query.get('date')) {
-				console.log('date changed');
-				updateBookings();
-			}
-			query = q;
+		const m = mapData;
+		if (!compareObjectsByValues(m, oldMapData)) {
+			oldMapData = m;
+			drawMap();
+		} else if (q.get('date') !== query.get('date')) {
+			updateBookings();
 		}
 	}
 

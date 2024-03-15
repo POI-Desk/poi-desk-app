@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { user } from '$lib/userStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
-	import { defaultLocation } from '$lib/mutations/location'
+	import { defaultLocation } from '$lib/mutations/location';
 	//export let parent: any;
 
 	$: currentUser = $user;
 	const modalStore = getModalStore();
-
-
 
 	async function setAsDefault() {
 		await defaultLocation.mutate({
@@ -15,8 +13,7 @@
 		});
 	}
 
-	function closeModal(){
-		
+	function closeModal() {
 		modalStore.close();
 	}
 
@@ -30,7 +27,7 @@
 			<div>
 				<a
 					class="btn variant-filled-success px-14"
-					href="."
+					href="/{$user.location?.locationname}"
 					on:click={() => {
 						setAsDefault();
 						closeModal();
@@ -41,7 +38,7 @@
 						closeModal();
 					}}
 					class="btn variant-filled-error px-14"
-					href=".">No</a
+					href="/{$user.location?.locationname}">No</a
 				>
 			</div>
 		</div>

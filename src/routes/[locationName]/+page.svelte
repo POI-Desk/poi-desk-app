@@ -28,7 +28,7 @@
 		const query = new URLSearchParams($page.url.searchParams);
 
 		const floor =
-			data.buildings
+			data.location?.buildings
 				?.filter((b) => b.buildingname === name)
 				.flatMap((b) => b.floors)
 				.map((f) => f?.floorname)[0] ?? '';
@@ -40,7 +40,7 @@
 	const changeFloor = (name: string) => {
 		const query = new URLSearchParams($page.url.searchParams);
 		query.set('floor', name);
-		goto(`?${query.toString()}`);
+		goto(`/${data.location?.locationname}?${query.toString()}`);
 	};
 
 	onMount(() => {
@@ -99,13 +99,13 @@
 
 	<FloorSelection
 		bind:floorName
-		floors={data.buildings?.filter((b) => b.buildingname === buildingName).flatMap((b) => b.floors)}
+		floors={data.location?.buildings?.filter((b) => b.buildingname === buildingName).flatMap((b) => b.floors)}
 		on:change={() => changeFloor(floorName)}
 	/>
 
 	<BuildingSelection
 		bind:buildingName
-		buildings={data.buildings}
+		buildings={data.location?.buildings}
 		on:change={() => changeBuilding(buildingName)}
 	/>
 </div>

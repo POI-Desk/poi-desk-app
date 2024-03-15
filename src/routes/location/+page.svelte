@@ -40,7 +40,6 @@
 			<button
 				class="btn btn-block variant-filled-primary w-2/3 px-14"
 				on:click={() => {
-					console.log('hello');
 					$user.location = {
 						locationname: location?.locationname,
 						pk_locationid: location?.pk_locationid
