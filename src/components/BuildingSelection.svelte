@@ -5,7 +5,7 @@
 
 	import { getFloors } from '$lib/queries/floorQueries';
 
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import * as Tabs from '$lib/components/ui/tabs';
 
 	export let buildingName: string;
 
@@ -33,34 +33,29 @@
 	}
 </script>
 
-<RadioGroup
-	border="none"
-	padding="py-2"
-	active="variant-filled-primary"
-	hover="hover:variant-soft-primary"
-	background="none"
->
-	<div
+<Tabs.Root>
+	<Tabs.List
 		class="absolute {$getFloors.fetching
 			? 'min-w-[25%]'
-			: ''} h-11 bottom-28 md:bottom-11 left-1/2 z-[100] rounded-full -translate-x-1/2 bg-surface-50-900-token
-    flex border-2 border-primary-300 shadow-around-10"
+			: ''} h-11 bottom-28 md:bottom-11 left-1/2 z-[100] -translate-x-1/2
+    flex border-2 shadow-around-10"
 	>
 		{#if $getBuildings.fetching}
 			<div />
 		{:else}
 			{#each buildings ?? [] as building}
-				<RadioItem
-					bind:group={$buildingid}
-					name="buildings"
+				<Tabs.Trigger
 					value={building?.pk_buildingid}
+					on:click={() => {
+						$buildingid = building.pk_buildingid;
+					}}
 					class="flex items-center justify-center px-12"
 				>
 					<p class="select-none font-semibold">
 						{building.buildingname}
 					</p>
-				</RadioItem>
+				</Tabs.Trigger>
 			{/each}
 		{/if}
-	</div>
-</RadioGroup>
+	</Tabs.List>
+</Tabs.Root>

@@ -11,7 +11,8 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$houdini: './$houdini',
-			$components: './src/components'
+			$components: './src/components',
+			$lib: './src/lib',
 		}
 	}
 };

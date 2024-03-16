@@ -8,6 +8,7 @@
 	export let values: { label: string; value: string }[];
 	let inputDemo = '';
 	function onFlavorSelection(event: CustomEvent<AutocompleteOption<string>>): void {
+		console.log(event.detail)
 		inputDemo = event.detail.label;
 		dispatch('selected', event.detail.value);
 	}

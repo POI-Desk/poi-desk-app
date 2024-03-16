@@ -2,9 +2,8 @@
 	import { floorid } from '$lib/floorStore';
 	import { buildingid } from '$lib/buildingStore';
 	import { getFloors } from '$lib/queries/floorQueries';
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-	import { getBookings } from '$lib/bookingStore';
 	import { getBuildings } from '$lib/queries/buildingQueries';
+	import * as Tabs from '$lib/components/ui/tabs';
 
 	$: floors = $getFloors.data?.getFloorsInBuilding;
 
@@ -14,7 +13,6 @@
 		if ($floorid) {
 			floorName = floors?.find((floor) => floor.pk_floorid === $floorid)?.floorname ?? '';
 		}
-	
 	}
 
 	async function selectFirstFloor() {
@@ -30,7 +28,34 @@
 	}
 </script>
 
-<RadioGroup
+<Tabs.Root class="w-min">
+	<Tabs.List
+		class="absolute {$getBuildings.fetching
+			? 'min-h-[25%]'
+			: ''} left-2 md:left-11 top-1/2 z-[100] -translate-y-1/2
+    flex flex-col border-2 shadow-around-10 w-min h-min"
+	>
+		{#if $getFloors.fetching}
+			<div />
+		{:else}
+			{#each floors ?? [] as floor}
+				<Tabs.Trigger
+					value={floor?.pk_floorid}
+					on:click={() => {
+						$floorid = floor.pk_floorid;
+					}}
+					class="flex items-center justify-center px-5 py-5"
+				>
+					<p class="select-none font-semibold">
+						{floor.floorname}
+					</p>
+				</Tabs.Trigger>
+			{/each}
+		{/if}
+	</Tabs.List>
+</Tabs.Root>
+
+<!-- <RadioGroup
 	border="none"
 	padding="px-2"
 	active="variant-filled-primary"
@@ -47,7 +72,6 @@
 			<div  />
 		{:else}
 			{#each floors ?? [] as floor}
-				<!--        <div class="flex justify-center items-center">-->
 				<RadioItem
 					bind:group={$floorid}
 					name="floors"
@@ -58,8 +82,7 @@
 						{floor?.floorname.split(' ')[0]}
 					</p>
 				</RadioItem>
-				<!--        </div>-->
 			{/each}
 		{/if}
 	</div>
-</RadioGroup>
+</RadioGroup> -->

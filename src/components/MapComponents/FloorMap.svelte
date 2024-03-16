@@ -6,13 +6,6 @@
 	import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import type { MapTransform } from '$lib/types/mapTypes';
-	import {
-		ProgressBar,
-		getModalStore,
-		type ModalSettings,
-		getToastStore,
-		type ToastSettings
-	} from '@skeletonlabs/skeleton';
 	import type { PanZoom } from 'panzoom';
 	import panzoom from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
@@ -22,11 +15,11 @@
 	import WallSvg from './MapObjects/WallSVG.svelte';
 	import { isExtended, selectedDesks, selectedUsers } from '$lib/stores/extendedUserStore';
 	import { refreshDesks } from '$lib/refreshStore';
-	import { buildingid } from '$lib/buildingStore';
 	import Label from './MapObjects/Label.svelte';
 	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import type { Desk } from '$lib/types/deskTypes';
 	import { getDeskById } from '$lib/queries/deskQueries';
+	import { toast } from 'svelte-sonner';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
@@ -37,21 +30,6 @@
 		height: 0,
 		width: 0,
 		scale: 1
-	};
-
-	const modalStore = getModalStore();
-
-	const modal: ModalSettings = {
-		type: 'component',
-		component: 'modalBooking'
-	};
-
-	const toastStore = getToastStore();
-
-	const tooManyDesks: ToastSettings = {
-		message: 'Too many desks selected!',
-		timeout: 3000,
-		background: 'variant-filled-error'
 	};
 
 	let deskObjects: { [key: string]: DeskSvg } = {};
@@ -89,7 +67,6 @@
 
 	onDestroy(() => {
 		if (!panz) return;
-
 		panz.dispose();
 	});
 	const emptyMap = () => {
@@ -187,6 +164,8 @@
 				}
 			});
 			deskSvg.$on('click', async () => {
+				console.log('dispatched lol');
+				console.log('isExtended', $isExtended);
 				if ($isExtended) {
 					let newD: Desk = {
 						pk_deskid: desk.pk_deskid,
@@ -198,7 +177,9 @@
 						$selectedDesks.splice($selectedDesks.indexOf(newD), 1);
 						deskSvg.setSelected(false);
 					} else if ($selectedDesks.length >= $selectedUsers.length) {
-						toastStore.trigger(tooManyDesks);
+						toast.error('Too many desks selected!', {
+							position: 'bottom-center'
+						});
 					} else {
 						if (
 							($interval.morning && !deskSvg.getBookedMorning()) ||
@@ -215,7 +196,7 @@
 						variables: { deskId: desk.pk_deskid },
 						policy: CachePolicy.NetworkOnly
 					});
-					modalStore.trigger(modal);
+					//modalStore.trigger(modal);
 				}
 			});
 			deskObjects[desk.pk_deskid] = deskSvg;
@@ -307,7 +288,7 @@
 	>
 		{#if $getPublishedMapOnFloor.fetching}
 			<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
-				<ProgressBar value={undefined} />
+				Loading...
 			</div>
 		{:else if mapData}
 			<canvas

@@ -50,7 +50,8 @@
 		if ($dateValue) {
 			morningSelected = false;
 			afternoonSelected = false;
-			currentBookingsOnDate = selectedDesk?.bookings!.filter((b: any) => b.date === $dateValue) ?? [];
+			currentBookingsOnDate =
+				selectedDesk?.bookings!.filter((b: any) => b.date === $dateValue) ?? [];
 			isBookedMorning = currentBookingsOnDate.some((booking: any) => booking.ismorning);
 			isBookedAfternoon = currentBookingsOnDate.some((booking: any) => booking.isafternoon);
 			for (const booking of currentBookingsOnDate) {
@@ -76,7 +77,7 @@
 		}
 	}
 
-	const baseStyle = 'h-1/2 w-full flex gap-4';
+	const baseStyle = 'h-1/2 w-full flex gap-4 px-7';
 	let staticLocation = 'POI/AT';
 	let location = `${$user.location?.locationname}`;
 </script>
@@ -93,16 +94,18 @@
 		class={baseStyle}
 	>
 		<div
-			class="w-9/12 h-full p-2 rounded-3xl"
+			class="w-full h-full p-2 rounded-3xl"
 			class:bg-white={!morningSelected && !isBookedMorning}
 			class:border-4={!morningSelected && !isBookedMorning}
-			class:border-primary-500={!morningSelected && !isBookedMorning}
+			class:border-black={!morningSelected && !isBookedMorning}
 			class:variant-filled-secondary={morningSelected || isBookedMorning}
 		>
 			{#if morningSelected && !isBookedMorning}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
+						<div
+							class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center"
+						>
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
@@ -113,12 +116,18 @@
 				</div>
 			{:else if !isBookedMorning && !deskAssigned}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
-					<div class="flex justify-center items-center w-full h-full">FREE</div>
+					<div class="flex flex-col justify-center items-center text-black w-full h-full">
+						<p>FREE</p>
+						<p>07:00 - 13:00</p>
+						<p>Click to add</p>
+					</div>
 				</div>
 			{:else}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
+						<div
+							class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center"
+						>
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
@@ -128,13 +137,6 @@
 					</div>
 				</div>
 			{/if}
-		</div>
-		<div
-			class="btn w-3/12 h-full variant-filled-primary rounded-full"
-			class:variant-filled-primary={!isBookedMorning}
-			class:variant-filled-secondary={isBookedMorning}
-		>
-			07:00 <br /> 13:00 <br />
 		</div>
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -148,16 +150,18 @@
 		class={baseStyle}
 	>
 		<div
-			class="w-9/12 h-full p-2 rounded-3xl"
+			class="w-full h-full p-2 rounded-3xl"
 			class:bg-white={!afternoonSelected && !isBookedAfternoon}
 			class:border-4={!afternoonSelected && !isBookedAfternoon}
-			class:border-primary-500={!afternoonSelected && !isBookedAfternoon}
+			class:border-black={!afternoonSelected && !isBookedAfternoon}
 			class:variant-filled-secondary={afternoonSelected || isBookedAfternoon}
 		>
 			{#if afternoonSelected && !isBookedAfternoon}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
+						<div
+							class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center"
+						>
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
@@ -168,12 +172,20 @@
 				</div>
 			{:else if !isBookedAfternoon && !deskAssigned}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
-					<div class="flex justify-center items-center w-full h-full">FREE</div>
+					<div class="flex justify-center items-center w-full h-full">
+						<div class="flex flex-col justify-center items-center text-black w-full h-full">
+							<p>FREE</p>
+							<p>13:00 - 20:00</p>
+							<p>Click to add</p>
+						</div>
+					</div>
 				</div>
 			{:else}
 				<div in:fade class="flex flex-col gap-2 w-full h-full">
 					<div class="flex w-full h-1/2 gap-2">
-						<div class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center">
+						<div
+							class="w-1/2 h-full bg-white text-black rounded-3xl flex items-center justify-center"
+						>
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
 						<div class="w-1/2 h-full bg-white rounded-3xl" />
@@ -183,13 +195,6 @@
 					</div>
 				</div>
 			{/if}
-		</div>
-		<div
-			class="btn w-3/12 h-full variant-filled-primary rounded-full"
-			class:variant-filled-primary={!isBookedAfternoon}
-			class:variant-filled-secondary={isBookedAfternoon}
-		>
-			13:00 <br /> 20:00 <br />
 		</div>
 	</div>
 </div>

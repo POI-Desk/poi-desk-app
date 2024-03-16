@@ -4,6 +4,7 @@
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { createEventDispatcher } from 'svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	const cBase = 'card p-4 w-1/5 shadow-xl space-y-4';
 
@@ -61,20 +62,18 @@
 				<p>Loading...</p>
 			{:then users}
 				{#each users.data?.getUsersWithNoDeskOnMap ?? [] as user}
-					<button
+					<Button
 						class="btn bg-primary-400"
 						on:click={() => {
 							selectedUserId = user.pk_userid;
-						}}>{user.username}</button
+						}}>{user.username}</Button
 					>
 				{/each}
 			{/await}
 
 			<div class="flex flex-row space-x-2 justify-end w-full">
-				<button class="btn border-2 border-primary-500 w-20" on:click={cancelModal}>
-					Cancel
-				</button>
-				<button class="btn bg-primary-500 w-20" on:click={saveModal}> Save </button>
+				<Button class="btn border-2 border-primary-500 w-20" on:click={cancelModal}>Cancel</Button>
+				<Button class="btn bg-primary-500 w-20" on:click={saveModal}>Save</Button>
 			</div>
 		</div>
 	</div>

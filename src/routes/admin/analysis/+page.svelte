@@ -1,29 +1,10 @@
 <script lang="ts">
-	import { building } from '$app/environment';
-	import BarChart from '$components/AnalysisComponents/BarChart.svelte';
-	import DataChart from '$components/AnalysisComponents/DataChart.svelte';
-	import ComparisonBarChart from '$components/AnalysisComponents/ComparisonBarChart.svelte';
-	import DaisplayData from '$components/AnalysisComponents/DaisplayData.svelte';
-	import { MonthlyBookingsByLocation, YearsSinceStart } from '$lib/queries/analysisQueries';
-	import { RadioGroup, RadioItem, ListBox, ListBoxItem, popup } from '@skeletonlabs/skeleton';
-	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import DataSelectionCard from '$components/AnalysisComponents/DataSelectionCard.svelte';
 	import Last30Days from '$components/AnalysisComponents/Last30Days.svelte';
-	import { Info } from 'lucide-svelte';
-	import type {
-		AnalysisResult,
-		AnalysisComparisonInfo,
-		AnalysisComparisonInfoBoth
-	} from '$lib/types/analysisResultType';
-	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import { user } from '$lib/userStore';
 	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { storePopup } from '@skeletonlabs/skeleton';
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+	import { user } from '$lib/userStore';
 
 	async function loadData() {
 		if (buildingsWithFloors.length <= 1) {

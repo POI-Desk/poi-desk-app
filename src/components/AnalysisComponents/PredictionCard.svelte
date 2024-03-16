@@ -395,23 +395,24 @@
 	});
 	let showType: 'Days' | 'Data' = 'Data';*/
 </script>
+
 <!--
 <div class="h-full card p-4 w-full flex flex-col rounded-3xl">
 	<div class="h-1/2 w-full flex flex-row">
 		<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col">
 			{#await loadBuildings() then data}
 				<p>building:</p>
-				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
+				<Button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
 					<span class="capitalize">{selection.Building?.buildingname ?? 'Building'}</span>
 					<span>↓</span>
-				</button>
+				</Button>
 				<p>Floor:</p>
-				<button class="btn variant-filled w-48 justify-between" use:popup={floorSelection}>
+				<Button class="btn variant-filled w-48 justify-between" use:popup={floorSelection}>
 					{#key selection.Floor}
 						<span class="capitalize">{selection.Floor?.floorname ?? 'Floor'}</span>
 					{/key}
 					<span>↓</span>
-				</button>
+				</Button>
 				<RadioGroup
 					flex="flex"
 					active="variant-filled-primary"

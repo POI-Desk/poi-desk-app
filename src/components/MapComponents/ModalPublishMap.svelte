@@ -1,16 +1,13 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui/button';
 	import {
 		SlideToggle,
 		getModalStore,
-		type PopupSettings,
-		popup,
-		type ToastSettings,
-		getToastStore
+		type PopupSettings
 	} from '@skeletonlabs/skeleton';
-	import { onDestroy, onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const modalStore = getModalStore();
-	const toastStore = getToastStore();
 
 	const cBase = 'card px-8 py-4 shadow-xl space-y-4 w-1/3';
 	let keep: boolean = false;
@@ -24,17 +21,11 @@
 		placement: 'bottom'
 	};
 
-	const bookingActionToast: ToastSettings = {
-		message: 'All bookings on the map will be deleted. Are you sure?',
-		background: 'variant-filled-warning'
-	};
 
 	const publish = () => {
 		if ($modalStore[0].response) {
 			$modalStore[0].response({ keepPublishedMap: keep, keepBookings: bookings });
 		}
-
-		toastStore.clear();
 		modalStore.close();
 	};
 
@@ -43,7 +34,9 @@
 			return;
 		}
 		if (!warningSeen) {
-			toastStore.trigger(bookingActionToast);
+			toast.warning('All bookings on the map will be deleted. Are you sure?', {
+				position: 'bottom-center'
+			});
 			warningSeen = !warningSeen;
 		}
 	};
@@ -66,14 +59,13 @@
 			</SlideToggle>
 		</div>
 		<div class="flex justify-end space-x-2 w-full">
-			<button
+			<Button
 				class="btn variant-outline-primary"
 				on:click={() => {
-					toastStore.clear();
 					modalStore.close();
-				}}>Cancel</button
+				}}>Cancel</Button
 			>
-			<button class="btn variant-filled-primary" on:click={publish}>Publish</button>
+			<Button class="btn variant-filled-primary" on:click={publish}>Publish</Button>
 		</div>
 	</div>
 {/if}

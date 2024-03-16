@@ -3,6 +3,7 @@
 	import SnapshotSelector from '$components/MapComponents/SnapshotSelector.svelte';
 	import type { User } from '$lib/types/userTypes';
 	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button';
 
 	export let data: PageData;
 
@@ -19,10 +20,10 @@
 	<div
 		class="w-2/3 ml-4 max-w-screen-lg flex justify-between p-2 bg-surface-50 rounded-full shadow-around-10"
 	>
-		<button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</button>
-		<button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</button>
-		<button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
-			>Analytics</button
+		<Button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</Button>
+		<Button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</Button>
+		<Button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+			>Analytics</Button
 		>
 	</div>
 </div>

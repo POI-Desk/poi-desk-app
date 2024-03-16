@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { goto, invalidate, invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
+	import { Button } from '$lib/components/ui/button';
 	import { defaultMapProps } from '$lib/map/props';
 	import { deleteMap } from '$lib/mutations/map';
 	import type { Location } from '$lib/types/locationType';
@@ -9,9 +10,7 @@
 		ListBox,
 		ListBoxItem,
 		getModalStore,
-		getToastStore,
-		type ModalSettings,
-		type ToastSettings
+		type ModalSettings
 	} from '@skeletonlabs/skeleton';
 	import {
 		AlignHorizontalDistributeCenter,
@@ -21,17 +20,10 @@
 		Trash2
 	} from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const dispatch = createEventDispatcher();
-	const toastStore = getToastStore();
 	const modalStore = getModalStore();
-
-	const toastMapNotCreated: ToastSettings = {
-		message: 'Map could not be created!',
-		hideDismiss: true,
-		timeout: 3500,
-		background: 'variant-filled-error'
-	};
 
 	const namePromptModal: ModalSettings = {
 		type: 'prompt',
@@ -82,7 +74,9 @@
 
 	const createNewSnapshot = async (floorId: string, name: string) => {
 		if (!floorId) {
-			toastStore.trigger(toastMapNotCreated);
+			toast.error('Map could not be created!', {
+				position: 'bottom-center'
+			});
 			return;
 		}
 
@@ -97,7 +91,9 @@
 		});
 
 		if (!newMap.data?.createMapSnapshotOfFloor?.pk_mapId) {
-			toastStore.trigger(toastMapNotCreated);
+			toast.error('Map could not be created!', {
+				position: 'bottom-center'
+			});
 			return;
 		}
 
@@ -185,8 +181,8 @@
 				{/if}
 			</ListBox>
 		</div>
-		<!-- <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Buildings</button>
-        <button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Floors</button> -->
+		<!-- <Button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Buildings</Button>
+        <Button class="hover:bg-primary-400 hover:bg-opacity-20 hover:text-primary-800 text-primary-500 hover:font-bold py-2 pr-52 pl-4 rounded-lg max-w-[14rem]">Floors</Button> -->
 	</div>
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
@@ -223,11 +219,11 @@
 			{/each}
 		{/if}
 
-		<button
+		<Button
 			class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary {cardStyle}"
 			on:click={newButtonClicked}
 		>
 			+
-		</button>
+		</Button>
 	</div>
 </div>

@@ -3,6 +3,7 @@
 	import { dateValue, maxBookingValue, today } from "$lib/dateStore";
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import { floorid } from '$lib/floorStore';
+	import { Input } from '$lib/components/ui/input';
 
 	$dateValue = new Date().toISOString().split('T')[0];
 
@@ -15,6 +16,7 @@
 
 	let visibility = 'hidden';
 	$dateValue = new Date().toISOString().split('T')[0];
+	console.log($dateValue);
 	const getBookings = () => {
 		$selectedDesks = [];
 		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
@@ -26,8 +28,8 @@
 
 <div class="group w-fit">
 	<div class="dropdown">
-		<input
-			class="input border-none"
+		<Input
+			class="input border-none bg-primary text-primary-foreground"
 			type="date"
 			id="calendar"
 			min="{today}"

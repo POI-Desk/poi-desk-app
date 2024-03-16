@@ -5,7 +5,6 @@
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import type { PageData } from '../[[mapId]]/$houdini';
 	import {
 		CachePolicy,
 		graphql,
@@ -16,7 +15,9 @@
 		type UpdateWallInput
 	} from '$houdini';
 	import { compareObjectsByValues } from '$lib/map/helper';
+	import type { PageData } from '../[[mapId]]/$houdini';
 
+	import { Button } from '$lib/components/ui/button';
 	import {
 		defaultMapProps,
 		deskProps,
@@ -47,12 +48,11 @@
 	} from '$lib/types/transformType';
 	import {
 		getModalStore,
-		getToastStore,
-		type ModalSettings,
-		type ToastSettings
+		type ModalSettings
 	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -71,8 +71,6 @@
 
 	const modalStore = getModalStore();
 
-	const toastStore = getToastStore();
-
 	const modalEditDesk: ModalSettings = {
 		type: 'component',
 		component: 'modalEditDesk',
@@ -89,7 +87,6 @@
 		type: 'component',
 		component: 'modalPublishMap',
 		response: (response: { keepPublishedMap: boolean; keepBookings: boolean }) => {
-			toastStore.clear();
 			if (!response) return;
 			publish(response.keepPublishedMap, response.keepBookings);
 		}
@@ -107,40 +104,22 @@
 
 		if (response.errors) {
 			console.error(response.errors);
-			toastStore.trigger(toastPublishFailed);
+			toast.error('Map could not be published!', {
+				position: 'bottom-center'
+			});
 			return;
 		}
 
 		if (response.data?.publishMap) {
-			toastStore.trigger(toastPublishSuccess);
+			toast('Map published successfully!', {
+				position: 'bottom-center'
+			});
 			goto(`/admin`);
 		} else {
-			toastStore.trigger(toastPublishFailed);
+			toast.error('Map could not be published!', {
+				position: 'bottom-center'
+			});
 		}
-	};
-
-	const toastOffline: ToastSettings = {
-		message: 'You are offline, changes may not be saved',
-		hideDismiss: true,
-		background: 'variant-filled-error'
-	};
-
-	const toastOnline: ToastSettings = {
-		message: 'You are online, changes are beeing saved',
-		hideDismiss: true,
-		background: 'variant-filled-success'
-	};
-
-	const toastPublishFailed: ToastSettings = {
-		message: 'Map could not be published',
-		hideDismiss: true,
-		background: 'variant-filled-error'
-	};
-
-	const toastPublishSuccess: ToastSettings = {
-		message: 'Map successfully published',
-		hideDismiss: true,
-		background: 'variant-filled-success'
 	};
 
 	const publishMap = graphql(`
@@ -232,14 +211,16 @@
 	};
 
 	const handleOffline = () => {
-		toastStore.clear();
-		toastStore.trigger(toastOffline);
+		toast.error('You are offline. Changes may not be saved!', {
+			position: 'bottom-center'
+		});
 	};
 
 	const handleOnline = () => {
 		saveMap();
-		toastStore.clear();
-		toastStore.trigger(toastOnline);
+		toast('You are online. Changes are being saved!', {
+			position: 'bottom-center'
+		});
 	};
 	//#endregion
 
@@ -1027,20 +1008,20 @@
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<button
+	<Button
 		class="absolute top-28 left-1/2 -translate-x-1/2 btn variant-filled-primary z-[100]"
 		on:click={triggerPublishModal}
 	>
 		Publish
-	</button>
+	</Button>
 	<div class="absolute z-[100] bottom-0 flex justify-center items-center w-full p-8">
 		<div
 			class="w-2/3 max-w-screen-lg flex justify-between p-2 bg-surface-50 rounded-full shadow-around-10"
 		>
-			<button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</button>
-			<button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</button>
-			<button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
-				>Analytics</button
+			<Button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</Button>
+			<Button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</Button>
+			<Button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+				>Analytics</Button
 			>
 		</div>
 	</div>
@@ -1048,24 +1029,24 @@
 	<!-- <div class="absolute p-2 flex gap-1 w-full bg-red-500">
 		temporary
 		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
-		<button
+		<Button
 			on:click={saveMap}
 			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
+			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</Button
 		>
-		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
+		<Button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
 			Discrad
-		</button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
-		<button
+		</Button>
+		<Button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </Button>
+		<Button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </Button>
+		<Button
 			class="btn variant-filled-primary z-[100]"
 			on:click={() => {
 				goto(`/admin`);
 			}}
 		>
 			Change Snapshot
-		</button>
+		</Button>
 	</div> -->
 
 	<MapObjectSelector

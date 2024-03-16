@@ -61,8 +61,7 @@
       <a class="btn variant-filled-primary" href="/admin">Map Editor</a>
       <a class="btn variant-filled-primary" href="/admin/analysis">Analysis</a>
       <a class="btn variant-filled-primary" href="/extendedUser">Extended User</a>
-      
-      <LightSwitch />
+    
     </div> -->
 	</div>
 
@@ -73,33 +72,40 @@
 			<a
 				href="/bookings"
 				class="btn rounded-none rounded-t-[10px] w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-				>Bookings</a
+			>
+				<p class="leading-7 [&:not(:first-child)]:mt-6">Bookings</p></a
 			>
 
-			<a href={`/admin?building=${buildingName}&floor=${floorName}`} class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-				>Map Creator</a
+			<a
+				href={`/admin?building=${buildingName}&floor=${floorName}`}
+				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+			>
+				<p class="leading-7 [&:not(:first-child)]:mt-6">Map Creator</p></a
 			>
 
 			<a
 				href="/admin/analysis"
-				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Analysis</a
+				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
+			>
+				<p class="leading-7 [&:not(:first-child)]:mt-6">Analysis</p></a
 			>
 
-			<a href="/user" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-				>User</a
+			<a href="/user" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">
+				<p class="leading-7 [&:not(:first-child)]:mt-6">User</p></a
 			>
 
 			<a
 				href="/login"
 				class="btn rounded-none rounded-b-[10px] border-surface-900 w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
-				>Change User</a
 			>
+				<p class="leading-7 [&:not(:first-child)]:mt-6">Change User</p>
+			</a>
 		</div>
 	</div>
 
-	<div class="absolute bottom-0 w-screen md:hidden block">
+	<!-- <div class="absolute bottom-0 w-screen md:hidden block">
 		<BottomNav />
-	</div>
+	</div> -->
 
 	<FloorSelection bind:floorName />
 
