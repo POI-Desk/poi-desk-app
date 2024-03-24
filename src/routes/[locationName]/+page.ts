@@ -4,7 +4,6 @@ import {
 	getPublishedMapByBuildingNameAndFloorNameStore,
 	graphql
 } from '$houdini';
-import type { PageLoad } from './$types';
 
 const getPublishedMap = graphql(`
 	query getPublishedMapByBuildingNameAndFloorName(
@@ -27,11 +26,11 @@ const getPublishedMap = graphql(`
 				x
 				y
 				rotation
-				bookings {
-					date
-					ismorning
-					isafternoon
-				}
+				# bookings {
+				# 	date
+				# 	ismorning
+				# 	isafternoon
+				# }
 				user {
 					pk_userid
 					username
@@ -89,7 +88,6 @@ const getBookingsByDate = graphql(`
 			buildingName: $buildingName
 		) {
 			pk_bookingid
-			bookingnumber
 			isafternoon
 			ismorning
 			date

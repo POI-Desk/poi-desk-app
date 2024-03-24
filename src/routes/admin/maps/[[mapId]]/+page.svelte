@@ -378,16 +378,16 @@
 		const objH = transform.height;
 
 		if (x < 0 + defaultMapProps.border) {
-			$map.width += (x > 0 ? x : Math.abs(x)) + defaultMapProps.border;
+			$map.width += Math.abs(x) + defaultMapProps.border;
 			panzOffsetX = x - defaultMapProps.border;
 		} else if (x > $map.width - (defaultMapProps.border + objW)) {
-			$map.width += x - $map.width + objW + defaultMapProps.border;
+			$map.width += x + objW + defaultMapProps.border;
 		}
 		if (y < 0 + defaultMapProps.border) {
-			$map.height += (y > 0 ? -y : Math.abs(y)) + defaultMapProps.border;
+			$map.height += Math.abs(y) + defaultMapProps.border;
 			panzOffsetY = y - defaultMapProps.border;
 		} else if (y > $map.height - (defaultMapProps.border + objH)) {
-			$map.height += y - $map.height + objH + defaultMapProps.border;
+			$map.height += y + objH + defaultMapProps.border;
 		}
 
 		if (panzOffsetX !== 0 || panzOffsetY !== 0) {

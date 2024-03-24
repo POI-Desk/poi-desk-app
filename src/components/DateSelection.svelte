@@ -22,7 +22,7 @@
 	}
 </script>
 
-<div class="group w-fit">
+<div class="group w-fit shadow-around-10">
 	<div class="dropdown">
 		<input
 			class="input border-none"
