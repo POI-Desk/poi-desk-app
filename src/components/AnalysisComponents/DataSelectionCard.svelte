@@ -41,7 +41,7 @@
     console.log(selection.Floor);
 	}*/
 
-	let years: string[] = ['2024'];
+	let years: string[] = ['2024']; // hardcoded??? are you stupid? 🧮 -Tischler
 
 	async function getYears(): Promise<void> {
 		const result = await YearsSinceStart.fetch();
@@ -58,36 +58,9 @@
 		showType: 'Days'
 	};
 
-	function onBuildingChange(event: any) {
+	function onBuildingChange() {
 		selection.Floor = selection.Building?.floors[0]!;
 	}
-
-	// const yearSelection: PopupSettings = {
-	// 	event: 'focus-click',
-	// 	target: 'yearSelection',
-	// 	placement: 'right',
-	// 	closeQuery: '.listbox-item'
-	// };
-
-	// const monthSelection: PopupSettings = {
-	// 	event: 'focus-click',
-	// 	target: 'monthSelection',
-	// 	placement: 'right',
-	// 	closeQuery: '.listbox-item'
-	// };
-
-	// const buildingSelection: PopupSettings = {
-	// 	event: 'focus-click',
-	// 	target: 'buildingSelection',
-	// 	placement: 'right',
-	// 	closeQuery: '.listbox-item'
-	// };
-	// const floorSelection: PopupSettings = {
-	// 	event: 'focus-click',
-	// 	target: 'floorSelection',
-	// 	placement: 'right',
-	// 	closeQuery: '.listbox-item'
-	// };
 
 	const amongus = 'w-40';
 </script>
@@ -97,7 +70,9 @@
 		<div class="w-full h-full rounded-3xl flex items-center justify-center">
 			<!--Diagramm-->
 			<div class="w-1/2 h-full hite rounded-3xl flex items-center justify-center flex-row">
-				<div class="w-full h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+				<div
+					class="w-full h-full bg-white rounded-3xl flex gap-2 items-center justify-center flex-col"
+				>
 					{#await getYears()}
 						<p>loading...</p>
 					{:then data}
@@ -152,6 +127,7 @@
 										<DropdownMenu.Item
 											on:click={() => {
 												selection.Building = building;
+												onBuildingChange();
 											}}>{building.buildingname}</DropdownMenu.Item
 										>
 									{/each}

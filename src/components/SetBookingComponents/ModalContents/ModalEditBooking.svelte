@@ -28,7 +28,6 @@
 		X
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {

@@ -1,15 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { getModalStore, type ModalSettings } from "@skeletonlabs/skeleton";
   import { currentBooking } from "$lib/bookingStore";
   import { MapPin, Clock, Building, MonitorSmartphone, Cuboid } from "lucide-svelte";
-
-
-  const dispatch = createEventDispatcher();
-
-  function deleteBooking(id: string) {
-    dispatch("deleteBooking", id);
-  }
 
   export let thisBooking: any;
 

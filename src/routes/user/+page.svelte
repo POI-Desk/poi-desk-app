@@ -5,9 +5,6 @@
 	import { defaultLocation } from '$lib/mutations/location';
 	import { getUserByid } from '$lib/queries/userQuerries';
 	import { user } from '$lib/userStore';
-	import {
-		LightSwitch
-	} from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
@@ -63,12 +60,11 @@
 
 	console.log(jwtData);
 	console.log(decodedJwt);
-
 </script>
 
 {#if thisUser}
-	<div class="rounded-3xl variant-filled-primary h-1/2 mt-5 p-2 m-2 flex flex-col gap-2">
-		<div class="rounded-3xl flex flex-row bg-white text-surface-900 h-1/2 p-2">
+	<div class="rounded-lg bg-primary h-1/2 mt-5 p-2 m-2 flex flex-col gap-2">
+		<div class="rounded-lg flex flex-row bg-white text-surface-900 h-1/2 p-2">
 			<div class="w-1/2 flex justify-center items-center">
 				<!-- svelte-ignore a11y-img-redundant-alt -->
 				<img
@@ -85,20 +81,9 @@
 				<h1>{thisUser?.location?.locationname}</h1>
 			</div>
 		</div>
-		<!-- <Button
-			on:click={async () => {
-				modalStore.trigger(modal);
-			}}
-			class="rounded-3xl bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
-		>
-			<div>
-				{thisUser?.location?.locationname}
-			</div>
-			<Pen /></Button
-		> -->
 		<AlertDialog.Root>
 			<AlertDialog.Trigger
-				class="rounded-3xl bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
+				class="rounded-lg bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
 			>
 				{thisUser?.location?.locationname}
 			</AlertDialog.Trigger>
@@ -131,15 +116,14 @@
 			</AlertDialog.Content>
 		</AlertDialog.Root>
 		<div
-			class="rounded-3xl bg-white text-surface-900 h-1/6 flex flex-row justify-around items-center"
+			class="rounded-lg bg-white text-surface-900 h-1/6 flex flex-row justify-around items-center"
 		>
 			<div>Light Mode</div>
 			<div class="flex items-center">
-				<LightSwitch />
 			</div>
 		</div>
 		<!--
-		<div class="rounded-3xl bg-green-500 h-1/6 flex items-center justify-around">
+		<div class="rounded-lg bg-green-500 h-1/6 flex items-center justify-around">
 			<div>Add to Outlook</div>
 			<div class="flex items-center">
 				<SlideToggle name="addToOutlookChanger" bind:checked={addToOutlookTrue} />
@@ -147,22 +131,22 @@
 		</div>
 		-->
 		Statistics:
-		<div class="rounded-3xl h-1/6 flex flex-row gap-2">
-			<div class="w-1/2 flex justify-center items-center bg-white text-surface-900 rounded-3xl">
+		<div class="rounded-lg h-1/6 flex flex-row gap-2">
+			<div class="w-1/2 flex justify-center items-center bg-white text-surface-900 rounded-lg">
 				{currentMonthName}
 			</div>
-			<div class="w-1/2 flex justify-center items-center bg-white text-surface-900 rounded-3xl">
+			<div class="w-1/2 flex justify-center items-center bg-white text-surface-900 rounded-lg">
 				{amountOfBookingsThisMonth}
 			</div>
 		</div>
 		<!-- button to change into a different role-->
 		{#if thisUser.roles && thisUser.roles[0].rolename === 'Admin'}
-			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
+			<div class="rounded-lg bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
 		{/if}
 		{#if thisUser.roles && thisUser.roles[0].rolename === 'Super Admin'}
-			<div class="rounded-3xl bg-green-500 h-1/6 flex flex-row justify-center items-center">
+			<div class="rounded-lg bg-green-500 h-1/6 flex flex-row justify-center items-center">
 				<a class="btn variant-filled-primary" href="./admin">Change {thisUser.roles[0].rolename}</a>
 			</div>
 		{/if}

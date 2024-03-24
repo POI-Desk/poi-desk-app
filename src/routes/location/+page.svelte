@@ -8,13 +8,16 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { defaultLocation } from '$lib/mutations/location';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
+	import { Drawer } from 'vaul-svelte';
+	import { clsx } from 'clsx';
 
+	let activeSnapPoint = '148px';
 	async function setAsDefault() {
 		await defaultLocation.mutate({
 			lid: $user.location?.pk_locationid!
 		});
 	}
-
 	// export const _getAllLocationsVariables = () => {
 	// 	return {};
 	// };
@@ -29,7 +32,6 @@
 		}
 	`);
 
-
 	$: ({ getAllLocations } = data);
 	$: locations = $getAllLocations.data?.getAllLocations;
 </script>
@@ -39,17 +41,20 @@
 	{#if locations}
 		<AlertDialog.Root>
 			{#each locations as location}
-				<AlertDialog.Trigger
-					on:click={() => {
-						$user.location = {
-							locationname: location?.locationname,
-							pk_locationid: location?.pk_locationid
-						};
-						$floorid = '';
-						$buildingid = '';
-					}}
-				>
-					{location?.locationname}
+				<AlertDialog.Trigger class="">
+					<Button
+						on:click={() => {
+							$user.location = {
+								locationname: location?.locationname,
+								pk_locationid: location?.pk_locationid
+							};
+							$floorid = '';
+							$buildingid = '';
+						}}
+						class="w-36"
+					>
+						{location?.locationname}
+					</Button>
 				</AlertDialog.Trigger>
 			{/each}
 			<AlertDialog.Content>
@@ -81,3 +86,4 @@
 		</AlertDialog.Root>
 	{/if}
 </div>
+

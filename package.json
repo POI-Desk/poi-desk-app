@@ -39,7 +39,7 @@
     "type": "module",
     "dependencies": {
         "@floating-ui/dom": "^1.5.3",
-        "bits-ui": "^0.19.6",
+        "bits-ui": "^0.19.7",
         "chart.js": "^4.4.0",
         "clsx": "^2.1.0",
         "cmdk-sv": "^0.0.15",

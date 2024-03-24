@@ -9,7 +9,6 @@
 	import { isExtended } from '$lib/stores/extendedUserStore';
 	import SearchBar from '$components/SearchBar.svelte';
 	import type { PageServerData } from './$types';
-	import BottomNav from '$components/BottomNav.svelte';
 
 	export let data: PageServerData;
 
@@ -47,6 +46,8 @@
 <!--{/if}-->
 
 <div class="overflow-hidden h-screen">
+
+	
 	<FloorMap />
 
 	<div class="absolute p-8 w-full">
@@ -102,10 +103,6 @@
 			</a>
 		</div>
 	</div>
-
-	<!-- <div class="absolute bottom-0 w-screen md:hidden block">
-		<BottomNav />
-	</div> -->
 
 	<FloorSelection bind:floorName />
 

@@ -32,10 +32,6 @@ export const handle: Handle = async ({ event }) => {
 */
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.cookies.set(
-		'session',
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRpc2NobGVyLmRldkBnbWFpbC5jb20iLCJuYW1lIjoiVG9iaWFzIFRpc2NobGVyIiwidXNlcm5hbWUiOiJ0aXNjaGxlci5kZXYiLCJsb2NhdGlvbiI6IldpZW4iLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSzA2aHFoVFpJZjV5Ml9PNnYtcHBSajVpOGZkcjFnb3NjcDltM1dGSk9JMlE9czk2LWMiLCJzdWIiOiIxMTYwMDg3MDI3NjM3MTIwMzAxMDAiLCJpc3MiOiJQT0lEZXNrIiwiYXVkIjoiUE9JRGVzayIsImlhdCI6MTcxMDMxMjQ5MCwiZXhwIjoxNzEwOTE3MjkwfQ.2KwjeW6dioXUMf4Ie5v61HAjAcoXQxw7QGiYo2bKCS0'
-	);
 	const sessionToken = event.cookies.get('session');
 	
 	const data = await getData.fetch({ variables: { session: sessionToken! }, event});

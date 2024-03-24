@@ -34,14 +34,14 @@
 	{#if allUsers}
 		{#each allUsers as user}
 			<!--TODO: FIX THIS-->
-			<Button
+			<button
 				class="btn btn-block w-2/3 py-3 px-32"
 				on:click={() => handleUserSelection(user)}
 				class:variant-filled-secondary={!newSelectedUsers.includes(user)}
 				class:variant-filled-primary={newSelectedUsers.includes(user)}
 			>
 				{user?.username}
-			</Button>
+			</button>
 		{/each}
 	{/if}
 </div>

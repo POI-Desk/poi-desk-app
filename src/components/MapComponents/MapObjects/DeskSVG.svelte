@@ -1,13 +1,14 @@
 <script lang="ts">
+	import ModalEditDesk from '$components/MapComponents/ModalEditDesk.svelte';
 	import { deskProps, wallThickness } from '$lib/map/props';
 	import { createEventDispatcher } from 'svelte';
-	import { isExtended } from '$lib/stores/extendedUserStore';
-	import { interval } from '$lib/bookingStore.js';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import * as Drawer from '$lib/components/ui/drawer';
-	import { Button } from '$lib/components/ui/button';
 	import ModalBooking from '$components/SetBookingComponents/ModalContents/ModalBooking.svelte';
 	import { mediaQuery } from 'svelte-legos';
+	import { Pen } from 'lucide-svelte';
+	import * as ContextMenu from '$lib/components/ui/context-menu';
+	import { Button } from '$lib/components/ui/button';
 
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;
@@ -63,6 +64,15 @@
 
 	let open = false;
 	const isDesktop = mediaQuery('(min-width: 768px)');
+	let selectedUserId: string = '';
+
+	function handleMessage(event: any) {
+		selectedUserId = event.detail.userId;
+	}
+
+	function saveModal() {
+		dispatch('save', { userId: selectedUserId });
+	}
 </script>
 
 {#if $isDesktop}
@@ -122,50 +132,82 @@
 		</AlertDialog.Root>
 	{:else}
 		<button
-			class="z-{z}"
+			class="z-{z} flex flex-row"
 			style={useAsMain ? style : ''}
 			on:touchend={() => dispatch('click')}
 			on:click={() => dispatch('click')}
 		>
-			<svg {width} {height}>
-				<rect
-					x={borderThickness / 2}
-					y={borderThickness / 2}
-					width={width - borderThickness}
-					height={height - borderThickness}
-					rx="2"
-					ry="2"
-					stroke={selected ? '#8B80F9' : '#1A4775'}
-					stroke-width={borderThickness}
-					fill={bookedMorning || bookedAfternoon
-						? bookedColor
-						: assigned
-						? assignedColor
-						: freeColor}
-				/>
-				<polygon
-					points="{borderThickness},{borderThickness} {width -
-						borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-					fill={bookedMorning ? bookedColor : assigned ? assignedColor : freeColor}
-					stroke="none"
-				/>
-				<polygon
-					points="{width - borderThickness},{height - borderThickness} {width -
-						borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
-					fill={bookedAfternoon ? bookedColor : assigned ? assignedColor : freeColor}
-					stroke="none"
-				/>
-				<text
-					x="50%"
-					y="50%"
-					text-anchor="middle"
-					dominant-baseline="middle"
-					fill="#1A4775"
-					font-size="16"
-					font-weight="bold"
-					style="user-select: none;">{text}</text
-				>
-			</svg>
+			<ContextMenu.Root>
+				<AlertDialog.Root>
+					<ContextMenu.Trigger>
+						<svg {width} {height}>
+							<rect
+								x={borderThickness / 2}
+								y={borderThickness / 2}
+								width={width - borderThickness}
+								height={height - borderThickness}
+								rx="2"
+								ry="2"
+								stroke={selected ? '#8B80F9' : '#1A4775'}
+								stroke-width={borderThickness}
+								fill={bookedMorning || bookedAfternoon
+									? bookedColor
+									: assigned
+									? assignedColor
+									: freeColor}
+							/>
+							<polygon
+								points="{borderThickness},{borderThickness} {width -
+									borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
+								fill={bookedMorning ? bookedColor : assigned ? assignedColor : freeColor}
+								stroke="none"
+							/>
+							<polygon
+								points="{width - borderThickness},{height - borderThickness} {width -
+									borderThickness},{borderThickness} {borderThickness},{height - borderThickness}"
+								fill={bookedAfternoon ? bookedColor : assigned ? assignedColor : freeColor}
+								stroke="none"
+							/>
+							<text
+								x="50%"
+								y="50%"
+								text-anchor="middle"
+								dominant-baseline="middle"
+								fill="#1A4775"
+								font-size="16"
+								font-weight="bold"
+								style="user-select: none;">{text}</text
+							>
+						</svg>
+					</ContextMenu.Trigger>
+					<ContextMenu.Content>
+						<AlertDialog.Trigger class="w-full">
+							<ContextMenu.Item>Edit</ContextMenu.Item>
+						</AlertDialog.Trigger>
+						<ContextMenu.Item>Delete</ContextMenu.Item>
+					</ContextMenu.Content>
+					<AlertDialog.Content
+						><ModalEditDesk on:selectedUserChange={handleMessage}>
+							<div class="flex flex-row space-x-2 justify-end w-full">
+								<AlertDialog.Cancel asChild let:builder>
+									<Button builders={[builder]} class="btn border-2 border-primary-500 w-20"
+										>Cancel</Button
+									>
+								</AlertDialog.Cancel>
+								<AlertDialog.Action asChild let:builder>
+									<Button
+										builders={[builder]}
+										class="btn bg-primary-500 w-20"
+										on:click={() => {
+											saveModal();
+										}}>Save</Button
+									>
+								</AlertDialog.Action>
+							</div>
+						</ModalEditDesk></AlertDialog.Content
+					>
+				</AlertDialog.Root>
+			</ContextMenu.Root>
 		</button>
 	{/if}
 {:else}
@@ -176,7 +218,6 @@
 				style={useAsMain ? style : ''}
 				on:touchend={() => {
 					dispatch('click');
-					console.log('button gets pressed');
 				}}
 			>
 				<svg {width} {height}>

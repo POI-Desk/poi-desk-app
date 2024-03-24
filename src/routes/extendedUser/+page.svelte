@@ -11,7 +11,6 @@
 	import { dateValue } from '$lib/dateStore';
 	import { fade } from 'svelte/transition';
 	import ExtendedUserSelection from '$components/ExtendedBookingComponents/ExtendedUserSelection.svelte';
-	import { Button } from '$lib/components/ui/button';
 
 	$isExtended = true;
 
@@ -26,6 +25,9 @@
 			$dateValue = new Date().toISOString().split('T')[0];
 		}
 	};
+
+	let floorName: string;
+	let buildingName: string;
 </script>
 
 {#if $selectedUsers.length === 0}
@@ -45,14 +47,14 @@
 			</div>
 		</div>
 
-		<FloorSelection />
+		<FloorSelection bind:floorName />
 
-		<BuildingSelection />
+		<BuildingSelection bind:buildingName />
 
 		<div class="absolute bottom-44 left-1/2 z-[100] -translate-x-1/2">
 			<div class="in:fade flex justify-center">
 				{#if $selectedUsers.length === $selectedDesks.length && ($interval.morning || $interval.afternoon)}
-					<Button
+					<button
 						in:fade
 						on:click={() => {
 							if (
@@ -66,7 +68,7 @@
 						disabled={$selectedDesks.length !== $selectedUsers.length ||
 							!($interval.morning || $interval.afternoon)}
 						>Book
-					</Button>
+					</button>
 				{:else}
 					<div in:fade class="py-1 px-3 rounded-full variant-filled-secondary">
 						{$selectedDesks.length}/{$selectedUsers.length} Selected

@@ -15,8 +15,6 @@ export const afternoonSelected = writable<boolean>(false);
 
 export const currentBooking = writable<any>({});
 
-export const userBookings = writable<any>();
-
 export const _getBookingsByUseridVariables = () => {
 	return {};
 };

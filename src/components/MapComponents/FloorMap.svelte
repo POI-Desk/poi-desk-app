@@ -284,7 +284,7 @@
 		role="grid"
 		tabindex="0"
 		style="width: {map.width}px; height: {map.height}px;"
-		class="z-0"
+		class="z-0 "
 	>
 		{#if $getPublishedMapOnFloor.fetching}
 			<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
