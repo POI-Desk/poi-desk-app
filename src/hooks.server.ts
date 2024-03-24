@@ -1,8 +1,6 @@
-import { page } from '$app/stores';
+import { graphql, setSession } from '$houdini';
 import { authenticateUser } from '$lib/queries/userQuerries';
 import type { Handle } from '@sveltejs/kit';
-import { graphql, setSession } from '$houdini';
-import { user } from '$lib/userStore';
 
 const getData = graphql(`
 	query getData($session: String!) {
@@ -33,9 +31,9 @@ export const handle: Handle = async ({ event }) => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get('session');
-	
-	const data = await getData.fetch({ variables: { session: sessionToken! }, event});
-	
+
+	const data = await getData.fetch({ variables: { session: sessionToken! }, event });
+
 	event.locals.getSession = () => {
 		return data.data?.getUserInformation;
 	};

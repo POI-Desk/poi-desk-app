@@ -32,11 +32,23 @@
 	// 	response: (r: string) => {
 	// 		if (!r) return;
 
-	// 		const id: string = buildingsAndFloors![buildingGroup].floors![floorGroup].pk_floorid;
-	// 		if (!id) return;
-	// 		createNewSnapshot(id, r);
-	// 	}
-	// };
+	const namePromptModal: ModalSettings = {
+		type: 'prompt',
+		// Data
+		title: 'Enter Name',
+		body: 'Provide a name for the map',
+		// Populates the input value and attributes
+		value: '',
+		valueAttr: { type: 'text', minlength: 1, maxlength: 10, required: true },
+		// Returns the updated response value
+		response: (r: string) => {
+			if (!r) return;
+
+			const id: string = buildingsAndFloors![buildingGroup]?.floors![floorGroup].pk_floorid;
+			if (!id) return;
+			createNewSnapshot(id, r);
+		}
+	};
 
 	export let snapshotsOfFloor: any;
 	export let buildingsAndFloors: any;
@@ -106,7 +118,7 @@
 	const buildingChange = (buildingName: string) => {
 		floorGroup = 0;
 		goto(
-			`?building=${buildingName}&floor=${buildingsAndFloors[buildingGroup].floors![0].floorname}`
+			`?building=${buildingName}&floor=${buildingsAndFloors[buildingGroup]?.floors[0].floorname}`
 		);
 	};
 
@@ -186,9 +198,9 @@
 	</div>
 	<div class="flex flex-wrap gap-3 w-full max-h-[38rem] overflow-x-hidden p-1">
 		{#if snapshotsOfFloor}
-			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot}
+			{#each snapshotsOfFloor.sort((a, b) => new Date(b.updatedOn).valueOf() - new Date(a.updatedOn).valueOf()) ?? [] as snapshot, i (i)}
 				<div
-					tabindex="0"
+					tabindex={i}
 					role="button"
 					on:click={() => snapshotSelected(snapshot.pk_mapId)}
 					on:keydown={() => {}}

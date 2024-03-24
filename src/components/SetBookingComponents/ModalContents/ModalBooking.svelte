@@ -5,10 +5,7 @@
 	import { user } from '$lib/userStore';
 	import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
 	import { Button } from '$lib/components/ui/button';
-
-	//icons
 	import {
-		Calendar,
 		Clock,
 		MapPin,
 		Building,
@@ -16,7 +13,8 @@
 		Cuboid,
 		ArrowBigLeft,
 		ArrowBigRight,
-		ArrowLeft
+		ArrowLeft,
+		Calendar
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
 	import { getBookingsByDate } from '$lib/queries/booking';
@@ -24,6 +22,7 @@
 	import { floorid } from '$lib/floorStore';
 	import { getDeskById } from '$lib/queries/deskQueries';
 	import { onMount } from 'svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	$interval.morning = false;
 	$interval.afternoon = false;
@@ -46,7 +45,7 @@
 			variables: { date: $dateValue, floorId: $floorid },
 			policy: CachePolicy.NetworkOnly
 		});
-
+		invalidateAll();
 		$refreshDesks = !$refreshDesks;
 	}
 

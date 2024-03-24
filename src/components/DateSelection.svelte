@@ -1,29 +1,21 @@
 <script lang="ts">
-	import { selectedDesks } from "$lib/stores/extendedUserStore";
-	import { dateValue, maxBookingValue, today } from "$lib/dateStore";
-	import { getBookingsByDate } from '$lib/queries/booking';
-	import { floorid } from '$lib/floorStore';
+	import { dateValue, maxBookingValue, today } from '$lib/dateStore';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { Input } from '$lib/components/ui/input';
 
-	$dateValue = new Date().toISOString().split('T')[0];
+	export let date: string;
 
+	$dateValue = date;
 
-	export const _getBookingsByDateVariables = () => {
-		return {
-			date: $dateValue
-		};
-	};
-
-	let visibility = 'hidden';
-	$dateValue = new Date().toISOString().split('T')[0];
-	console.log($dateValue);
-	const getBookings = () => {
-		$selectedDesks = [];
-		getBookingsByDate.fetch({ variables: { date: $dateValue, floorId: $floorid } });
-	};
-
-	
-
+	$: {
+		if ($dateValue && browser) {
+			const query = new URLSearchParams($page.url.searchParams);
+			query.set('date', $dateValue);
+			goto(`?${query.toString()}`);
+		}
+	}
 </script>
 
 <div class="group w-fit">
@@ -32,10 +24,14 @@
 			class="input border-none bg-primary text-primary-foreground"
 			type="date"
 			id="calendar"
-			min="{today}"
-			max="{maxBookingValue}"
+			min={today}
+			max={maxBookingValue}
 			bind:value={$dateValue}
-			on:change={getBookings}
+			on:change={() => {
+				const query = new URLSearchParams($page.url.searchParams);
+				query.set('date', $dateValue);
+				goto(`?${query.toString()}`);
+			}}
 		/>
 	</div>
 </div>

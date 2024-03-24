@@ -67,12 +67,7 @@
 		<div class="rounded-lg flex flex-row bg-white text-surface-900 h-1/2 p-2">
 			<div class="w-1/2 flex justify-center items-center">
 				<!-- svelte-ignore a11y-img-redundant-alt -->
-				<img
-					class="rounded-full h-full"
-					src={decodedJwt.picture}
-					referrerpolicy="origin"
-					alt="profile picture"
-				/>
+				<img class="rounded-full h-full" referrerpolicy="no-referrer" src={decodedJwt.picture} alt="profile picture" />
 			</div>
 			<div class="flex flex-col w-1/2">
 				<h1>{thisUser?.username}</h1>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { user } from '$lib/userStore';
 	import { buildingid } from '$lib/buildingStore';
 	import { getBuildings } from '$lib/queries/buildingQueries';
 
@@ -7,30 +6,9 @@
 
 	import * as Tabs from '$lib/components/ui/tabs';
 
+
 	export let buildingName: string;
-
-	$: locationid = $user.location?.pk_locationid!;
-
-	$: buildings = $getBuildings.data?.getBuildingsInLocation;
-
-	async function selectFirstBuilding() {
-		if (!locationid) return;
-		await getBuildings.fetch({ variables: { locationid } });
-
-		if (buildings) {
-			$buildingid = buildings[0]?.pk_buildingid || ''; // Set to the first building
-		}
-	}
-
-	$: if (locationid) selectFirstBuilding();
-
-	$: {
-		if ($buildingid) {
-			getFloors.fetch({ variables: { buildingid: $buildingid } });
-			buildingName =
-				buildings?.find((building) => building.pk_buildingid === $buildingid)?.buildingname ?? '';
-		}
-	}
+	export let buildings: any;
 </script>
 
 <Tabs.Root>

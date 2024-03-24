@@ -1,10 +1,9 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import { CachePolicy } from '$houdini';
 	import { interval } from '$lib/bookingStore';
-	import { dateValue } from '$lib/dateStore';
-	import { floorid } from '$lib/floorStore';
-	import { deskProps, doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
-	import { getBookingsByDate } from '$lib/queries/booking';
+	import { doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
 	import type { MapTransform } from '$lib/types/mapTypes';
 	import type { PanZoom } from 'panzoom';
 	import panzoom from 'panzoom';
@@ -14,16 +13,18 @@
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
 	import { isExtended, selectedDesks, selectedUsers } from '$lib/stores/extendedUserStore';
-	import { refreshDesks } from '$lib/refreshStore';
 	import Label from './MapObjects/Label.svelte';
-	import { getPublishedMapOnFloor } from '$lib/queries/map';
 	import type { Desk } from '$lib/types/deskTypes';
 	import { getDeskById } from '$lib/queries/deskQueries';
 	import { toast } from 'svelte-sonner';
+	import { compareObjectsByValues } from '$lib/map/helper';
 
 	let container: HTMLDivElement;
 	let grid: HTMLDivElement;
 	let canvas: HTMLCanvasElement;
+
+	let drawingMap: boolean = false;
+	let finRender: boolean = false;
 
 	let panz: PanZoom;
 	let map: MapTransform = {
@@ -38,20 +39,22 @@
 	let wallObjects: { [key: string]: WallSvg } = {};
 	let labelObjects: { [key: string]: Label } = {};
 
-	$: mapData = $getPublishedMapOnFloor.data?.getPublishedMapOnFloor;
+	export let mapData: any;
 
-	$: bookingsData = $getBookingsByDate.data?.getBookingsByDateOnFloor;
+	export let bookingsData: any;
 
-	$: {
-		bookingsData;
-		$interval;
-		updateBookings();
-	}
+	let query: URLSearchParams = new URLSearchParams('');
+	let oldMapData: any = null;
 
 	$: {
-		$floorid;
-		$refreshDesks;
-		updateMap();
+		const q = new URLSearchParams($page.url.searchParams);
+		const m = mapData;
+		if (!compareObjectsByValues(m, oldMapData)) {
+			oldMapData = m;
+			drawMap();
+		} else if (q.get('date') !== query.get('date')) {
+			updateBookings();
+		}
 	}
 
 	onMount(() => {
@@ -63,12 +66,17 @@
 		});
 
 		recenterMap();
+
+		finRender = true;
+		drawMap();
 	});
 
 	onDestroy(() => {
+		emptyMap();
 		if (!panz) return;
 		panz.dispose();
 	});
+
 	const emptyMap = () => {
 		for (const [key, value] of Object.entries(deskObjects)) {
 			value.$destroy();
@@ -93,31 +101,15 @@
 		labelObjects = {};
 	};
 
-	const updateMap = async () => {
-		if (!$floorid) return;
-		emptyMap();
-		await getPublishedMapOnFloor.fetch({
-			variables: { floorID: $floorid },
-			policy: CachePolicy.NetworkOnly
-		});
-		drawMap();
-		const l = await getBookingsByDate.fetch({
-			variables: { date: $dateValue, floorId: $floorid },
-			policy: CachePolicy.NetworkOnly
-		});
+	const updateBookings = () => {
+		if (!finRender) return;
 
-		console.log(l);
-
-		await updateBookings();
-	};
-
-	const updateBookings = async () => {
 		for (const key of Object.keys(deskObjects)) {
 			const desk: DeskSvg = deskObjects[key];
-			const bookings = bookingsData?.filter((b) => b?.desk.pk_deskid === key);
+			const bookings = bookingsData?.filter((b: any) => b?.desk.pk_deskid === key);
 			let morning: boolean = false;
 			let afternoon: boolean = false;
-			bookings?.map((booking) => {
+			bookings?.map((booking: any) => {
 				if (booking) {
 					if (booking.ismorning) morning = true;
 					if (booking.isafternoon) afternoon = true;
@@ -143,12 +135,15 @@
 	};
 
 	const drawMap = () => {
-		if (!mapData) return;
+		emptyMap();
+		if (!mapData || !browser || !finRender) return;
+
+		drawingMap = true;
 		map.height = mapData.height;
 		map.width = mapData.width;
 		panz.zoomAbs(0, 0, 1);
 
-		mapData.desks?.map((desk) => {
+		mapData.desks?.map((desk: any) => {
 			const deskSvg = new DeskSvg({
 				target: grid,
 				props: {
@@ -202,7 +197,7 @@
 			deskObjects[desk.pk_deskid] = deskSvg;
 		});
 
-		mapData.rooms?.map((room) => {
+		mapData.rooms?.map((room: any) => {
 			const roomSvg = new RoomSvg({
 				target: grid,
 				props: {
@@ -220,7 +215,7 @@
 			roomObjects[room.pk_roomId] = roomSvg;
 		});
 
-		mapData.doors?.map((door) => {
+		mapData.doors?.map((door: any) => {
 			const doorSvg = new DoorSvg({
 				target: grid,
 				props: {
@@ -239,7 +234,7 @@
 			doorObjects[door.pk_doorId] = doorSvg;
 		});
 
-		mapData.walls?.map((wall) => {
+		mapData.walls?.map((wall: any) => {
 			const wallSvg = new WallSvg({
 				target: grid,
 				props: {
@@ -258,7 +253,7 @@
 			wallObjects[wall.pk_wallId] = wallSvg;
 		});
 
-		mapData.labels?.map((label) => {
+		mapData.labels?.map((label: any) => {
 			const labelSvg = new Label({
 				target: grid,
 				props: {
@@ -275,21 +270,15 @@
 		});
 
 		recenterMap();
+		updateBookings();
+		drawingMap = false;
 	};
 </script>
 
 <div bind:this={container} class="absolute overflow-hidden w-screen h-screen">
-	<div
-		bind:this={grid}
-		role="grid"
-		tabindex="0"
-		style="width: {map.width}px; height: {map.height}px;"
-		class="z-0 "
-	>
-		{#if $getPublishedMapOnFloor.fetching}
-			<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-1/6">
-				Loading...
-			</div>
+	<div bind:this={grid} role="grid" tabindex="0" class="z-0 w-[{map.width}px] h--[{map.height}px]">
+		{#if drawingMap}
+			<p>Drawing Map</p>
 		{:else if mapData}
 			<canvas
 				bind:this={canvas}
@@ -301,7 +290,7 @@
 		{/if}
 	</div>
 </div>
-{#if !$getPublishedMapOnFloor.fetching && !mapData}
+{#if !mapData}
 	<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
 		<p class="text-2xl text-center">No map found for this floor</p>
 	</div>

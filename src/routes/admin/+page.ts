@@ -1,5 +1,6 @@
+import { goto } from '$app/navigation';
 import { CachePolicy, getMapSnapshotsByLocationBuildingFloorNameStore, graphql } from '$houdini';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 const snapshots = graphql(`
 	query getMapSnapshotsByLocationBuildingFloorName(
@@ -23,22 +24,26 @@ const snapshots = graphql(`
 export const load = async (event) => {
 	const searchParams = event.url.searchParams;
 
-	const building = searchParams.get('building');
-	const floor = searchParams.get('floor');
+	const building = searchParams.get('building') ?? '';
+	const floor = searchParams.get('floor') ?? '';
 
 	const s = new getMapSnapshotsByLocationBuildingFloorNameStore();
 	await s.fetch({
 		variables: {
 			buildingName: building ?? '',
 			floorName: floor ?? '',
-			locationId: event.data.session.location.pk_locationid
+			locationId: event.data.session.location!.pk_locationid
 		},
 		policy: CachePolicy.NetworkOnly,
 		event
 	});
 
 	return {
-		snapShots: s,
-		...event.data
+		snapshots: s,
+		...event.data,
+		query: {
+			building: building,
+			floor: floor
+		}
 	};
 };

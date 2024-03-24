@@ -5,8 +5,9 @@
 	import { getBuildings } from '$lib/queries/buildingQueries';
 	import * as Tabs from '$lib/components/ui/tabs';
 
-	$: floors = $getFloors.data?.getFloorsInBuilding;
+	const dispatcher = createEventDispatcher();
 
+	export let floors: any;
 	export let floorName: string;
 
 	$: {
@@ -63,9 +64,7 @@
 	background="none"
 >
 	<div
-		class="absolute {$getBuildings.fetching
-			? 'min-h-[25%]'
-			: ''} w-11 left-2 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50-900-token
+		class="absolute w-11 left-2 md:left-11 top-1/2 z-[100] rounded-full -translate-y-1/2 bg-surface-50-900-token
     flex flex-col border-2 border-primary-300 shadow-around-10"
 	>
 		{#if $getBuildings.fetching}
