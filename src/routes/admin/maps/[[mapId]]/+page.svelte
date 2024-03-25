@@ -318,7 +318,7 @@
 				//check if the object was actually altered
 				if (compareObjectsByValues(event.detail.obj.transform, event.detail.start)) return;
 
-				resizeGrid(event.detail.obj.transform);
+				// resizeGrid(event.detail.obj.transform);
 				normalizeGridSize();
 				rerenderObjects();
 				saveMapObject(event.detail.obj);
@@ -368,39 +368,39 @@
 
 	//#region humongous
 	//x and y are in local space of the parent element
-	const resizeGrid = (transform: TransformType) => {
-		let panzOffsetX: number = 0;
-		let panzOffsetY: number = 0;
-		const x: number = transform.x;
-		const y: number = transform.y;
+	// const resizeGrid = (transform: TransformType) => {
+	// 	let panzOffsetX: number = 0;
+	// 	let panzOffsetY: number = 0;
+	// 	const x: number = transform.x;
+	// 	const y: number = transform.y;
 
-		const objW = transform.width;
-		const objH = transform.height;
+	// 	const objW = transform.width;
+	// 	const objH = transform.height;
 
-		if (x < 0 + defaultMapProps.border) {
-			$map.width += Math.abs(x) + defaultMapProps.border;
-			panzOffsetX = x - defaultMapProps.border;
-		} else if (x > $map.width - (defaultMapProps.border + objW)) {
-			$map.width += x + objW + defaultMapProps.border;
-		}
-		if (y < 0 + defaultMapProps.border) {
-			$map.height += Math.abs(y) + defaultMapProps.border;
-			panzOffsetY = y - defaultMapProps.border;
-		} else if (y > $map.height - (defaultMapProps.border + objH)) {
-			$map.height += y + objH + defaultMapProps.border;
-		}
+	// 	if (x < 0 + defaultMapProps.border) {
+	// 		$map.width += Math.abs(x) + defaultMapProps.border;
+	// 		panzOffsetX = x - defaultMapProps.border;
+	// 	} else if (x > $map.width - (defaultMapProps.border + objW)) {
+	// 		$map.width += x + objW + defaultMapProps.border;
+	// 	}
+	// 	if (y < 0 + defaultMapProps.border) {
+	// 		$map.height += Math.abs(y) + defaultMapProps.border;
+	// 		panzOffsetY = y - defaultMapProps.border;
+	// 	} else if (y > $map.height - (defaultMapProps.border + objH)) {
+	// 		$map.height += y + objH + defaultMapProps.border;
+	// 	}
 
-		if (panzOffsetX !== 0 || panzOffsetY !== 0) {
-			$allMapObjects.map((mapObject) => {
-				mapObject.transform.x -= panzOffsetX;
-				mapObject.transform.y -= panzOffsetY;
-			});
-		}
-		panz.moveTo(
-			panz.getTransform().x + panzOffsetX * $map.scale,
-			panz.getTransform().y + panzOffsetY * $map.scale
-		);
-	};
+	// 	if (panzOffsetX !== 0 || panzOffsetY !== 0) {
+	// 		$allMapObjects.map((mapObject) => {
+	// 			mapObject.transform.x -= panzOffsetX;
+	// 			mapObject.transform.y -= panzOffsetY;
+	// 		});
+	// 	}
+	// 	panz.moveTo(
+	// 		panz.getTransform().x + panzOffsetX * $map.scale,
+	// 		panz.getTransform().y + panzOffsetY * $map.scale
+	// 	);
+	// };
 
 	const normalizeGridSize = () => {
 		if ($allMapObjects.length === 0) {
@@ -409,51 +409,39 @@
 			return;
 		}
 
-		let left: TransformType = { ...maxLeftTransform };
-		let right: TransformType = { ...maxRightTransform };
-		let top: TransformType = { ...maxTopTransform };
-		let bottom: TransformType = { ...maxBottomTransform };
-		$allMapObjects.map((mapObject) => {
-			if (mapObject.transform.x! < left.x) left = { ...mapObject.transform };
-			if (mapObject.transform.y! < top.y) top = { ...mapObject.transform };
-		});
+		let mapWidth: number = defaultMapProps.width;
+		let mapHeight: number = defaultMapProps.height;
 
 		let horizontalOffset: number = 0;
 		let verticalOffset: number = 0;
 
-		let mapWidth: number = defaultMapProps.width;
-		let mapHeight: number = defaultMapProps.height;
-
-		if (
-			left.x > defaultMapProps.maxHorizontalDist ||
-			(left.x > defaultMapProps.border &&
-				left.x < defaultMapProps.border + ($map.width - defaultMapProps.width))
-		) {
-			horizontalOffset = -left.x + defaultMapProps.border;
-		}
-		if (
-			top.y > defaultMapProps.maxVerticalDist ||
-			(top.y > defaultMapProps.border &&
-				top.y < defaultMapProps.border + ($map.height - defaultMapProps.width))
-		) {
-			verticalOffset = -top.y + defaultMapProps.border;
-		}
+		let left: number = Number.MAX_SAFE_INTEGER;
+		let top: number = Number.MAX_SAFE_INTEGER;
+		let right: TransformType = { ...maxRightTransform };
+		let bottom: TransformType = { ...maxBottomTransform };
 
 		$allMapObjects.map((mapObject) => {
-			mapObject.transform.x += horizontalOffset;
-			mapObject.transform.y += verticalOffset;
-			if (mapObject.transform.y! + mapObject.transform.height > bottom.y + right.height)
+			if (mapObject.transform.x < left) left = mapObject.transform.x;
+			if (mapObject.transform.y < top) top = mapObject.transform.y;
+			if (mapObject.transform.y + mapObject.transform.height > bottom.y + bottom.height)
 				bottom = { ...mapObject.transform };
 			if (mapObject.transform.x! + mapObject.transform.width > right.x + right.width)
 				right = { ...mapObject.transform };
 		});
 
-		if (right.x > defaultMapProps.width - (defaultMapProps.border + right.width)) {
-			mapWidth = right.x + right.width + defaultMapProps.border;
-		}
-		if (bottom.y > defaultMapProps.height - (defaultMapProps.border + bottom.height)) {
-			mapHeight = bottom.y + bottom.height + defaultMapProps.border;
-		}
+		mapWidth = right.x + right.width + defaultMapProps.border;
+		mapHeight = bottom.y + bottom.height + defaultMapProps.border;
+
+		horizontalOffset = -left + defaultMapProps.border;
+		mapWidth += horizontalOffset;
+
+		verticalOffset = -top + defaultMapProps.border;
+		mapHeight += verticalOffset;
+
+		$allMapObjects.map((mapObject) => {
+			mapObject.transform.x += horizontalOffset;
+			mapObject.transform.y += verticalOffset;
+		});
 
 		panz.moveTo(
 			panz.getTransform().x - horizontalOffset * $map.scale,
