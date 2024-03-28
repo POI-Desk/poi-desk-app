@@ -8,6 +8,7 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import '../app.css';
+	import { ModeWatcher } from 'mode-watcher';
 	let activeSnapPoint = '80px';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -24,6 +25,8 @@
 		}
 	};
 </script>
+
+<ModeWatcher defaultMode={'light'} />
 
 <Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />
 <Toaster richColors={true} />

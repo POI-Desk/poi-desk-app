@@ -83,7 +83,7 @@
 				<h1>{thisUser?.location?.locationname}</h1>
 			</div>
 		</div>
-		<AlertDialog.Root>
+		<AlertDialog.Root closeOnOutsideClick={true}>
 			<AlertDialog.Trigger
 				class="rounded-lg bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
 			>
