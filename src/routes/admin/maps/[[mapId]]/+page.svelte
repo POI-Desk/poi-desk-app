@@ -381,8 +381,8 @@
 		let mapWidth: number = defaultMapProps.width;
 		let mapHeight: number = defaultMapProps.height;
 
-		let horizontalOffset: number = 0;
-		let verticalOffset: number = 0;
+		let offsetX: number = 0;
+		let offsetY: number = 0;
 
 		let left: number = Number.MAX_SAFE_INTEGER;
 		let top: number = Number.MAX_SAFE_INTEGER;
@@ -401,20 +401,20 @@
 		mapWidth = right.x + right.width + defaultMapProps.border;
 		mapHeight = bottom.y + bottom.height + defaultMapProps.border;
 
-		horizontalOffset = -left + defaultMapProps.border;
-		mapWidth += horizontalOffset;
+		offsetX = left - defaultMapProps.border;
+		mapWidth -= offsetX;
 
-		verticalOffset = -top + defaultMapProps.border;
-		mapHeight += verticalOffset;
+		offsetY = top - defaultMapProps.border;
+		mapHeight -= offsetY;
 
 		$allMapObjects.map((mapObject) => {
-			mapObject.transform.x += horizontalOffset;
-			mapObject.transform.y += verticalOffset;
+			mapObject.transform.x -= offsetX;
+			mapObject.transform.y -= offsetY;
 		});
 
 		panz.moveTo(
-			panz.getTransform().x - horizontalOffset * $map.scale,
-			panz.getTransform().y - verticalOffset * $map.scale
+			panz.getTransform().x + offsetX * $map.scale,
+			panz.getTransform().y + offsetY * $map.scale
 		);
 
 		$map.height = mapHeight;
