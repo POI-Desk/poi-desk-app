@@ -5,6 +5,8 @@
 	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import { AppShell, Modal, initializeStores, storePopup } from '@skeletonlabs/skeleton';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import '../app.css';
 	let activeSnapPoint = '80px';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });

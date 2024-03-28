@@ -1,5 +1,5 @@
 import { loginWizzGoogol } from '$lib/queries/userQuerries';
-import { error, json, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (req) => {

@@ -32,34 +32,29 @@
 	// 	response: (r: string) => {
 	// 		if (!r) return;
 
-	const namePromptModal: ModalSettings = {
-		type: 'prompt',
-		// Data
-		title: 'Enter Name',
-		body: 'Provide a name for the map',
-		// Populates the input value and attributes
-		value: '',
-		valueAttr: { type: 'text', minlength: 1, maxlength: 10, required: true },
-		// Returns the updated response value
-		response: (r: string) => {
-			if (!r) return;
-
-			const id: string = buildingsAndFloors![buildingGroup]?.floors![floorGroup].pk_floorid;
-			if (!id) return;
-			createNewSnapshot(id, r);
-		}
-	};
-
 	export let snapshotsOfFloor: any;
 	export let buildingsAndFloors: any;
 	export let location: Location | null;
+	export let buildingName: string;
+	export let floorName: string;
 
-	let buildingGroup = buildingsAndFloors.findIndex(
-		(b: any) => b.buildingname === $page.url.searchParams.get('building')
-	);
-	let floorGroup = buildingsAndFloors[buildingGroup].floors.findIndex(
-		(f: any) => f.floorname === $page.url.searchParams.get('floor')
-	);
+	$: buildingGroup = buildingGroupFromName(buildingName ?? '');
+	$: floorGroup = floorGroupFromName(floorName ?? '');
+
+	const buildingGroupFromName = (name: string) => {
+		const index = buildingsAndFloors.findIndex((b: any) => b.buildingname === name);
+
+		return index !== -1 ? index : 0;
+	};
+
+	const floorGroupFromName = (name: string) => {
+		const index = buildingsAndFloors[buildingGroup]?.floors?.findIndex(
+			(f: any) => f.floorname === name
+		);
+
+		return index !== -1 ? index : 0;
+	};
+
 	let formattedDate = '00-00-0000';
 	let id: string;
 	let snapshotName: string = '';
@@ -249,13 +244,15 @@
 				<Input bind:value={snapshotName} type="text" minlength={1} maxlength={10} required={true} />
 				<AlertDialog.Footer>
 					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-					<AlertDialog.Action on:click={() => {
-						if (buildingsAndFloors && buildingsAndFloors[buildingGroup]?.floors) {
-							id = buildingsAndFloors[buildingGroup].floors[floorGroup].pk_floorid;
-						}
-						if (!id) return;
-						createNewSnapshot(id, snapshotName);
-					}}>Continue</AlertDialog.Action>
+					<AlertDialog.Action
+						on:click={() => {
+							if (buildingsAndFloors && buildingsAndFloors[buildingGroup]?.floors) {
+								id = buildingsAndFloors[buildingGroup].floors[floorGroup].pk_floorid;
+							}
+							if (!id) return;
+							createNewSnapshot(id, snapshotName);
+						}}>Continue</AlertDialog.Action
+					>
 				</AlertDialog.Footer>
 			</AlertDialog.Content>
 		</AlertDialog.Root>

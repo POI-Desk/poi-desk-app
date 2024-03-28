@@ -4,29 +4,11 @@
 	import { getFloors } from '$lib/queries/floorQueries';
 	import { getBuildings } from '$lib/queries/buildingQueries';
 	import * as Tabs from '$lib/components/ui/tabs';
-
+	import { createEventDispatcher } from 'svelte';
 	const dispatcher = createEventDispatcher();
 
 	export let floors: any;
 	export let floorName: string;
-
-	$: {
-		if ($floorid) {
-			floorName = floors?.find((floor) => floor.pk_floorid === $floorid)?.floorname ?? '';
-		}
-	}
-
-	async function selectFirstFloor() {
-		await getFloors.fetch({ variables: { buildingid: $buildingid } });
-
-		if (floors) {
-			$floorid = floors[0]?.pk_floorid || ''; // Set to the first floor
-		}
-	}
-
-	$: {
-		if ($buildingid) selectFirstFloor();
-	}
 </script>
 
 <Tabs.Root class="w-min">
@@ -36,23 +18,20 @@
 			: ''} left-2 md:left-11 top-1/2 z-[100] -translate-y-1/2
     flex flex-col border-2 shadow-around-10 w-min h-min"
 	>
-		{#if $getFloors.fetching}
-			<div />
-		{:else}
-			{#each floors ?? [] as floor}
-				<Tabs.Trigger
-					value={floor?.pk_floorid}
-					on:click={() => {
-						$floorid = floor.pk_floorid;
-					}}
-					class="flex items-center justify-center px-5 py-5"
-				>
-					<p class="select-none font-semibold">
-						{floor.floorname}
-					</p>
-				</Tabs.Trigger>
-			{/each}
-		{/if}
+		{#each floors ?? [] as floor}
+			<Tabs.Trigger
+				value={floor?.pk_floorid}
+				on:click={() => {
+					floorName = floor.floorname;
+					dispatcher('change');
+				}}
+				class="flex items-center justify-center px-5 py-5"
+			>
+				<p class="select-none font-semibold">
+					{floor.floorname}
+				</p>
+			</Tabs.Trigger>
+		{/each}
 	</Tabs.List>
 </Tabs.Root>
 

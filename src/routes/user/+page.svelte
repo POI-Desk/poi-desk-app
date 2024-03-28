@@ -8,15 +8,17 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
+	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import { Pen } from 'lucide-svelte';
 
 	export let data: PageData;
 
+	$: thisUser = data.res.data?.getUserById;
+
 	onMount(() => {
-		$user = data.session;
 		getAllLocationsChange.fetch();
 	});
 
-	$: thisUser = data.res.data?.getUserById;
 	// let addToOutlookTrue = false;
 
 	$: bookings = thisUser?.bookings;
@@ -67,7 +69,12 @@
 		<div class="rounded-lg flex flex-row bg-white text-surface-900 h-1/2 p-2">
 			<div class="w-1/2 flex justify-center items-center">
 				<!-- svelte-ignore a11y-img-redundant-alt -->
-				<img class="rounded-full h-full" referrerpolicy="no-referrer" src={decodedJwt.picture} alt="profile picture" />
+				<img
+					class="rounded-full h-full"
+					referrerpolicy="no-referrer"
+					src={decodedJwt.picture}
+					alt="profile picture"
+				/>
 			</div>
 			<div class="flex flex-col w-1/2">
 				<h1>{thisUser?.username}</h1>
@@ -80,7 +87,8 @@
 			<AlertDialog.Trigger
 				class="rounded-lg bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
 			>
-				{thisUser?.location?.locationname}
+				<p>{thisUser?.location?.locationname}</p>
+				<Pen />
 			</AlertDialog.Trigger>
 			<AlertDialog.Content>
 				<AlertDialog.Header>
@@ -115,6 +123,7 @@
 		>
 			<div>Light Mode</div>
 			<div class="flex items-center">
+				<LightSwitch />
 			</div>
 		</div>
 		<!--
@@ -125,7 +134,7 @@
 			</div>
 		</div>
 		-->
-		Statistics:
+		<p class="text-white">Statistics:</p>
 		<div class="rounded-lg h-1/6 flex flex-row gap-2">
 			<div class="w-1/2 flex justify-center items-center bg-white text-surface-900 rounded-lg">
 				{currentMonthName}
@@ -146,22 +155,6 @@
 			</div>
 		{/if}
 	</div>
-	<Button
-		variant="outline"
-		on:click={() => {
-			console.log('test');
-			toast('Event has been created', {
-				description: 'Sunday, December 03, 2023 at 9:00 AM',
-				action: {
-					label: 'Undo',
-					onClick: () => console.log('Undo')
-				},
-				position: 'bottom-center'
-			});
-		}}
-	>
-		Show Toast
-	</Button>
 {/if}
 
 <style>
