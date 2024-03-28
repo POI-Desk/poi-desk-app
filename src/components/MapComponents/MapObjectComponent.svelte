@@ -223,14 +223,13 @@
 		let initialTransform: TransformType | null = null,
 			initialPos: { x: number; y: number } | null = null;
 
-		grabbers.forEach((grabber) => {
+		grabbers.map((grabber) => {
 			element.appendChild(grabber);
 			grabber.addEventListener('mousedown', onMousedown);
 		});
 
 		function onMousedown(event: MouseEvent) {
 			resizing = true;
-			const parent = target.parentElement!.getBoundingClientRect();
 			active = event.target as HTMLElement;
 
 			initialTransform = { ...mapObject.transform };
@@ -244,7 +243,7 @@
 		}
 
 		function onMove(event: MouseEvent) {
-			if (!active || !initialPos) return;
+			if (!active || !initialPos || !resizing) return;
 
 			const direction = active.title;
 			let delta: number = 0;
@@ -284,7 +283,7 @@
 				window.removeEventListener('mousemove', onMove);
 				window.removeEventListener('mousemove', onMousedown);
 
-				grabbers.forEach((grabber) => {
+				grabbers.map((grabber) => {
 					element.removeChild(grabber);
 				});
 			}
