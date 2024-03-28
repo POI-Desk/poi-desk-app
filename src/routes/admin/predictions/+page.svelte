@@ -24,6 +24,7 @@
 		ListBoxItem,
 		popup
 	} from '@skeletonlabs/skeleton';
+	import { Button } from '$lib/components/ui/button';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	import { onMount } from 'svelte';

@@ -1,72 +1,49 @@
 <script lang="ts">
-	import ModalDefaultLocation from '../components/DefaultLocationComponents/ModalContents/ModalDefaultLocation.svelte';
-	import ModalBooking from '$components/SetBookingComponents/ModalContents/ModalBooking.svelte';
-	import ModalEditBooking from '$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte';
-	import ModalChangeDefaultLocation from '$components/UserPageComponents/ModalChangeDefaultLocation.svelte';
-	import ModalPublishMap from '$components/MapComponents/ModalPublishMap.svelte';
-	import '../app.css';
-	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import BottomNav from '$components/BottomNav.svelte';
-	import { AppShell, Modal, Toast } from '@skeletonlabs/skeleton';
-	import { initializeStores } from '@skeletonlabs/skeleton';
-	import type { ModalComponent } from '@skeletonlabs/skeleton';
 	import ModalExtendedBooking from '$components/ExtendedBookingComponents/ModalExtendedBooking.svelte';
-	import { storePopup } from '@skeletonlabs/skeleton';
-	import { goto } from '$app/navigation';
-	import { MapPin, Search } from 'lucide-svelte';
-	import SearchBar from '$components/SearchBar.svelte';
-	import DateSelection from '$components/DateSelection.svelte';
-
-	import ModalEditDesk from '$components/MapComponents/ModalEditDesk.svelte';
+	import ModalEditBooking from '$components/SetBookingComponents/ModalContents/ModalEditBooking.svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
+	import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
+	import type { ModalComponent } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal, initializeStores, storePopup } from '@skeletonlabs/skeleton';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import '../app.css';
+	let activeSnapPoint = '80px';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	initializeStores();
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {
-		modalBooking: {
-			ref: ModalBooking,
-			slot: '<p>skeleton</p>'
-		},
 		modalExtendedBooking: {
 			ref: ModalExtendedBooking,
-			slot: '<p>skeleton</p>'
-		},
-		modalDefaultLocation: {
-			ref: ModalDefaultLocation,
 			slot: '<p>skeleton</p>'
 		},
 		modalEditBooking: {
 			ref: ModalEditBooking,
 			slot: '<p>skeleton</p>'
-		},
-		modalChangeDefaultLocation: {
-			ref: ModalChangeDefaultLocation,
-			slot: '<p>skeleton</p>'
-		},
-		modalEditDesk: {
-			ref: ModalEditDesk,
-			slot: '<p>skeleton</p>'
-		},
-		modalPublishMap: {
-			ref: ModalPublishMap,
-			slot: '<p>skeleton</p>'
 		}
-		/*
-    modalEditMapObject: {
-      ref: ModalEditMapObject,
-      slot: '<p>skeleton</p>'
-    }
-		*/
 	};
 </script>
 
 <Modal position="items-center !p-0" transitions={true} components={modalComponentRegistry} />
-<Toast zIndex="z-[1000]" />
-
+<Toaster richColors={true} />
 <AppShell>
 	<slot />
-
-	<!-- <svelte:fragment slot="footer">
-		<BottomNav />
-	</svelte:fragment> -->
 </AppShell>
+
+<!-- <Drawer.Root snapPoints={['80px', 0.9]} bind:activeSnapPoint open={true} dismissible={false}>
+	<Drawer.Trigger />
+	<Drawer.Overlay />
+	<Drawer.Portal>
+		<Drawer.Content
+			class="fixed z-[200] flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
+		>
+			<Tabs.Root value="account" class="w-[400px] flex justify-center mt-10">
+				<Tabs.List>
+					<Tabs.Trigger value="account">Account</Tabs.Trigger>
+					<Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+				</Tabs.List>
+			</Tabs.Root>
+		</Drawer.Content>
+	</Drawer.Portal>
+</Drawer.Root> -->

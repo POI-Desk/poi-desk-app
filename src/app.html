@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-		/>
-		<link
-			rel="preload"
-			href="%sveltekit.assets%/fonts/Lexend-VariableFont_wght.ttf"
-			as="font"
-			type="font/ttf"
-			crossorigin
-		/>
-		<meta name="viewport" content="width=device-width" />
-		%sveltekit.head%
-	</head>
-	<body data-theme="light-theme" data-sveltekit-preload-data="hover">
-		<div class="h-full overflow-hidden" style="display: contents">%sveltekit.body%</div>
-	</body>
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<link rel="preload" href="%sveltekit.assets%/fonts/Lexend-VariableFont_wght.ttf" as="font" type="font/ttf"
+		crossorigin />
+	<link rel="preload" href="%sveltekit.assets%/fonts/Inter-VariableFont_slnt,wght.ttf" as="font" type="font/ttf" crossorigin />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	%sveltekit.head%
+</head>
+
+<body data-theme="light-theme" data-sveltekit-preload-data="hover">
+	<div class="h-full overflow-hidden" style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

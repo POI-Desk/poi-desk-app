@@ -2,6 +2,7 @@
 	import { graphql } from '$houdini';
 	import { user } from '$lib/userStore';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
 
 	const createOrLoginAsUser = graphql(`
 		mutation createOrLoginAsUser($username: String!) {
@@ -32,6 +33,7 @@
 		}
 	}
 </script>
+
 <h1
 	class="absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h1 text-primary-500"
 >
@@ -52,11 +54,6 @@
 		-->
 	</div>
 	<div class="p-3">
-		<!--
-		<button class="btn variant-filled-primary p-3" on:click={loginWithoutMicrosoft}>
-			<a href="../" class="pl-5 pr-5"> Login</a>
-		</button>
-		-->
 		<form method="post">
 			<button class="gsi-material-button">
 				<div class="gsi-material-button-state" />

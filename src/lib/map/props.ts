@@ -117,7 +117,21 @@ export const panzoomProps: PanZoomOptions = {
 	maxZoom: 3,
 	minZoom: 0.25,
 	initialZoom: 1,
-	autocenter: false
+	autocenter: false,
+	onTouch: (e) => {
+		// if e.touches[0].target is object SVGPolygonElement then dont preventdefault
+		if (e.touches[0].target instanceof SVGPolygonElement || e.touches[0].target instanceof SVGTextElement) {
+			console.log("test")
+			// don't prevent default
+		} else {
+			e.preventDefault();
+		}
+		console.log(e);
+	},
+	onClick: (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}
 };
 
 export const mapObjectType: MapObjectType = {

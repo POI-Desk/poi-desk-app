@@ -1,11 +1,11 @@
 <script lang="ts">
+	import ModalPublishMap from '$components/MapComponents/ModalPublishMap.svelte';
 	import { goto } from '$app/navigation';
 
 	// import { getBuildings } from '$lib/queries/buildingQueries';
 	import AdminSerachbar from '$components/MapComponents/AdminSerachbar.svelte';
 	import MapObjectComponent from '$components/MapComponents/MapObjectComponent.svelte';
 	import MapObjectSelector from '$components/MapComponents/MapObjectSelector.svelte';
-	import type { PageData } from '../[[mapId]]/$houdini';
 	import {
 		CachePolicy,
 		graphql,
@@ -16,7 +16,9 @@
 		type UpdateWallInput
 	} from '$houdini';
 	import { compareObjectsByValues } from '$lib/map/helper';
-
+	import type { PageData } from '../[[mapId]]/$houdini';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import { Button } from '$lib/components/ui/button';
 	import {
 		defaultMapProps,
 		deskProps,
@@ -37,6 +39,7 @@
 	import { deleteWalls, updateWallsOnMap } from '$lib/mutations/wall';
 	import { editedMapId, map } from '$lib/stores/mapCreationStore';
 	import { allMapObjects, selectedMapObject } from '$lib/stores/mapObjectStore';
+	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import {
 		maxBottomTransform,
@@ -45,14 +48,9 @@
 		maxTopTransform,
 		type TransformType
 	} from '$lib/types/transformType';
-	import {
-		getModalStore,
-		getToastStore,
-		type ModalSettings,
-		type ToastSettings
-	} from '@skeletonlabs/skeleton';
 	import panzoom, { type PanZoom } from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	let grid: HTMLElement;
 	let main: HTMLElement;
@@ -69,31 +67,13 @@
 
 	let finishedLoading = false;
 
-	const modalStore = getModalStore();
+	let publishKeep: boolean;
 
-	const toastStore = getToastStore();
+	let publishBookings: boolean;
 
-	const modalEditDesk: ModalSettings = {
-		type: 'component',
-		component: 'modalEditDesk',
-		response: (response: { userId: string } | null) => {
-			if (!response?.userId || !$selectedMapObject) return;
-
-			$selectedMapObject!.userId = response.userId;
-			mapObjects[$selectedMapObject!.id].rerenderMapObject();
-			saveMapObject($selectedMapObject!);
-		}
-	};
-
-	const modalPublishMap: ModalSettings = {
-		type: 'component',
-		component: 'modalPublishMap',
-		response: (response: { keepPublishedMap: boolean; keepBookings: boolean }) => {
-			toastStore.clear();
-			if (!response) return;
-			publish(response.keepPublishedMap, response.keepBookings);
-		}
-	};
+	const handleSomething = () => {
+		publish(publishKeep, publishBookings);
+	}
 
 	const publish = async (keepMap: boolean, keepBookings: boolean) => {
 		if (!mapData) return;
@@ -107,40 +87,22 @@
 
 		if (response.errors) {
 			console.error(response.errors);
-			toastStore.trigger(toastPublishFailed);
+			toast.error('Map could not be published!', {
+				position: 'bottom-center'
+			});
 			return;
 		}
 
 		if (response.data?.publishMap) {
-			toastStore.trigger(toastPublishSuccess);
-			goto(`/`);
+			toast('Map published successfully!', {
+				position: 'bottom-center'
+			});
+			goto(`/admin`);
 		} else {
-			toastStore.trigger(toastPublishFailed);
+			toast.error('Map could not be published!', {
+				position: 'bottom-center'
+			});
 		}
-	};
-
-	const toastOffline: ToastSettings = {
-		message: 'You are offline, changes may not be saved',
-		hideDismiss: true,
-		background: 'variant-filled-error'
-	};
-
-	const toastOnline: ToastSettings = {
-		message: 'You are online, changes are beeing saved',
-		hideDismiss: true,
-		background: 'variant-filled-success'
-	};
-
-	const toastPublishFailed: ToastSettings = {
-		message: 'Map could not be published',
-		hideDismiss: true,
-		background: 'variant-filled-error'
-	};
-
-	const toastPublishSuccess: ToastSettings = {
-		message: 'Map successfully published',
-		hideDismiss: true,
-		background: 'variant-filled-success'
 	};
 
 	const publishMap = graphql(`
@@ -207,9 +169,6 @@
 		});
 	};
 
-	const triggerPublishModal = async () => {
-		modalStore.trigger(modalPublishMap);
-	};
 
 	// #region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -232,14 +191,16 @@
 	};
 
 	const handleOffline = () => {
-		toastStore.clear();
-		toastStore.trigger(toastOffline);
+		toast.error('You are offline. Changes may not be saved!', {
+			position: 'bottom-center'
+		});
 	};
 
 	const handleOnline = () => {
 		saveMap();
-		toastStore.clear();
-		toastStore.trigger(toastOnline);
+		toast('You are online. Changes are being saved!', {
+			position: 'bottom-center'
+		});
 	};
 	//#endregion
 
@@ -255,8 +216,6 @@
 				window.innerHeight / 2 - ($map.height / 2 + offsetY) * $map.scale
 			);
 	};
-
-	const discardUnsavedChanges = () => alert('THIS IS DEPRICATED');
 
 	const createMapObject = (
 		event: MouseEvent,
@@ -296,10 +255,20 @@
 		});
 		if (initialTransform) element.removeSelectedStyle();
 
-		element.$on('select', (event: CustomEvent<TransformType>) => {
-			panz.pause();
+		element.$on('save', (event: CustomEvent<string>) => {
+			if (!event.detail || !$selectedMapObject) return;
+
+			$selectedMapObject!.userId = event.detail;
+			mapObjects[$selectedMapObject!.id].rerenderMapObject();
+			saveMapObject($selectedMapObject!);
+		});
+
+		element.$on('select', (event: CustomEvent<{ transform: TransformType; pause: boolean }>) => {
+			if (event.detail.pause) panz.pause();
 			resetSelectedMapObjectStyle();
-			selectMapObject($allMapObjects.find((mapObject) => mapObject.transform === event.detail)!);
+			selectMapObject(
+				$allMapObjects.find((mapObject) => mapObject.transform === event.detail.transform)!
+			);
 		});
 
 		element.$on('resetSelection', (event: CustomEvent<void>) => {
@@ -312,7 +281,7 @@
 			'release',
 			(event: CustomEvent<{ obj: MapObject; start: TransformType; destroyed: boolean }>) => {
 				panz.resume();
-
+				console.log('panzoom resumed');
 				if (event.detail.destroyed) return;
 
 				//check if the object was actually altered
@@ -325,10 +294,10 @@
 			}
 		);
 
-		element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
-			selectMapObject(event.detail);
-			modalStore.trigger(modalEditDesk);
-		});
+		// element.$on('dblcDesk', (event: CustomEvent<MapObject>) => {
+		// 	selectMapObject(event.detail);
+		// 	modalStore.trigger(modalEditDesk);
+		// });
 
 		if (initialTransform == null) {
 			panz.pause();
@@ -1012,23 +981,45 @@
 		saving = false;
 	};
 	//#endregion
+
+
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
-	<button
-		class="absolute top-28 left-1/2 -translate-x-1/2 btn variant-filled-primary z-[100]"
-		on:click={triggerPublishModal}
-	>
-		Publish
-	</button>
+	<AlertDialog.Root>
+		<AlertDialog.Trigger asChild let:builder>
+			<Button
+				builders={[builder]}
+				class="absolute top-28 left-1/2 -translate-x-1/2 btn variant-filled-primary z-[100]"
+			>
+				Publish
+			</Button>
+		</AlertDialog.Trigger>
+		<AlertDialog.Content>
+			<ModalPublishMap bind:keep={publishKeep} bind:bookings={publishBookings}>
+				<div class="flex justify-end space-x-2 w-full">
+					<AlertDialog.Cancel asChild let:builder>
+						<Button
+							builders={[builder]}
+							class="btn variant-outline-primary">Cancel</Button
+						>
+					</AlertDialog.Cancel>
+					<AlertDialog.Action asChild let:builder
+						><Button builders={[builder]} class="btn variant-filled-primary" on:click={handleSomething}>Publish</Button
+						></AlertDialog.Action
+					>
+				</div>
+			</ModalPublishMap>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
 	<div class="absolute z-[100] bottom-0 flex justify-center items-center w-full p-8">
 		<div
 			class="w-2/3 max-w-screen-lg flex justify-between p-2 bg-surface-50 rounded-full shadow-around-10"
 		>
-			<button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</button>
-			<button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</button>
-			<button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
-				>Analytics</button
+			<Button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</Button>
+			<Button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</Button>
+			<Button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+				>Analytics</Button
 			>
 		</div>
 	</div>
@@ -1036,24 +1027,24 @@
 	<!-- <div class="absolute p-2 flex gap-1 w-full bg-red-500">
 		temporary
 		<a href="/" class="btn variant-filled-primary z-[100]">Home</a>
-		<button
+		<Button
 			on:click={saveMap}
 			class="absolute left-1/2 -translate-x-1/2 bottom-24 btn variant-filled-primary rounded-full w-24 z-[100]"
-			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</button
+			>{$getMapSnapshotById.fetching ? 'loading' : 'SAVE'}</Button
 		>
-		<button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
+		<Button class="btn variant-filled-primary z-[100]" on:click={discardUnsavedChanges}>
 			Discrad
-		</button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
-		<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
-		<button
+		</Button>
+		<Button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </Button>
+		<Button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </Button>
+		<Button
 			class="btn variant-filled-primary z-[100]"
 			on:click={() => {
 				goto(`/admin`);
 			}}
 		>
 			Change Snapshot
-		</button>
+		</Button>
 	</div> -->
 
 	<MapObjectSelector

@@ -14,7 +14,6 @@ export const load = (async (event) => {
 	const sessionToken = event.cookies.get('session');
 	const session = event.locals.getSession();
 
-	// TODO: gets called very often 🤣😂
 	const res = await getUserByid.fetch({
 		event,
 		variables: { id: session.pk_userid },

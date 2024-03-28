@@ -1,16 +1,12 @@
 <script lang="ts">
-	import { selectedDesks } from '$lib/stores/extendedUserStore';
 	import { dateValue, maxBookingValue, today } from '$lib/dateStore';
-	import { getBookingsByDate } from '$lib/queries/booking';
-	import { floorid } from '$lib/floorStore';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { Input } from '$lib/components/ui/input';
 
 	export let date: string;
 
-	let rendered = false;
 	$dateValue = date;
 
 	$: {
@@ -24,8 +20,8 @@
 
 <div class="group w-fit shadow-around-10">
 	<div class="dropdown">
-		<input
-			class="input border-none"
+		<Input
+			class="input border-none bg-primary text-primary-foreground"
 			type="date"
 			id="calendar"
 			min={today}

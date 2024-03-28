@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
 	import { displayedTime, interval } from '$lib/bookingStore';
 	import { dateValue, maxBookingDate, todaysDate } from '$lib/dateStore';
 	import { bookDesk } from '$lib/mutations/booking';
 	import { user } from '$lib/userStore';
 	import BookingDeskState from '$components/SetBookingComponents/BookingDeskState.svelte';
-
-	//icons
+	import { Button } from '$lib/components/ui/button';
 	import {
-		Calendar,
 		Clock,
 		MapPin,
 		Building,
@@ -16,8 +13,8 @@
 		Cuboid,
 		ArrowBigLeft,
 		ArrowBigRight,
-		X,
-		ArrowLeft
+		ArrowLeft,
+		Calendar
 	} from 'lucide-svelte';
 	import { refreshDesks } from '$lib/refreshStore';
 	import { getBookingsByDate } from '$lib/queries/booking';
@@ -44,19 +41,15 @@
 			}
 		});
 
-		// await getBookingsByDate.fetch({
-		//   variables: { date: $dateValue, floorId: $floorid },
-		//   policy: CachePolicy.NetworkOnly
-		// });
-
+		await getBookingsByDate.fetch({
+			variables: { date: $dateValue, floorId: $floorid },
+			policy: CachePolicy.NetworkOnly
+		});
 		invalidateAll();
-
 		$refreshDesks = !$refreshDesks;
-		modalStore.close();
 	}
 
 	function onExitHandler() {
-		modalStore.close();
 		$dateValue = new Date().toISOString().split('T')[0];
 	}
 
@@ -88,9 +81,7 @@
 		isFullDay = hasBookings && isBookedMorning && isBookedAfternoon;
 	});
 
-	const modalStore = getModalStore();
-
-	const cBase = 'card p-4 shadow-xl space-y-4';
+	//const cBase = 'card p-4 shadow-xl space-y-4';
 
 	function whenSelection() {
 		const selectedDate = new Date($dateValue);
@@ -101,7 +92,6 @@
 			if (!$interval.morning && !$interval.afternoon) {
 				return;
 			}
-			console.log(selectedDesk);
 			selectionPage = !selectionPage;
 			return;
 		}
@@ -122,55 +112,40 @@
 		date.setDate(date.getDate() - 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
 	}
-
-	window.addEventListener('popstate', () => {
-		modalStore.close();
-	});
-
 	const iconContainerClasses = 'rounded-3xl flex justify-center variant-filled-tertiary';
 	const textClasses = 'col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white';
 </script>
 
-{#if $modalStore[0]}
-	<div class="{cBase} rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200">
+<div class="h-full">
+	<div class="rounded-xl w-full h-full flex flex-col">
 		{#if selectionPage}
 			<div class=" flex justify-center items-center">
 				<div class="flex items-center gap-x-5 bg-white text-primary-500 rounded-full p-4 px-10">
-					<h1>{selectedDesk?.desknum}</h1>
+					<h1 class="text-black">{selectedDesk?.desknum}</h1>
 				</div>
-				<button
-					on:click={() => onExitHandler()}
-					class="absolute right-0 pr-7 px-4 py-2 rounded-full"
-				>
-					<X />
-				</button>
 			</div>
 			<div class="basis-full text-primary-500 font-bold">
 				<BookingDeskState />
 				<!---->
 				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
-			<div
-				class="bg-white text-primary-500 h-24 rounded-full flex items-center justify-between px-10"
-			>
-				<button on:click={subtractDay}>
-					<ArrowBigLeft />
-				</button>
-				<h1>{$dateValue}</h1>
-				<button on:click={addDay}>
-					<ArrowBigRight />
-				</button>
+			<div class="p-3">
+				<div class="bg-white text-primary-500 h-16 flex items-center justify-between px-10">
+					<Button on:click={subtractDay} class="bg-white text-black">
+						<ArrowBigLeft />
+					</Button>
+					<h1 class="text-black">{$dateValue}</h1>
+					<Button on:click={addDay} class="bg-white text-black">
+						<ArrowBigRight />
+					</Button>
+				</div>
 			</div>
-			<div class="variant-filled-tertiary h-24 rounded-full">
-				<button
-					on:click={() => whenSelection()}
-					class="btn rounded-full w-full h-full text-xl variant-filled-primary"
-					>Book
-				</button>
+			<div class="h-24 flex items-center justify-center p-3">
+				<Button on:click={() => whenSelection()} class="btn w-full h-full text-xl">Book</Button>
 			</div>
 		{:else}
 			<div class="grid grid-cols-3 text-center align-middle px-4 pt-5">
-				<button
+				<Button
 					on:click={() => {
 						selectionPage = !selectionPage;
 						$interval.morning = false;
@@ -178,7 +153,7 @@
 					}}
 				>
 					<ArrowLeft />
-				</button>
+				</Button>
 				<h1 class="text-center text-3xl p-3">Booking</h1>
 			</div>
 			<div class="h-full flex items-center justify-center text-primary-500">
@@ -234,12 +209,8 @@
 				</div>
 			</div>
 			<div class="variant-filled-tertiary h-24 rounded-full">
-				<button
-					on:click={() => finishBooking()}
-					class="btn rounded-full w-full h-full text-xl variant-filled-primary"
-					>Book
-				</button>
+				<Button on:click={() => finishBooking()} class="btn w-full h-full text-xl ">Book</Button>
 			</div>
 		{/if}
 	</div>
-{/if}
+</div>
