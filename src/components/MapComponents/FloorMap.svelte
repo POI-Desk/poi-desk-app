@@ -4,24 +4,19 @@
 	import { CachePolicy } from '$houdini';
 	import { interval } from '$lib/bookingStore';
 	import { doorProps, panzoomProps, wallProps, wallThickness } from '$lib/map/props';
-	import { getDeskById } from '$lib/queries/deskQueries';
-	import { isExtended, selectedDesks, selectedUsers } from '$lib/stores/extendedUserStore';
-	import type { Desk } from '$lib/types/deskTypes';
 	import type { MapTransform } from '$lib/types/mapTypes';
-	import {
-		getModalStore,
-		getToastStore,
-		type ModalSettings,
-		type ToastSettings
-	} from '@skeletonlabs/skeleton';
 	import type { PanZoom } from 'panzoom';
 	import panzoom from 'panzoom';
 	import { onDestroy, onMount } from 'svelte';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
-	import Label from './MapObjects/Label.svelte';
 	import RoomSvg from './MapObjects/RoomSVG.svelte';
 	import WallSvg from './MapObjects/WallSVG.svelte';
+	import { isExtended, selectedDesks, selectedUsers } from '$lib/stores/extendedUserStore';
+	import Label from './MapObjects/Label.svelte';
+	import type { Desk } from '$lib/types/deskTypes';
+	import { getDeskById } from '$lib/queries/deskQueries';
+	import { toast } from 'svelte-sonner';
 	import { compareObjectsByValues } from '$lib/map/helper';
 
 	let container: HTMLDivElement;
@@ -36,21 +31,6 @@
 		height: 0,
 		width: 0,
 		scale: 1
-	};
-
-	const modalStore = getModalStore();
-
-	const modal: ModalSettings = {
-		type: 'component',
-		component: 'modalBooking'
-	};
-
-	const toastStore = getToastStore();
-
-	const tooManyDesks: ToastSettings = {
-		message: 'Too many desks selected!',
-		timeout: 3000,
-		background: 'variant-filled-error'
 	};
 
 	let deskObjects: { [key: string]: DeskSvg } = {};
@@ -94,7 +74,6 @@
 	onDestroy(() => {
 		emptyMap();
 		if (!panz) return;
-
 		panz.dispose();
 	});
 
@@ -180,6 +159,8 @@
 				}
 			});
 			deskSvg.$on('click', async () => {
+				console.log('dispatched lol');
+				console.log('isExtended', $isExtended);
 				if ($isExtended) {
 					let newD: Desk = {
 						pk_deskid: desk.pk_deskid,
@@ -191,7 +172,9 @@
 						$selectedDesks.splice($selectedDesks.indexOf(newD), 1);
 						deskSvg.setSelected(false);
 					} else if ($selectedDesks.length >= $selectedUsers.length) {
-						toastStore.trigger(tooManyDesks);
+						toast.error('Too many desks selected!', {
+							position: 'bottom-center'
+						});
 					} else {
 						if (
 							($interval.morning && !deskSvg.getBookedMorning()) ||
@@ -208,7 +191,7 @@
 						variables: { deskId: desk.pk_deskid },
 						policy: CachePolicy.NetworkOnly
 					});
-					modalStore.trigger(modal);
+					//modalStore.trigger(modal);
 				}
 			});
 			deskObjects[desk.pk_deskid] = deskSvg;

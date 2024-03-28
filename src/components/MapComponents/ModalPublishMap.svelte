@@ -1,79 +1,55 @@
 <script lang="ts">
-	import {
-		SlideToggle,
-		getModalStore,
-		type PopupSettings,
-		popup,
-		type ToastSettings,
-		getToastStore
-	} from '@skeletonlabs/skeleton';
-	import { onDestroy, onMount } from 'svelte';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Label } from '$lib/components/ui/label';
+	import { toast } from 'svelte-sonner';
 
-	const modalStore = getModalStore();
-	const toastStore = getToastStore();
-
-	const cBase = 'card px-8 py-4 shadow-xl space-y-4 w-1/3';
-	let keep: boolean = false;
-	let bookings: boolean = true;
+	export let keep: boolean = false;
+	export let bookings: boolean = true;
 
 	let warningSeen: boolean = false;
 
-	const toolTip: PopupSettings = {
-		event: 'hover',
-		target: 'popupHover',
-		placement: 'bottom'
-	};
-
-	const bookingActionToast: ToastSettings = {
-		message: 'All bookings on the map will be deleted. Are you sure?',
-		background: 'variant-filled-warning'
-	};
-
-	const publish = () => {
-		if ($modalStore[0].response) {
-			$modalStore[0].response({ keepPublishedMap: keep, keepBookings: bookings });
-		}
-
-		toastStore.clear();
-		modalStore.close();
-	};
 
 	const bookingsChanged = () => {
 		if (bookings) {
 			return;
 		}
 		if (!warningSeen) {
-			toastStore.trigger(bookingActionToast);
+			toast.warning('All bookings on the map will be deleted. Are you sure?', {
+				position: 'bottom-center'
+			});
 			warningSeen = !warningSeen;
 		}
 	};
 </script>
 
-{#if $modalStore[0]}
-	<div class="{cBase} rounded-xl shadow-3xl flex flex-col items-center">
-		<h1 class="text-2xl font-semibold text-primary-500">Publish Settings</h1>
-		<div class="flex flex-col w-full space-y-4">
-			<SlideToggle class="select-none text-primary-500" name="slider-label" bind:checked={keep}>
+<div class="rounded-xl shadow-3xl flex flex-col items-center">
+	<h1 class="text-2xl font-semibold">Publish Settings</h1>
+	<div class="flex flex-col w-full space-y-4 my-5">
+		<div class="flex flex-row space-x-2">
+			<Checkbox id="terms-keep" bind:checked={keep} aria-labelledby="terms-label-keep" />
+			<Label
+				id="terms-label-keep"
+				for="terms-keep"
+				class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+			>
 				{keep ? 'keep' : "don't keep"} map
-			</SlideToggle>
-			<SlideToggle
-				class="select-none text-primary-500"
-				name="slider-label"
+			</Label>
+		</div>
+		<div class="flex flex-row space-x-2">
+			<Checkbox
+				id="terms-bookings"
+				on:click={bookingsChanged}
 				bind:checked={bookings}
-				on:change={bookingsChanged}
+				aria-labelledby="terms-label-bookings"
+			/>
+			<Label
+				id="terms-label-bookings"
+				for="terms-bookings"
+				class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 			>
 				remove {bookings ? ' necessary ' : ' all '} bookings
-			</SlideToggle>
-		</div>
-		<div class="flex justify-end space-x-2 w-full">
-			<button
-				class="btn variant-outline-primary"
-				on:click={() => {
-					toastStore.clear();
-					modalStore.close();
-				}}>Cancel</button
-			>
-			<button class="btn variant-filled-primary" on:click={publish}>Publish</button>
+			</Label>
 		</div>
 	</div>
-{/if}
+	<slot/> 
+</div>

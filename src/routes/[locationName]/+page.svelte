@@ -2,7 +2,6 @@
 	import DateSelection from '$components/DateSelection.svelte';
 
 	import { page } from '$app/stores';
-	import BottomNav from '$components/BottomNav.svelte';
 	import BuildingSelection from '$components/BuildingSelection.svelte';
 	import FloorSelection from '$components/FloorSelection.svelte';
 	import FloorMap from '$components/MapComponents/FloorMap.svelte';
@@ -22,7 +21,7 @@
 
 	$: floorName = data.query?.floor ?? '';
 	$: buildingName = data.query?.building ?? '';
-	$: date = data.query?.date ?? new Date().toISOString().split('T')[0];
+	$: date = data.query?.date ?? new Date().toISOString().split('T')[0].toString();
 
 	const changeBuilding = (name: string) => {
 		const query = new URLSearchParams($page.url.searchParams);
@@ -93,13 +92,11 @@
 		</div>
 	</div>
 
-	<div class="absolute bottom-0 w-screen md:hidden block">
-		<BottomNav />
-	</div>
-
 	<FloorSelection
 		bind:floorName
-		floors={data.location?.buildings?.filter((b) => b.buildingname === buildingName).flatMap((b) => b.floors)}
+		floors={data.location?.buildings
+			?.filter((b) => b.buildingname === buildingName)
+			.flatMap((b) => b.floors)}
 		on:change={() => changeFloor(floorName)}
 	/>
 

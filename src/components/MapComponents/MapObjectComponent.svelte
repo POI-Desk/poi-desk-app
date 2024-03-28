@@ -9,7 +9,7 @@
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-	//Look into this so import is not needed
+//Look into this so import is not needed
 	import '../../styles/handles.css';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
@@ -114,7 +114,7 @@
 		dragging = true;
 		offsetX = event.clientX / $map.scale - mapObject.transform.x;
 		offsetY = event.clientY / $map.scale - mapObject.transform.y;
-		dispatch('select', mapObject.transform);
+		dispatch('select', {transform: mapObject.transform, pause: true});
 		let start: TransformType = { ...mapObject.transform };
 
 		const handleDragMove = (e: MouseEvent) => {
@@ -358,6 +358,11 @@
 			}
 		};
 	}
+
+
+	function handleMessage(e: CustomEvent<any>): void {
+		dispatch('save', e.detail.userId);
+	}
 </script>
 
 {#if mapObject.type === mapObjectType.Desk}
@@ -370,9 +375,10 @@
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
+		on:auxclick={() => dispatch('select', {transform: mapObject.transform, pause: false})}
 		on:dblclick={() => dispatch('dblcDesk', mapObject)}
 	>
-		<DeskSvg {selected} assigned={mapObject.userId !== null} text={mapObject.id} />
+		<DeskSvg on:save={handleMessage} {selected} assigned={mapObject.userId !== null} text={mapObject.id} />
 	</div>
 {:else if mapObject.type === mapObjectType.Room}
 	<div

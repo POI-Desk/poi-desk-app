@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	export let floors: any[];
 
@@ -15,12 +16,12 @@
 >
 	{#if floors.length > 0}
 		{#each floors as floor}
-			<button
+			<Button
 				on:click={() => changeFloor(floor.pk_floorid)}
 				class="flex items-center justify-center"
 			>
 				<p class="select-none text-primary-500 font-semibold">{floor.floorname}</p>
-			</button>
+			</Button>
 		{/each}
 	{:else}
 		<div class="h-full rounded-full placeholder animate-pulse" />

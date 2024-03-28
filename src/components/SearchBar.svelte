@@ -7,6 +7,7 @@
 	import { searchedUser } from '$lib/searchStore';
 	import { goto } from '$app/navigation';
 	import { MapPin, Search } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	export const _getAllUsersVariables = () => {
 		return '';
@@ -179,11 +180,11 @@
 </script>
 
 <div class="flex justify-center">
-	<div class="flex items-center relative w-full rounded-full max-w-screen-sm">
+	<div class="flex items-center relative w-full rounded-lg max-w-screen-sm">
 		<div class="flex justify-center w-full" on:focusout={handleDropdownFocusLoss}>
-			<div class="dropdown w-full rounded-full border-2 border-primary-300">
+			<div class="dropdown w-full rounded-lg border-primary-300">
 				<input
-					class="input bg-surface-50 w-full rounded-full pl-20 py-3 border-none shadow-around-10"
+					class="my-1 w-full pl-20 py-3 border-2 rounded-lg"
 					placeholder="Search..."
 					bind:value={typedUsername}
 					on:input={handleDropDownClick}
@@ -191,11 +192,11 @@
 				<div class="absolute w-full px-2 z-10">
 					{#if dropdownIsOpen}
 						<ul
-							class="dropdown-content menu shadow variant-filled-tertiary dark:bg-surface-600 rounded-xl max-h-90 flex-nowrap overflow-auto"
+							class="dropdown-content menu shadow variant-filled-tertiary rounded-lg max-h-90 flex-nowrap overflow-auto"
 						>
 							{#each searchUsers as usr}
 								<li class="m-1 flex justify-center">
-									<button
+									<Button
 										class="w-full px-3 py-2 border rounded-2xl flex flex-col"
 										style="grid-row: 1; background-color: #1A4775; color: #ffffff;"
 										on:click={() => {
@@ -207,26 +208,26 @@
 											<span>{usr.username}</span>
 											<span style="grid-row: 2">{mpUserUserinfo.get(usr.pk_userid)}</span>
 										</div>
-									</button>
+									</Button>
 								</li>
 							{/each}
 							<li class="m-1">
 								<div class="grid grid-cols-2 grid-rows-1">
 									<div style="grid-col: 1">
 										{#if pageNumber > 0}
-											<button
+											<Button
 												on:click={() => {
 													pageNumber--;
 												}}
 												class="border rounded-2xl py-1 px-2"
 												style="background-color: #FFFCF2;"
 												>show less...
-											</button>
+											</Button>
 										{/if}
 									</div>
 									{#if hasNextPage && typedUsername}
 										<div style="grid-col: 2" class="flex justify-end">
-											<button
+											<Button
 												class="border rounded-2xl py-1 px-2"
 												style="background-color: #FFFCF2;"
 												on:click={() => {
@@ -235,7 +236,7 @@
 													getSearchUsers(pageNumber);
 												}}
 												>show more...
-											</button>
+											</Button>
 										</div>
 									{/if}
 								</div>
@@ -246,14 +247,14 @@
 			</div>
 		</div>
 
-		<button
-			class="btn variant-filled-primary rounded-full absolute left-3 text-white text-center px-5 py-2"
+		<Button
+			class="btn bg-black absolute left-2 text-white text-center px-5 py-2"
 			on:click={() => {
 				goto('/location');
 			}}
 		>
 			<MapPin />
-		</button>
+		</Button>
 
 		<div class="absolute right-1 w-10 text-secondary-900 pointer-events-none">
 			<Search />
