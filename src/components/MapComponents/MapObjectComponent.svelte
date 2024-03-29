@@ -174,7 +174,11 @@
 		grabbers.map((grabber) => {
 			grabber.classList.remove(
 				'handle',
-				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${
+					mapObject.type == mapObjectType.Room || mapObject.type == mapObjectType.Label
+						? ''
+						: '-point'
+				}`
 			);
 		});
 	};
@@ -184,7 +188,11 @@
 		grabbers.map((grabber) => {
 			grabber.classList.add(
 				'handle',
-				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
+				`handle-${grabber.title}${
+					mapObject.type == mapObjectType.Room || mapObject.type == mapObjectType.Label
+						? ''
+						: '-point'
+				}`
 			);
 		});
 	};
@@ -263,14 +271,14 @@
 
 			if (direction.match('north')) {
 				delta = closestNumber((initialPos!.y - event.pageY) / $map.scale, mapMagnetSteps);
-				if (initialTransform!.height + delta < 50) return;
+				if (initialTransform!.height + delta < 25) return;
 				mapObject.transform.y = initialTransform!.y - delta;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
 
 			if (direction.match('south')) {
 				delta = closestNumber((event.pageY - initialPos!.y) / $map.scale, mapMagnetSteps);
-				if (initialTransform!.height + delta < 50) return;
+				if (initialTransform!.height + delta < 25) return;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
 		}
@@ -487,34 +495,16 @@
 		on:mousedown={handleDragStart}
 		use:resizeRectangle
 	>
-		<RoomSvg
-			height={mapObject.transform.height + wallThickness}
-			width={mapObject.transform.width + wallThickness}
-			{selected}
-		/>
-	</div>
-	<!-- <div
-		class="flex justify-center duration-0"
-		style="position: absolute; width: {mapObject.transform.width +
-			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
-			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
-			? 10
-			: 10};"
-		role="button"
-		tabindex="0"
-		bind:this={drag}
-		on:mousedown={handleDragStart}
-		use:resizeRectangle
-	>
-</div> -->
-{/if}
-<!-- <textarea
-	placeholder="Label"
-	bind:value={mapObject.text}
-	class="text-primary-500 bg-transparent
+		<textarea
+			placeholder="Label"
+			bind:value={mapObject.text}
+			class="text-primary-500 bg-transparent
 		border-transparent
 		text-center
-		resize-none"
-	style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height +
-		wallThickness}px;"
-/> -->
+		resize-none
+		overflow-hidden"
+			style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height +
+				wallThickness}px;"
+		/>
+	</div>
+{/if}

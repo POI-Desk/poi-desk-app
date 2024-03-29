@@ -262,6 +262,8 @@
 					transform: {
 						x: label.x,
 						y: label.y,
+						width: label.width,
+						height: label.height,
 						rotation: 0
 					}
 				}

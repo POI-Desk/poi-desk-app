@@ -618,7 +618,7 @@
 			recenterMap();
 		}
 
-		const sel =$allMapObjects.find((obj) =>
+		const sel = $allMapObjects.find((obj) =>
 			compareObjectsByValues(
 				{ ...obj.transform, type: obj.type },
 				{ ...selObjId.transform, type: selObjId.type }

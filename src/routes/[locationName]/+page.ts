@@ -62,6 +62,8 @@ const getPublishedMap = graphql(`
 				text
 				x
 				y
+				width
+				height
 				rotation
 			}
 			floor {
