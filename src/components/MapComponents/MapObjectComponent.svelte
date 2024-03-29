@@ -9,7 +9,7 @@
 	import type { MapObject } from '$lib/types/mapObjectTypes';
 	import type { TransformType } from '$lib/types/transformType';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-//Look into this so import is not needed
+	//Look into this so import is not needed
 	import '../../styles/handles.css';
 	import DeskSvg from './MapObjects/DeskSVG.svelte';
 	import DoorSvg from './MapObjects/DoorSVG.svelte';
@@ -114,7 +114,7 @@
 		dragging = true;
 		offsetX = event.clientX / $map.scale - mapObject.transform.x;
 		offsetY = event.clientY / $map.scale - mapObject.transform.y;
-		dispatch('select', {transform: mapObject.transform, pause: true});
+		dispatch('select', { transform: mapObject.transform, pause: true });
 		let start: TransformType = { ...mapObject.transform };
 
 		const handleDragMove = (e: MouseEvent) => {
@@ -171,7 +171,7 @@
 	export const removeSelectedStyle = () => {
 		selected = false;
 
-		grabbers.forEach((grabber) => {
+		grabbers.map((grabber) => {
 			grabber.classList.remove(
 				'handle',
 				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
@@ -181,7 +181,7 @@
 
 	export const applySelectedStyle = () => {
 		selected = true;
-		grabbers.forEach((grabber) => {
+		grabbers.map((grabber) => {
 			grabber.classList.add(
 				'handle',
 				`handle-${grabber.title}${mapObject.type == mapObjectType.Room ? '' : '-point'}`
@@ -233,7 +233,7 @@
 			active = event.target as HTMLElement;
 
 			initialTransform = { ...mapObject.transform };
-			initialPos = { x: event.pageX / $map.scale, y: event.pageY / $map.scale };
+			initialPos = { x: event.pageX, y: event.pageY };
 		}
 
 		function onMouseup(event: MouseEvent) {
@@ -249,27 +249,27 @@
 			let delta: number = 0;
 
 			if (direction.match('east')) {
-				delta = closestNumber(event.pageX / $map.scale - initialPos!.x, mapMagnetSteps);
+				delta = closestNumber((event.pageX - initialPos!.x) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 
 			if (direction.match('west')) {
-				delta = closestNumber(initialPos!.x - event.pageX / $map.scale, mapMagnetSteps);
+				delta = closestNumber((initialPos!.x - event.pageX) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.x = initialTransform!.x - delta;
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 
 			if (direction.match('north')) {
-				delta = closestNumber(initialPos!.y - event.pageY / $map.scale, mapMagnetSteps);
+				delta = closestNumber((initialPos!.y - event.pageY) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.height + delta < 50) return;
 				mapObject.transform.y = initialTransform!.y - delta;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
 
 			if (direction.match('south')) {
-				delta = closestNumber(event.pageY / $map.scale - initialPos!.y, mapMagnetSteps);
+				delta = closestNumber((event.pageY - initialPos!.y) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.height + delta < 50) return;
 				mapObject.transform.height = initialTransform!.height + delta;
 			}
@@ -304,18 +304,17 @@
 		let initialTransform: TransformType | null = null,
 			initialPos: { x: number; y: number } | null = null;
 
-		grabbers.forEach((grabber) => {
+		grabbers.map((grabber) => {
 			element.appendChild(grabber);
 			grabber.addEventListener('mousedown', onMousedown);
 		});
 
 		function onMousedown(event: MouseEvent) {
 			resizing = true;
-			const parent = target.parentElement!.getBoundingClientRect();
 			active = event.target as HTMLElement;
 
 			initialTransform = { ...mapObject.transform };
-			initialPos = { x: event.pageX / $map.scale, y: event.pageY / $map.scale };
+			initialPos = { x: event.pageX, y: event.pageY };
 		}
 
 		function onMouseup(event: MouseEvent) {
@@ -325,19 +324,19 @@
 		}
 
 		function onMove(event: MouseEvent) {
-			if (!active || !initialPos) return;
+			if (!active || !initialPos || !resizing) return;
 
 			const direction = active.title;
 			let delta: number = 0;
 
 			if (direction.match('east')) {
-				delta = closestNumber(event.pageX / $map.scale - initialPos!.x, mapMagnetSteps);
+				delta = closestNumber((event.pageX - initialPos.x) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 
 			if (direction.match('west')) {
-				delta = closestNumber(initialPos!.x - event.pageX / $map.scale, mapMagnetSteps);
+				delta = closestNumber((initialPos.x - event.pageX) / $map.scale, mapMagnetSteps);
 				if (initialTransform!.width + delta < 50) return;
 				mapObject.transform.x = initialTransform!.x - delta;
 				mapObject.transform.width = initialTransform!.width + delta;
@@ -352,13 +351,12 @@
 				window.removeEventListener('mousemove', onMove);
 				window.removeEventListener('mousemove', onMousedown);
 
-				grabbers.forEach((grabber) => {
+				grabbers.map((grabber) => {
 					element.removeChild(grabber);
 				});
 			}
 		};
 	}
-
 
 	function handleMessage(e: CustomEvent<any>): void {
 		dispatch('save', e.detail.userId);
@@ -375,10 +373,15 @@
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
-		on:auxclick={() => dispatch('select', {transform: mapObject.transform, pause: false})}
+		on:auxclick={() => dispatch('select', { transform: mapObject.transform, pause: false })}
 		on:dblclick={() => dispatch('dblcDesk', mapObject)}
 	>
-		<DeskSvg on:save={handleMessage} {selected} assigned={mapObject.userId !== null} text={mapObject.id} />
+		<DeskSvg
+			on:save={handleMessage}
+			{selected}
+			assigned={mapObject.userId !== null}
+			text={mapObject.id}
+		/>
 	</div>
 {:else if mapObject.type === mapObjectType.Room}
 	<div
@@ -472,24 +475,46 @@
 	</div>
 {:else if mapObject.type === mapObjectType.Label}
 	<div
-		class="flex justify-center z-50 duration-0 -translate-y-1/2"
+		class="flex justify-center duration-0"
 		style="position: absolute; width: {mapObject.transform.width +
-			wallThickness}px; height: {mapObject.transform.height}px; left: {mapObject.transform.x -
-			wallThickness / 2}px; top: {mapObject.transform.y + wallThickness}px;"
+			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
+			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
+			? 10
+			: 10};"
 		role="button"
 		tabindex="0"
 		bind:this={drag}
 		on:mousedown={handleDragStart}
+		use:resizeRectangle
 	>
-		<input
-			type="text"
-			placeholder="Label"
-			bind:value={mapObject.text}
-			class="text-primary-500 bg-transparent
-				border-transparent
-				text-center"
-			style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height +
-				wallThickness}px;"
+		<RoomSvg
+			height={mapObject.transform.height + wallThickness}
+			width={mapObject.transform.width + wallThickness}
+			{selected}
 		/>
 	</div>
+	<!-- <div
+		class="flex justify-center duration-0"
+		style="position: absolute; width: {mapObject.transform.width +
+			wallThickness}px; height: {mapObject.transform.height + wallThickness}px; left: {mapObject
+			.transform.x}px; top: {mapObject.transform.y - wallThickness / 2}px; z-index: {selected
+			? 10
+			: 10};"
+		role="button"
+		tabindex="0"
+		bind:this={drag}
+		on:mousedown={handleDragStart}
+		use:resizeRectangle
+	>
+</div> -->
 {/if}
+<!-- <textarea
+	placeholder="Label"
+	bind:value={mapObject.text}
+	class="text-primary-500 bg-transparent
+		border-transparent
+		text-center
+		resize-none"
+	style="  width: {mapObject.transform.width}px; height: {mapObject.transform.height +
+		wallThickness}px;"
+/> -->

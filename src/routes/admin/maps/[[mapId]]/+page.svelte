@@ -73,7 +73,7 @@
 
 	const handleSomething = () => {
 		publish(publishKeep, publishBookings);
-	}
+	};
 
 	const publish = async (keepMap: boolean, keepBookings: boolean) => {
 		if (!mapData) return;
@@ -139,7 +139,6 @@
 			$map.scale = e.getTransform().scale;
 		});
 
-		recenterMap();
 		drawMapFromLocalDbData();
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -163,12 +162,14 @@
 	});
 
 	const getMapById = async (mapId: string) => {
-		return await getMapSnapshotById.fetch({
+		const map = await getMapSnapshotById.fetch({
 			variables: { mapId: mapId },
 			policy: CachePolicy.NetworkOnly
 		});
-	};
 
+		drawMapFromLocalDbData(false);
+		return map;
+	};
 
 	// #region handles
 	const handleKeyDown = (event: KeyboardEvent) => {
@@ -407,6 +408,12 @@
 		offsetY = top - defaultMapProps.border;
 		mapHeight -= offsetY;
 
+		const smallX = mapWidth < defaultMapProps.width;
+		const smallY = mapHeight < defaultMapProps.height;
+
+		mapWidth = smallX ? defaultMapProps.width : mapWidth;
+		mapHeight = smallY ? defaultMapProps.height : mapHeight;
+
 		$allMapObjects.map((mapObject) => {
 			mapObject.transform.x -= offsetX;
 			mapObject.transform.y -= offsetY;
@@ -517,6 +524,7 @@
 	};
 
 	const drawMapFromLocalDbData = (recenter: boolean = true) => {
+		const selObjId = { ...$selectedMapObject };
 		emptyMap();
 		if (!mapData) {
 			// DEBUG
@@ -596,8 +604,8 @@
 				{
 					x: label.x,
 					y: label.y,
-					width: labelProps.width,
-					height: labelProps.height,
+					width: label.width,
+					height: label.height,
 					rotation: label.rotation
 				} as TransformType,
 				'',
@@ -609,6 +617,17 @@
 			panz.zoomAbs(0, 0, 1);
 			recenterMap();
 		}
+
+		const sel =$allMapObjects.find((obj) =>
+			compareObjectsByValues(
+				{ ...obj.transform, type: obj.type },
+				{ ...selObjId.transform, type: selObjId.type }
+			)
+		);
+		if (sel){
+			selectMapObject(sel);
+		}
+
 		$allMapObjects = $allMapObjects;
 		mapObjects = mapObjects;
 	};
@@ -619,71 +638,6 @@
 		showMapLoader = false;
 
 		await saveMap();
-		// switch (mapObj.type) {
-		// 	case mapObjectType.Desk:
-		// 		const desk = await updateDesksOnMap.mutate({
-		// 			mapId: mapData?.pk_mapId,
-		// 			deskInputs: [getInputTypeFromMapObject(mapObj) as UpdateDeskInput]
-		// 		});
-		// 		if (desk.errors) return console.error(desk.errors);
-
-		// 		const dObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-		// 		dObj!.dbID = desk.data?.updateDesksOnMap![0].pk_deskid! ?? dObj?.dbID;
-		// 		break;
-		// 	case mapObjectType.Room:
-		// 		const room = await updateRoomsOnMap.mutate({
-		// 			mapId: mapData?.pk_mapId,
-		// 			roomInputs: [getInputTypeFromMapObject(mapObj) as UpdateRoomInput]
-		// 		});
-		// 		if (room.errors) return console.error(room.errors);
-
-		// 		const rObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-		// 		rObj!.dbID = room.data?.updateRoomsOnMap![0].pk_roomId! ?? rObj?.dbID;
-		// 		break;
-		// 	case mapObjectType.Wall:
-		// 		const wall = await updateWallsOnMap.mutate({
-		// 			mapId: mapData?.pk_mapId,
-		// 			wallInputs: [getInputTypeFromMapObject(mapObj) as UpdateWallInput]
-		// 		});
-		// 		if (wall.errors) return console.error(wall.errors);
-
-		// 		const wObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-		// 		wObj!.dbID = wall.data?.updateWallsOnMap![0].pk_wallId! ?? wObj?.dbID;
-		// 		break;
-		// 	case mapObjectType.Door:
-		// 		const door = await updateDoorsOnMap.mutate({
-		// 			mapId: mapData?.pk_mapId,
-		// 			doorInputs: [getInputTypeFromMapObject(mapObj) as UpdateDoorInput]
-		// 		});
-		// 		if (door.errors) return console.error(door.errors);
-
-		// 		const doObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-		// 		doObj!.dbID = door.data?.updateDoorsOnMap![0].pk_doorId! ?? doObj?.dbID;
-		// 		break;
-		// 	case mapObjectType.Label:
-		// 		const label = await updateLabelsOnMap.mutate({
-		// 			mapId: mapData?.pk_mapId,
-		// 			labelInputs: [getInputTypeFromMapObject(mapObj) as UpdateLabelInput]
-		// 		});
-		// 		if (label.errors) return console.error(label.errors);
-
-		// 		const lObj = $allMapObjects.find((obj) => obj.id === mapObj.id);
-		// 		lObj!.dbID = label.data?.updateLabelsOnMap![0].pk_labelId! ?? lObj?.dbID;
-		// 		break;
-		// }
-
-		// if ($map.height !== mapData.height || $map.width !== mapData.width) {
-		// 	await updateMap.mutate({
-		// 		mapId: mapData.pk_mapId,
-		// 		mapInput: {
-		// 			height: $map.height,
-		// 			width: $map.width,
-		// 			name: mapData.name
-		// 		}
-		// 	});
-		// }
-
-		// await getMapById(mapData?.pk_mapId!);
 
 		showMapLoader = true;
 		saving = false;
@@ -813,6 +767,8 @@
 							dbID: obj.dbID,
 							x: obj.transform.x,
 							y: obj.transform.y,
+							width: obj.transform.width,
+							height: obj.transform.height,
 							rotation: obj.transform.rotation,
 							text: obj.text
 						},
@@ -820,6 +776,8 @@
 							dbID: label?.pk_labelId,
 							x: label?.x,
 							y: label?.y,
+							width: label?.width,
+							height: label?.height,
 							rotation: label?.rotation,
 							text: label?.text
 						}
@@ -973,16 +931,10 @@
 
 		await getMapById(mapData?.pk_mapId!);
 
-		$allMapObjects = $allMapObjects.map((obj) => {
-			obj.dbID = mapData?.desks?.find((d) => d.desknum === obj.id)?.pk_deskid ?? obj.dbID;
-			return obj;
-		});
 		showMapLoader = true;
 		saving = false;
 	};
 	//#endregion
-
-
 </script>
 
 <main bind:this={main} class="overflow-hidden h-full">
@@ -999,13 +951,13 @@
 			<ModalPublishMap bind:keep={publishKeep} bind:bookings={publishBookings}>
 				<div class="flex justify-end space-x-2 w-full">
 					<AlertDialog.Cancel asChild let:builder>
-						<Button
-							builders={[builder]}
-							class="btn variant-outline-primary">Cancel</Button
-						>
+						<Button builders={[builder]} class="btn variant-outline-primary">Cancel</Button>
 					</AlertDialog.Cancel>
 					<AlertDialog.Action asChild let:builder
-						><Button builders={[builder]} class="btn variant-filled-primary" on:click={handleSomething}>Publish</Button
+						><Button
+							builders={[builder]}
+							class="btn variant-filled-primary"
+							on:click={handleSomething}>Publish</Button
 						></AlertDialog.Action
 					>
 				</div>

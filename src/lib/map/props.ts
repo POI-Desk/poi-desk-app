@@ -104,6 +104,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				pk_labelId: mapObject.dbID,
 				rotation: mapObject.transform.rotation,
 				text: mapObject.text,
+				width: mapObject.transform.width,
+				height: mapObject.transform.height,
 				x: mapObject.transform.x,
 				y: mapObject.transform.y
 			};
@@ -120,8 +122,11 @@ export const panzoomProps: PanZoomOptions = {
 	autocenter: false,
 	onTouch: (e) => {
 		// if e.touches[0].target is object SVGPolygonElement then dont preventdefault
-		if (e.touches[0].target instanceof SVGPolygonElement || e.touches[0].target instanceof SVGTextElement) {
-			console.log("test")
+		if (
+			e.touches[0].target instanceof SVGPolygonElement ||
+			e.touches[0].target instanceof SVGTextElement
+		) {
+			console.log('test');
 			// don't prevent default
 		} else {
 			e.preventDefault();

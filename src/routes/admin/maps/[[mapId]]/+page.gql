@@ -40,6 +40,8 @@ query getMapSnapshotById($mapId: ID! = "") {
 		labels {
 			pk_labelId
 			text
+			width
+			height
 			x
 			y
 			rotation
