@@ -44,7 +44,6 @@
 
 	onMount(() => {
 		$user = data.session;
-		console.log($map?.data?.getPublishedMapByLocationBuildingFloorName);
 	});
 </script>
 

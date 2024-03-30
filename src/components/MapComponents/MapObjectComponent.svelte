@@ -405,32 +405,27 @@
 		on:mousedown={(event) => {
 			// INFO: the funny:
 			const extension = 4;
+			const bounds = drag.getBoundingClientRect();
 			if (
 				selected ||
-				(event.clientX >= drag.getBoundingClientRect().left - extension &&
-					event.clientX <=
-						drag.getBoundingClientRect().left + extension + wallThickness * $map.scale) ||
+				(event.clientX >= bounds.left - extension &&
+					event.clientX <= bounds.left + extension + wallThickness * $map.scale) ||
 				(event.clientX >=
-					drag.getBoundingClientRect().left -
+					bounds.left -
 						extension +
 						(mapObject.transform.width + wallThickness) * $map.scale -
 						wallThickness * $map.scale &&
 					event.clientX <=
-						drag.getBoundingClientRect().left +
-							extension +
-							(mapObject.transform.width + wallThickness) * $map.scale) ||
-				(event.clientY >= drag.getBoundingClientRect().top - extension &&
-					event.clientY <=
-						drag.getBoundingClientRect().top + extension + wallThickness * $map.scale) ||
+						bounds.left + extension + (mapObject.transform.width + wallThickness) * $map.scale) ||
+				(event.clientY >= bounds.top - extension &&
+					event.clientY <= bounds.top + extension + wallThickness * $map.scale) ||
 				(event.clientY >=
-					drag.getBoundingClientRect().top -
+					bounds.top -
 						extension +
 						(mapObject.transform.height + wallThickness) * $map.scale -
 						wallThickness * $map.scale &&
 					event.clientY <=
-						drag.getBoundingClientRect().top +
-							extension +
-							(mapObject.transform.height + wallThickness) * $map.scale)
+						bounds.top + extension + (mapObject.transform.height + wallThickness) * $map.scale)
 			)
 				handleDragStart(event);
 			else if (!selected) {
