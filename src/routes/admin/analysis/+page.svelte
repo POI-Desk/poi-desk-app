@@ -63,27 +63,26 @@
 	}
 </script>
 
-<div class="h-screen flex flex-col p-5">
-	<div class="h-full flex">
+<div class="h-screen w-full flex flex-col justify-between p-4">
+	<div class="h-screen w-full flex flex-col justify-between bg-gray-50 rounded-3xl">
 		<!--Last 30 Days-->
-		<div class="card bg-white p-4 w-full flex flex-col rounded-3xl">
+		<div class="p-4 w-full h-full flex flex-col">
 			<div class="w-full h-1/8">
-				<p class="flex justify-center h4">Last 30 Days</p>
+				<p class="flex justify-center" style="font-size:40px;">Last 30 Days</p>
 			</div>
-			<div class="flex flex-row w-full h-full p2">
+			<div class="flex flex-row w-full h-full">
 				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
 					<Last30Days />
 				</div>
 			</div>
 		</div>
-	</div>
+		<hr/>
 
-	<div class="h-full flex gap-4 pt-2">
-		<div class="card bg-white p-4 w-full flex flex-col rounded-3xl">
-			<div class="w-full h-1/8 h4">
-				<p class="flex justify-center">Select Anaylsis</p>
+		<div class="p-4 w-full h-full flex flex-col">
+			<div class="w-full h-1/8">
+				<p class="flex justify-center" style="font-size:40px;">Select Anaylsis</p>
 			</div>
-			<div class="flex flex-row w-full h-full p2">
+			<div class="flex flex-row w-full h-full">
 				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
 					{#await getData()}
 						<p>loading...</p>
@@ -94,12 +93,4 @@
 			</div>
 		</div>
 	</div>
-
-	<!--<div class="h-1/2 flex gap-4">
-			{#await getData()}
-				<p>loading...</p>
-			{:then data}
-				<DataSelectionCard buildings={x} />
-			{/await}
-		</div>-->
 </div>

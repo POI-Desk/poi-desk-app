@@ -4,10 +4,21 @@
 	import { MonthlyBookingsByLocation } from '$lib/queries/analysisQueries';
 	import { user } from '$lib/userStore';
 	import Chart from 'chart.js/auto';
+	import type { PopupSettings } from '@skeletonlabs/skeleton';
+	import {
+		storePopup,
+		RadioGroup,
+		RadioItem,
+		ListBox,
+		ListBoxItem,
+		popup
+	} from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	async function loadDays() {
 		const result = await MonthlyBookingsByLocation.fetch({
-			variables: { year: '2024', month: '02', location: $user.location?.pk_locationid || '' }
+			variables: { year: '2024', month: '03', location: $user.location?.pk_locationid || '' }
 		});
 		if (result && chartLabels.length == 0) {
 			let monthlyBookingResult = result.data?.getMonthlyBookingByLocation;
@@ -51,15 +62,44 @@
 		min: number;
 		avg: number;
 	};
+	let maxdays: number[] = [];
+	let mindays: number[] = [];
 
 	async function computeData() {
 		computedData = {
 			total: totalValues.reduce((acc, value) => acc + (value || 0), 0),
 			max: Math.max(...totalValues),
 			min: Math.min(...totalValues),
-			avg: totalValues.reduce((acc, value) => acc + (value || 0), 0) / totalValues.length
+			avg: Math.round(totalValues.reduce((acc, value) => acc + (value || 0), 0) / totalValues.length)
 		};
+		totalValues.filter((value) => value == computedData.max).forEach((value) => {
+			maxdays.push(value);
+		});
+		totalValues.filter((value) => value == computedData.min).forEach((value) => {
+			mindays.push(value);
+		});
 	}
+
+	const totalHover: PopupSettings = {
+		event: 'hover',
+		target: 'totalHover',
+		placement: 'top'
+	};
+	const maxHover: PopupSettings = {
+		event: 'hover',
+		target: 'maxHover',
+		placement: 'top'
+	};
+	const avgHover: PopupSettings = {
+		event: 'hover',
+		target: 'avgHover',
+		placement: 'top'
+	};
+	const minHover: PopupSettings = {
+		event: 'hover',
+		target: 'minHover',
+		placement: 'top'
+	};
 </script>
 
 {#await loadDays()}
@@ -71,25 +111,77 @@
 	<div class="w-1/2 h-full text-black rounded-3xl flex items-center justify-center p-2>">
 		<div class="flex flex-col gap-2 w-full h-full">
 			<div class="flex w-full h-1/2 gap-2">
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-					<p class="p-2" style="font-size:60px;">{computedData.total}</p>
-					<p class="p-2" style="font-size:20px;">Total</p>
+				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+					<div
+						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
+						use:popup={totalHover}
+					>
+						<p class="p-2" style="font-size:60px;">{computedData.total}</p>
+						<p class="p-2" style="font-size:20px;">Total</p>
+					</div>
 				</div>
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-					<p class="p-2" style="font-size:60px;">{computedData.max}</p>
-					<p class="p-2" style="font-size:20px;">Max</p>
+				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+					<div
+						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
+						use:popup={maxHover}
+					>
+						<p class="p-2" style="font-size:60px;">{computedData.max}</p>
+						<p class="p-2" style="font-size:20px;">Max</p>
+					</div>
 				</div>
 			</div>
 			<div class="flex w-full h-1/2 gap-2">
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-					<p class="p-2" style="font-size:60px;">{computedData.avg}</p>
-					<p class="p-2" style="font-size:20px;">Avg</p>
+				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+					<div
+						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
+						use:popup={avgHover}
+					>
+						<p class="p-2" style="font-size:60px;">{computedData.avg}</p>
+						<p class="p-2" style="font-size:20px;">Avg</p>
+					</div>
 				</div>
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-					<p class="p-2" style="font-size:60px;">{computedData.min}</p>
-					<p class="p-2" style="font-size:20px;">Min</p>
+				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+					<div
+						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
+						use:popup={minHover}
+					>
+						<p class="p-2" style="font-size:60px;">{computedData.min}</p>
+						<p class="p-2" style="font-size:20px;">min</p>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+<div class="card p-4 variant-filled-secondary" data-popup="totalHover">
+	<p style="font-size:12px;">
+		The total amount of bookings in {$user.location?.locationname} over the last 30 days
+	</p>
+	<div class="arrow variant-filled-secondary" />
+</div>
+
+<div class="card p-4 variant-filled-secondary" data-popup="maxHover">
+	<p style="font-size:12px;">
+		<!--The maximum amount of bookings in {$user.location?.locationname} on a single day: {maxdays.forEach((day) => chartLabels[day])}-->
+		The maximum amount of bookings in {$user.location?.locationname} on a single day: {chartLabels[totalValues.indexOf(computedData.max)]}
+
+	</p>
+	<div class="arrow variant-filled-secondary" />
+</div>
+
+<div class="card p-4 variant-filled-secondary" data-popup="avgHover">
+	<p style="font-size:12px;">
+		The average amount of bookings in {$user.location?.locationname} over the last 30 days
+	</p>
+	<div class="arrow variant-filled-secondary" />
+</div>
+
+<div class="card p-4 variant-filled-secondary" data-popup="minHover">
+	<p style="font-size:12px;">
+		The minimum amount of bookings in {$user.location?.locationname} on a single day: {chartLabels[totalValues.indexOf(computedData.min)]}
+	</p>
+	<div class="arrow variant-filled-secondary" />
+</div>
+
 {/await}
+

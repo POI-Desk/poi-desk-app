@@ -40,13 +40,13 @@ export type PredictionSelection = {
 };
 
 export type PredictionData = {
-	total: number[] | null;
-	morning_highestBooking: number[] | null;
-	morningAverageBooking: number[] | null;
-	morning_lowestBooking: number[] | null;
-	afternoon_highestBooking: number[] | null;
-	afternoonAverageBooking: number[] | null;
-	afternoon_lowestBooking: number[] | null;
+	total: number[];
+	morning_highestBooking: number[];
+	morningAverageBooking: number[];
+	morning_lowestBooking: number[];
+	afternoon_highestBooking: number[];
+	afternoonAverageBooking: number[];
+	afternoon_lowestBooking: number[];
 }
 
 export type PredictionDays = {

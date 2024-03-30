@@ -29,7 +29,7 @@
 		ListBoxItem,
 		popup
 	} from '@skeletonlabs/skeleton';
-	import PredictionCharts from './PredictionCharts.svelte';
+	import PredictionCharts from '$components/PredictionComponents/PredictionCharts.svelte';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	export const CHART_COLORS = {
@@ -94,11 +94,12 @@
 					result = await getMonthlyBookingPrediction.fetch({
 						variables: {
 							identifier: selection.Floor.floorid!,
-							identifierType: IdentifierType.Building
+							identifierType: IdentifierType.Floor
 						}
 					});
 				}
-				if (result) {
+				console.log('result', result);
+				if (result || result!.data?.getMonthlyBookingPrediction) {
 					monthlyPrediction = result!.data?.getMonthlyBookingPrediction;
 					monthlyPrediction?.forEach((element: any) => {
 						if (element) {
@@ -113,6 +114,8 @@
 						}
 					});
 					break;
+				} else {
+					console.log('no data');
 				}
 			}
 			case 'Quarter': {
@@ -143,11 +146,11 @@
 					result = await getQuarterlyBookingPrediction.fetch({
 						variables: {
 							identifier: selection.Floor.floorid!,
-							identifierType: IdentifierType.Building
+							identifierType: IdentifierType.Floor
 						}
 					});
 				}
-				if (result) {
+				if (result || result!.data?.getQuarterlyBookingPrediction) {
 					quarterlyPrediction = result!.data?.getQuarterlyBookingPrediction;
 					quarterlyPrediction?.forEach((element: any) => {
 						if (element) {
@@ -165,7 +168,6 @@
 				}
 			}
 			case 'Year': {
-				console.log('year');
 				type = 2;
 				let result;
 				let yearlyPrediction;
@@ -193,7 +195,7 @@
 					result = await getYearlyBookingPrediction.fetch({
 						variables: {
 							identifier: selection.Floor.floorid!,
-							identifierType: IdentifierType.Building
+							identifierType: IdentifierType.Floor
 						}
 					});
 				}
@@ -223,6 +225,7 @@
 	async function createDiagramms(id: number) {
 		let time;
 		console.log('type', type);
+		console.log('data', predictionDays);
 		if (type === 0) {
 			time = predictionDays.month;
 		} else if (type === 1) {
@@ -236,19 +239,19 @@
 					labels: time,
 					datasets: [
 						{
-							label: 'morning_highestBooking',
+							label: 'highestBooking',
 							data: predictionData.morning_highestBooking,
 							backgroundColor: CHART_COLORS.orange,
 							borderColor: CHART_COLORS.orange
 						},
 						{
-							label: 'morningAverageBooking',
+							label: 'AverageBooking',
 							data: predictionData.morningAverageBooking,
 							backgroundColor: CHART_COLORS.purple,
 							borderColor: CHART_COLORS.purple
 						},
 						{
-							label: 'morning_lowestBooking',
+							label: 'lowestBooking',
 							data: predictionData.morning_lowestBooking,
 							backgroundColor: CHART_COLORS.blue,
 							borderColor: CHART_COLORS.blue
@@ -261,19 +264,19 @@
 					labels: time,
 					datasets: [
 						{
-							label: 'afternoon_highestBooking',
+							label: 'highestBooking',
 							data: predictionData.afternoon_highestBooking,
 							backgroundColor: CHART_COLORS.green,
 							borderColor: CHART_COLORS.green
 						},
 						{
-							label: 'afternoonAverageBooking',
+							label: 'AverageBooking',
 							data: predictionData.afternoonAverageBooking,
 							backgroundColor: CHART_COLORS.yellow,
 							borderColor: CHART_COLORS.yellow
 						},
 						{
-							label: 'afternoon_lowestBooking',
+							label: 'lowestBooking',
 							data: predictionData.afternoon_lowestBooking,
 							backgroundColor: CHART_COLORS.grey,
 							borderColor: CHART_COLORS.grey
@@ -287,39 +290,47 @@
 </script>
 
 {#await loadPredictions() then data}
-	<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+	<div class="w-1/2 h-2/5 bg-slate-50 flex items-center justify-center flex-col rounded-3xl">
 		<div class="flex flex-col gap-2 w-full h-full">
 			<div class="flex w-full h-1/2 gap-2">
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
+				<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
 					<p class="p-2" style="font-size:60px;">
-						{predictionDays.month[predictionDays.month.length - 1]}
+						{#if type === 0}
+							{predictionDays.month[predictionDays.month.length - 1]}
+						{:else if type === 1}
+							{predictionDays.quarter[predictionDays.quarter.length - 1]}
+						{:else if type}
+							{predictionDays.year[predictionDays.year.length - 1]}
+						{/if}
 					</p>
-					<p class="p-2" style="font-size:20px;">Year</p>
+					<p class="p-2" style="font-size:20px;">Time</p>
 				</div>
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
+				<!--div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
 					<p class="p-2" style="font-size:60px;">
 						{predictionDays.month[predictionDays.month.length - 1]}
 					</p>
 					<p class="p-2" style="font-size:20px;">Month</p>
-				</div>
+				</div>-->
 			</div>
 			<div class="flex w-full h-1/2 gap-2">
 				<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
 					<p class="p-2" style="font-size:60px;">
-						3000
+						{predictionData.total[predictionData.total.length - 1]}
 					</p>
 					<p class="p-2" style="font-size:20px;">Total</p>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="card w-full h-full bg-white flex flex-row">
-		<div class="card w-full h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+	<hr class="w-full" />
+	<div class="bg-slate-50 w-full h-3/5 flex flex-row rounded-3xl">
+		<div class="w-full h-full flex items-center justify-center flex-col">
+			<p style="font-size:30px;">Morning</p>
 			{#await createDiagramms(0) then data}
 				<PredictionCharts {data} />
 			{/await}
 		</div>
-		<div class="card h-full w-10 bg-white rounded-3xl flex items-center justify-center">
+		<!--<div class="card h-full w-10 bg-white rounded-3xl flex items-center justify-center">
 			<div class="h-full flex flex-row">
 				<RadioGroup
 					flex="flex"
@@ -337,74 +348,12 @@
 					</div>
 				</RadioGroup>
 			</div>
-		</div>
-		<div class="card w-full h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+		</div>-->
+		<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
+			<p style="font-size:30px;">Afternoon</p>
 			{#await createDiagramms(1) then data}
 				<PredictionCharts {data} />
 			{/await}
 		</div>
 	</div>
 {/await}
-
-<!--
-<div class="h-full card p-4 w-full flex flex-col rounded-3xl">
-	<div class="h-1/2 w-full flex flex-row">
-		<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col" />
-		<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center">
-			<div class="flex flex-col gap-2 w-full h-full">
-				<div class="flex w-full h-1/2 gap-2">
-					<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-						<p class="p-2" style="font-size:60px;">2024</p>
-						<p class="p-2" style="font-size:20px;">year</p>
-					</div>
-					<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
-						<p class="p-2" style="font-size:60px;">April</p>
-						<p class="p-2" style="font-size:20px;">Month</p>
-					</div>
-				</div>
-				<div class="flex w-full h-1/2 gap-2">
-					<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
-						<p class="p-2" style="font-size:60px;">7539</p>
-						<p class="p-2" style="font-size:20px;">Total</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="h-1/2 w-full flex flex-row">
-		<div class="card w-full h-full bg-white rounded-3xl flex items-center justify-center">
-			{#key selection}
-				{#await createDiagramms(0) then data}
-					<PredictionCharts {data} />
-				{/await}
-			{/key}
-		</div>
-		<div class="card h-full w-10 bg-white rounded-3xl flex items-center justify-center">
-			<div class="h-full flex flex-row">
-				<RadioGroup
-					flex="flex"
-					active="variant-filled-primary"
-					hover="hover:variant-soft-primary"
-					flexDirection="flex-column"
-				>
-					<div class="flex flex-column justify-center h-full">
-						<RadioItem bind:group={showType} name="end" value="Days">
-							<BarChart3 />
-						</RadioItem>
-						<RadioItem bind:group={showType} name="end" value="Data">
-							<File />
-						</RadioItem>
-					</div>
-				</RadioGroup>
-			</div>
-		</div>
-		<div class="card w-full h-full bg-white rounded-3xl flex items-center justify-center">
-			{#key selection}
-				{#await createDiagramms(1) then data}
-					<PredictionCharts {data} />
-				{/await}
-			{/key}
-		</div>
-	</div>
-</div>-->

@@ -7,8 +7,8 @@
 	} from '$lib/queries/predictionQueries';
 	import Chart from 'chart.js/auto';
 	import type { MonthlyPrediction } from '$lib/types/predictionType';
-	import PredictionCard from '$components/AnalysisComponents/PredictionCard.svelte';
-	import PredictionOverview from '$components/AnalysisComponents/PredictionOverview.svelte';
+	import PredictionCard from '$components/PredictionComponents/PredictionCard.svelte';
+	import PredictionOverview from '$components/PredictionComponents/PredictionOverview.svelte';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
 	import { user } from '$lib/userStore';
@@ -104,8 +104,8 @@
 	<div class="h-full">
 		<!--Last 30 Days-->
 		<!--<PredictionCard />-->
-		<div class="card h-1/2 flex flex-wrap">
-			<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+		<div class="card bg-slate-50 h-full flex flex-wrap rounded-3xl">
+			<div class="w-1/2 h-2/5 rounded-3xl flex items-center justify-center flex-col">
 				<p>building:</p>
 				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
 					<span class="capitalize">{selection.Building?.buildingname ?? 'Building'}</span>
