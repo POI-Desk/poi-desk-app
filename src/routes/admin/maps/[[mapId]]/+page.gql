@@ -11,6 +11,7 @@ query getMapSnapshotById($mapId: ID! = "") {
 			x
 			y
 			rotation
+			localId
 			user {
 				pk_userid
 				username
@@ -22,6 +23,7 @@ query getMapSnapshotById($mapId: ID! = "") {
 			y
 			width
 			height
+			localId
 		}
 		walls {
 			pk_wallId
@@ -29,6 +31,7 @@ query getMapSnapshotById($mapId: ID! = "") {
 			y
 			rotation
 			width
+			localId
 		}
 		doors {
 			pk_doorId
@@ -36,6 +39,7 @@ query getMapSnapshotById($mapId: ID! = "") {
 			y
 			rotation
 			width
+			localId
 		}
 		labels {
 			pk_labelId
@@ -45,6 +49,7 @@ query getMapSnapshotById($mapId: ID! = "") {
 			x
 			y
 			rotation
+			localId
 		}
 		floor {
 			floorname

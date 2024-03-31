@@ -186,13 +186,13 @@
 						</AlertDialog.Trigger>
 						<ContextMenu.Item>Delete</ContextMenu.Item>
 					</ContextMenu.Content>
-					<AlertDialog.Content
-						><ModalEditDesk on:selectedUserChange={handleMessage}>
+					<AlertDialog.Content>
+						<ModalEditDesk on:selectedUserChange={handleMessage}>
 							<div class="flex flex-row space-x-2 justify-end w-full">
 								<AlertDialog.Cancel asChild let:builder>
-									<Button builders={[builder]} class="btn border-2 border-primary-500 w-20"
-										>Cancel</Button
-									>
+									<Button builders={[builder]} class="btn border-2 border-primary-500 w-20">
+										Cancel
+									</Button>
 								</AlertDialog.Cancel>
 								<AlertDialog.Action asChild let:builder>
 									<Button
@@ -200,12 +200,14 @@
 										class="btn bg-primary-500 w-20"
 										on:click={() => {
 											saveModal();
-										}}>Save</Button
+										}}
 									>
+										Save
+									</Button>
 								</AlertDialog.Action>
 							</div>
-						</ModalEditDesk></AlertDialog.Content
-					>
+						</ModalEditDesk>
+					</AlertDialog.Content>
 				</AlertDialog.Root>
 			</ContextMenu.Root>
 		</button>

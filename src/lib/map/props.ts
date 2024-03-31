@@ -73,7 +73,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				desknum: mapObject.id,
 				x: mapObject.transform.x,
 				y: mapObject.transform.y,
-				userId: mapObject.userId
+				userId: mapObject.userId,
+				localId: mapObject.id,
 			} as UpdateDeskInput;
 		case mapObjectType.Room:
 			return {
@@ -81,7 +82,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				x: mapObject.transform.x,
 				y: mapObject.transform.y,
 				width: mapObject.transform.width,
-				height: mapObject.transform.height
+				height: mapObject.transform.height,
+				localId: mapObject.id,
 			} as UpdateRoomInput;
 		case mapObjectType.Wall:
 			return {
@@ -89,7 +91,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				rotation: mapObject.transform.rotation,
 				width: mapObject.transform.width,
 				x: mapObject.transform.x,
-				y: mapObject.transform.y
+				y: mapObject.transform.y,
+				localId: mapObject.id,
 			} as UpdateWallInput;
 		case mapObjectType.Door:
 			return {
@@ -97,7 +100,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				rotation: mapObject.transform.rotation,
 				width: mapObject.transform.width,
 				x: mapObject.transform.x,
-				y: mapObject.transform.y
+				y: mapObject.transform.y,
+				localId: mapObject.id,
 			} as UpdateDoorInput;
 		case mapObjectType.Label:
 			return {
@@ -107,7 +111,8 @@ export const getInputTypeFromMapObject = (mapObject: MapObject) => {
 				width: mapObject.transform.width,
 				height: mapObject.transform.height,
 				x: mapObject.transform.x,
-				y: mapObject.transform.y
+				y: mapObject.transform.y,
+				localId: mapObject.id
 			};
 		default:
 			throw new Error(`Invalid type ${mapObject.type}`);
