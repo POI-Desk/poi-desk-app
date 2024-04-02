@@ -35,7 +35,7 @@
 		let initialTransform: TransformType | null = null,
 			initialPos: { x: number; y: number } | null = null;
 
-		grabbers.forEach((grabber) => {
+		grabbers.map((grabber) => {
 			element.appendChild(grabber);
 			grabber.addEventListener('mousedown', onMousedown);
 		});
@@ -72,9 +72,9 @@
 		return {
 			destroy() {
 				window.removeEventListener('mousemove', onMove);
-				window.removeEventListener('mousemove', onMousedown);
+				window.removeEventListener('mouseup', onMousedown);
 
-				grabbers.forEach((grabber) => {
+				grabbers.map((grabber) => {
 					element.removeChild(grabber);
 				});
 			}

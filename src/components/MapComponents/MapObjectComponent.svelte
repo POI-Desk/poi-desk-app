@@ -350,14 +350,14 @@
 				mapObject.transform.width = initialTransform!.width + delta;
 			}
 		}
-
+		
 		window.addEventListener('mousemove', onMove);
 		window.addEventListener('mouseup', onMouseup);
 
 		return {
 			destroy() {
 				window.removeEventListener('mousemove', onMove);
-				window.removeEventListener('mousemove', onMousedown);
+				window.removeEventListener('mouseup', onMousedown);
 
 				grabbers.map((grabber) => {
 					element.removeChild(grabber);
