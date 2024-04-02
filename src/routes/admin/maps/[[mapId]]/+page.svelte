@@ -167,7 +167,7 @@
 			policy: CachePolicy.NetworkOnly
 		});
 
-		drawMapFromLocalDbData(false);
+		// drawMapFromLocalDbData(false);
 		return map;
 	};
 
@@ -563,7 +563,7 @@
 					height: doorProps.height,
 					rotation: door.rotation
 				} as TransformType,
-				'',
+				door.localId,
 				door.pk_doorId
 			);
 		});
@@ -578,7 +578,7 @@
 					height: room.height,
 					rotation: roomProps.rotation
 				} as TransformType,
-				'',
+				room.localId,
 				room.pk_roomId
 			);
 		});
@@ -593,7 +593,7 @@
 					height: wallProps.height,
 					rotation: wall.rotation
 				} as TransformType,
-				'',
+				wall.localId,
 				wall.pk_wallId
 			);
 		});
@@ -608,7 +608,7 @@
 					height: label.height,
 					rotation: label.rotation
 				} as TransformType,
-				'',
+				label.localId,
 				label.pk_labelId,
 				label.text
 			);
@@ -624,7 +624,7 @@
 				{ ...selObjId.transform, type: selObjId.type }
 			)
 		);
-		if (sel){
+		if (sel) {
 			selectMapObject(sel);
 		}
 
@@ -788,44 +788,6 @@
 			})
 			.filter((label) => Object.keys(label).length !== 0);
 
-		const deskIdsToDelete: string[] =
-			mapData.desks
-				?.filter(
-					(desk) =>
-						!$allMapObjects?.find((d) => d.dbID === desk.pk_deskid && d.type === mapObjectType.Desk)
-				)
-				?.map((desk) => desk.pk_deskid) ?? [];
-		const roomIdsToDelete: string[] =
-			mapData.rooms
-				?.filter(
-					(room) =>
-						!$allMapObjects?.find((d) => d.dbID === room.pk_roomId && d.type === mapObjectType.Room)
-				)
-				?.map((room) => room.pk_roomId) ?? [];
-		const doorIdsToDelete: string[] =
-			mapData.doors
-				?.filter(
-					(door) =>
-						!$allMapObjects?.find((d) => d.dbID === door.pk_doorId && d.type === mapObjectType.Door)
-				)
-				?.map((door) => door.pk_doorId) ?? [];
-		const wallIdsToDelete: string[] =
-			mapData.walls
-				?.filter(
-					(wall) =>
-						!$allMapObjects?.find((d) => d.dbID === wall.pk_wallId && d.type === mapObjectType.Wall)
-				)
-				?.map((wall) => wall.pk_wallId) ?? [];
-		const labelsToDelete: string[] =
-			mapData.labels
-				?.filter(
-					(label) =>
-						!$allMapObjects?.find(
-							(d) => d.dbID === label.pk_labelId && d.type === mapObjectType.Label
-						)
-				)
-				?.map((label) => label.pk_labelId) ?? [];
-
 		let updateDesks;
 		if (desks.length > 0) {
 			updateDesks = updateDesksOnMap.mutate({
@@ -875,53 +837,13 @@
 			}
 		});
 
-		let delDesks;
-		if (deskIdsToDelete?.length > 0) {
-			delDesks = deleteDesks.mutate({
-				deskIds: deskIdsToDelete
-			});
-		}
-
-		let delRooms;
-		if (roomIdsToDelete?.length > 0) {
-			delRooms = deleteRooms.mutate({
-				roomIds: roomIdsToDelete
-			});
-		}
-
-		let delDoors;
-		if (doorIdsToDelete?.length > 0) {
-			delDoors = deleteDoors.mutate({
-				doorIds: doorIdsToDelete
-			});
-		}
-
-		let delWalls;
-		if (wallIdsToDelete?.length > 0) {
-			delWalls = deleteWalls.mutate({
-				wallIds: wallIdsToDelete
-			});
-		}
-
-		let delLabels;
-		if (labelsToDelete?.length > 0) {
-			delLabels = deleteLabels.mutate({
-				labelIds: labelsToDelete
-			});
-		}
-
 		const resolves = await Promise.all([
 			updateDesks,
 			updateRooms,
 			updateWalls,
 			updateDoors,
 			updateLabels,
-			mapUpdate,
-			delDesks,
-			delRooms,
-			delDoors,
-			delWalls,
-			delLabels
+			mapUpdate
 		]);
 
 		resolves.map((resolve) => {
@@ -930,6 +852,47 @@
 		});
 
 		await getMapById(mapData?.pk_mapId!);
+
+		mapData.desks?.map((desk) => {
+			const obj = $allMapObjects.find(
+				(d) => d.type == mapObjectType.Desk && d.id === desk.localId && !d.dbID
+			);
+			if (obj) {
+				obj.dbID = desk.pk_deskid;
+			}
+		});
+		mapData.labels?.map((label) => {
+			const obj = $allMapObjects.find(
+				(l) => l.type == mapObjectType.Label && l.id === label.localId && !l.dbID
+			);
+			if (obj) {
+				obj.dbID = label.pk_labelId;
+			}
+		});
+		mapData.rooms?.map((room) => {
+			const obj = $allMapObjects.find(
+				(r) => r.type == mapObjectType.Room && r.id === room.localId && !r.dbID
+			);
+			if (obj) {
+				obj.dbID = room.pk_roomId;
+			}
+		});
+		mapData.walls?.map((wall) => {
+			const obj = $allMapObjects.find(
+				(w) => w.type == mapObjectType.Wall && w.id === wall.localId && !w.dbID
+			);
+			if (obj) {
+				obj.dbID = wall.pk_wallId;
+			}
+		});
+		mapData.doors?.map((door) => {
+			const obj = $allMapObjects.find(
+				(d) => d.type == mapObjectType.Door && d.id === door.localId && !d.dbID
+			);
+			if (obj) {
+				obj.dbID = door.pk_doorId;
+			}
+		});
 
 		showMapLoader = true;
 		saving = false;
