@@ -1,4 +1,5 @@
-import { getLocationByNameStore, graphql } from '$houdini';
+import { CachePolicy, getLocationByNameStore, graphql } from '$houdini';
+import { getUserByid } from '$lib/queries/userQuerries';
 import type { User } from '$lib/types/userTypes';
 import type { PageServerLoad } from './$types';
 
@@ -21,6 +22,12 @@ const locationByName = graphql(`
 export const load = (async (event) => {
 	const session = event.locals.getSession() as User;
 	const searchParams = event.url.searchParams;
+	const sessionToken = event.cookies.get('session');
+	const user = await getUserByid.fetch({
+		event,
+		variables: { id: session.pk_userid },
+		policy: CachePolicy.NetworkOnly
+	});
 
 	const l = new getLocationByNameStore();
 	const res = await l.fetch({
@@ -56,7 +63,9 @@ export const load = (async (event) => {
 	}
 
 	return {
+		sessionToken,
 		session,
+		user,
 		location: res.data?.getLocationByName,
 		query: {
 			building,

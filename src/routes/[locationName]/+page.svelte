@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BookingsOfUser from '$components/PersonalBookingComponents/BookingsOfUser.svelte';
 	import DateSelection from '$components/DateSelection.svelte';
 
 	import { page } from '$app/stores';
@@ -12,7 +13,9 @@
 	import type { PageData } from './$types';
 	import AdminBuildingSelector from '$components/MapComponents/AdminBuildingSelector.svelte';
 	import { goto } from '$app/navigation';
-
+	import * as Drawer from '$lib/components/ui/drawer';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import UserPage from '$components/UserPage.svelte';
 	export let data: PageData;
 	$: ({ map } = data);
 	$: ({ bookings } = data);
@@ -22,6 +25,7 @@
 	$: floorName = data.query?.floor ?? '';
 	$: buildingName = data.query?.building ?? '';
 	$: date = data.query?.date ?? new Date().toISOString().split('T')[0].toString();
+	let activeSnapPoint = '80px';
 
 	const changeBuilding = (name: string) => {
 		const query = new URLSearchParams($page.url.searchParams);
@@ -45,6 +49,7 @@
 	onMount(() => {
 		$user = data.session;
 	});
+	let isCurrentBookings = true;
 </script>
 
 <div class="overflow-hidden h-screen">
@@ -106,3 +111,46 @@
 		on:change={() => changeBuilding(buildingName)}
 	/>
 </div>
+
+<!--
+<Drawer.Root snapPoints={['80px', 1]} bind:activeSnapPoint open={true} dismissible={false}>
+	<Drawer.Trigger />
+	<Drawer.Overlay />
+	<Drawer.Portal>
+		<Drawer.Content
+			class="fixed z-[200] flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
+		>
+			<Tabs.Root value="account" class="flex items-center mt-10 flex-col h-full">
+				<Tabs.List>
+					<Tabs.Trigger value="account">Account</Tabs.Trigger>
+					<Tabs.Trigger value="bookings">Bookings</Tabs.Trigger>
+				</Tabs.List>
+				<Tabs.Content class="w-full py-5 h-3/5" value="account">
+					<UserPage userContent={data.user} sessionToken={data.sessionToken} />
+				</Tabs.Content>
+				<Tabs.Content value="bookings">
+					<div class="flex flex-row w-full justify-center p-5">
+						<Tabs.Root value="current">
+							<Tabs.List>
+								<Tabs.Trigger
+									value="current"
+									on:click={() => {
+										isCurrentBookings = true;
+									}}>Current</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="past"
+									on:click={() => {
+										isCurrentBookings = false;
+									}}>Past</Tabs.Trigger
+								>
+							</Tabs.List>
+						</Tabs.Root>
+					</div>
+					<BookingsOfUser {isCurrentBookings} />
+				</Tabs.Content>
+			</Tabs.Root>
+		</Drawer.Content>
+	</Drawer.Portal>
+</Drawer.Root>
+-->
