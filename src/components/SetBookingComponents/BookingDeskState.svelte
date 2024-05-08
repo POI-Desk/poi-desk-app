@@ -108,7 +108,9 @@
 						>
 							<p>{staticLocation} <br /> {location}</p>
 						</div>
-						<div class="w-1/2 h-full bg-white rounded-3xl" />
+						<div class="w-1/2 h-full bg-white rounded-3xl">
+							<img src="" alt="" srcset="" />
+						</div>
 					</div>
 					<div class="h-1/2 bg-white text-black rounded-3xl flex justify-center items-center">
 						<p>{$user.username}</p>

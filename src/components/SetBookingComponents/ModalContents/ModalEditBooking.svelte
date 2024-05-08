@@ -233,9 +233,9 @@
 		modalStore.close();
 	};
 
-	const iconContainerClasses = 'rounded-3xl flex justify-center variant-filled-tertiary';
-	const iconClasses = 'rounded-3xl m-3 mx-5';
-	const textClasses = 'col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white';
+	const iconContainerClasses = 'rounded-lg flex justify-center variant-filled-tertiary';
+	const iconClasses = 'rounded-lg m-3 mx-5';
+	const textClasses = 'col-span-2 rounded-lg flex justify-center items-center text-xl bg-white';
 	const cBase = 'card p-4 shadow-xl space-y-4';
 </script>
 
@@ -244,13 +244,6 @@
 		{#if deleteBookingState}
 			<div class="h-full flex flex-col justify-center items-center text-center px-4 pt-5">
 				<div class="grid grid-cols-3 align-middle">
-					<Button
-						on:click={() => {
-							deleteBookingState = false;
-						}}
-					>
-						<ArrowLeft />
-					</Button>
 					<h1 class="text-center text-3xl p-3">Booking</h1>
 				</div>
 				<div class="flex flex-col h-full justify-center gap-y-5 text-xl items-center align-middle">
@@ -260,7 +253,7 @@
 							on:click={async () => {
 								await deleteBooking($currentBooking);
 							}}
-							class="btn bg-green-400 rounded-full"
+							class="btn bg-green-400 rounded-lg"
 						>
 							<Check />
 						</Button>
@@ -268,7 +261,7 @@
 							on:click={() => {
 								deleteBookingState = !deleteBookingState;
 							}}
-							class="btn bg-red-400 rounded-full"
+							class="btn bg-red-400 rounded-lg"
 						>
 							<X />
 						</Button>
@@ -276,14 +269,7 @@
 				</div>
 			</div>
 		{:else if !editBookingState}
-			<div class="grid grid-cols-3 text-center align-middle px-4 pt-5">
-				<Button
-					on:click={() => {
-						modalStore.close();
-					}}
-				>
-					<ArrowLeft />
-				</Button>
+			<div class="text-center align-middle px-4 pt-5">
 				<h1 class="text-center text-3xl p-3">Booking</h1>
 			</div>
 			<div class="h-full flex items-center justify-center text-primary-500">
@@ -338,19 +324,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex flex-col gap-5 rounded-full">
+			<div class="flex flex-col gap-5 rounded-lg">
 				<Button
 					on:click={() => {
 						editBookingState = !editBookingState;
 					}}
-					class="btn variant-filled-primary rounded-full w-full h-full text-xl"
+					class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
 					>Edit
 				</Button>
 				<Button
 					on:click={() => {
 						deleteBookingState = !deleteBookingState;
 					}}
-					class="btn bg-red-400 rounded-full w-full h-full text-xl"
+					class="btn bg-red-400 rounded-lg w-full h-full text-xl"
 					>Delete
 				</Button>
 			</div>
@@ -479,7 +465,7 @@
 						);
 						//editBookingState = !editBookingState;
 					}}
-					class="btn variant-filled-primary rounded-full w-full h-full text-xl"
+					class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
 					>Save Changes
 				</Button>
 				<Button
@@ -487,7 +473,7 @@
 						editDate = firstDate;
 						editBookingState = !editBookingState;
 					}}
-					class="btn bg-red-400 rounded-full w-full h-full text-xl"
+					class="btn bg-red-400 rounded-lg w-full h-full text-xl"
 				>
 					Go Back
 				</Button>

@@ -1,26 +1,40 @@
 <script lang="ts">
-	import { CachePolicy, graphql } from '$houdini';
+	import {
+		getUserInfoStore,
+		graphql,
+		type getUserInfo$result,
+		type QueryResult,
+		CachePolicy
+	} from '$houdini';
+	import { Moon, Pen, Sun } from 'lucide-svelte';
+	type getUserInfo$input = import('$houdini').getUserInfo$input;
+	import { onMount } from 'svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { defaultLocation } from '$lib/mutations/location';
 	import { getUserByid } from '$lib/queries/userQuerries';
-	import { user } from '$lib/userStore';
-	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
-	import type { PageData } from './$types';
-	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import { Pen, Sun, Moon } from 'lucide-svelte';
 	import { toggleMode } from 'mode-watcher';
+	import { toast } from 'svelte-sonner';
 
-	export let data: PageData;
+	export let userContent: QueryResult<getUserInfo$result, getUserInfo$input> | undefined;
+	export let sessionToken: string | undefined;
 
-	$: thisUser = data.res.data?.getUserById;
+	const jwtData = sessionToken?.split('.')[1];
+	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
 
+	const getAllLocationsChange = graphql(`
+		query getAllLocationsChange {
+			getAllLocations {
+				pk_locationid
+				locationname
+			}
+		}
+	`);
+
+	$: thisUser = userContent?.data?.getUserById;
 	onMount(() => {
 		getAllLocationsChange.fetch();
 	});
-
-	// let addToOutlookTrue = false;
 
 	$: bookings = thisUser?.bookings;
 	const currentMonth = new Date().getMonth();
@@ -47,32 +61,24 @@
 	});
 	$: amountOfBookingsThisMonth = bookingsThisMonth?.length;
 
-	const jwtData = data.sessionToken?.split('.')[1];
-	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
+	const getAllLocationsChangeDrawer = graphql(`
+		query getAllLocationsChangeDrawer {
+			getAllLocations {
+				pk_locationid
+				locationname
+			}
+		}
+	`);
 
-	// const getAllLocationsChange = graphql(`
-	// 	query getAllLocationsChange {
-	// 		getAllLocations {
-	// 			pk_locationid
-	// 			locationname
-	// 		}
-	// 	}
-	// `);
-
-	// $: locations = $getAllLocationsChange.data?.getAllLocations;
+	$: locations = $getAllLocationsChangeDrawer.data?.getAllLocations;
 </script>
 
 {#if thisUser}
-	<div class="rounded-lg bg-primary h-1/2 p-2 m-2 flex flex-col gap-2">
+	<div class="rounded-lg bg-primary h-full p-2 m-2 flex flex-col gap-2">
 		<div class="rounded-lg flex flex-row bg-white text-surface-900 h-1/2 p-2">
 			<div class="w-1/2 flex items-center">
 				<!-- svelte-ignore a11y-img-redundant-alt -->
-				<img
-					class="rounded-lg h-full"
-					referrerpolicy="no-referrer"
-					src={decodedJwt.picture}
-					alt="profile picture"
-				/>
+				<img class="rounded-lg h-full" referrerpolicy="no-referrer" alt="profile picture" src={decodedJwt.picture} />
 			</div>
 			<div class="flex flex-col w-1/2">
 				<h1>{thisUser?.username}</h1>
@@ -95,6 +101,7 @@
 						<div class="flex flex-col items-center">
 							<div class="flex justify-center items-center flex-col gap-5">
 								{#each locations ?? [] as location}
+									<!-- svelte-ignore missing-declaration -->
 									<AlertDialog.Action
 										class="w-28"
 										on:click={async () => {

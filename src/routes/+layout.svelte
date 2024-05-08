@@ -41,11 +41,15 @@
 		<Drawer.Content
 			class="fixed z-[200] flex flex-col bg-white border border-gray-200 border-b-none rounded-t-[10px] bottom-0 left-0 right-0 h-full max-h-[97%] mx-[-1px]"
 		>
-			<Tabs.Root value="account" class="w-[400px] flex justify-center mt-10">
+			<Tabs.Root value="account" class=" flex justify-center items-center mt-10 flex-col">
 				<Tabs.List>
 					<Tabs.Trigger value="account">Account</Tabs.Trigger>
-					<Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+					<Tabs.Trigger value="bookings">Bookings</Tabs.Trigger>
 				</Tabs.List>
+				<Tabs.Content class="w-full p-5" value="account">
+					
+				</Tabs.Content>
+				<Tabs.Content value="bookings" />
 			</Tabs.Root>
 		</Drawer.Content>
 	</Drawer.Portal>

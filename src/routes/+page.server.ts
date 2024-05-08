@@ -5,10 +5,10 @@ export const load = async (event) => {
 	const session = event.locals.getSession() as User;
 	if (session.location) {
 		throw redirect(
-			300,
+			308,
 			`/${session.location.locationname}?date=${new Date().toISOString().split('T')[0]}`
 		);
-	}
+	}	
 
 	throw redirect(300, '/locations');
 };
