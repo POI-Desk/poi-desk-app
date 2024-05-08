@@ -9,6 +9,7 @@
 	import { Pen } from 'lucide-svelte';
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import { Button } from '$lib/components/ui/button';
+	import AlertDialogCancel from '$lib/components/ui/alert-dialog/alert-dialog-cancel.svelte';
 
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;
@@ -77,7 +78,7 @@
 
 {#if $isDesktop}
 	{#if !window.location.href.includes('admin/maps')}
-		<AlertDialog.Root bind:open>
+		<AlertDialog.Root bind:open closeOnOutsideClick={true}>
 			<AlertDialog.Trigger>
 				<button
 					class="z-{z}"
@@ -127,7 +128,11 @@
 				</button>
 			</AlertDialog.Trigger>
 			<AlertDialog.Content class="z-[1000] !h-screen">
-				<ModalBooking />
+				<ModalBooking>
+					<AlertDialog.Action class="w-full h-full">
+						<Button class="btn w-full h-full text-xl ">Book</Button>
+					</AlertDialog.Action>
+				</ModalBooking>
 			</AlertDialog.Content>
 		</AlertDialog.Root>
 	{:else}
