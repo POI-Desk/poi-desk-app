@@ -18,7 +18,7 @@
 
 	async function loadDays() {
 		const result = await MonthlyBookingsByLocation.fetch({
-			variables: { year: '2024', month: '03', location: $user.location?.pk_locationid || '' }
+			variables: { year: '2024', month: '02', location: $user.location?.pk_locationid || '' }
 		});
 		if (result && chartLabels.length == 0) {
 			let monthlyBookingResult = result.data?.getMonthlyBookingByLocation;

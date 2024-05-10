@@ -1,13 +1,4 @@
 <script lang="ts">
-	import { IdentifierType } from './../../../../$houdini/graphql/enums.js';
-	import {
-		getMonthlyBookingPrediction,
-		getQuarterlyBookingPrediction,
-		getYearlyBookingPrediction
-	} from '$lib/queries/predictionQueries';
-	import Chart from 'chart.js/auto';
-	import type { MonthlyPrediction } from '$lib/types/predictionType';
-	import PredictionCard from '$components/PredictionComponents/PredictionCard.svelte';
 	import PredictionOverview from '$components/PredictionComponents/PredictionOverview.svelte';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
@@ -106,7 +97,7 @@
 		<!--<PredictionCard />-->
 		<div class="card bg-slate-50 h-full flex flex-wrap rounded-3xl">
 			<div class="w-1/2 h-2/5 rounded-3xl flex items-center justify-center flex-col">
-				<p>building:</p>
+				<p>Building:</p>
 				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
 					<span class="capitalize">{selection.Building?.buildingname ?? 'Building'}</span>
 					<span>↓</span>

@@ -141,6 +141,8 @@
 	export let data: any;
 	let predictionCanvas: any;
 
+	console.log(data);
+
 	onMount(() => {
 		let ctx = predictionCanvas.getContext('2d');
 		let myChart = new Chart(ctx, {
@@ -154,7 +156,7 @@
 					},
 					title: {
 						display: true,
-						text: 'Chart.js Line Chart'
+						text: 'Predictions'
 					},
 					tooltip: {
 						enabled: false,

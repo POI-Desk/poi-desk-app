@@ -154,7 +154,7 @@
 					quarterlyPrediction = result!.data?.getQuarterlyBookingPrediction;
 					quarterlyPrediction?.forEach((element: any) => {
 						if (element) {
-							predictionDays.quarter?.push(element.year + ' ' + element.quarter);
+							predictionDays.quarter?.push(element.year + ' Q' + element.quarter);
 							predictionData.total?.push(element.total);
 							predictionData.morning_highestBooking?.push(element.morning_highestBooking);
 							predictionData.morningAverageBooking?.push(element.morningAverageBooking);
@@ -224,8 +224,9 @@
 
 	async function createDiagramms(id: number) {
 		let time;
-		console.log('type', type);
 		console.log('data', predictionDays);
+		predictionDays.quarter[0] = "2024 Q1";
+		
 		if (type === 0) {
 			time = predictionDays.month;
 		} else if (type === 1) {
@@ -290,7 +291,7 @@
 </script>
 
 {#await loadPredictions() then data}
-	<div class="w-1/2 h-2/5 bg-slate-50 flex items-center justify-center flex-col rounded-3xl">
+	<div class="w-1/2 h-2/5 bg-white flex items-center justify-center flex-col rounded-3xl">
 		<div class="flex flex-col gap-2 w-full h-full">
 			<div class="flex w-full h-1/2 gap-2">
 				<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
@@ -323,7 +324,7 @@
 		</div>
 	</div>
 	<hr class="w-full" />
-	<div class="bg-slate-50 w-full h-3/5 flex flex-row rounded-3xl">
+	<div class="bg-white w-full h-3/5 flex flex-row rounded-3xl">
 		<div class="w-full h-full flex items-center justify-center flex-col">
 			<p style="font-size:30px;">Morning</p>
 			{#await createDiagramms(0) then data}
