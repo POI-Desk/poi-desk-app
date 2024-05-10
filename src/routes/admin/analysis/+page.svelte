@@ -5,12 +5,19 @@
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
 	import { user } from '$lib/userStore';
+	import type { PageData } from './$types';
+	
+
+	export let data: PageData;
+
+	$: userLocation =  data.location.data?.getLocationByName;
 
 	async function loadData() {
 		if (buildingsWithFloors.length <= 1) {
 			const resultsFromBuildings = await getBuildingsWithFloors.fetch({
-				variables: { locationid: $user.location?.pk_locationid || '' }
+				variables: { locationid: userLocation?.pk_locationid || '' }
 			});
+			console.log(userLocation);
 			if (resultsFromBuildings && buildingsWithFloors.length <= 1) {
 				let buildings = resultsFromBuildings.data?.getBuildingsInLocation;
 				buildings?.forEach((building) => {
