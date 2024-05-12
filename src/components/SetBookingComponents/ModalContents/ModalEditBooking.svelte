@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { CachePolicy, graphql } from '$houdini';
 	import { currentBooking, displayedTime, getBookings } from '$lib/bookingStore';
 	import { Button } from '$lib/components/ui/button';
@@ -30,6 +31,7 @@
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import { createEventDispatcher } from 'svelte';
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -56,6 +58,7 @@
 	let firstDate: string;
 	let firstTime: string;
 	let openTrigger: boolean;
+	const dispatch = createEventDispatcher();
 
 	$: value = $displayedTime;
 
@@ -241,8 +244,8 @@
 				deskid: deskid
 			}
 		});
+		dispatch('updateBookings')
 		await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
-		modalStore.close();
 	};
 
 	const iconContainerClasses = 'rounded-lg flex justify-center variant-filled-tertiary';

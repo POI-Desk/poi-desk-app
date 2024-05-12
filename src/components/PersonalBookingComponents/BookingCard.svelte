@@ -75,12 +75,12 @@
 		</button>
 	</Drawer.Trigger>
 	<Drawer.Content class="z-[2000] h-full !max-h-[94%]">
-		<ModalEditBooking>
+		<ModalEditBooking on:updateBookings>
 			<Drawer.Close slot="confirmDeletion">
 				<Check />
 			</Drawer.Close>
 			<Drawer.Close slot="save">Save changes</Drawer.Close>
-		</ModalEditBooking>
+		</ModalEditBooking >
 	</Drawer.Content>
 </Drawer.NestedRoot>
 

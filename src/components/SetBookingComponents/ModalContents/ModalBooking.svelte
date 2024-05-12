@@ -99,7 +99,6 @@
 		let date = new Date($dateValue);
 		date.setDate(date.getDate() + 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
-		console.log($dateValue);
 	}
 
 	function subtractDay() {
@@ -124,8 +123,6 @@
 			</div>
 			<div class="basis-full text-primary-500 font-bold">
 				<BookingDeskState />
-				<!---->
-				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
 			<div class="p-3">
 				<div class="bg-white text-primary-500 h-16 flex items-center justify-between px-10">
@@ -162,7 +159,7 @@
 						</div>
 					</div>
 					<div class={textClasses}>
-						{date.toLocaleDateString('de-DE')}
+						{$dateValue}
 					</div>
 					<div class={iconContainerClasses}>
 						<div class="rounded-3xl m-3 mx-5">

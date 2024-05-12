@@ -10,6 +10,7 @@
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import { Button } from '$lib/components/ui/button';
 	import AlertDialogCancel from '$lib/components/ui/alert-dialog/alert-dialog-cancel.svelte';
+	import {refreshTrigger} from '$lib/bookingStore';
 
 	let width: number = deskProps.width;
 	let height: number = deskProps.height;
@@ -130,7 +131,7 @@
 			<AlertDialog.Content class="z-[1000] !h-screen">
 				<ModalBooking>
 					<AlertDialog.Action class="w-full h-full">
-						<Button class="btn w-full h-full text-xl">Book</Button>
+						<Button on:click={() => {$refreshTrigger = !$refreshTrigger}} class="btn w-full h-full text-xl">Book</Button>
 					</AlertDialog.Action>
 				</ModalBooking>
 			</AlertDialog.Content>
@@ -274,7 +275,7 @@
 		<Drawer.Content class="z-[1000] h-full !min-h-[90vh]">
 			<ModalBooking>
 				<Drawer.Close class="w-full h-full">
-					<Button class="btn w-full h-full text-xl ">Book</Button>
+					<Button on:click={() => {$refreshTrigger = !$refreshTrigger}} class="btn w-full h-full text-xl ">Book</Button>
 				</Drawer.Close>
 			</ModalBooking>
 		</Drawer.Content>

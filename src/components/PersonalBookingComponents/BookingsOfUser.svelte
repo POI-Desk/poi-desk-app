@@ -1,17 +1,32 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { CachePolicy } from '$houdini';
 	import { user } from '$lib/userStore';
 	import { getBookings } from '$lib/bookingStore';
 	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
 	import { onMount } from 'svelte';
 	import * as Drawer from '$lib/components/ui/drawer';
+	import { refreshTrigger } from '$lib/bookingStore';
 
 	let bookings: any;
 	export let isCurrentBookings = true;
+	let penis: boolean = true;
+
+	const fetchBookings = async (refresh: boolean) => {
+		await getBookings.fetch({
+			variables: { isCurrent: isCurrentBookings },
+			policy: CachePolicy.NetworkOnly
+		});
+		return $getBookings.data?.getBookingsByUserid;
+	};
 
 	onMount(() => {
-		getBookings.fetch({ variables: { isCurrent: isCurrentBookings } });
+		fetchBookings(true);
 	});
+
+	const handleMessage = async () => {
+		$refreshTrigger = !$refreshTrigger
+	};
 
 	$: bookings = $getBookings.data?.getBookingsByUserid;
 
@@ -24,13 +39,15 @@
 	}
 </script>
 
-{#await getBookings.fetch( { variables: { isCurrent: isCurrentBookings }, policy: CachePolicy.NetworkOnly } )}
-	<p />
-{:then fetched}
-	{#each fetched.data?.getBookingsByUserid ?? [] as booking}
-		<BookingCard thisBooking={booking} />
-	{/each}
-{/await}
+{#if penis}
+	{#await fetchBookings($refreshTrigger)}
+		<p />
+	{:then fetched}
+		{#each fetched ?? [] as booking}
+			<BookingCard thisBooking={booking} on:updateBookings={handleMessage} />
+		{/each}
+	{/await}
+{/if}
 
 {#if bookings?.length === 0}
 	<p class="text-4xl text-primary-500">
