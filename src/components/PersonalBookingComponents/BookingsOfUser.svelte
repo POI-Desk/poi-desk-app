@@ -10,13 +10,13 @@
 
 	let bookings: any;
 	export let isCurrentBookings = true;
-	let penis: boolean = true;
 
 	const fetchBookings = async (refresh: boolean) => {
 		await getBookings.fetch({
 			variables: { isCurrent: isCurrentBookings },
 			policy: CachePolicy.NetworkOnly
 		});
+		console.log($getBookings.data?.getBookingsByUserid);
 		return $getBookings.data?.getBookingsByUserid;
 	};
 
@@ -25,7 +25,7 @@
 	});
 
 	const handleMessage = async () => {
-		$refreshTrigger = !$refreshTrigger
+		$refreshTrigger = !$refreshTrigger;
 	};
 
 	$: bookings = $getBookings.data?.getBookingsByUserid;
@@ -39,18 +39,10 @@
 	}
 </script>
 
-{#if penis}
-	{#await fetchBookings($refreshTrigger)}
-		<p />
-	{:then fetched}
-		{#each fetched ?? [] as booking}
-			<BookingCard thisBooking={booking} on:updateBookings={handleMessage} />
-		{/each}
-	{/await}
-{/if}
-
-{#if bookings?.length === 0}
-	<p class="text-4xl text-primary-500">
-		{isCurrentBookings ? 'No current bookings' : 'No past bookings'}
-	</p>
-{/if}
+{#await fetchBookings($refreshTrigger)}
+	<p />
+{:then fetched}
+	{#each fetched ?? [] as booking}
+		<BookingCard thisBooking={booking} on:updateBookings={handleMessage} />
+	{/each}
+{/await}

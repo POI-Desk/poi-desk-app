@@ -131,7 +131,7 @@
 			<AlertDialog.Content class="z-[1000] !h-screen">
 				<ModalBooking>
 					<AlertDialog.Action class="w-full h-full">
-						<Button on:click={() => {$refreshTrigger = !$refreshTrigger}} class="btn w-full h-full text-xl">Book</Button>
+						<Button class="btn w-full h-full text-xl">Book</Button>
 					</AlertDialog.Action>
 				</ModalBooking>
 			</AlertDialog.Content>
@@ -275,7 +275,7 @@
 		<Drawer.Content class="z-[1000] h-full !min-h-[90vh]">
 			<ModalBooking>
 				<Drawer.Close class="w-full h-full">
-					<Button on:click={() => {$refreshTrigger = !$refreshTrigger}} class="btn w-full h-full text-xl ">Book</Button>
+					<Button class="btn w-full h-full text-xl ">Book</Button>
 				</Drawer.Close>
 			</ModalBooking>
 		</Drawer.Content>
