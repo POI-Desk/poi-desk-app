@@ -20,28 +20,35 @@
 	let morningAlreadyTakenName: string = '';
 	let afternoonAlreadyTakenName: string = '';
 
-	onMount(() => {
-		currentBookingsOnDate = selectedDesk?.bookings?.filter((b: any) => b.date === $dateValue)!;
-		isBookedMorning = currentBookingsOnDate?.some((booking: any) => booking.ismorning)!;
-		isBookedAfternoon = currentBookingsOnDate?.some((booking: any) => booking.isafternoon);
-		deskAssigned = selectedDesk?.user !== null;
-
-		for (const booking of currentBookingsOnDate ?? []) {
-			if (booking.date === $dateValue) {
-				if (booking.ismorning) {
-					morningAlreadyTakenName = booking.user.username;
+	// we gotta leave in the $ syntax. otherwise a mount function wont work with the selectedDesk thingy because it first will be
+	// undefined making the mount function useless. the $ syntax will make it reactive and will be called again when the selectedDesk
+	// has the data ready
+	$:{
+		if (selectedDesk) {			
+			onMount(() => {
+				currentBookingsOnDate = selectedDesk?.bookings?.filter((b: any) => b.date === $dateValue)!;
+				isBookedMorning = currentBookingsOnDate?.some((booking: any) => booking.ismorning)!;
+				isBookedAfternoon = currentBookingsOnDate?.some((booking: any) => booking.isafternoon);
+				deskAssigned = selectedDesk?.user !== null;
+		
+				for (const booking of currentBookingsOnDate ?? []) {
+					if (booking.date === $dateValue) {
+						if (booking.ismorning) {
+							morningAlreadyTakenName = booking.user.username;
+						}
+						if (booking.isafternoon) {
+							afternoonAlreadyTakenName = booking.user.username;
+						}
+					}
 				}
-				if (booking.isafternoon) {
-					afternoonAlreadyTakenName = booking.user.username;
+		
+				if (deskAssigned) {
+					morningAlreadyTakenName = selectedDesk?.user?.username ?? '';
+					afternoonAlreadyTakenName = selectedDesk?.user?.username ?? '';
 				}
-			}
+			})
 		}
-
-		if (deskAssigned) {
-			morningAlreadyTakenName = selectedDesk?.user?.username ?? '';
-			afternoonAlreadyTakenName = selectedDesk?.user?.username ?? '';
-		}
-	});
+	}
 
 	$: $interval.morning = morningSelected;
 	$: $interval.afternoon = afternoonSelected;

@@ -16,7 +16,6 @@
 		ArrowLeft,
 		Calendar
 	} from 'lucide-svelte';
-	import { refreshDesks } from '$lib/refreshStore';
 	import { getBookingsByDate } from '$lib/queries/booking';
 	import { CachePolicy } from '$houdini';
 	import { floorid } from '$lib/floorStore';
@@ -46,7 +45,6 @@
 			policy: CachePolicy.NetworkOnly
 		});
 		invalidateAll();
-		$refreshDesks = !$refreshDesks;
 	}
 
 	function onExitHandler() {
@@ -101,7 +99,6 @@
 		let date = new Date($dateValue);
 		date.setDate(date.getDate() + 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
-		console.log($dateValue);
 	}
 
 	function subtractDay() {
@@ -112,8 +109,8 @@
 		date.setDate(date.getDate() - 1);
 		$dateValue = date.toISOString().split('T')[0]; // format back to 'yyyy-mm-dd'
 	}
-	const iconContainerClasses = 'rounded-3xl flex justify-center variant-filled-tertiary';
-	const textClasses = 'col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white';
+	const iconContainerClasses = 'rounded-xl flex justify-center variant-filled-tertiary';
+	const textClasses = 'col-span-2 rounded-3xl flex justify-center items-center text-xl bg-white text-black';
 </script>
 
 <div class="h-full">
@@ -126,8 +123,6 @@
 			</div>
 			<div class="basis-full text-primary-500 font-bold">
 				<BookingDeskState />
-				<!---->
-				<!--<BookingDeskState shownInterval="afternoon" />-->
 			</div>
 			<div class="p-3">
 				<div class="bg-white text-primary-500 h-16 flex items-center justify-between px-10">
@@ -140,12 +135,12 @@
 					</Button>
 				</div>
 			</div>
-			<div class="h-24 flex items-center justify-center p-3">
-				<Button on:click={() => whenSelection()} class="btn w-full h-full text-xl">Book</Button>
+			<div class="h-24 flex items-center justify-center p-3 max-h-[75px]">
+				<Button on:click={() => whenSelection()} class="btn w-full h-full text-xl ">Book</Button>
 			</div>
 		{:else}
-			<div class="grid grid-cols-3 text-center align-middle px-4 pt-5">
-				<Button
+			<div class="text-center align-middle px-4 pt-5">
+				<!-- <Button
 					on:click={() => {
 						selectionPage = !selectionPage;
 						$interval.morning = false;
@@ -153,7 +148,7 @@
 					}}
 				>
 					<ArrowLeft />
-				</Button>
+				</Button> -->
 				<h1 class="text-center text-3xl p-3">Booking</h1>
 			</div>
 			<div class="h-full flex items-center justify-center text-primary-500">
@@ -164,7 +159,7 @@
 						</div>
 					</div>
 					<div class={textClasses}>
-						{date.toLocaleDateString('de-DE')}
+						{$dateValue}
 					</div>
 					<div class={iconContainerClasses}>
 						<div class="rounded-3xl m-3 mx-5">
@@ -208,8 +203,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="variant-filled-tertiary h-24 rounded-full">
-				<Button on:click={() => finishBooking()} class="btn w-full h-full text-xl ">Book</Button>
+			<div class="h-24 rounded-full">
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<div on:click={() => finishBooking()} class="w-full h-full text-xl p-3 max-h-[75px]">
+					<slot />
+				</div>
 			</div>
 		{/if}
 	</div>

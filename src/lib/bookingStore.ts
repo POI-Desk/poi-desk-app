@@ -19,6 +19,8 @@ export const _getBookingsByUseridVariables = () => {
 	return {};
 };
 
+export const refreshTrigger = writable<boolean>(false);
+
 
 export const getBookings = graphql(`
 	query getBookingsByUserid($isCurrent: Boolean!) @load {

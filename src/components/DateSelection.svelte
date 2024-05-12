@@ -30,6 +30,7 @@
 			on:change={() => {
 				const query = new URLSearchParams($page.url.searchParams);
 				query.set('date', $dateValue);
+				console.log($dateValue);
 				goto(`?${query.toString()}`);
 			}}
 		/>

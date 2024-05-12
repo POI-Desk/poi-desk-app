@@ -22,18 +22,9 @@
 	const jwtData = sessionToken?.split('.')[1];
 	const decodedJwt = JSON.parse(atob(jwtData ?? ''));
 
-	const getAllLocationsChange = graphql(`
-		query getAllLocationsChange {
-			getAllLocations {
-				pk_locationid
-				locationname
-			}
-		}
-	`);
-
 	$: thisUser = userContent?.data?.getUserById;
-	onMount(() => {
-		getAllLocationsChange.fetch();
+	onMount( () => {
+		getAllLocationsChangeDrawer.fetch();
 	});
 
 	$: bookings = thisUser?.bookings;
@@ -71,6 +62,9 @@
 	`);
 
 	$: locations = $getAllLocationsChangeDrawer.data?.getAllLocations;
+	$: console.log(locations);
+	$: displayedLocation = thisUser?.location?.locationname;
+	
 </script>
 
 {#if thisUser}
@@ -84,14 +78,14 @@
 				<h1>{thisUser?.username}</h1>
 				<hr />
 				<h1>POI/AT</h1>
-				<h1>{thisUser?.location?.locationname}</h1>
+				<h1>{displayedLocation}</h1>
 			</div>
 		</div>
 		<AlertDialog.Root closeOnOutsideClick={true}>
 			<AlertDialog.Trigger
 				class="rounded-lg bg-white text-surface-900 h-1/6 flex flex-row justify-center items-center gap-5"
 			>
-				<p>{thisUser?.location?.locationname}</p>
+				<p>{displayedLocation}</p>
 				<Pen />
 			</AlertDialog.Trigger>
 			<AlertDialog.Content>
@@ -108,6 +102,7 @@
 											await defaultLocation.mutate({
 												lid: location.pk_locationid
 											});
+											displayedLocation = location.locationname;
 											await getUserByid.fetch({ policy: CachePolicy.NetworkOnly });
 											toast('Default Location changed successfully!', {
 												position: 'bottom-center'

@@ -25,7 +25,7 @@
 					floorName = floor.floorname;
 					dispatcher('change');
 				}}
-				class="flex items-center justify-center px-5 py-5"
+				class="flex items-center justify-center px-3 py-5"
 			>
 				<p class="select-none font-semibold">
 					{floor.floorname}

@@ -19,7 +19,7 @@ export const getUserByid = graphql(`
 			}
 			bookings {
 				bookingnumber
-                date
+				date
 			}
 			location {
 				locationname
@@ -29,15 +29,13 @@ export const getUserByid = graphql(`
 `);
 
 export const authenticateUser = graphql(`
-	query authenticateUser{
+	query authenticateUser {
 		authorizeUser
 	}
 `);
 
-
-export const loginWizzGoogol = graphql(`
+export const loginWithGoogle = graphql(`
 	mutation loginWizzGoogol($auth: String!) {
 		loginWizzGoogol(authToken: $auth)
 	}
 `);
-

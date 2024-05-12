@@ -16,9 +16,9 @@
 
 	$: thisUser = data.res.data?.getUserById;
 
-	onMount(() => {
-		getAllLocationsChange.fetch();
-	});
+	// onMount(() => {
+	// 	getAllLocationsChange.fetch();
+	// });
 
 	// let addToOutlookTrue = false;
 
@@ -94,7 +94,7 @@
 					<AlertDialog.Description>
 						<div class="flex flex-col items-center">
 							<div class="flex justify-center items-center flex-col gap-5">
-								{#each locations ?? [] as location}
+								<!-- {#each locations ?? [] as location}
 									<AlertDialog.Action
 										class="w-28"
 										on:click={async () => {
@@ -109,7 +109,7 @@
 									>
 										{location?.locationname}
 									</AlertDialog.Action>
-								{/each}
+								{/each} -->
 							</div>
 						</div>
 					</AlertDialog.Description>
