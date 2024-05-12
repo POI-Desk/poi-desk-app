@@ -15,20 +15,6 @@ const getData = graphql(`
 	}
 `);
 
-/*
-export const handle: Handle = async ({ event }) => {
-	const sessionToken = event.cookies.get('session');
-	event.locals.getSession = () => {
-		return sessionToken ?? 'Amongus';
-	};
-	console.log(event.request.url);
-	if (event.request.url.includes('/login')) {
-		return Promise.resolve;
-	}
-	return Response.redirect('http://localhost:5173/login', 302);
-};
-*/
-
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get('session');
 

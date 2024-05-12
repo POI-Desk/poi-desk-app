@@ -45,11 +45,19 @@
 		query.set('floor', name);
 		goto(`/${data.location?.locationname}?${query.toString()}`);
 	};
-
+	const updateIsMobile = () => {
+		isMobileView = window.innerWidth <= 640;
+	};
 	onMount(() => {
+		updateIsMobile();
 		$user = data.session;
+		window.addEventListener('resize', updateIsMobile);
+
+		return () => {
+			window.removeEventListener('resize', updateIsMobile);
+		};
 	});
-	let isCurrentBookings = true;
+	let isMobileView = false;
 </script>
 
 <div class="overflow-hidden h-screen">
@@ -120,7 +128,7 @@
 <Drawer.Root
 	snapPoints={['80px', 1]}
 	bind:activeSnapPoint
-	open={true}
+	open={isMobileView}
 	dismissible={false}
 	closeOnEscape={false}
 >
