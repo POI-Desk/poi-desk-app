@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { displayedTime, interval } from '$lib/bookingStore';
+	import { displayedTime, interval, refreshTrigger } from '$lib/bookingStore';
 	import { dateValue, maxBookingDate, todaysDate } from '$lib/dateStore';
 	import { bookDesk } from '$lib/mutations/booking';
 	import { user } from '$lib/userStore';
@@ -39,7 +39,7 @@
 				extendedid: ''
 			}
 		});
-
+		$refreshTrigger = !$refreshTrigger;
 		await getBookingsByDate.fetch({
 			variables: { date: $dateValue, floorId: $floorid },
 			policy: CachePolicy.NetworkOnly

@@ -7,6 +7,7 @@
 	import { getBookingsByDateBetween } from '$lib/queries/booking';
 	import type { Booking } from '$lib/types/bookingTypes';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import {refreshTrigger} from '$lib/bookingStore';
 	import { user } from '$lib/userStore';
 	import {
 		ListBox,
@@ -262,6 +263,7 @@
 					<Button
 						on:click={async () => {
 							await deleteBooking($currentBooking);
+							$refreshTrigger = !$refreshTrigger;
 						}}
 						class="btn bg-green-400 rounded-lg"
 					>
