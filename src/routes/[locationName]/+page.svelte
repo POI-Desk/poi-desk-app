@@ -85,6 +85,11 @@
 				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Analysis</a
 			>
 
+			<a
+				href="/admin/predictions"
+				class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]">Predictions</a
+			>
+
 			<a href="/user" class="btn rounded-none w-full hover:bg-primary-500 hover:bg-opacity-[15%]"
 				>User</a
 			>

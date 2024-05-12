@@ -475,3 +475,14 @@ export const YearsSinceStart = graphql(`
 		getAllYears
 	}
 `);
+
+export const Last30DaysByLocation = graphql(`
+	query getLast30DaysByLocation($location: ID!) {
+		getLast30DaysByLocation(locationId: $location)   {
+			day
+			morning
+			afternoon
+			total
+		}	
+	}
+`);

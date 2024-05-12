@@ -1,3 +1,4 @@
+import type { Location } from '$lib/types/locationType';
 import type { Building } from '$lib/types/buildingType';
 import type { Floor } from '$lib/types/floorType';
 
@@ -34,6 +35,7 @@ export type YearlyPrediction = {
 };
 
 export type PredictionSelection = {
+	Location: Location | null;
 	Building: Building | null;
 	Floor: Floor | null;
 	showType: 'Month' | 'Quarter' | 'Year';
@@ -47,11 +49,10 @@ export type PredictionData = {
 	afternoon_highestBooking: number[];
 	afternoonAverageBooking: number[];
 	afternoon_lowestBooking: number[];
-}
+};
 
 export type PredictionDays = {
 	year: string[];
-	quarter: string[] 
+	quarter: string[];
 	month: string[];
 };
-

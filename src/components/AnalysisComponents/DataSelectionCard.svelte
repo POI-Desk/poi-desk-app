@@ -65,13 +65,13 @@
 	const amongus = 'w-40';
 </script>
 
-<div class=" h-full w-full flex flex-col rounded-3xl">
-	<div class="flex flex-row w-full h-full p2">
-		<div class="w-full h-full rounded-3xl flex items-center justify-center">
+<div class="  w-full flex flex-col rounded-3xl">
+	<div class="flex flex-row w-full  p2">
+		<div class="w-full  rounded-3xl flex items-center justify-center">
 			<!--Diagramm-->
-			<div class="w-1/2 h-full hite rounded-3xl flex items-center justify-center flex-row">
+			<div class="w-1/2  hite rounded-3xl flex items-center justify-center flex-row">
 				<div
-					class="w-full h-full bg-white rounded-3xl flex gap-2 items-center justify-center flex-col"
+					class="w-full  rounded-3xl flex gap-1 items-center justify-center flex-col"
 				>
 					{#await getYears()}
 						<p>loading...</p>
@@ -153,8 +153,7 @@
 								</DropdownMenu.Group>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
-					{/await}
-					<div class="flex w-full h-10 mt-10 justify-center">
+					<div class="flex w-full h-10 ht-10 justify-center">
 						<Tabs.Root value="days">
 							<Tabs.List>
 								<Tabs.Trigger
@@ -176,13 +175,14 @@
 							</Tabs.List>
 						</Tabs.Root>
 					</div>
+					{/await}
 				</div>
 			</div>
 
 			<!--Data-->
-			<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center p-2>">
+			<div class="w-2/5  rounded-3xl flex items-center justify-center p-2>">
 				{#if !selection.Month || !selection.Year}
-					<div class="flex justify-center items-center h-full">
+					<div class="flex justify-center items-center ">
 						<p>Select Time</p>
 					</div>
 				{/if}

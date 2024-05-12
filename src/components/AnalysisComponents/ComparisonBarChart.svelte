@@ -76,6 +76,7 @@
 	let returnedNull: Boolean = false;
 
 	async function loadData() {
+		console.log(building, floor, year, selectedTimePeriod);
 		chartValues = [];
 		morningValues = [];
 		afternoonValues = [];

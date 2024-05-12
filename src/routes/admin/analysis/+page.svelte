@@ -5,11 +5,19 @@
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
 	import { user } from '$lib/userStore';
+	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
+	
+
+	export let data: PageData;
+
+	$: userLocation =  data.location.data?.getLocationByName;
 
 	async function loadData() {
 		if (buildingsWithFloors.length <= 1) {
 			const resultsFromBuildings = await getBuildingsWithFloors.fetch({
-				variables: { locationid: $user.location?.pk_locationid || '' }
+				variables: { locationid: userLocation?.pk_locationid || '' }
 			});
 			if (resultsFromBuildings && buildingsWithFloors.length <= 1) {
 				let buildings = resultsFromBuildings.data?.getBuildingsInLocation;
@@ -63,27 +71,26 @@
 	}
 </script>
 
-<div class="h-screen w-full flex flex-col justify-between p-4">
-	<div class="h-screen w-full flex flex-col justify-between bg-gray-50 rounded-3xl">
+<div class="h-screen w-full flex flex-col justify-between bg-surface-50">
+	<div class="w-full h-full flex flex-col justify-between ">
 		<!--Last 30 Days-->
-		<div class="p-4 w-full h-full flex flex-col">
-			<div class="w-full h-1/8">
-				<p class="flex justify-center" style="font-size:40px;">Last 30 Days</p>
+		<div class="pt-4 h w-full h-1/2 flex flex-col">
+			<div class="w-full h-1/4">
+				<p class="flex justify-center" style="font-size:30px;">Last 30 Days</p>
 			</div>
-			<div class="flex flex-row w-full h-full">
-				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
-					<Last30Days />
+			<div class="flex flex-row w-full">
+				<div class="w-full  flex items-center justify-center">
+					<Last30Days location={userLocation} />
 				</div>
 			</div>
 		</div>
-		<hr/>
-
-		<div class="p-4 w-full h-full flex flex-col">
-			<div class="w-full h-1/8">
-				<p class="flex justify-center" style="font-size:40px;">Select Anaylsis</p>
+		<!--Last 30 Days-->
+		<div class="w-full h-1/2 ht-8 flex flex-col">
+			<div class="w-full">
+				<p class="flex justify-center" style="font-size:30px;">Select Anaylsis</p>
 			</div>
-			<div class="flex flex-row w-full h-full">
-				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
+			<div class="flex h-full flex-row w-full">
+				<div class="w-full flex items-center justify-center">
 					{#await getData()}
 						<p>loading...</p>
 					{:then data}
@@ -93,4 +100,16 @@
 			</div>
 		</div>
 	</div>
+		<div class="flex justify-center bottom-0 items-center p-4 w-full">
+			<div class="w-2/3 max-w-screen-lg flex  justify-between p-2 bg-gray-50 rounded-full shadow-around-10">
+				<Button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</Button>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</Button>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+					>Analytics</Button
+				>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/admin/predictions')}
+					>Predictions</Button
+				>
+			</div>
+		</div>
 </div>
