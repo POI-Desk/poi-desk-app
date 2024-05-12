@@ -78,7 +78,7 @@
 
 {#if $isDesktop}
 	{#if !window.location.href.includes('admin/maps')}
-		<AlertDialog.Root bind:open closeOnOutsideClick={true}>
+		<AlertDialog.Root bind:open closeOnOutsideClick={true} >
 			<AlertDialog.Trigger>
 				<button
 					class="z-{z}"
@@ -130,7 +130,7 @@
 			<AlertDialog.Content class="z-[1000] !h-screen">
 				<ModalBooking>
 					<AlertDialog.Action class="w-full h-full">
-						<Button class="btn w-full h-full text-xl ">Book</Button>
+						<Button class="btn w-full h-full text-xl">Book</Button>
 					</AlertDialog.Action>
 				</ModalBooking>
 			</AlertDialog.Content>
@@ -226,6 +226,9 @@
 				on:touchend={() => {
 					dispatch('click');
 				}}
+				on:click={() => {
+					dispatch('click');
+				}}
 			>
 				<svg {width} {height}>
 					<rect
@@ -269,7 +272,11 @@
 			</button>
 		</Drawer.Trigger>
 		<Drawer.Content class="z-[1000] h-full !min-h-[90vh]">
-			<ModalBooking />
+			<ModalBooking>
+				<Drawer.Close class="w-full h-full">
+					<Button class="btn w-full h-full text-xl ">Book</Button>
+				</Drawer.Close>
+			</ModalBooking>
 		</Drawer.Content>
 	</Drawer.Root>
 {/if}

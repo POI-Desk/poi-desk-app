@@ -1,4 +1,4 @@
-import { loginWizzGoogol } from '$lib/queries/userQuerries';
+import { loginWithGoogle } from '$lib/queries/userQuerries';
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -9,7 +9,7 @@ export const GET: RequestHandler = async (req) => {
 		throw error(400, 'Missing code parameter in the query string');
 	}
 
-	const res = await loginWizzGoogol.mutate(
+	const res = await loginWithGoogle.mutate(
 		{
 			auth: code
 		},
@@ -27,6 +27,8 @@ export const GET: RequestHandler = async (req) => {
 		httpOnly: true,
 		sameSite: 'lax'
 	});
+
+
 
 	throw redirect(302, '/');
 };

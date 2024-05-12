@@ -47,7 +47,6 @@
 					<Tabs.Trigger value="bookings">Bookings</Tabs.Trigger>
 				</Tabs.List>
 				<Tabs.Content class="w-full p-5" value="account">
-					
 				</Tabs.Content>
 				<Tabs.Content value="bookings" />
 			</Tabs.Root>

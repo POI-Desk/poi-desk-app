@@ -112,8 +112,13 @@
 	/>
 </div>
 
-<!--
-<Drawer.Root snapPoints={['80px', 1]} bind:activeSnapPoint open={true} dismissible={false}>
+<Drawer.Root
+	snapPoints={['80px', 1]}
+	bind:activeSnapPoint
+	open={true}
+	dismissible={false}
+	closeOnEscape={false}
+>
 	<Drawer.Trigger />
 	<Drawer.Overlay />
 	<Drawer.Portal>
@@ -129,28 +134,28 @@
 					<UserPage userContent={data.user} sessionToken={data.sessionToken} />
 				</Tabs.Content>
 				<Tabs.Content value="bookings">
-					<div class="flex flex-row w-full justify-center p-5">
+					<div class="flex flex-row w-full h-[82vh] justify-center py-5">
 						<Tabs.Root value="current">
-							<Tabs.List>
-								<Tabs.Trigger
-									value="current"
-									on:click={() => {
-										isCurrentBookings = true;
-									}}>Current</Tabs.Trigger
-								>
-								<Tabs.Trigger
-									value="past"
-									on:click={() => {
-										isCurrentBookings = false;
-									}}>Past</Tabs.Trigger
-								>
-							</Tabs.List>
+							<div class="flex items-center justify-center">
+								<Tabs.List>
+									<Tabs.Trigger value="current">Current</Tabs.Trigger>
+									<Tabs.Trigger value="past">Past</Tabs.Trigger>
+								</Tabs.List>
+							</div>
+							<Tabs.Content class="h-full overflow-auto" value="current">
+								<div class="overflow-auto">
+									<BookingsOfUser isCurrentBookings={true} />
+								</div>
+							</Tabs.Content>
+							<Tabs.Content class="h-full overflow-auto" value="past">
+								<div class="overflow-auto">
+									<BookingsOfUser isCurrentBookings={false} />
+								</div>
+							</Tabs.Content>
 						</Tabs.Root>
 					</div>
-					<BookingsOfUser {isCurrentBookings} />
 				</Tabs.Content>
 			</Tabs.Root>
 		</Drawer.Content>
 	</Drawer.Portal>
 </Drawer.Root>
--->

@@ -4,6 +4,7 @@
 	import { getBookings } from '$lib/bookingStore';
 	import BookingCard from '$components/PersonalBookingComponents/BookingCard.svelte';
 	import { onMount } from 'svelte';
+	import * as Drawer from '$lib/components/ui/drawer';
 
 	let bookings: any;
 	export let isCurrentBookings = true;

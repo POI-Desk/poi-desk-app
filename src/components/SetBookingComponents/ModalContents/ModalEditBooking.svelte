@@ -5,6 +5,7 @@
 	import { delBooking, editBooking } from '$lib/mutations/booking';
 	import { getBookingsByDateBetween } from '$lib/queries/booking';
 	import type { Booking } from '$lib/types/bookingTypes';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { user } from '$lib/userStore';
 	import {
 		ListBox,
@@ -28,6 +29,7 @@
 		X
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
 
 	$: {
 		if ($currentBooking.ismorning && $currentBooking.isafternoon) {
@@ -43,6 +45,7 @@
 
 	const modalStore = getModalStore();
 
+	let previousDate = $currentBooking.date;
 	let desk = $currentBooking.desk;
 	let deleteBookingState: boolean = false;
 	let editBookingState: boolean = false;
@@ -52,6 +55,7 @@
 	let value: string = '';
 	let firstDate: string;
 	let firstTime: string;
+	let openTrigger: boolean;
 
 	$: value = $displayedTime;
 
@@ -134,19 +138,25 @@
 			for (let j = 0; j < stringDates.length; j++) {
 				if (bookings[i].date == stringDates[j]) {
 					if (bookings[i].ismorning && bookings[i].isafternoon) {
+						/*
 						console.log(bookings[i].date, stringDates[j], 'deleted');
 						stringDates.splice(j, 1);
+						*/
 					}
 					if ($currentBooking.ismorning && !$currentBooking.isafternoon) {
 						if (bookings[i].ismorning && !bookings[i].isafternoon) {
+							/*
 							console.log(bookings[i].date, stringDates[j], 'deleted');
 							stringDates.splice(j, 1);
+							*/
 						}
 					}
 					if ($currentBooking.isafternoon && !$currentBooking.ismorning) {
 						if (!bookings[i].ismorning && bookings[i].isafternoon) {
+							/*
 							console.log(bookings[i].date, stringDates[j], 'deleted');
 							stringDates.splice(j, 1);
+							*/
 						}
 					}
 				}
@@ -157,16 +167,15 @@
 	const addFirstValues = (time: string) => {
 		console.log('firstTime:', firstTime);
 		console.log('time:', time);
-		if (firstTime == time) {
-			let displayFirstDate = firstDate + ' (current)';
-			stringDates.push(displayFirstDate);
-			return;
-		}
+		// if (firstTime == time) {
+		// 	stringDates.push(previousDate);
+		// }
 	};
 
 	function recalcDates(time: string) {
-		editDate = 'click to select a date';
+		editDate = 'change date';
 		stringDates = [];
+		console.log(stringDates)
 		if (time == '07:00 - 13:00') {
 			tempMorning = true;
 			tempAfternoon = false;
@@ -205,6 +214,9 @@
 			}
 		}
 		addFirstValues(time);
+		let newDates : string[] = stringDates 
+		console.log('stringDates:', newDates);
+		console.log('previousDate:', previousDate);
 	}
 
 	const finishEditBooking = async (
@@ -236,248 +248,231 @@
 	const iconContainerClasses = 'rounded-lg flex justify-center variant-filled-tertiary';
 	const iconClasses = 'rounded-lg m-3 mx-5';
 	const textClasses = 'col-span-2 rounded-lg flex justify-center items-center text-xl bg-white';
-	const cBase = 'card p-4 shadow-xl space-y-4';
 </script>
 
-{#if $modalStore[0]}
-	<div class="{cBase} rounded-xl lg:w-[470px] w-screen h-screen flex flex-col bg-slate-200 p-4">
-		{#if deleteBookingState}
-			<div class="h-full flex flex-col justify-center items-center text-center px-4 pt-5">
-				<div class="grid grid-cols-3 align-middle">
-					<h1 class="text-center text-3xl p-3">Booking</h1>
-				</div>
-				<div class="flex flex-col h-full justify-center gap-y-5 text-xl items-center align-middle">
-					<p>Do you really want to delete this booking?</p>
-					<div class="flex gap-5">
-						<Button
-							on:click={async () => {
-								await deleteBooking($currentBooking);
-							}}
-							class="btn bg-green-400 rounded-lg"
-						>
-							<Check />
-						</Button>
-						<Button
-							on:click={() => {
-								deleteBookingState = !deleteBookingState;
-							}}
-							class="btn bg-red-400 rounded-lg"
-						>
-							<X />
-						</Button>
-					</div>
-				</div>
-			</div>
-		{:else if !editBookingState}
-			<div class="text-center align-middle px-4 pt-5">
-				<h1 class="text-center text-3xl p-3">Booking</h1>
-			</div>
-			<div class="h-full flex items-center justify-center text-primary-500">
-				<div class="grid grid-cols-3 grid-rows-6 gap-7">
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Calendar />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{$currentBooking.date}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Clock />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{$displayedTime}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<MapPin />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{desk.map.floor.building.location.locationname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Building />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{desk.map.floor.building.buildingname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Cuboid />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{desk.map.floor.floorname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Armchair />
-						</div>
-					</div>
-					<div class={textClasses}>
-						{desk.desknum}
-					</div>
-				</div>
-			</div>
-			<div class="flex flex-col gap-5 rounded-lg">
-				<Button
-					on:click={() => {
-						editBookingState = !editBookingState;
-					}}
-					class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
-					>Edit
-				</Button>
-				<Button
-					on:click={() => {
-						deleteBookingState = !deleteBookingState;
-					}}
-					class="btn bg-red-400 rounded-lg w-full h-full text-xl"
-					>Delete
-				</Button>
-			</div>
-		{:else}
-			<div class="grid grid-cols-3 text-center align-middle px-4 pt-5">
-				<Button
-					on:click={() => {
-						editBookingState = false;
-					}}
-				>
-					<ArrowLeft />
-				</Button>
-				<h1 class="text-center text-3xl p-3">Booking</h1>
-			</div>
-			<div class="h-full flex items-center justify-center">
-				<div class="grid grid-cols-3 grid-rows-6 gap-7">
-					<div class={iconContainerClasses}>
-						<div class="rounded-3xl m-3 mx-5">
-							<Calendar />
-						</div>
-					</div>
+<div class="rounded-xl lg:w-[470px] w-screen h-screen flex flex-col p-4">
+	{#if deleteBookingState}
+		<div class="h-full flex flex-col justify-center items-center text-center px-4 pt-5">
+			<div class="flex flex-col h-full justify-center gap-y-5 text-xl items-center align-middle">
+				<p>Do you really want to delete this booking?</p>
+				<div class="flex gap-5">
 					<Button
-						class="col-span-2 rounded-3xl flex justify-center items-center text-xl variant-filled-primary"
+						on:click={async () => {
+							await deleteBooking($currentBooking);
+						}}
+						class="btn bg-green-400 rounded-lg"
 					>
-						{editDate}
+						<slot name="confirmDeletion" />
 					</Button>
-					<div class="card w-48 shadow-xl py-2 z-10" data-popup="popupDates">
-						<ListBox>
-							{#each stringDates as item}
-								<ListBoxItem bind:group={editDate} name="medium" value={item} class="fortniteDates">
-									{item}
-								</ListBoxItem>
-							{/each}
-						</ListBox>
-						<div class="arrow bg-surface-100-800-token" />
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Clock />
-						</div>
-					</div>
-					<RadioGroup
-						class="col-span-2 btn-group rounded-3xl flex flex-row justify-center items-center bg-white"
+					<Button
+						on:click={() => {
+							deleteBookingState = !deleteBookingState;
+						}}
+						class="btn bg-red-400 rounded-lg"
 					>
-						<RadioItem
-							on:change={(e) => {
-								recalcDates(value);
-							}}
-							bind:group={value}
-							name="justify"
-							value={'07:00 - 13:00'}
-						>
-							<Sun />
-						</RadioItem>
-						<RadioItem
-							on:change={(e) => {
-								recalcDates(value);
-							}}
-							bind:group={value}
-							name="justify"
-							value={'13:00 - 20:00'}
-						>
-							<Moon />
-						</RadioItem>
-						<RadioItem
-							on:change={(e) => {
-								recalcDates(value);
-							}}
-							bind:group={value}
-							name="justify"
-							class="flex flex-row"
-							value={'07:00 - 20:00'}
-						>
-							<Sun />
-							<Moon />
-						</RadioItem>
-					</RadioGroup>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<MapPin />
-						</div>
-					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500">
-						{desk.map.floor.building.location.locationname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Building />
-						</div>
-					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500">
-						{desk.map.floor.building.buildingname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Cuboid />
-						</div>
-					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500">
-						{desk.map.floor.floorname}
-					</div>
-					<div class={iconContainerClasses}>
-						<div class={iconClasses}>
-							<Armchair />
-						</div>
-					</div>
-					<div class="col-span-2 rounded-3xl flex justify-center items-center text-xl bg-gray-500">
-						{desk.desknum}
-					</div>
+						<X />
+					</Button>
 				</div>
 			</div>
-			<div class="flex flex-col gap-5">
-				<Button
-					on:click={() => {
-						if (editDate.includes('(current)')) {
-							editDate = editDate.split(' ')[0];
-							editBookingState = !editBookingState;
-							return;
-						}
-						finishEditBooking(
-							$currentBooking.pk_bookingid,
-							editDate,
-							tempMorning,
-							tempAfternoon,
-							tempDesk
-						);
-						//editBookingState = !editBookingState;
-					}}
-					class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
-					>Save Changes
-				</Button>
-				<Button
-					on:click={() => {
-						editDate = firstDate;
-						editBookingState = !editBookingState;
-					}}
-					class="btn bg-red-400 rounded-lg w-full h-full text-xl"
-				>
-					Go Back
-				</Button>
+		</div>
+	{:else if !editBookingState}
+		<div class="text-center align-middle">
+			<h1 class="text-center text-3xl p-3">Booking</h1>
+		</div>
+		<div class="h-full flex items-center justify-center text-black">
+			<div class="grid grid-cols-3 grid-rows-6 gap-7">
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Calendar />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{$currentBooking.date}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Clock />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{$displayedTime}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<MapPin />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{desk.map.floor.building.location.locationname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Building />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{desk.map.floor.building.buildingname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Cuboid />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{desk.map.floor.floorname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Armchair />
+					</div>
+				</div>
+				<div class={textClasses}>
+					{desk.desknum}
+				</div>
 			</div>
-		{/if}
-	</div>
-{/if}
+		</div>
+		<div class="flex flex-col gap-5 rounded-lg">
+			<Button
+				on:click={() => {
+					editBookingState = !editBookingState;
+				}}
+				class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
+				>Edit
+			</Button>
+			<Button
+				on:click={() => {
+					deleteBookingState = !deleteBookingState;
+				}}
+				class="btn bg-red-400 rounded-lg w-full h-full text-xl"
+				>Delete
+			</Button>
+		</div>
+	{:else}
+		<div class="text-center align-middle px-4 pt-5">
+			<h1 class="text-center text-3xl p-3">Booking</h1>
+		</div>
+		<div class="h-full flex items-center justify-center">
+			<div class="grid grid-cols-3 grid-rows-6 gap-7">
+				<div class={iconContainerClasses}>
+					<div class="rounded-lg m-3 mx-5">
+						<Calendar />
+					</div>
+				</div>
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger asChild let:builder>
+						<Button
+							builders={[builder]}
+							class="col-span-2 rounded-lg flex justify-center items-center text-xl variant-filled-primary"
+						>
+							{editDate}
+						</Button>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content class="w-52" side="bottom">
+						{#each stringDates as item}
+							<DropdownMenu.Item
+								on:click={() => {
+									editDate = item;
+								}}
+							>
+								{item}
+							</DropdownMenu.Item>
+						{/each}
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+				<!-- <div class="card w-48 shadow-xl py-2 z-10" data-popup="popupDates">
+					<ListBox>
+						{#each stringDates as item}
+							<ListBoxItem bind:group={editDate} name="medium" value={item} class="fortniteDates">
+								{item}
+							</ListBoxItem>
+						{/each}
+					</ListBox>
+					<div class="arrow bg-surface-100-800-token" />
+				</div> -->
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Clock />
+					</div>
+				</div>
+				<Tabs.Root
+					class="col-span-2 rounded-lg flex flex-row justify-center items-center"
+				>
+					<Tabs.List>
+						<Tabs.Trigger on:click={() => {value = '07:00 - 13:00'; recalcDates(value)}} value={'07:00 - 13:00'}>
+							<Sun />
+						</Tabs.Trigger>
+						<Tabs.Trigger on:click={() => {value = '13:00 - 20:00'; recalcDates(value)}} value={'13:00 - 20:00'}>
+							<Moon />
+						</Tabs.Trigger>
+						<Tabs.Trigger class="flex flex-row" on:click={() => {value = '07:00 - 20:00'; recalcDates(value)}} value={'07:00 - 20:00'}>
+							<Sun />
+							<Moon />
+						</Tabs.Trigger>
+					</Tabs.List>
+				</Tabs.Root>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<MapPin />
+					</div>
+				</div>
+				<div class="col-span-2 rounded-lg flex justify-center items-center text-xl bg-gray-500">
+					{desk.map.floor.building.location.locationname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Building />
+					</div>
+				</div>
+				<div class="col-span-2 rounded-lg flex justify-center items-center text-xl bg-gray-500">
+					{desk.map.floor.building.buildingname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Cuboid />
+					</div>
+				</div>
+				<div class="col-span-2 rounded-lg flex justify-center items-center text-xl bg-gray-500">
+					{desk.map.floor.floorname}
+				</div>
+				<div class={iconContainerClasses}>
+					<div class={iconClasses}>
+						<Armchair />
+					</div>
+				</div>
+				<div class="col-span-2 rounded-lg flex justify-center items-center text-xl bg-gray-500">
+					{desk.desknum}
+				</div>
+			</div>
+		</div>
+		<div class="flex flex-col gap-5">
+			<Button
+				on:click={() => {
+					if (previousDate == editDate && tempMorning == $currentBooking.ismorning && tempAfternoon == $currentBooking.isafternoon && tempDesk == desk.pk_deskid) {
+						editBookingState = !editBookingState;
+						return;
+					}
+					finishEditBooking(
+						$currentBooking.pk_bookingid,
+						editDate,
+						tempMorning,
+						tempAfternoon,
+						tempDesk
+					);
+					//editBookingState = !editBookingState;
+				}}
+				class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
+				>
+				<slot name="save"/>
+			</Button>
+			<Button
+				on:click={() => {
+					editDate = firstDate;
+					editBookingState = !editBookingState;
+				}}
+				class="btn bg-red-400 rounded-lg w-full h-full text-xl"
+			>
+				Go Back
+			</Button>
+		</div>
+	{/if}
+</div>
