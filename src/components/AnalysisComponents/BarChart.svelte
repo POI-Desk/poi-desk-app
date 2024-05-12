@@ -181,5 +181,4 @@
 		var chart = new Chart(ctx, barconfig);
 	});
 </script>
-
 <canvas bind:this={chartCanvas} id="myChart" />

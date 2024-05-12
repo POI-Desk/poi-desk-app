@@ -1,7 +1,7 @@
 <script lang="ts">
 	import BarChart from '$components/AnalysisComponents/BarChart.svelte';
 	import { onMount } from 'svelte';
-	import { MonthlyBookingsByLocation } from '$lib/queries/analysisQueries';
+	import { MonthlyBookingsByLocation, Last30DaysByLocation } from '$lib/queries/analysisQueries';
 	import { user } from '$lib/userStore';
 	import Chart from 'chart.js/auto';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
@@ -16,14 +16,16 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
+	export let location: any;
+
 	async function loadDays() {
-		const result = await MonthlyBookingsByLocation.fetch({
-			variables: { year: '2024', month: '02', location: $user.location?.pk_locationid || '' }
+		const result = await Last30DaysByLocation.fetch({
+			variables: { location: location?.pk_locationid || '' }
 		});
 		if (result && chartLabels.length == 0) {
-			let monthlyBookingResult = result.data?.getMonthlyBookingByLocation;
-			monthlyBookingResult?.dailyBookings?.forEach(
-				(element: { day: String; total: number; morning: number; afternoon: number } | null) => {
+			let monthlyBookingResult = result.data?.getLast30DaysByLocation;
+			monthlyBookingResult?.forEach(
+				(element: { day: String; morning: number; afternoon: number; total: number } | null) => {
 					if (element?.total != 0) {
 						chartLabels.push(element?.day!);
 						morningValues.push(element?.morning!);
@@ -105,13 +107,13 @@
 {#await loadDays()}
 	<p>Loading...</p>
 {:then data}
-	<div class="w-1/2 h-full text-black rounded-3xl flex items-center justify-center">
+	<div class="w-2/5 text-black rounded-3xl flex items-center justify-center">
 		<BarChart {data} title="Bookings - {$user.location?.locationname}" />
 	</div>
-	<div class="w-1/2 h-full text-black rounded-3xl flex items-center justify-center p-2>">
-		<div class="flex flex-col gap-2 w-full h-full">
+	<div class="w-1/2  text-black rounded-3xl flex items-center justify-center p-2>">
+		<div class="flex flex-col gap-2 w-full ">
 			<div class="flex w-full h-1/2 gap-2">
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+				<div class="w-1/2  rounded-3xl flex items-center justify-center">
 					<div
 						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
 						use:popup={totalHover}
@@ -120,7 +122,7 @@
 						<p class="p-2" style="font-size:20px;">Total</p>
 					</div>
 				</div>
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+				<div class="w-1/2  rounded-3xl flex items-center justify-center">
 					<div
 						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
 						use:popup={maxHover}
@@ -131,7 +133,7 @@
 				</div>
 			</div>
 			<div class="flex w-full h-1/2 gap-2">
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+				<div class="w-1/2  rounded-3xl flex items-center justify-center">
 					<div
 						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
 						use:popup={avgHover}
@@ -140,7 +142,7 @@
 						<p class="p-2" style="font-size:20px;">Avg</p>
 					</div>
 				</div>
-				<div class="w-1/2 h-full rounded-3xl flex items-center justify-center">
+				<div class="w-1/2  rounded-3xl flex items-center justify-center">
 					<div
 						class="[&>*]:pointer-events-none flex items-center justify-center flex-col"
 						use:popup={minHover}

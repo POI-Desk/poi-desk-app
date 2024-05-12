@@ -30,6 +30,8 @@
 		popup
 	} from '@skeletonlabs/skeleton';
 	import PredictionCharts from '$components/PredictionComponents/PredictionCharts.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { goto } from '$app/navigation';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	export const CHART_COLORS = {
@@ -42,6 +44,8 @@
 		grey: 'rgb(201, 203, 207)'
 	};
 	export let selection: PredictionSelection;
+	console.log(selection);
+
 	let predictionData: PredictionData = {
 		total: [],
 		morning_highestBooking: [],
@@ -76,7 +80,7 @@
 				) {
 					result = await getMonthlyBookingPrediction.fetch({
 						variables: {
-							identifier: $user.location?.pk_locationid!,
+							identifier: selection.Location?.pk_locationid!,
 							identifierType: IdentifierType.Location
 						}
 					});
@@ -98,7 +102,6 @@
 						}
 					});
 				}
-				console.log('result', result);
 				if (result || result!.data?.getMonthlyBookingPrediction) {
 					monthlyPrediction = result!.data?.getMonthlyBookingPrediction;
 					monthlyPrediction?.forEach((element: any) => {
@@ -128,7 +131,7 @@
 				) {
 					result = await getQuarterlyBookingPrediction.fetch({
 						variables: {
-							identifier: $user.location?.pk_locationid!,
+							identifier: selection.Location?.pk_locationid!,
 							identifierType: IdentifierType.Location
 						}
 					});
@@ -177,7 +180,7 @@
 				) {
 					result = await getYearlyBookingPrediction.fetch({
 						variables: {
-							identifier: $user.location?.pk_locationid!,
+							identifier: selection.Location?.pk_locationid!,
 							identifierType: IdentifierType.Location
 						}
 					});
@@ -224,9 +227,6 @@
 
 	async function createDiagramms(id: number) {
 		let time;
-		console.log('data', predictionDays);
-		predictionDays.quarter[0] = "2024 Q1";
-		
 		if (type === 0) {
 			time = predictionDays.month;
 		} else if (type === 1) {
@@ -291,7 +291,7 @@
 </script>
 
 {#await loadPredictions() then data}
-	<div class="w-1/2 h-2/5 bg-white flex items-center justify-center flex-col rounded-3xl">
+	<div class="w-1/2 h-2/5 bg-surface-50 flex items-center justify-center flex-col rounded-3xl">
 		<div class="flex flex-col gap-2 w-full h-full">
 			<div class="flex w-full h-1/2 gap-2">
 				<div class="w-full h-full rounded-3xl flex items-center justify-center flex-col">
@@ -323,8 +323,7 @@
 			</div>
 		</div>
 	</div>
-	<hr class="w-full" />
-	<div class="bg-white w-full h-3/5 flex flex-row rounded-3xl">
+	<div class="bg-surface-50 w-full h-2/5 flex flex-row rounded-3xl">
 		<div class="w-full h-full flex items-center justify-center flex-col">
 			<p style="font-size:30px;">Morning</p>
 			{#await createDiagramms(0) then data}
@@ -358,3 +357,15 @@
 		</div>
 	</div>
 {/await}
+<div class="flex justify-center bottom-0 items-center p-4 w-full">
+			<div class="w-2/3 max-w-screen-lg flex  justify-between p-2 bg-gray-50 rounded-full shadow-around-10">
+				<Button class="btn variant-filled-primary" on:click={() => goto('/user')}>User</Button>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/')}>Home</Button>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/admin/analysis')}
+					>Analytics</Button
+				>
+				<Button class="btn variant-filled-primary" on:click={() => goto('/admin/predictions')}
+					>Predictions</Button
+				>
+			</div>
+		</div>

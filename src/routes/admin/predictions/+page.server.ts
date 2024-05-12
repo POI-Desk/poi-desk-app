@@ -2,8 +2,8 @@ import type { PageServerLoad } from './$types';
 import { CachePolicy, getLocationByNameStore, graphql } from '$houdini';
 import { getUserByid } from '$lib/queries/userQuerries';
 
-const locationByNameAnalysis = graphql(`
-	query getLocationByNameAnalysis($name: String!) {
+const locationByNamePrediction = graphql(`
+	query getLocationByNamePrediction($name: String!) {
 		getLocationByName(name: $name) {
 			pk_locationid
 			locationname
@@ -28,7 +28,7 @@ export const load = (async (event) => {
 		policy: CachePolicy.NetworkOnly
 	});
 
-	const location = await locationByNameAnalysis.fetch({
+	const location = await locationByNamePrediction.fetch({
 		variables: { name: res.data?.getUserById?.location?.locationname as string },
 		event
 	});

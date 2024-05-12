@@ -7,6 +7,7 @@
 	import type { PredictionSelection } from '$lib/types/predictionType';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import type { PageData } from './$types';
 	import {
 		storePopup,
 		RadioGroup,
@@ -16,7 +17,12 @@
 		popup
 	} from '@skeletonlabs/skeleton';
 	import { Button } from '$lib/components/ui/button';
+		import { goto } from '$app/navigation';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+	export let data: PageData;
+
+	$: userLocation =  data.location.data?.getLocationByName;
 
 	import { onMount } from 'svelte';
 
@@ -34,8 +40,11 @@
 			]
 		}
 	];
-
 	let selection: PredictionSelection = {
+		Location: {
+			pk_locationid: userLocation?.pk_locationid!,
+			locationname: userLocation?.locationname!
+		},
 		Building: buildingsWithFloors[0] ?? null,
 		Floor: buildingsWithFloors[0].floors[0] ?? null,
 		showType: 'Month'
@@ -44,7 +53,7 @@
 	async function loadBuildings() {
 		if (buildingsWithFloors.length <= 1) {
 			let resultsFromBuildings = await getBuildingsWithFloors.fetch({
-				variables: { locationid: $user.location?.pk_locationid || '' }
+				variables: { locationid: userLocation?.pk_locationid || '' }
 			});
 			if (resultsFromBuildings && buildingsWithFloors.length <= 1) {
 				let buildings = resultsFromBuildings.data?.getBuildingsInLocation;
@@ -69,12 +78,16 @@
 				});
 			}
 		}
+		selection.Location ={
+			pk_locationid: userLocation?.pk_locationid!,
+			locationname: userLocation?.locationname!
+		}
 		start = true;
 		return buildingsWithFloors;
 	}
 
 	function onBuildingChange(event: any) {
-		//selection.Floor = selection.Building?.floors[0]!;
+		selection.Floor = selection.Building?.floors[0]!;
 	}
 
 	const buildingSelection: PopupSettings = {
@@ -91,11 +104,11 @@
 	};
 </script>
 
-<div class="h-full flex flex-col p-5">
-	<div class="h-full">
-		<!--Last 30 Days-->
-		<!--<PredictionCard />-->
-		<div class="card bg-slate-50 h-full flex flex-wrap rounded-3xl">
+<div class="h-screen w-full flex flex-col justify-between bg-surface-50">
+	<div class="h-full flex flex-col">
+	<!--Last 30 Days-->
+	<!--<PredictionCard />-->
+		<div class="card bg-surface-50 h-full flex flex-wrap">
 			<div class="w-1/2 h-2/5 rounded-3xl flex items-center justify-center flex-col">
 				<p>Building:</p>
 				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
@@ -134,24 +147,27 @@
 			{/key}
 		</div>
 	</div>
+
+	<div class="card w-48 shadow-xl py-2" data-popup="buildingSelection">
+		<ListBox rounded="rounded-none">
+			{#await loadBuildings()}
+				<p>loading...</p>
+			{:then data}
+				{#each buildingsWithFloors as building}
+					<ListBoxItem
+						bind:group={selection.Building}
+						name="medium"
+						value={building}
+						on:change={onBuildingChange}>{building.buildingname}</ListBoxItem
+					>
+				{/each}
+			{/await}
+		</ListBox>
+	</div>
 </div>
 
-<div class="card w-48 shadow-xl py-2" data-popup="buildingSelection">
-	<ListBox rounded="rounded-none">
-		{#await loadBuildings()}
-			<p>loading...</p>
-		{:then data}
-			{#each buildingsWithFloors as building}
-				<ListBoxItem
-					bind:group={selection.Building}
-					name="medium"
-					value={building}
-					on:change={onBuildingChange}>{building.buildingname}</ListBoxItem
-				>
-			{/each}
-		{/await}
-	</ListBox>
-</div>
+
+
 
 <div class="card w-48 shadow-xl py-2" data-popup="floorSelection">
 	<ListBox rounded="rounded-none">

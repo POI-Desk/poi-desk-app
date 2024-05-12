@@ -141,7 +141,6 @@
 	export let data: any;
 	let predictionCanvas: any;
 
-	console.log(data);
 
 	onMount(() => {
 		let ctx = predictionCanvas.getContext('2d');
@@ -155,7 +154,7 @@
 						position: 'top'
 					},
 					title: {
-						display: true,
+						display: false,
 						text: 'Predictions'
 					},
 					tooltip: {
