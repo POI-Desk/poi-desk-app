@@ -16,7 +16,6 @@
 			variables: { isCurrent: isCurrentBookings },
 			policy: CachePolicy.NetworkOnly
 		});
-		console.log($getBookings.data?.getBookingsByUserid);
 		return $getBookings.data?.getBookingsByUserid;
 	};
 

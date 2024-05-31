@@ -7,29 +7,9 @@
 	import { getBookingsByDateBetween } from '$lib/queries/booking';
 	import type { Booking } from '$lib/types/bookingTypes';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import {refreshTrigger} from '$lib/bookingStore';
+	import { refreshTrigger } from '$lib/bookingStore';
 	import { user } from '$lib/userStore';
-	import {
-		ListBox,
-		ListBoxItem,
-		RadioGroup,
-		RadioItem,
-		getModalStore,
-		type PopupSettings
-	} from '@skeletonlabs/skeleton';
-	import {
-		Armchair,
-		ArrowLeft,
-		Building,
-		Calendar,
-		Check,
-		Clock,
-		Cuboid,
-		MapPin,
-		Moon,
-		Sun,
-		X
-	} from 'lucide-svelte';
+	import { Armchair, Building, Calendar, Clock, Cuboid, MapPin, Moon, Sun, X } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { createEventDispatcher } from 'svelte';
@@ -46,8 +26,6 @@
 		firstTime = $displayedTime;
 	}
 
-	const modalStore = getModalStore();
-
 	let previousDate = $currentBooking.date;
 	let desk = $currentBooking.desk;
 	let deleteBookingState: boolean = false;
@@ -58,7 +36,6 @@
 	let value: string = '';
 	let firstDate: string;
 	let firstTime: string;
-	let openTrigger: boolean;
 	const dispatch = createEventDispatcher();
 
 	$: value = $displayedTime;
@@ -66,13 +43,6 @@
 	let tempMorning: boolean = $currentBooking.ismorning;
 	let tempAfternoon: boolean = $currentBooking.isafternoon;
 	let tempDesk: string = desk.pk_deskid;
-
-	const popupDates: PopupSettings = {
-		event: 'focus-click',
-		target: 'popupDates',
-		placement: 'bottom',
-		closeQuery: '.fortniteDates'
-	};
 
 	const getBookingsByNumContains = graphql(`
 		query GetBookingsByBookingnumberContains($string: String!) @load {
@@ -83,31 +53,12 @@
 		}
 	`);
 
-	export const _GetBookingsByBookingnumberContainsVariables = () => {
-		return {};
-	};
-
 	$: extendedBookings = $getBookingsByNumContains.data?.getBookingsByBookingnumberContains;
 
 	const deleteBooking = async (booking: Booking) => {
 		const id = booking.pk_bookingid;
 
-		if (booking.bookingnumber.includes('EXTID')) {
-			const extId = booking.bookingnumber.split('EXTID')[1];
-
-			if (extId.split('+')[1] !== $user.pk_userid) modalStore.close();
-
-			await getBookingsByNumContains.fetch({ variables: { string: extId } });
-			for (const b of extendedBookings ?? []) {
-				await delBooking.mutate({ id: b.pk_bookingid });
-			}
-		} else {
-			await delBooking.mutate({ id });
-		}
-
-		await getBookings.fetch({ policy: CachePolicy.NetworkOnly }); //TODO: DONT FETCH THIS! DELETE FROM ARRAY
-
-		modalStore.close();
+		await delBooking.mutate({ id });
 	};
 
 	// get all dates between startDate and endDate and write them in an array
@@ -179,7 +130,7 @@
 	function recalcDates(time: string) {
 		editDate = 'change date';
 		stringDates = [];
-		console.log(stringDates)
+		console.log(stringDates);
 		if (time == '07:00 - 13:00') {
 			tempMorning = true;
 			tempAfternoon = false;
@@ -218,19 +169,14 @@
 			}
 		}
 		addFirstValues(time);
-		let newDates : string[] = stringDates 
+		let newDates: string[] = stringDates;
 		console.log('stringDates:', newDates);
 		console.log('previousDate:', previousDate);
 	}
 
-	const finishEditBooking = async (
-		bookingid: any,
-		date: any,
-		morning: boolean,
-		afternoon: boolean,
-		deskid: any
-	) => {
-		if (date == 'click to select a date') {
+	const finishEditBooking = async (bookingid: string, date: string, morning: boolean, 
+	afternoon: boolean, deskid: string) => {
+		if (date == 'change date') {
 			toast.error('Please select a date before saving!', {
 				position: 'bottom-center'
 			});
@@ -245,8 +191,7 @@
 				deskid: deskid
 			}
 		});
-		dispatch('updateBookings')
-		await getBookings.fetch({ policy: CachePolicy.NetworkOnly });
+		dispatch('updateBookings');
 	};
 
 	const iconContainerClasses = 'rounded-lg flex justify-center variant-filled-tertiary';
@@ -399,17 +344,34 @@
 						<Clock />
 					</div>
 				</div>
-				<Tabs.Root
-					class="col-span-2 rounded-lg flex flex-row justify-center items-center"
-				>
+				<Tabs.Root class="col-span-2 rounded-lg flex flex-row justify-center items-center">
 					<Tabs.List>
-						<Tabs.Trigger on:click={() => {value = '07:00 - 13:00'; recalcDates(value)}} value={'07:00 - 13:00'}>
+						<Tabs.Trigger
+							on:click={() => {
+								value = '07:00 - 13:00';
+								recalcDates(value);
+							}}
+							value={'07:00 - 13:00'}
+						>
 							<Sun />
 						</Tabs.Trigger>
-						<Tabs.Trigger on:click={() => {value = '13:00 - 20:00'; recalcDates(value)}} value={'13:00 - 20:00'}>
+						<Tabs.Trigger
+							on:click={() => {
+								value = '13:00 - 20:00';
+								recalcDates(value);
+							}}
+							value={'13:00 - 20:00'}
+						>
 							<Moon />
 						</Tabs.Trigger>
-						<Tabs.Trigger class="flex flex-row" on:click={() => {value = '07:00 - 20:00'; recalcDates(value)}} value={'07:00 - 20:00'}>
+						<Tabs.Trigger
+							class="flex flex-row"
+							on:click={() => {
+								value = '07:00 - 20:00';
+								recalcDates(value);
+							}}
+							value={'07:00 - 20:00'}
+						>
 							<Sun />
 							<Moon />
 						</Tabs.Trigger>
@@ -452,7 +414,12 @@
 		<div class="flex flex-col gap-5">
 			<Button
 				on:click={() => {
-					if (previousDate == editDate && tempMorning == $currentBooking.ismorning && tempAfternoon == $currentBooking.isafternoon && tempDesk == desk.pk_deskid) {
+					if (
+						previousDate == editDate &&
+						tempMorning == $currentBooking.ismorning &&
+						tempAfternoon == $currentBooking.isafternoon &&
+						tempDesk == desk.pk_deskid
+					) {
 						editBookingState = !editBookingState;
 						return;
 					}
@@ -466,8 +433,8 @@
 					//editBookingState = !editBookingState;
 				}}
 				class="btn variant-filled-primary rounded-lg w-full h-full text-xl"
-				>
-				<slot name="save"/>
+			>
+				<slot name="save" />
 			</Button>
 			<Button
 				on:click={() => {

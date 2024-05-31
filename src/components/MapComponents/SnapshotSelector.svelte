@@ -229,7 +229,7 @@
 		<AlertDialog.Root>
 			<AlertDialog.Trigger asChild let:builder>
 				<Button
-					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary {cardStyle}"
+					class="card card-hover select-none text-2xl text-primary-500 font-bold variant-ghost-secondary text-white {cardStyle}"
 					on:click={newButtonClicked}
 					builders={[builder]}
 				>

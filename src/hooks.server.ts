@@ -35,23 +35,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	if (!sessionToken) {
-		console.log('No session token found');
 		if (!event.request.url.includes('/login')) {
 			return Response.redirect('http://localhost:5173/login', 302);
 		}
 		return await resolve(event);
 	}
 	setSession(event, { sessionToken });
-	//console.log("Session token found:", sessionToken);
 	const res = await authenticateUser.fetch({
 		event
 	});
-	//console.log("AuthenticateUser response:", res.data?.authorizeUser);
 	if (res.data?.authorizeUser) {
-		console.log('User is authorized');
 		return await resolve(event);
 	} else {
-		console.warn('User is not authorized');
 		return Response.redirect('http://localhost:5173/login', 302);
 	}
 };

@@ -10,9 +10,7 @@ export const GET: RequestHandler = async (req) => {
 	}
 
 	const res = await loginWithGoogle.mutate(
-		{
-			auth: code
-		},
+		{ auth: code },
 		{ event: req }
 	);
 
