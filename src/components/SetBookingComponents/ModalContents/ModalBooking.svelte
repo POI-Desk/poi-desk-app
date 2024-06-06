@@ -206,6 +206,7 @@
 			<div class="h-24 rounded-full">
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<!-- this is a git test-->
 				<div on:click={() => finishBooking()} class="w-full h-full text-xl p-3 max-h-[75px]">
 					<slot />
 				</div>
