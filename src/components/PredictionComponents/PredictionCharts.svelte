@@ -1,11 +1,17 @@
 <script lang="ts">
+	import { offset } from '@floating-ui/dom';
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
 
-	export let data: any;
-	export let title: any;
-	let ctx: any;
-	let chartCanvas: any;
+	export const CHART_COLORS = {
+		red: 'rgb(255, 99, 132)',
+		orange: 'rgb(255, 159, 64)',
+		yellow: 'rgb(255, 205, 86)',
+		green: 'rgb(75, 192, 192)',
+		blue: 'rgb(54, 162, 235)',
+		purple: 'rgb(153, 102, 255)',
+		grey: 'rgb(201, 203, 207)'
+	};
 
 	// <block:external:2>
 	const getOrCreateTooltip = (chart: any) => {
@@ -18,6 +24,7 @@
 			tooltipEl.style.color = 'white';
 			tooltipEl.style.opacity = 1;
 			tooltipEl.style.pointerEvents = 'none';
+			tooltipEl.style.offset = '10px 100px';
 			tooltipEl.style.position = 'absolute';
 			tooltipEl.style.transform = 'translate(-50%, 0)';
 			tooltipEl.style.transition = 'all .1s ease';
@@ -131,53 +138,34 @@
 	};
 	// </block:external>
 
-	let barconfig: any = {
-		type: 'bar',
-		data: data,
-		options: {
-			interaction: {
-				intersect: false,
-				mode: 'index'
-			},
-			plugins: {
-				title: {
-					display: true,
-					text: title,
-					font: {
-						size: 20
-						//family: 'Helvetica Neue'
+	export let data: any;
+	let predictionCanvas: any;
+
+
+	onMount(() => {
+		let ctx = predictionCanvas.getContext('2d');
+		let myChart = new Chart(ctx, {
+			type: 'line',
+			data: data,
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'top'
+					},
+					title: {
+						display: false,
+						text: 'Predictions'
+					},
+					tooltip: {
+						enabled: false,
+						position: 'nearest',
+						external: externalTooltipHandler
 					}
-				},
-				legend: {
-					position: 'bottom',
-					labels: {
-						font: {
-							size: 14
-							//family: 'Helvetica Neue'
-						}
-					}
-				},
-				tooltip: {
-					enabled: false,
-					position: 'nearest',
-					external: externalTooltipHandler
-				}
-			},
-			responsive: true,
-			scales: {
-				x: {
-					stacked: true
-				},
-				y: {
-					stacked: true
 				}
 			}
-		}
-	};
-
-	onMount(async () => {
-		ctx = chartCanvas.getContext('2d');
-		var chart = new Chart(ctx, barconfig);
+		});
 	});
 </script>
-<canvas bind:this={chartCanvas} id="myChart" />
+
+<canvas bind:this={predictionCanvas} id="myChart" />

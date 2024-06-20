@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { IdentifierType } from '$houdini/graphql/enums.js';
-	import {
-		getMonthlyBookingPrediction,
-		getQuarterlyBookingPrediction,
-		getYearlyBookingPrediction
-	} from '$lib/queries/predictionQueries';
-	import Chart from 'chart.js/auto';
-	import type { MonthlyPrediction } from '$lib/types/predictionType';
-	import PredictionCard from '$components/AnalysisComponents/PredictionCard.svelte';
-	import PredictionOverview from '$components/AnalysisComponents/PredictionOverview.svelte';
+	import PredictionOverview from '$components/PredictionComponents/PredictionOverview.svelte';
 	import type { Building } from '$lib/types/buildingType';
 	import type { Floor } from '$lib/types/floorType';
 	import { user } from '$lib/stores/userStore';
@@ -24,9 +15,9 @@
 		ListBoxItem,
 		popup
 	} from '@skeletonlabs/skeleton';
+	import { goto } from '$app/navigation';
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
-	import { onMount } from 'svelte';
+	import BurgerMenu from "$components/SuperAdminComponents/BurgerMenu.svelte";
 
 	let start: Boolean = false;
 
@@ -42,8 +33,11 @@
 			]
 		}
 	];
-
 	let selection: PredictionSelection = {
+		Location: {
+			pk_locationid: $user.location?.pk_locationid!,
+			locationname: $user.location?.locationname!
+		},
 		Building: buildingsWithFloors[0] ?? null,
 		Floor: buildingsWithFloors[0].floors[0] ?? null,
 		showType: 'Month'
@@ -77,12 +71,16 @@
 				});
 			}
 		}
+		selection.Location ={
+			pk_locationid: $user.location?.pk_locationid!,
+			locationname: $user.location?.locationname!
+		}
 		start = true;
 		return buildingsWithFloors;
 	}
 
 	function onBuildingChange(event: any) {
-		//selection.Floor = selection.Building?.floors[0]!;
+		selection.Floor = selection.Building?.floors[0]!;
 	}
 
 	const buildingSelection: PopupSettings = {
@@ -97,15 +95,16 @@
 		placement: 'right',
 		closeQuery: '.listbox-item'
 	};
+	const btn = "btn variant-filled-primary shadow-md"
 </script>
 
-<div class="h-full flex flex-col p-5">
-	<div class="h-full">
-		<!--Last 30 Days-->
-		<!--<PredictionCard />-->
-		<div class="card h-1/2 flex flex-wrap">
-			<div class="card w-1/2 h-full bg-white rounded-3xl flex items-center justify-center flex-col">
-				<p>building:</p>
+<div class="h-screen w-full flex flex-col justify-between bg-primary-50">
+	<div class="h-full flex flex-col">
+	<!--Last 30 Days-->
+	<!--<PredictionCard />-->
+		<div class="card bg-surface-50 h-full flex flex-wrap">
+			<div class="w-1/2 h-2/5 flex items-center justify-center flex-col">
+				<p>Building:</p>
 				<button class="btn variant-filled w-48 justify-between" use:popup={buildingSelection}>
 					<span class="capitalize">{selection.Building?.buildingname ?? 'Building'}</span>
 					<span>↓</span>
@@ -142,23 +141,38 @@
 			{/key}
 		</div>
 	</div>
-</div>
 
-<div class="card w-48 shadow-xl py-2" data-popup="buildingSelection">
-	<ListBox rounded="rounded-none">
-		{#await loadBuildings()}
-			<p>loading...</p>
-		{:then data}
-			{#each buildingsWithFloors as building}
-				<ListBoxItem
-					bind:group={selection.Building}
-					name="medium"
-					value={building}
-					on:change={onBuildingChange}>{building.buildingname}</ListBoxItem
-				>
-			{/each}
-		{/await}
-	</ListBox>
+	<div class="card w-48 shadow-xl py-2" data-popup="buildingSelection">
+		<ListBox rounded="rounded-none">
+			{#await loadBuildings()}
+				<p>loading...</p>
+			{:then data}
+				{#each buildingsWithFloors as building}
+					<ListBoxItem
+						bind:group={selection.Building}
+						name="medium"
+						value={building}
+						on:change={onBuildingChange}>{building.buildingname}</ListBoxItem
+					>
+				{/each}
+			{/await}
+		</ListBox>
+	</div>
+	<div class="px-5">
+		<BurgerMenu>
+			<button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+			<button on:click={() => goto("/admin/analysis")} class="{btn}">Analysis</button>
+			<button on:click={() => goto("/admin/predictions")} class="{btn}">Prediction</button>
+			<button
+				class="btn variant-filled-primary z-[100]"
+				on:click={() => {
+				goto(`/admin`);
+			}}
+			>
+				Snapshots
+			</button>
+		</BurgerMenu>
+	</div>
 </div>
 
 <div class="card w-48 shadow-xl py-2" data-popup="floorSelection">

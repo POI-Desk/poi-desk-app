@@ -1,22 +1,14 @@
 <script lang="ts">
-	import { storePopup } from "@skeletonlabs/skeleton";
-	import DataSelectionCard from "$components/AnalysisComponents/DataSelectionCard.svelte";
-	import Last30Days from "$components/AnalysisComponents/Last30Days.svelte";
-	import { arrow, autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
-	import { user } from "$lib/stores/userStore";
-	import { getBuildingsWithFloors } from "$lib/queries/buildingQueries";
-	import type { Building } from "$lib/types/buildingType";
-	import type { Floor } from "$lib/types/floorType";
-	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
-
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
-	onMount(() => {
-		if (!$user.pk_userid) {
-			goto('/login');
-		}
-	});
+	import DataSelectionCard from '$components/AnalysisComponents/DataSelectionCard.svelte';
+	import Last30Days from '$components/AnalysisComponents/Last30Days.svelte';
+	import { getBuildingsWithFloors } from '$lib/queries/buildingQueries';
+	import type { Building } from '$lib/types/buildingType';
+	import type { Floor } from '$lib/types/floorType';
+	import { user } from '$lib/stores/userStore';
+	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
+	import BurgerMenu from "$components/SuperAdminComponents/BurgerMenu.svelte";
+	
 
 	async function loadData() {
 		if (buildingsWithFloors.length <= 1) {
@@ -73,30 +65,29 @@
 		}
 		return true;
 	}
+	const btn = "btn variant-filled-primary shadow-md"
 </script>
 
-<div class="h-screen flex flex-col p-5">
-	<div class="h-full flex">
+<div class="h-screen w-full flex flex-col justify-between primary-50">
+	<div class="flex w-full h-full flex-col justify-between ">
 		<!--Last 30 Days-->
-		<div class="card bg-white p-4 w-full flex flex-col rounded-3xl">
-			<div class="w-full h-1/8">
-				<p class="flex justify-center h4">Last 30 Days</p>
+		<div class="pt-4 h w-full h-full flex flex-col">
+			<div class="w-full h-1/4">
+				<p class="flex justify-center" style="font-size:30px;">Last 30 Days</p>
 			</div>
-			<div class="flex flex-row w-full h-full p2">
-				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
-					<Last30Days />
+			<div class="flex h-full flex-row w-full">
+				<div class="w-full flex h-full items-center justify-center">
+					<Last30Days location={$user.location} />
 				</div>
 			</div>
 		</div>
-	</div>
-
-	<div class="h-full flex gap-4 pt-2">
-		<div class="card bg-white p-4 w-full flex flex-col rounded-3xl">
-			<div class="w-full h-1/8 h4">
-				<p class="flex justify-center">Select Anaylsis</p>
+		<!--Last 30 Days-->
+		<div class="w-full h-full ht-8 flex flex-col">
+			<div class="w-full">
+				<p class="flex justify-center" style="font-size:30px;">Select Anaylsis</p>
 			</div>
-			<div class="flex flex-row w-full h-full p2">
-				<div class="w-full h-ful rounded-3xl flex items-center justify-center">
+			<div class="flex h-full flex-row w-full">
+				<div class="flex w-full h-full items-center justify-center">
 					{#await getData()}
 						<p>loading...</p>
 					{:then data}
@@ -106,12 +97,12 @@
 			</div>
 		</div>
 	</div>
-
-	<!--<div class="h-1/2 flex gap-4">
-			{#await getData()}
-				<p>loading...</p>
-			{:then data}
-				<DataSelectionCard buildings={x} />
-			{/await}
-		</div>-->
+	<div class="px-5 primary-50">
+		<BurgerMenu>
+			<button on:click={() => goto("/")} class="{btn}">Back to POI-Desk</button>
+			<button on:click={() => goto("/admin/analysis")} class="{btn}">Analysis</button>
+			<button on:click={() => goto("/admin/predictions")} class="{btn}">Prediction</button>
+			<button on:click={() => goto(`/admin`)} class="{btn}">Snapshots </button>
+		</BurgerMenu>
+	</div>
 </div>
