@@ -1070,6 +1070,8 @@
 			</button>
 			<button class="btn variant-filled-primary z-[100]" on:click={handleOffline}> Offline </button>
 			<button class="btn variant-filled-primary z-[100]" on:click={handleOnline}> Online </button>
+			<button on:click={() => goto("/admin/analysis")} class="{btn}">Analysis</button>
+			<button on:click={() => goto("/admin/predictions")} class="{btn}">Prediction</button>
 			<button
 				class="btn variant-filled-primary z-[100]"
 				on:click={() => {

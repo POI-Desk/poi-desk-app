@@ -76,6 +76,7 @@
 	let returnedNull: Boolean = false;
 
 	async function loadData() {
+		console.log(building, floor, year, selectedTimePeriod);
 		chartValues = [];
 		morningValues = [];
 		afternoonValues = [];
@@ -288,17 +289,19 @@
 	}
 </script>
 
-{#await loadData()}
-	<p>loading...</p>
-{:then data}
-	{#if returnedNull}
-		<p class="p-2" style="font-size:40px;">No days available for selection</p>
-	{:else}
-		<BarChart
-			{data}
-			title="Bookings {year} {selectedTimePeriod}  {building?.buildingid
-				? `building: ${building?.buildingname}`
-				: ''}  {floor?.floorid ? `floor: ${floor?.floorname}` : ''}"
-		/>
-	{/if}
-{/await}
+<div class="flex h-full w-full justify-start">
+	{#await loadData()}
+		<p>loading...</p>
+	{:then data}
+		{#if returnedNull}
+			<p class="p-2 flex items-center justify-center h-full" style="font-size:40px;">No days available for selection</p>
+		{:else}
+			<BarChart
+				{data}
+				title="Bookings {year} {selectedTimePeriod}  {building?.buildingid
+					? `building: ${building?.buildingname}`
+					: ''}  {floor?.floorid ? `floor: ${floor?.floorname}` : ''}"
+			/>
+		{/if}
+	{/await}
+</div>

@@ -56,7 +56,7 @@
 	async function getYears(): Promise<void> {
 		const result = await YearsSinceStart.fetch();
 		if (result) {
-			years = result.data?.getAllYears ?? [];
+		 	years = result.data?.getAllYears ?? [];
 		}
 	}
 
@@ -100,12 +100,12 @@
 	};
 </script>
 
-<div class=" h-full w-full flex flex-col rounded-3xl">
+<div class=" h-full w-full flex flex-col">
 	<div class="flex flex-row w-full h-full p2">
-		<div class="w-full h-full rounded-3xl flex items-center justify-center">
+		<div class="w-full h-full flex items-center justify-center">
 			<!--Diagramm-->
-			<div class="w-1/2 h-full hite rounded-3xl flex items-center justify-center flex-row">
-				<div class="w-full h-full bg-white rounded-3xl flex items-center justify-center flex-col">
+			<div class="w-3/5 h-full hite flex items-center justify-center flex-row">
+				<div class="w-full h-full flex items-center justify-center flex-col">
 					{#await getYears()}
 						<p>loading...</p>
 					{:then data}
@@ -132,7 +132,7 @@
 							<span>↓</span>
 						</button>
 					{/await}
-					<div class="flex w-full h-10 items-end h-full justify-center">
+					<div class="flex w-full items-end justify-center">
 						<RadioGroup
 							flex="flex"
 							active="variant-filled-primary"
@@ -151,10 +151,10 @@
 			</div>
 
 			<!--Data-->
-			<div class="w-1/2 h-full bg-white rounded-3xl flex items-center justify-center p-2>">
+			<div class="w-1/2 h-full flex items-center justify-start">
 				{#if !selection.Month || !selection.Year}
-					<div class="flex justify-center items-center h-full">
-						<p>Select Time</p>
+					<div class="flex justify-start items-center h-full">
+						<p style="font-size:40px;">Select Time</p>
 					</div>
 				{/if}
 				{#key selection}

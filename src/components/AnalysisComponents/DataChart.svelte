@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { AnalysisData } from '$lib/types/analysisResultType';
-	import { user } from '$lib/stores/userStore';
+	import { user } from '$lib/stores/userStore.js';
 	import {
 		MonthlyBookingDataByLocation,
 		MonthlyBookingDataByBuilding,
-		MonthlyBookingDataByFloor,
+		//MonthlyBookingDataByFloor,
 		QuarterlyBookingDataByLocation,
 		QuarterlyBookingDataByBuilding,
 		QuarterlyBookingDataByFloor,
@@ -102,14 +102,14 @@
 					});
 					monthlyBookingResult = result.data?.getMonthlyBookingByBuilding;
 				} else if (building && floor) {
-					result = await MonthlyBookingDataByFloor.fetch({
-						variables: {
-							year: year,
-							month: monthDictionary[selectedTimePeriod].toString(),
-							floor: floor.floorid
-						}
-					});
-					monthlyBookingResult = result.data?.getMonthlyBookingByFloor;
+					// result = await MonthlyBookingDataByFloor.fetch({
+					// 	variables: {
+					// 		year: year,
+					// 		month: monthDictionary[selectedTimePeriod].toString(),
+					// 		floor: floor.floorid
+					// 	}
+					// });
+					// monthlyBookingResult = result.data?.getMonthlyBookingByFloor;
 				}
 				if (monthlyBookingResult == null || monthlyBookingResult?.afternoon_lowestBooking === null) {
 					returnedNull = true;
@@ -313,7 +313,7 @@
 	{#if returnedNull}
 		<p class="p-2" style="font-size:40px;">No data available for selection</p>
 	{:else}
-		<div class=" w-full h-full text-black rounded-3xl flex items-center justify-center p-2>">
+		<div class=" w-full h-full rounded-3xl flex items-center justify-center p-2>">
 			<div class="flex flex-col gap-2 w-full h-full">
 				<div class="flex w-full h-1/2 gap-2 justify-around">
 					<div class="w-1/2 h-full rounded-3xl flex items-center justify-center flex-col">
